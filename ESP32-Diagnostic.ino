@@ -1,4 +1,5 @@
 /*
+ * V3.00
  * DIAGNOSTIC COMPLET ESP32 - VERSION MULTILINGUE v2.5
  * Compatible: ESP32, ESP32-S2, ESP32-S3, ESP32-C3
  * Optimisé pour ESP32 Arduino Core 3.1.3
@@ -39,7 +40,7 @@
 #include "languages.h"
 
 // ========== CONFIGURATION ==========
-#define DIAGNOSTIC_VERSION "2.5"
+#define DIAGNOSTIC_VERSION "3.0.0"
 #define CUSTOM_LED_PIN -1
 #define CUSTOM_LED_COUNT 1
 #define ENABLE_I2C_SCAN true
