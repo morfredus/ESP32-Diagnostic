@@ -33,6 +33,7 @@
 
 #include <WiFi.h>
 #include <WebServer.h>
+#include <ESPmDNS.h>
 #include <Wire.h>
 #include <Adafruit_NeoPixel.h>
 #include <esp_heap_caps.h>
