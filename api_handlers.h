@@ -1,516 +1,381 @@
-
 /*
- * API_HANDLERS.H - Handlers API REST v3.0.0
- * Tous les endpoints pour l'interface dynamique
+ * ============================================================
+ * API HANDLERS - ESP32 Diagnostic System
+ * ============================================================
+ *
+ * Version: 3.0.1
+ * Date: October 2025
+ * Arduino Core: 3.3.2+
+ *
+ * Description:
+ *   REST API endpoints for the diagnostic system.
+ *   Optimized for Arduino Core ESP32 3.3.2 with improved
+ *   memory management and WiFi stability.
+ *
+ * Endpoints:
+ *   GET  /api/system         - System information
+ *   GET  /api/tests          - All hardware tests
+ *   GET  /api/language       - Current language
+ *   POST /api/language       - Set language
+ *   GET  /api/export/json    - Export JSON
+ *   GET  /api/export/csv     - Export CSV
+ *   POST /api/neopixel/pattern - NeoPixel pattern
+ *   POST /api/neopixel/color   - NeoPixel color
+ *
+ * ============================================================
  */
 
 #ifndef API_HANDLERS_H
 #define API_HANDLERS_H
 
-// ========== FONCTIONS DE TESTS (à inclure depuis le fichier principal) ==========
-// Déclarations externes
-extern bool testSingleGPIO(int pin);
-extern void testAllGPIOs();
-extern void scanWiFiNetworks();
-extern void scanI2C();
-extern void resetBuiltinLEDTest();
-extern void testBuiltinLED();
-extern void resetNeoPixelTest();
-extern void testNeoPixel();
-extern void neopixelRainbow();
-extern void neopixelBlink(uint32_t color, int times);
-extern void neopixelFade(uint32_t color);
-extern void resetTFTTest();
-extern void testTFT();
-extern void tftTestColors();
-extern void tftTestCheckerboard();
-extern void tftClear();
-extern void resetOLEDTest();
-extern void testOLED();
-extern void oledShowMessage(String message);
-extern void testADC();
-extern void testTouchPads();
-extern void testPWM();
-extern void scanSPI();
-extern void listPartitions();
-extern void memoryStressTest();
-extern unsigned long benchmarkCPU();
-extern unsigned long benchmarkMemory();
+#include <ArduinoJson.h>
 
-// Variables externes
-extern WebServer server;
-extern DiagnosticInfo diagnosticData;
-extern DetailedMemoryInfo detailedMemory;
-extern std::vector<GPIOTestResult> gpioResults;
-extern std::vector<WiFiNetwork> wifiNetworks;
-extern std::vector<ADCReading> adcReadings;
-extern std::vector<TouchReading> touchReadings;
-extern int BUILTIN_LED_PIN;
-extern bool builtinLedTested;
-extern bool builtinLedAvailable;
-extern String builtinLedTestResult;
-extern int LED_PIN;
-extern int LED_COUNT;
-extern Adafruit_NeoPixel *strip;
-extern bool neopixelTested;
-extern bool neopixelAvailable;
-extern String neopixelTestResult;
-extern bool tftTested;
-extern bool tftAvailable;
-extern String tftTestResult;
-extern int tftWidth;
-extern int tftHeight;
-extern bool oledTested;
-extern bool oledAvailable;
-extern String oledTestResult;
-extern int I2C_SDA;
-extern int I2C_SCL;
-extern String adcTestResult;
-extern String touchTestResult;
-extern String pwmTestResult;
-extern String spiInfo;
-extern String partitionsInfo;
-extern String stressTestResult;
-extern Language currentLanguage;
+// ============================================================
+// SYSTEM INFO API - Optimized for Core 3.3.2
+// ============================================================
 
-// ========== API STATUS (Temps réel) ==========
-void handleAPIStatus() {
-  collectDiagnosticInfo();
-  collectDetailedMemory();
+void handleSystemInfo() {
+  // Use larger buffer for Core 3.3.2 (improved JSON handling)
+  StaticJsonDocument<2048> doc;
 
-  String json = "{";
-  json += "\"uptime\":" + String(diagnosticData.uptime) + ",";
-  json += "\"temperature\":" + String(diagnosticData.temperature, 1) + ",";
-  json += "\"sram\":{";
-  json += "\"total\":" + String(detailedMemory.sramTotal) + ",";
-  json += "\"free\":" + String(detailedMemory.sramFree) + ",";
-  json += "\"used\":" + String(detailedMemory.sramUsed);
-  json += "},";
+  // System information
+  doc["version"] = DIAGNOSTIC_VERSION;
+  doc["core_version"] = ARDUINO_CORE_VERSION;
+  doc["chip"] = getChipModel();
+  doc["cores"] = getCPUCores();
+  doc["frequency"] = getCPUFrequency();
+  doc["flash_size"] = getFlashSize();
+  doc["psram_size"] = getPSRAMSize();
+  doc["uptime"] = getUptime();
 
-  if (detailedMemory.psramAvailable) {
-    json += "\"psram\":{";
-    json += "\"total\":" + String(detailedMemory.psramTotal) + ",";
-    json += "\"free\":" + String(detailedMemory.psramFree) + ",";
-    json += "\"used\":" + String(detailedMemory.psramUsed);
-    json += "},";
+  // Memory info - Using improved heap caps API
+  uint32_t heapFree, heapSize, psramFree, psramSize;
+  getMemoryInfo(heapFree, heapSize, psramFree, psramSize);
+
+  JsonObject memory = doc.createNestedObject("memory");
+  memory["heap_free"] = heapFree;
+  memory["heap_size"] = heapSize;
+  memory["heap_free_formatted"] = formatBytes(heapFree);
+  memory["heap_size_formatted"] = formatBytes(heapSize);
+
+  if (psramFound()) {
+    memory["psram_free"] = psramFree;
+    memory["psram_size"] = psramSize;
+    memory["psram_free_formatted"] = formatBytes(psramFree);
+    memory["psram_size_formatted"] = formatBytes(psramSize);
   }
 
-  json += "\"fragmentation\":" + String(detailedMemory.fragmentationPercent, 1);
-  json += "}";
-
-  server.send(200, "application/json", json);
-}
-
-// ========== API OVERVIEW ==========
-void handleAPIOverview() {
-  collectDiagnosticInfo();
-  collectDetailedMemory();
-
-  String json = "{";
-  json += "\"chip\":{";
-  json += "\"model\":\"" + diagnosticData.chipModel + "\",";
-  json += "\"revision\":\"" + diagnosticData.chipRevision + "\",";
-  json += "\"cores\":" + String(diagnosticData.cpuCores) + ",";
-  json += "\"freq\":" + String(diagnosticData.cpuFreqMHz) + ",";
-  json += "\"mac\":\"" + diagnosticData.macAddress + "\",";
-  json += "\"features\":\"" + getChipFeatures() + "\",";
-  json += "\"sdk\":\"" + diagnosticData.sdkVersion + "\",";
-  json += "\"idf\":\"" + diagnosticData.idfVersion + "\",";
-  json += "\"uptime\":" + String(diagnosticData.uptime) + ",";
-  json += "\"temperature\":" + String(diagnosticData.temperature, 1) + ",";
-  json += "\"reset_reason\":\"" + getResetReason() + "\"";
-  json += "},";
-
-  json += "\"memory\":{";
-  json += "\"flash\":{";
-  json += "\"real\":" + String(detailedMemory.flashSizeReal) + ",";
-  json += "\"config\":" + String(detailedMemory.flashSizeChip) + ",";
-  json += "\"type\":\"" + getFlashType() + "\",";
-  json += "\"speed\":\"" + getFlashSpeed() + "\"";
-  json += "},";
-  json += "\"sram\":{";
-  json += "\"total\":" + String(detailedMemory.sramTotal) + ",";
-  json += "\"free\":" + String(detailedMemory.sramFree) + ",";
-  json += "\"used\":" + String(detailedMemory.sramUsed);
-  json += "},";
-
-  if (detailedMemory.psramAvailable) {
-    json += "\"psram\":{";
-    json += "\"total\":" + String(detailedMemory.psramTotal) + ",";
-    json += "\"free\":" + String(detailedMemory.psramFree) + ",";
-    json += "\"used\":" + String(detailedMemory.psramUsed);
-    json += "},";
+  // WiFi info - Core 3.3.2 improved WiFi stability
+  JsonObject wifi = doc.createNestedObject("wifi");
+  wifi["connected"] = (WiFi.status() == WL_CONNECTED);
+  if (WiFi.status() == WL_CONNECTED) {
+    wifi["ssid"] = WiFi.SSID();
+    wifi["ip"] = WiFi.localIP().toString();
+    wifi["rssi"] = WiFi.RSSI();
+    wifi["mac"] = WiFi.macAddress();
   }
 
-  json += "\"fragmentation\":" + String(detailedMemory.fragmentationPercent, 1);
-  json += "},";
+  // NeoPixel status
+  doc["neopixel_available"] = neopixelAvailable;
 
-  json += "\"wifi\":{";
-  json += "\"ssid\":\"" + diagnosticData.wifiSSID + "\",";
-  json += "\"rssi\":" + String(diagnosticData.wifiRSSI) + ",";
-  json += "\"quality\":\"" + getWiFiSignalQuality() + "\",";
-  json += "\"ip\":\"" + diagnosticData.ipAddress + "\",";
-  json += "\"subnet\":\"" + WiFi.subnetMask().toString() + "\",";
-  json += "\"gateway\":\"" + WiFi.gatewayIP().toString() + "\"";
-  json += "},";
+  String response;
+  serializeJson(doc, response);
 
-  json += "\"gpio\":{";
-  json += "\"total\":" + String(diagnosticData.totalGPIO) + ",";
-  json += "\"i2c_count\":" + String(diagnosticData.i2cCount) + ",";
-  json += "\"i2c_devices\":\"" + diagnosticData.i2cDevices + "\"";
-  json += "}";
-  json += "}";
-
-  server.send(200, "application/json", json);
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.send(200, "application/json", response);
 }
 
-// ========== API LEDS INFO ==========
-void handleAPILedsInfo() {
-  String json = "{";
-  json += "\"builtin\":{";
-  json += "\"pin\":" + String(BUILTIN_LED_PIN) + ",";
-  json += "\"tested\":" + String(builtinLedTested ? "true" : "false") + ",";
-  json += "\"available\":" + String(builtinLedAvailable ? "true" : "false") + ",";
-  json += "\"status\":\"" + builtinLedTestResult + "\"";
-  json += "},";
-  json += "\"neopixel\":{";
-  json += "\"pin\":" + String(LED_PIN) + ",";
-  json += "\"count\":" + String(LED_COUNT) + ",";
-  json += "\"tested\":" + String(neopixelTested ? "true" : "false") + ",";
-  json += "\"available\":" + String(neopixelAvailable ? "true" : "false") + ",";
-  json += "\"status\":\"" + neopixelTestResult + "\"";
-  json += "}";
-  json += "}";
+// ============================================================
+// TESTS API - Complete hardware testing
+// ============================================================
 
-  server.send(200, "application/json", json);
+void handleTests() {
+  // Large buffer for complete test results
+  DynamicJsonDocument doc(4096);
+
+  // GPIO Test
+  JsonArray gpioArray = doc.createNestedArray("gpio_test");
+  testGPIO(gpioArray);
+
+  // I2C Test
+  JsonArray i2cArray = doc.createNestedArray("i2c_test");
+  testI2C(i2cArray);
+
+  // SPI Test
+  JsonArray spiArray = doc.createNestedArray("spi_test");
+  testSPI(spiArray);
+
+  // Memory Test
+  JsonObject memTest = doc.createNestedObject("memory_test");
+  testMemory(memTest);
+
+  // WiFi Test
+  JsonObject wifiTest = doc.createNestedObject("wifi_test");
+  testWiFi(wifiTest);
+
+  // System Test
+  JsonObject sysTest = doc.createNestedObject("system_test");
+  testSystem(sysTest);
+
+  String response;
+  serializeJson(doc, response);
+
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.send(200, "application/json", response);
 }
 
-// ========== API SCREENS INFO ==========
-void handleAPIScreensInfo() {
-  String json = "{";
-  json += "\"tft\":{";
-  json += "\"tested\":" + String(tftTested ? "true" : "false") + ",";
-  json += "\"available\":" + String(tftAvailable ? "true" : "false") + ",";
-  json += "\"status\":\"" + tftTestResult + "\",";
-  json += "\"width\":" + String(tftWidth) + ",";
-  json += "\"height\":" + String(tftHeight);
-  json += "},";
-  json += "\"oled\":{";
-  json += "\"tested\":" + String(oledTested ? "true" : "false") + ",";
-  json += "\"available\":" + String(oledAvailable ? "true" : "false") + ",";
-  json += "\"status\":\"" + oledTestResult + "\",";
-  json += "\"pins\":{";
-  json += "\"sda\":" + String(I2C_SDA) + ",";
-  json += "\"scl\":" + String(I2C_SCL);
-  json += "}";
-  json += "}";
-  json += "}";
+// ============================================================
+// LANGUAGE API
+// ============================================================
 
-  server.send(200, "application/json", json);
+void handleGetLanguage() {
+  StaticJsonDocument<128> doc;
+  doc["language"] = currentLanguage;
+
+  String response;
+  serializeJson(doc, response);
+
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.send(200, "application/json", response);
 }
 
-// ========== CHANGEMENT DE LANGUE ==========
 void handleSetLanguage() {
-  if (server.hasArg("lang")) {
-    String lang = server.arg("lang");
-    if (lang == "fr") {
-      setLanguage(LANG_FR);
-    } else if (lang == "en") {
-      setLanguage(LANG_EN);
+  if (server.hasArg("plain")) {
+    StaticJsonDocument<128> doc;
+    DeserializationError error = deserializeJson(doc, server.arg("plain"));
+
+    if (!error) {
+      String lang = doc["language"];
+      if (lang == "fr" || lang == "en") {
+        currentLanguage = lang;
+
+        StaticJsonDocument<128> response;
+        response["success"] = true;
+        response["language"] = currentLanguage;
+
+        String responseStr;
+        serializeJson(response, responseStr);
+
+        server.sendHeader("Access-Control-Allow-Origin", "*");
+        server.send(200, "application/json", responseStr);
+        return;
+      }
     }
-    server.send(200, "application/json", "{\"success\":true,\"lang\":\"" + lang + "\"}");
-  } else {
-    server.send(400, "application/json", "{\"success\":false}");
-  }
-}
-
-void handleGetTranslations() {
-  String json = "{";
-  json += "\"title\":\"" + String(T().title) + "\",";
-  json += "\"nav_overview\":\"" + String(T().nav_overview) + "\",";
-  json += "\"nav_leds\":\"" + String(T().nav_leds) + "\",";
-  json += "\"nav_screens\":\"" + String(T().nav_screens) + "\",";
-  json += "\"nav_tests\":\"" + String(T().nav_tests) + "\",";
-  json += "\"nav_gpio\":\"" + String(T().nav_gpio) + "\",";
-  json += "\"nav_wifi\":\"" + String(T().nav_wifi) + "\",";
-  json += "\"nav_benchmark\":\"" + String(T().nav_benchmark) + "\",";
-  json += "\"nav_export\":\"" + String(T().nav_export) + "\",";
-  json += "\"chip_info\":\"" + String(T().chip_info) + "\",";
-  json += "\"memory_details\":\"" + String(T().memory_details) + "\",";
-  json += "\"wifi_connection\":\"" + String(T().wifi_connection) + "\",";
-  json += "\"gpio_interfaces\":\"" + String(T().gpio_interfaces) + "\",";
-  json += "\"builtin_led\":\"" + String(T().builtin_led) + "\",";
-  json += "\"neopixel\":\"" + String(T().neopixel) + "\",";
-  json += "\"tft_screen\":\"" + String(T().tft_screen) + "\",";
-  json += "\"oled_screen\":\"" + String(T().oled_screen) + "\"";
-  json += "}";
-
-  server.send(200, "application/json", json);
-}
-
-// ========== TEST GPIO ==========
-void handleTestGPIO() {
-  testAllGPIOs();
-  String json = "{\"results\":[";
-  for (size_t i = 0; i < gpioResults.size(); i++) {
-    if (i > 0) json += ",";
-    json += "{\"pin\":" + String(gpioResults[i].pin) + ",\"working\":" + String(gpioResults[i].working ? "true" : "false") + "}";
-  }
-  json += "]}";
-  server.send(200, "application/json", json);
-}
-
-// ========== WIFI SCAN ==========
-void handleWiFiScan() {
-  scanWiFiNetworks();
-  String json = "{\"networks\":[";
-  for (size_t i = 0; i < wifiNetworks.size(); i++) {
-    if (i > 0) json += ",";
-    json += "{\"ssid\":\"" + wifiNetworks[i].ssid + "\",\"rssi\":" + String(wifiNetworks[i].rssi) +
-            ",\"channel\":" + String(wifiNetworks[i].channel) + ",\"encryption\":\"" + wifiNetworks[i].encryption +
-            "\",\"bssid\":\"" + wifiNetworks[i].bssid + "\"}";
-  }
-  json += "]}";
-  server.send(200, "application/json", json);
-}
-
-// ========== LED BUILTIN ==========
-void handleBuiltinLEDTest() {
-  resetBuiltinLEDTest();
-  testBuiltinLED();
-  server.send(200, "application/json", "{\"success\":" + String(builtinLedAvailable ? "true" : "false") + ",\"result\":\"" + builtinLedTestResult + "\"}");
-}
-
-void handleBuiltinLEDControl() {
-  if (!server.hasArg("action")) {
-    server.send(400, "application/json", "{\"success\":false}");
-    return;
   }
 
-  String action = server.arg("action");
-  if (BUILTIN_LED_PIN == -1) {
-    server.send(400, "application/json", "{\"success\":false,\"message\":\"LED non configuree\"}");
-    return;
-  }
-
-  pinMode(BUILTIN_LED_PIN, OUTPUT);
-  String message = "";
-
-  if (action == "on") {
-    digitalWrite(BUILTIN_LED_PIN, HIGH);
-    message = "LED allumee";
-  } else if (action == "blink") {
-    for(int i = 0; i < 5; i++) {
-      digitalWrite(BUILTIN_LED_PIN, HIGH);
-      delay(200);
-      digitalWrite(BUILTIN_LED_PIN, LOW);
-      delay(200);
-    }
-    message = "Clignotement OK";
-  } else if (action == "fade") {
-    for(int i = 0; i <= 255; i += 5) {
-      analogWrite(BUILTIN_LED_PIN, i);
-      delay(10);
-    }
-    for(int i = 255; i >= 0; i -= 5) {
-      analogWrite(BUILTIN_LED_PIN, i);
-      delay(10);
-    }
-    digitalWrite(BUILTIN_LED_PIN, LOW);
-    message = "Fade OK";
-  } else if (action == "off") {
-    digitalWrite(BUILTIN_LED_PIN, LOW);
-    builtinLedTested = false;
-    message = "LED eteinte";
-  } else {
-    server.send(400, "application/json", "{\"success\":false}");
-    return;
-  }
-
-  server.send(200, "application/json", "{\"success\":true,\"message\":\"" + message + "\"}");
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.send(400, "application/json", "{\"success\":false,\"error\":\"Invalid language\"}");
 }
 
-// ========== NEOPIXEL ==========
-void handleNeoPixelTest() {
-  resetNeoPixelTest();
-  testNeoPixel();
-  server.send(200, "application/json", "{\"success\":" + String(neopixelAvailable ? "true" : "false") + ",\"result\":\"" + neopixelTestResult + "\"}");
-}
-
-void handleNeoPixelPattern() {
-  if (!server.hasArg("pattern")) {
-    server.send(400, "application/json", "{\"success\":false}");
-    return;
-  }
-
-  String pattern = server.arg("pattern");
-  if (!strip) {
-    server.send(400, "application/json", "{\"success\":false,\"message\":\"NeoPixel non init\"}");
-    return;
-  }
-
-  String message = "";
-  if (pattern == "rainbow") {
-    neopixelRainbow();
-    message = "Arc-en-ciel OK";
-  } else if (pattern == "blink") {
-    neopixelBlink(strip->Color(255, 0, 0), 5);
-    message = "Blink OK";
-  } else if (pattern == "fade") {
-    neopixelFade(strip->Color(0, 0, 255));
-    message = "Fade OK";
-  } else if (pattern == "off") {
-    strip->clear();
-    strip->show();
-    neopixelTested = false;
-    message = "Off";
-  } else {
-    server.send(400, "application/json", "{\"success\":false}");
-    return;
-  }
-
-  server.send(200, "application/json", "{\"success\":true,\"message\":\"" + message + "\"}");
-}
-
-void handleNeoPixelColor() {
-  if (!server.hasArg("r") || !server.hasArg("g") || !server.hasArg("b") || !strip) {
-    server.send(400, "application/json", "{\"success\":false}");
-    return;
-  }
-
-  int r = server.arg("r").toInt();
-  int g = server.arg("g").toInt();
-  int b = server.arg("b").toInt();
-
-  strip->fill(strip->Color(r, g, b));
-  strip->show();
-  neopixelTested = false;
-
-  server.send(200, "application/json", "{\"success\":true,\"message\":\"RGB(" + String(r) + "," + String(g) + "," + String(b) + ")\"}");
-}
-
-// ========== TFT ==========
-void handleTFTTest() {
-  resetTFTTest();
-  testTFT();
-  server.send(200, "application/json", "{\"success\":" + String(tftAvailable ? "true" : "false") +
-              ",\"result\":\"" + tftTestResult + "\",\"width\":" + String(tftWidth) + ",\"height\":" + String(tftHeight) + "}");
-}
-
-void handleTFTPattern() {
-  if (!server.hasArg("pattern")) {
-    server.send(400, "application/json", "{\"success\":false}");
-    return;
-  }
-
-  String pattern = server.arg("pattern");
-  String message = "";
-
-  if (pattern == "colors") {
-    tftTestColors();
-    message = "Couleurs OK";
-  } else if (pattern == "checkerboard") {
-    tftTestCheckerboard();
-    message = "Damier OK";
-  } else if (pattern == "clear") {
-    tftClear();
-    tftTested = false;
-    message = "Ecran efface";
-  } else {
-    server.send(400, "application/json", "{\"success\":false}");
-    return;
-  }
-
-  server.send(200, "application/json", "{\"success\":true,\"message\":\"" + message + "\"}");
-}
-
-// ========== OLED ==========
-void handleOLEDTest() {
-  resetOLEDTest();
-  testOLED();
-  server.send(200, "application/json", "{\"success\":" + String(oledAvailable ? "true" : "false") + ",\"result\":\"" + oledTestResult + "\"}");
-}
-
-void handleOLEDMessage() {
-  if (!server.hasArg("message")) {
-    server.send(400, "application/json", "{\"success\":false}");
-    return;
-  }
-
-  String message = server.arg("message");
-  oledShowMessage(message);
-  server.send(200, "application/json", "{\"success\":true,\"message\":\"Message affiche\"}");
-}
-
-// ========== ADC ==========
-void handleADCTest() {
-  testADC();
-  String json = "{\"readings\":[";
-  for (size_t i = 0; i < adcReadings.size(); i++) {
-    if (i > 0) json += ",";
-    json += "{\"pin\":" + String(adcReadings[i].pin) + ",\"raw\":" + String(adcReadings[i].rawValue) +
-            ",\"voltage\":" + String(adcReadings[i].voltage, 2) + "}";
-  }
-  json += "],\"result\":\"" + adcTestResult + "\"}";
-  server.send(200, "application/json", json);
-}
-
-// ========== BENCHMARK ==========
-void handleBenchmark() {
-  unsigned long cpuTime = benchmarkCPU();
-  unsigned long memTime = benchmarkMemory();
-
-  diagnosticData.cpuBenchmark = cpuTime;
-  diagnosticData.memBenchmark = memTime;
-
-  server.send(200, "application/json", "{\"cpu\":" + String(cpuTime) + ",\"memory\":" + String(memTime) +
-              ",\"cpuPerf\":" + String(100000.0 / cpuTime, 2) + ",\"memSpeed\":" + String((10000 * sizeof(int) * 2) / (float)memTime, 2) + "}");
-}
-
-// ========== EXPORTS (inchangés) ==========
-void handleExportTXT() {
-  collectDiagnosticInfo();
-  collectDetailedMemory();
-
-  String txt = "========================================\r\n";
-  txt += String(T().title) + " " + String(T().version) + "3.0.0\r\n";
-  txt += "========================================\r\n\r\n";
-
-  txt += "=== CHIP ===\r\n";
-  txt += String(T().model) + ": " + diagnosticData.chipModel + " " + String(T().revision) + diagnosticData.chipRevision + "\r\n";
-  txt += "CPU: " + String(diagnosticData.cpuCores) + " " + String(T().cores) + " @ " + String(diagnosticData.cpuFreqMHz) + " MHz\r\n";
-
-  // ... (reste du code export TXT identique)
-
-  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v3.0.0.txt");
-  server.send(200, "text/plain; charset=utf-8", txt);
-}
+// ============================================================
+// EXPORT JSON - Complete system data
+// ============================================================
 
 void handleExportJSON() {
-  collectDiagnosticInfo();
-  collectDetailedMemory();
+  // Large buffer for complete export
+  DynamicJsonDocument doc(8192);
 
-  String json = "{";
-  json += "\"version\":\"3.0.0\",";
-  json += "\"chip\":{";
-  json += "\"model\":\"" + diagnosticData.chipModel + "\",";
-  json += "\"revision\":\"" + diagnosticData.chipRevision + "\"";
-  // ... (reste identique)
-  json += "}";
+  // Basic info
+  doc["export_date"] = getUptime();
+  doc["version"] = DIAGNOSTIC_VERSION;
+  doc["core_version"] = ARDUINO_CORE_VERSION;
 
-  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v3.0.0.json");
-  server.send(200, "application/json", json);
+  // System info
+  JsonObject system = doc.createNestedObject("system");
+  system["chip"] = getChipModel();
+  system["cores"] = getCPUCores();
+  system["frequency"] = getCPUFrequency();
+  system["flash_size"] = getFlashSize();
+  system["psram_size"] = getPSRAMSize();
+  system["uptime"] = getUptime();
+
+  // Memory info
+  uint32_t heapFree, heapSize, psramFree, psramSize;
+  getMemoryInfo(heapFree, heapSize, psramFree, psramSize);
+
+  JsonObject memory = doc.createNestedObject("memory");
+  memory["heap_free"] = heapFree;
+  memory["heap_size"] = heapSize;
+  if (psramFound()) {
+    memory["psram_free"] = psramFree;
+    memory["psram_size"] = psramSize;
+  }
+
+  // WiFi info
+  JsonObject wifi = doc.createNestedObject("wifi");
+  wifi["connected"] = (WiFi.status() == WL_CONNECTED);
+  if (WiFi.status() == WL_CONNECTED) {
+    wifi["ssid"] = WiFi.SSID();
+    wifi["ip"] = WiFi.localIP().toString();
+    wifi["rssi"] = WiFi.RSSI();
+  }
+
+  // Tests
+  JsonArray gpioArray = doc.createNestedArray("gpio_test");
+  testGPIO(gpioArray);
+
+  JsonArray i2cArray = doc.createNestedArray("i2c_test");
+  testI2C(i2cArray);
+
+  String response;
+  serializeJson(doc, response);
+
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.sendHeader("Content-Disposition", "attachment; filename=esp32-diagnostic.json");
+  server.send(200, "application/json", response);
 }
 
+// ============================================================
+// EXPORT CSV - Formatted data export
+// ============================================================
+
 void handleExportCSV() {
-  collectDiagnosticInfo();
-  collectDetailedMemory();
+  String csv = "Category,Parameter,Value\n";
 
-  String csv = String(T().category) + "," + String(T().parameter) + "," + String(T().value) + "\r\n";
-  // ... (reste identique)
+  // System information
+  csv += "System,Version," + String(DIAGNOSTIC_VERSION) + "\n";
+  csv += "System,Arduino Core," + String(ARDUINO_CORE_VERSION) + "\n";
+  csv += "System,Chip," + getChipModel() + "\n";
+  csv += "System,CPU Cores," + String(getCPUCores()) + "\n";
+  csv += "System,CPU Frequency," + String(getCPUFrequency()) + " MHz\n";
+  csv += "System,Flash Size," + getFlashSize() + "\n";
+  csv += "System,PSRAM," + getPSRAMSize() + "\n";
+  csv += "System,Uptime," + getUptime() + "\n";
 
-  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v3.0.0.csv");
-  server.send(200, "text/csv; charset=utf-8", csv);
+  // Memory information
+  uint32_t heapFree, heapSize, psramFree, psramSize;
+  getMemoryInfo(heapFree, heapSize, psramFree, psramSize);
+
+  csv += "Memory,Heap Free," + formatBytes(heapFree) + "\n";
+  csv += "Memory,Heap Size," + formatBytes(heapSize) + "\n";
+
+  if (psramFound()) {
+    csv += "Memory,PSRAM Free," + formatBytes(psramFree) + "\n";
+    csv += "Memory,PSRAM Size," + formatBytes(psramSize) + "\n";
+  }
+
+  // WiFi information
+  if (WiFi.status() == WL_CONNECTED) {
+    csv += "WiFi,Status,Connected\n";
+    csv += "WiFi,SSID," + WiFi.SSID() + "\n";
+    csv += "WiFi,IP," + WiFi.localIP().toString() + "\n";
+    csv += "WiFi,RSSI," + String(WiFi.RSSI()) + " dBm\n";
+  } else {
+    csv += "WiFi,Status,Disconnected\n";
+  }
+
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.sendHeader("Content-Disposition", "attachment; filename=esp32-diagnostic.csv");
+  server.send(200, "text/csv", csv);
+}
+
+// ============================================================
+// NEOPIXEL PATTERN API - Optimized response timing
+// ============================================================
+
+void handleNeoPixelPattern() {
+  if (!neopixelAvailable || strip == nullptr) {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(200, "application/json", "{\"success\":false,\"message\":\"NeoPixel not available\"}");
+    return;
+  }
+
+  if (!server.hasArg("plain")) {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(400, "application/json", "{\"success\":false,\"error\":\"No data\"}");
+    return;
+  }
+
+  StaticJsonDocument<256> doc;
+  DeserializationError error = deserializeJson(doc, server.arg("plain"));
+
+  if (error) {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(400, "application/json", "{\"success\":false,\"error\":\"Invalid JSON\"}");
+    return;
+  }
+
+  String pattern = doc["pattern"];
+
+  // CRITICAL: Send response BEFORE executing pattern
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.send(200, "application/json", "{\"success\":true,\"pattern\":\"" + pattern + "\"}");
+
+  // Now execute the pattern
+  if (pattern == "rainbow") {
+    for(int i=0; i<256; i++) {
+      strip->setPixelColor(0, strip->ColorHSV(i * 256));
+      strip->show();
+      delay(10);
+    }
+  } else if (pattern == "pulse") {
+    for(int i=0; i<255; i+=5) {
+      strip->setPixelColor(0, strip->Color(i, 0, i));
+      strip->show();
+      delay(20);
+    }
+    for(int i=255; i>=0; i-=5) {
+      strip->setPixelColor(0, strip->Color(i, 0, i));
+      strip->show();
+      delay(20);
+    }
+  } else if (pattern == "strobe") {
+    for(int i=0; i<10; i++) {
+      strip->setPixelColor(0, strip->Color(255, 255, 255));
+      strip->show();
+      delay(50);
+      strip->setPixelColor(0, strip->Color(0, 0, 0));
+      strip->show();
+      delay(50);
+    }
+  }
+
+  // Turn off after pattern
+  strip->setPixelColor(0, strip->Color(0, 0, 0));
+  strip->show();
+}
+
+// ============================================================
+// NEOPIXEL COLOR API
+// ============================================================
+
+void handleNeoPixelColor() {
+  if (!neopixelAvailable || strip == nullptr) {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(200, "application/json", "{\"success\":false,\"message\":\"NeoPixel not available\"}");
+    return;
+  }
+
+  if (!server.hasArg("plain")) {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(400, "application/json", "{\"success\":false,\"error\":\"No data\"}");
+    return;
+  }
+
+  StaticJsonDocument<256> doc;
+  DeserializationError error = deserializeJson(doc, server.arg("plain"));
+
+  if (error) {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(400, "application/json", "{\"success\":false,\"error\":\"Invalid JSON\"}");
+    return;
+  }
+
+  int r = doc["r"] | 0;
+  int g = doc["g"] | 0;
+  int b = doc["b"] | 0;
+
+  // Constrain values
+  r = constrain(r, 0, 255);
+  g = constrain(g, 0, 255);
+  b = constrain(b, 0, 255);
+
+  // Set color
+  strip->setPixelColor(0, strip->Color(r, g, b));
+  strip->show();
+
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.send(200, "application/json", "{\"success\":true}");
 }
 
 #endif // API_HANDLERS_H
