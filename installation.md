@@ -1,8 +1,8 @@
-# 📦 GUIDE D'INSTALLATION COMPLET - ESP32 Diagnostic v3.0.0
+# 📦 GUIDE D'INSTALLATION COMPLET - ESP32 Diagnostic v3.0.1
 
 ## 🎯 Vue d'ensemble
 
-Ce guide vous accompagne pas à pas pour installer la version 3.0.0 du système de diagnostic ESP32 avec interface web dynamique, multilingue et moderne.
+Ce guide vous accompagne pas à pas pour installer la version 3.0.1 du système de diagnostic ESP32 avec interface web dynamique, multilingue et moderne.
 
 ---
 
@@ -15,7 +15,7 @@ Ce guide vous accompagne pas à pas pour installer la version 3.0.0 du système 
 
 ### Logiciels nécessaires
 - **Arduino IDE 2.x** ou **PlatformIO**
-- **ESP32 Board Package** version 3.1.3 ou supérieure
+- **ESP32 Board Package** version **3.3.2 ou supérieure** ⚡ NOUVEAU
 - Navigateur web moderne (Chrome, Firefox, Edge)
 
 ### Bibliothèques Arduino requises
@@ -32,16 +32,24 @@ Ce guide vous accompagne pas à pas pour installer la version 3.0.0 du système 
 
 ## 📁 Structure des fichiers
 
-Votre projet doit contenir **5 fichiers** :
+Votre projet doit contenir **6 fichiers de code** :
 
 ```
 ESP32-Diagnostic/
 ├── ESP32-Diagnostic.ino          # Fichier principal
+├── exemple-config.h              # Template configuration ⚡ À COPIER
+├── config.h                      # Votre configuration (à créer) ⚡
 ├── api_handlers.h                # Handlers API REST
 ├── web_interface.h               # Interface HTML/CSS/JS
 ├── test_functions.h              # Fonctions de tests hardware
-└── translations.h                # Traductions FR/EN
+├── translations.h                # Traductions FR/EN
+└── .gitignore                    # Exclusions Git
 ```
+
+**⚠️ IMPORTANT** :
+- `exemple-config.h` = Template fourni (safe pour Git)
+- `config.h` = Votre fichier avec VOS identifiants (ignoré par Git)
+- Ne JAMAIS commiter `config.h` avec vos vrais identifiants
 
 ---
 
@@ -57,7 +65,7 @@ ESP32-Diagnostic/
      https://espressif.github.io/arduino-esp32/package_esp32_index.json
      ```
    - Aller dans `Outils > Type de carte > Gestionnaire de cartes`
-   - Rechercher "ESP32" et installer la version **3.1.3 ou supérieure**
+   - Rechercher "ESP32" et installer la version **3.3.2 ou supérieure** ⚡
 
 2. **Installer les bibliothèques requises** :
    - `Croquis > Inclure une bibliothèque > Gérer les bibliothèques`
@@ -68,18 +76,67 @@ ESP32-Diagnostic/
 ### Étape 2 : Créer le projet
 
 1. **Créer un nouveau dossier** nommé `ESP32-Diagnostic`
-2. **Télécharger les 5 fichiers** fournis dans les artifacts précédents
+2. **Télécharger les fichiers** fournis dans les artifacts
 3. **Placer tous les fichiers** dans le dossier `ESP32-Diagnostic`
-
-### Étape 3 : Configuration WiFi
-
-1. Ouvrir le fichier `ESP32-Diagnostic.ino`
-2. Localiser les lignes de configuration WiFi (vers ligne 50-51) :
-   ```cpp
-   const char* ssid = "VotreSSID";          // ← Modifier ici
-   const char* password = "VotreMotDePasse"; // ← Modifier ici
+4. **Créer votre fichier de configuration** :
    ```
-3. Remplacer par vos identifiants WiFi réels
+   - Copier "exemple-config.h"
+   - Renommer la copie en "config.h"
+   - Garder "exemple-config.h" comme template
+   ```
+
+### Étape 3 : Configuration WiFi ⚠️ IMPORTANT
+
+1. **Ouvrir le fichier `config.h`** (que vous venez de créer)
+
+2. **Choisir votre mode WiFi** :
+
+#### Option A : Multi-WiFi (RECOMMANDÉ) ✨
+
+L'ESP32 essaiera plusieurs réseaux automatiquement :
+
+```cpp
+// Déjà activé par défaut
+#define MULTI_WIFI_ENABLED
+#define NUM_SSIDS 2
+
+const char* ssid_list[] = {
+  "MonWiFiMaison",      // Premier réseau
+  "MonWiFiBureau"       // Second réseau (si premier échoue)
+};
+
+const char* password_list[] = {
+  "PasswordMaison",
+  "PasswordBureau"
+};
+```
+
+**Avantages** :
+- ✅ Fonctionne dans plusieurs lieux
+- ✅ Bascule automatique entre réseaux
+- ✅ Plus flexible
+
+#### Option B : WiFi Simple
+
+Un seul réseau :
+
+```cpp
+// Commenter Multi-WiFi et activer Single
+// #define MULTI_WIFI_ENABLED  // ← Commenter
+#define SINGLE_WIFI_ENABLED     // ← Activer
+
+const char* ssid = "MonSSID";
+const char* password = "MonPassword";
+```
+
+3. **Sauvegarder `config.h`**
+
+**🔒 Sécurité :**
+- ✅ `config.h` est dans `.gitignore` (ne sera pas commité)
+- ✅ `exemple-config.h` peut être commité (pas de credentials)
+- ❌ Ne JAMAIS partager votre `config.h` configuré
+
+**Option avancée** : Vous pouvez ajouter 3, 4 réseaux ou plus en augmentant `NUM_SSIDS`
 
 ### Étape 4 : Configuration des pins (optionnel)
 
@@ -106,7 +163,7 @@ Si vous utilisez des composants matériels, ajustez les pins selon votre câblag
    USB CDC On Boot: Enabled
    Flash Size: 8MB
    Partition Scheme: Default 4MB with spiffs
-   PSRAM: QSPI PSRAM
+   PSRAM: QSPI PSRAM (OPI PSRAM si disponible avec Core 3.3.2)
    Upload Speed: 921600
    ```
 
@@ -120,7 +177,7 @@ Si vous utilisez des composants matériels, ajustez les pins selon votre câblag
 3. Vous devriez voir :
    ```
    ====================================
-   ESP32 Diagnostic System v3.0.0
+   ESP32 Diagnostic System v3.0.1
    ====================================
 
    [INIT] Initializing system...
@@ -138,7 +195,7 @@ Si vous utilisez des composants matériels, ajustez les pins selon votre câblag
 ### Méthode 1 : mDNS (recommandé)
 Ouvrir dans votre navigateur :
 ```
-http://esp32-diag.local
+http://esp32-diagnostic.local
 ```
 
 ### Méthode 2 : Adresse IP
@@ -149,7 +206,7 @@ http://192.168.1.xxx
 
 ---
 
-## ✨ Fonctionnalités de l'interface v3.0.0
+## ✨ Fonctionnalités de l'interface v3.0.1
 
 ### 🎨 Design moderne
 - **Glassmorphism** avec effets de transparence et flou
@@ -207,7 +264,7 @@ http://192.168.1.xxx
 
 ### Problème : ESP32 ne se connecte pas au WiFi
 
-**Solution 1** : Vérifier les identifiants
+**Solution 1** : Vérifier les identifiants dans `config.h`
 ```cpp
 const char* ssid = "VotreSSID";      // Vérifier majuscules/minuscules
 const char* password = "MotDePasse";  // Vérifier caractères spéciaux
@@ -291,9 +348,16 @@ Une fois l'installation terminée, vous pouvez :
 
 ---
 
-## 📝 Changelog v3.0.0
+## 📝 Changelog
 
-### ✨ Nouveau
+### v3.0.1 (Octobre 2025) - Upgrade Core 3.3.2 ⚡
+- **Upgrade** : Arduino Core ESP32 3.1.3 → 3.3.2
+- **Optimisé** : Gestion mémoire améliorée avec nouvelles API
+- **Optimisé** : Support OPI PSRAM pour ESP32-S3
+- **Optimisé** : Performances WiFi améliorées
+- **Corrigé** : Compatibilité avec nouvelles APIs Core 3.3.2
+
+### v3.0.0 (Octobre 2025)
 - Interface web dynamique avec mise à jour temps réel
 - Design glassmorphism moderne
 - Navigation par onglets
@@ -301,29 +365,21 @@ Une fois l'installation terminée, vous pouvez :
 - Export JSON et CSV
 - Animations et transitions fluides
 
-### 🔧 Amélioré
-- Performances optimisées
-- Structure modulaire avec 5 fichiers
-- API REST complète
-- Gestion mémoire optimisée
-
-### 🐛 Corrigé
-- Problèmes de réponse HTTP pour NeoPixel
-- Fuites mémoire sur WebServer
-- Compatibilité ESP32-S3
-
 ---
 
 ## ✅ Checklist finale
 
 Avant de considérer l'installation terminée, vérifiez :
 
-- [ ] Tous les fichiers sont dans le bon dossier
-- [ ] Identifiants WiFi configurés
+- [ ] Arduino Core ESP32 version 3.3.2+ installé
+- [ ] Tous les fichiers (6 code + 2 config) sont dans le bon dossier
+- [ ] `exemple-config.h` copié et renommé en `config.h` ⚡
+- [ ] Identifiants WiFi configurés dans `config.h`
+- [ ] `config.h` ne sera PAS commité (vérifier .gitignore)
 - [ ] Compilation sans erreur
 - [ ] Téléversement réussi
 - [ ] Messages de démarrage corrects dans le moniteur série
-- [ ] Interface web accessible
+- [ ] Interface web accessible via http://esp32-diagnostic.local
 - [ ] Design moderne s'affiche correctement
 - [ ] Changement de langue fonctionne
 - [ ] Mise à jour automatique active
@@ -335,13 +391,15 @@ Avant de considérer l'installation terminée, vérifiez :
 
 ## 🎉 Félicitations !
 
-Votre système de diagnostic ESP32 v3.0.0 est maintenant opérationnel !
+Votre système de diagnostic ESP32 v3.0.1 est maintenant opérationnel !
 
-**Accès** : http://esp32-diag.local
-**Version** : 3.0.0
+**Accès** : http://esp32-diagnostic.local
+**Version** : 3.0.1
+**Core ESP32** : 3.3.2+
 **Langues** : 🇫🇷 Français / 🇬🇧 English
 
 ---
 
-*Guide créé pour ESP32 Diagnostic System v3.0.0*
+*Guide créé pour ESP32 Diagnostic System v3.0.1*
 *Dernière mise à jour : Octobre 2025*
+*Arduino Core ESP32 : 3.3.2+*

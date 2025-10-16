@@ -33,6 +33,12 @@ Comprehensive **multilingual** diagnostic tool for ESP32 microcontrollers, acces
 - **Real-time update**: No page reload required
 - **Complete translations**: All texts, labels, messages and status
 
+### 📡 Multi-Network Connectivity ✨ NEW
+- **Multi-WiFi**: Supports multiple WiFi networks
+- **Automatic fallback**: Tries each network in order
+- **Flexible**: Works at home, office, on the go
+- **AP Fallback**: Access Point mode if no network available
+
 ### 🎨 Modern Design
 - **Glassmorphism** with transparency and blur effects
 - **Animated gradients** purple/blue
@@ -130,16 +136,48 @@ Comprehensive **multilingual** diagnostic tool for ESP32 microcontrollers, acces
 
 3. **Download Project Files**
    - ESP32-Diagnostic.ino
+   - exemple-config.h ⚡ IMPORTANT (template)
    - api_handlers.h
    - test_functions.h
    - translations.h
    - web_interface.h
+   - .gitignore
 
-4. **Configure WiFi**
+4. **Create your configuration file**
+   ```bash
+   # Copy the template
+   cp exemple-config.h config.h
+   ```
+
+   Edit `config.h` with **Multi-WiFi** (recommended):
    ```cpp
+   #define MULTI_WIFI_ENABLED
+   #define NUM_SSIDS 2
+
+   const char* ssid_list[] = {
+     "HomeWiFi",
+     "OfficeWiFi"
+   };
+
+   const char* password_list[] = {
+     "HomePassword",
+     "OfficePassword"
+   };
+   ```
+
+   Or **Single WiFi** mode:
+   ```cpp
+   // #define MULTI_WIFI_ENABLED  // Comment out
+   #define SINGLE_WIFI_ENABLED
+
    const char* ssid = "YourSSID";
    const char* password = "YourPassword";
    ```
+
+   ⚠️ **SECURITY**:
+   - `config.h` contains YOUR credentials (in .gitignore)
+   - `exemple-config.h` is the template (safe for Git)
+   - NEVER commit configured `config.h`
 
 5. **Compile and Upload**
    - Select your board (ESP32S3 Dev Module)
@@ -147,7 +185,7 @@ Comprehensive **multilingual** diagnostic tool for ESP32 microcontrollers, acces
    - Upload ✓
 
 6. **Access Interface**
-   - Open browser: `http://esp32-diag.local`
+   - Open browser: `http://esp32-diagnostic.local`
    - Or use IP address shown in Serial Monitor
 
 ---
@@ -185,7 +223,7 @@ Comprehensive **multilingual** diagnostic tool for ESP32 microcontrollers, acces
 
 ### mDNS Name
 ```cpp
-const char* mdnsName = "esp32-diag";  // Access via http://esp32-diag.local
+const char* mdnsName = "esp32-diagnostic";  // Access via http://esp32-diagnostic.local
 ```
 
 ### Update Interval
@@ -219,6 +257,38 @@ const unsigned long UPDATE_INTERVAL = 5000; // 5 seconds (in web_interface.h)
 - Improved memory management with heap_caps API
 - Enhanced WiFi stability with auto-reconnect
 - OPI PSRAM support for ESP32-S3
+
+### 📡 Multi-WiFi Support ✨ NEW
+The system now supports multiple WiFi networks with automatic failover:
+
+```cpp
+// In config.h
+#define MULTI_WIFI_ENABLED
+#define NUM_SSIDS 3
+
+const char* ssid_list[] = {
+  "HomeWiFi",
+  "OfficeWiFi",
+  "MobileHotspot"
+};
+
+const char* password_list[] = {
+  "HomePassword",
+  "OfficePassword",
+  "MobilePassword"
+};
+```
+
+**Benefits:**
+- ✅ Works in multiple locations
+- ✅ Automatic network switching
+- ✅ Single firmware for all environments
+- ✅ Fallback to AP mode if all networks fail
+
+### 🔐 Secure Configuration System
+- **exemple-config.h**: Public template (safe for Git)
+- **config.h**: Your private credentials (ignored by Git)
+- **.gitignore**: Automatic protection
 
 ### 📊 New Metrics (12 total)
 **Memory:**
@@ -336,7 +406,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 **Last update**: October 2025
 **Available languages**: French (default), English
 
-🌐 **Access**: http://esp32-diag.local
+🌐 **Access**: http://esp32-diagnostic.local
 🇫🇷🇬🇧 **Language switching**: FR/EN buttons in interface
 
 ---

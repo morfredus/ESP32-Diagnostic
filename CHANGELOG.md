@@ -14,6 +14,28 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 - Amélioration de la stabilité WiFi
 - API heap capabilities améliorées
 
+#### Multi-WiFi Support ✨ NOUVEAU
+- **WiFiMulti intégré** : Support de plusieurs réseaux WiFi
+- **Basculement automatique** : L'ESP32 essaie chaque réseau dans l'ordre
+- **Flexible** : Fonctionne à la maison, au bureau, en déplacement
+- **Configuration simple** : Ajoutez autant de réseaux que nécessaire
+- **Fallback AP** : Mode Point d'Accès si aucun réseau disponible
+
+Configuration Multi-WiFi exemple :
+```cpp
+#define MULTI_WIFI_ENABLED
+#define NUM_SSIDS 2
+
+const char* ssid_list[] = {"Home", "Office"};
+const char* password_list[] = {"pass1", "pass2"};
+```
+
+#### Système de configuration sécurisé
+- **exemple-config.h** : Template public (safe pour Git)
+- **config.h** : Votre configuration privée (ignorée par Git)
+- **.gitignore** : Protection automatique des identifiants
+- **Documentation complète** : Guide de sécurité inclus
+
 #### Optimisations mémoire (Core 3.3.2)
 - Utilisation de `heap_caps_get_free_size()` pour une meilleure précision
 - Ajout de `heap_caps_get_minimum_free_size()` pour tracking de la mémoire minimale

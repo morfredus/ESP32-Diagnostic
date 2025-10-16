@@ -9,7 +9,8 @@
  *
  * Description:
  *   Complete diagnostic system for ESP32 with modern web interface,
- *   real-time updates, multilingual support (FR/EN), and hardware testing.
+ *   real-time updates, multilingual support (FR/EN), Multi-WiFi, and
+ *   hardware testing.
  *
  * Requirements:
  *   - Arduino Core ESP32 v3.3.2 or higher
@@ -20,18 +21,20 @@
  *   - Dynamic web interface with glassmorphism design
  *   - Real-time data updates (5s interval)
  *   - Multilingual interface (French/English)
+ *   - Multi-WiFi support (multiple networks)
  *   - Hardware testing (GPIO, I2C, SPI, Memory, WiFi)
  *   - JSON/CSV export capabilities
  *   - NeoPixel control
  *
  * Hardware Support:
- *   - ESP32-S2, ESP32-S3, ESP32-C3
+ *   - ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, ESP32-H2
  *   - Tested on ESP32-S3 with 8MB Flash, OPI PSRAM
  *
  * ============================================================
  */
 
 #include <WiFi.h>
+#include <WiFiMulti.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include <Wire.h>
@@ -50,17 +53,17 @@
 #define NEOPIXEL_PIN 48
 #define NEOPIXEL_COUNT 1
 
-// WiFi Configuration
-const char* ssid = "VotreSSID";
-const char* password = "VotreMotDePasse";
+// Include WiFi configuration
+#include "config.h"
 
 // mDNS Configuration
-const char* mdnsName = "esp32-diag";
+const char* mdnsName = "esp32-diagnostic";
 
 // ============================================================
 // GLOBAL OBJECTS
 // ============================================================
 WebServer server(80);
+WiFiMulti wifiMulti;
 Adafruit_NeoPixel* strip = nullptr;
 bool neopixelAvailable = false;
 
@@ -70,15 +73,7 @@ unsigned long lastUpdateTime = 0;
 const unsigned long UPDATE_INTERVAL = 5000; // 5 seconds
 
 // ============================================================
-// INCLUDE MODULES
-// ============================================================
-#include "translations.h"
-#include "test_functions.h"
-#include "api_handlers.h"
-#include "web_interface.h"
-
-// ============================================================
-// SYSTEM INFORMATION FUNCTIONS
+// SYSTEM INFORMATION FUNCTIONS (must be before includes)
 // ============================================================
 
 String getChipModel() {
@@ -179,6 +174,14 @@ String getUptime() {
 }
 
 // ============================================================
+// INCLUDE MODULES (after function definitions)
+// ============================================================
+#include "translations.h"
+#include "test_functions.h"
+#include "api_handlers.h"
+#include "web_interface.h"
+
+// ============================================================
 // NEOPIXEL INITIALIZATION
 // ============================================================
 
@@ -207,41 +210,117 @@ void initNeoPixel() {
 }
 
 // ============================================================
-// WIFI CONNECTION - Optimized for Core 3.3.2
+// WIFI CONNECTION - Optimized for Core 3.3.2 with Multi-WiFi
 // ============================================================
 
 void connectWiFi() {
-  Serial.println("\n[WIFI] Connecting to WiFi...");
-  Serial.print("[WIFI] SSID: ");
-  Serial.println(ssid);
+  Serial.println("\n[WIFI] ========== WiFi Connection ==========");
   
-  // Configure WiFi for better stability (Core 3.3.2 improvements)
-  WiFi.mode(WIFI_STA);
-  WiFi.setAutoReconnect(true);
-  WiFi.persistent(false); // Don't save to flash
+  #ifdef MULTI_WIFI_ENABLED
+    // Multi-WiFi mode - Try multiple networks
+    Serial.println("[WIFI] Mode: Multi-WiFi");
+    Serial.print("[WIFI] Networks configured: ");
+    Serial.println(NUM_SSIDS);
+
+    // Add all networks to WiFiMulti
+    for(int i = 0; i < NUM_SSIDS; i++) {
+      Serial.print("[WIFI] Adding network ");
+      Serial.print(i + 1);
+      Serial.print(": ");
+      Serial.println(ssid_list[i]);
+      wifiMulti.addAP(ssid_list[i], password_list[i]);
+    }
+
+    // Try to connect
+    Serial.print("[WIFI] Connecting");
+    int attempts = 0;
+    while (wifiMulti.run() != WL_CONNECTED && attempts < 40) {
+      delay(500);
+      Serial.print(".");
+      attempts++;
+    }
+    Serial.println();
+
+  #else
+    // Single WiFi mode
+    Serial.println("[WIFI] Mode: Single WiFi");
+    Serial.print("[WIFI] SSID: ");
+    Serial.println(ssid);
+
+    // Disconnect proprement
+    WiFi.disconnect(true);
+    delay(1000);
+
+    // Configure WiFi for better stability (Core 3.3.2 improvements)
+    WiFi.mode(WIFI_STA);
+    WiFi.setAutoReconnect(true);
+    WiFi.persistent(false); // Don't save to flash
+
+    // Start connection
+    WiFi.begin(ssid, password);
+
+    int attempts = 0;
+    Serial.print("[WIFI] Connecting");
+    while (WiFi.status() != WL_CONNECTED && attempts < 40) {
+      delay(500);
+      Serial.print(".");
+      attempts++;
+    }
+    Serial.println();
+  #endif
   
-  WiFi.begin(ssid, password);
-  
-  int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < 30) {
-    delay(500);
-    Serial.print(".");
-    attempts++;
-  }
-  
+  // Check connection status
   if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("\n[WIFI] Connected!");
+    Serial.println("[WIFI] ========== Connection SUCCESS ==========");
+    Serial.print("[WIFI] Connected to: ");
+    Serial.println(WiFi.SSID());
     Serial.print("[WIFI] IP Address: ");
     Serial.println(WiFi.localIP());
-    Serial.print("[WIFI] Signal Strength: ");
+    Serial.print("[WIFI] Gateway: ");
+    Serial.println(WiFi.gatewayIP());
+    Serial.print("[WIFI] Subnet: ");
+    Serial.println(WiFi.subnetMask());
+    Serial.print("[WIFI] DNS: ");
+    Serial.println(WiFi.dnsIP());
+    Serial.print("[WIFI] Signal Strength (RSSI): ");
     Serial.print(WiFi.RSSI());
     Serial.println(" dBm");
+    Serial.print("[WIFI] MAC Address: ");
+    Serial.println(WiFi.macAddress());
+    Serial.print("[WIFI] Channel: ");
+    Serial.println(WiFi.channel());
+    Serial.println("[WIFI] ==========================================");
   } else {
-    Serial.println("\n[WIFI] Connection failed!");
-    Serial.println("[WIFI] Starting in AP mode...");
+    Serial.println("[WIFI] ========== Connection FAILED ==========");
+    #ifdef MULTI_WIFI_ENABLED
+      Serial.println("[WIFI] None of the configured networks are available");
+      Serial.println("[WIFI] Networks tried:");
+      for(int i = 0; i < NUM_SSIDS; i++) {
+        Serial.print("[WIFI]   - ");
+        Serial.println(ssid_list[i]);
+      }
+    #else
+      Serial.print("[WIFI] Could not connect to: ");
+      Serial.println(ssid);
+    #endif
+
+    Serial.println("[WIFI] Switching to AP mode...");
+    Serial.println("[WIFI] ==========================================");
+
+    // Passage en mode AP
+    WiFi.disconnect(true);
+    delay(100);
+    WiFi.mode(WIFI_AP);
     WiFi.softAP("ESP32-Diagnostic", "12345678");
-    Serial.print("[WIFI] AP IP: ");
+    delay(100);
+
+    Serial.println("[WIFI] ========== AP MODE STARTED ==========");
+    Serial.println("[WIFI] AP SSID: ESP32-Diagnostic");
+    Serial.println("[WIFI] AP Password: 12345678");
+    Serial.print("[WIFI] AP IP Address: ");
     Serial.println(WiFi.softAPIP());
+    Serial.println("[WIFI] Connect to this network to access the interface");
+    Serial.println("[WIFI] ==========================================");
   }
 }
 
@@ -327,8 +406,8 @@ void setup() {
 void loop() {
   server.handleClient();
   
-  // Handle mDNS
-  MDNS.update();
+  // Handle mDNS (Core 3.3.2 - update() is optional, removed for compatibility)
+  // MDNS service is handled automatically
 
   // Optional: Add periodic tasks here
   unsigned long currentTime = millis();

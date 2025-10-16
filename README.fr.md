@@ -33,6 +33,12 @@ Outil de diagnostic exhaustif **multilingue** pour microcontrôleurs ESP32, acce
 - **Mise à jour en temps réel** : Aucun rechargement nécessaire
 - **Traductions complètes** : Tous les textes, labels, messages et statuts
 
+### 📡 Connectivité Multi-Réseau ✨ NOUVEAU
+- **Multi-WiFi** : Supporte plusieurs réseaux WiFi
+- **Basculement automatique** : Essaie chaque réseau dans l'ordre
+- **Flexible** : Fonctionne à la maison, au bureau, en déplacement
+- **Fallback AP** : Mode Point d'Accès si aucun réseau disponible
+
 ### 🎨 Design Moderne
 - **Glassmorphism** avec effets de transparence et flou
 - **Dégradés animés** violet/bleu
@@ -130,16 +136,29 @@ Outil de diagnostic exhaustif **multilingue** pour microcontrôleurs ESP32, acce
 
 3. **Télécharger les Fichiers du Projet**
    - ESP32-Diagnostic.ino
+   - exemple-config.h ⚡ IMPORTANT (template)
    - api_handlers.h
    - test_functions.h
    - translations.h
    - web_interface.h
+   - .gitignore
 
-4. **Configurer le WiFi**
+4. **Créer votre fichier de configuration**
+   ```bash
+   # Copier le template
+   cp exemple-config.h config.h
+   ```
+
+   Éditer `config.h` :
    ```cpp
    const char* ssid = "VotreSSID";
    const char* password = "VotreMotDePasse";
    ```
+
+   ⚠️ **SÉCURITÉ** :
+   - `config.h` contient VOS identifiants (dans .gitignore)
+   - `exemple-config.h` est le template (safe pour Git)
+   - Ne JAMAIS commiter `config.h` configuré
 
 5. **Compiler et Téléverser**
    - Sélectionner votre carte (ESP32S3 Dev Module)
@@ -147,7 +166,7 @@ Outil de diagnostic exhaustif **multilingue** pour microcontrôleurs ESP32, acce
    - Téléverser ✓
 
 6. **Accéder à l'Interface**
-   - Ouvrir le navigateur : `http://esp32-diag.local`
+   - Ouvrir le navigateur : `http://esp32-diagnostic.local`
    - Ou utiliser l'adresse IP affichée dans le Moniteur Série
 
 ---
@@ -185,7 +204,7 @@ Outil de diagnostic exhaustif **multilingue** pour microcontrôleurs ESP32, acce
 
 ### Nom mDNS
 ```cpp
-const char* mdnsName = "esp32-diag";  // Accès via http://esp32-diag.local
+const char* mdnsName = "esp32-diagnostic";  // Accès via http://esp32-diagnostic.local
 ```
 
 ### Intervalle de Mise à Jour
@@ -336,7 +355,7 @@ Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
 **Dernière mise à jour** : Octobre 2025
 **Langues disponibles** : Français (défaut), Anglais
 
-🌐 **Accès** : http://esp32-diag.local
+🌐 **Accès** : http://esp32-diagnostic.local
 🇫🇷🇬🇧 **Changement de langue** : Boutons FR/EN dans l'interface
 
 ---
