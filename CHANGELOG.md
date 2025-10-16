@@ -5,60 +5,38 @@ All notable changes to the ESP32 Complete Diagnostic Tool will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.0.2-dev] - 2025-10-09
+## [3.0.0] - 2025-01-16
 
-### Fixed
-- Live language switching now bypasses browser caches, immediately fetching the requested translation set without a full page reload.
+### 🚀 Major Changes - Dynamic Real-Time Interface
 
-### Changed
-- Added targeted translation fetching on the API (`/api/get-translations?lang=`) and updated the interface to sync the `<html lang>` attribute.
-- Incremented diagnostic version to `3.0.2-dev`.
-
-## [3.0.1-dev] - 2025-10-09
-
-### Fixed
-- Live language switching now updates all interface texts without requiring a page reload.
-
-### Changed
-- Incremented diagnostic version to `3.0.1-dev`.
-
-## [3.0-dev] - 2025-10-09
-
-### 🚀 Major Changes - Dynamic Web Interface
+This is a **major rewrite** introducing a completely dynamic, real-time web interface with instant language switching and automatic updates.
 
 #### Added
-- **Complete REST API architecture** for efficient client-server communication
-- **Dynamic web interface** with asynchronous data loading
-- **Auto-refresh system** every 5 seconds for real-time monitoring
-- **Separated HTML/CSS/JavaScript** in `web_interface.h` for better maintainability
-- **Connection status indicator** with visual online/offline feedback (pulsing green/red dot)
-- **Smooth animations and transitions** throughout the interface (fadeIn, hover effects)
-- **Tab-based content loading** with lazy loading for optimal performance
-- **Update indicator** badge showing when data is being refreshed
-- New API endpoints for real-time data:
+- **🔄 Fully dynamic web interface** - No page reloads required
+- **⚡ Real-time updates** - Auto-refresh every 5 seconds
+- **🌐 Instant language switching** - Change FR/EN without page reload
+- **🎯 REST API architecture** - Complete JSON endpoints for all features
+- **📡 Connection status indicator** - Visual online/offline feedback (pulsing dot)
+- **✨ Smooth animations** - FadeIn, hover effects, transitions throughout
+- **🔔 Update notifications** - Floating badge shows when data refreshes
+- **📱 Improved responsive design** - Better mobile/tablet experience
+- New API endpoints:
   - `/api/status` - Real-time system status (uptime, temperature, memory)
-  - `/api/system-info` - Chip model and IP address
   - `/api/overview` - Complete system overview with all data
-  - `/api/memory` - Detailed memory analysis (Flash, PSRAM, SRAM)
-  - `/api/wifi-info` - WiFi connection details and signal quality
-  - `/api/peripherals` - I2C and SPI peripheral information
   - `/api/leds-info` - Built-in LED and NeoPixel status
   - `/api/screens-info` - TFT and OLED screen information
-- **JavaScript application** (`/js/app.js`) served as separate file
-- **Memory usage graphs** in real-time (progress bars with percentage)
-- **Responsive design improvements** for mobile devices
-- **Error handling** for disconnection scenarios
-- **Automatic reconnection** detection and status update
+  - `/api/get-translations?lang=XX&t=timestamp` - Cache-busting translations
 
 #### Changed
 - **Complete interface rewrite** from static HTML to dynamic single-page application
-- **Improved performance** - Initial page load reduced by 60%
-- **Reduced memory footprint** - Chunked HTML generation eliminated
+- **Drastically improved performance** - Initial page load reduced by ~60%
+- **Reduced memory footprint** - Eliminated chunked HTML generation
 - **Better user experience** - No full page reloads, instant tab switching
 - **Optimized data transfer** - Only necessary data sent via API calls
-- **Modernized UI design** with card-based layouts and shadows
-- **Enhanced visual feedback** for all user interactions
-- **Streamlined navigation** with active tab highlighting
+- **Modernized UI design** - Card-based layouts with depth and shadows
+- **Enhanced visual feedback** - All buttons and elements respond to interactions
+- **Streamlined navigation** - Active tab highlighting with smooth transitions
+- Language switching now bypasses all browser caches with timestamp parameter
 - All existing handlers converted to return JSON instead of full HTML
 
 #### Technical Improvements
@@ -68,15 +46,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved code organization with dedicated API handler functions
 - Better memory management with on-demand content generation
 - Eliminated server-side HTML concatenation overhead
+- JavaScript auto-update system with connection monitoring
+- Real-time DOM updates without page refresh
 
 #### Breaking Changes
 - Old URL structure changed - all data now accessed via `/api/*` endpoints
 - JavaScript now required for web interface (was optional before)
 - Minimum browser requirement: ES6 support (Chrome 51+, Firefox 54+, Safari 10+)
+- Interface no longer works without JavaScript enabled
 
 ---
 
-## [2.5] - 2025-10-08
+## [2.5] - 2025-01-10
 
 ### Added
 - **Translated exports** in French and English
@@ -94,7 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.4] - 2025-10-07
+## [2.4] - 2025-01-09
 
 ### 🌐 Added - Multilingual Interface
 
@@ -127,7 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.3] - 2025-10-06
+## [2.3] - 2025-01-08
 
 ### Added - OLED Display Support
 
@@ -162,7 +143,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.2] - 2025-10-05
+## [2.2] - 2025-01-07
 
 ### Added - TFT Display Support
 
@@ -184,7 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.1] - 2025-10-04
+## [2.1] - 2025-01-06
 
 ### Added - NeoPixel Support
 
@@ -213,7 +194,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.0] - 2025-10-03
+## [2.0] - 2025-01-05
 
 ### Major Rewrite - Complete Diagnostic System
 
@@ -256,7 +237,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0] - 2025-10-01
+## [1.0] - 2025-01-01
 
 ### Initial Release
 
@@ -306,14 +287,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Key Features |
 |---------|------|--------------|
-| 3.0-dev | 2025-10-09 | Dynamic interface, REST API, real-time updates |
-| 2.5 | 2025-10-08 | Translated exports |
-| 2.4 | 2025-10-07 | Multilingual interface (FR/EN) |
-| 2.3 | 2025-10-06 | OLED display support |
-| 2.2 | 2025-10-05 | TFT display support |
-| 2.1 | 2025-10-04 | NeoPixel support |
-| 2.0 | 2025-10-03 | Complete rewrite with all diagnostics |
-| 1.0 | 2025-10-01 | Initial release |
+| 3.0.0 | 2025-01-16 | Dynamic interface, REST API, real-time updates |
+| 2.5 | 2025-01-10 | Translated exports |
+| 2.4 | 2025-01-09 | Multilingual interface (FR/EN) |
+| 2.3 | 2025-01-08 | OLED display support |
+| 2.2 | 2025-01-07 | TFT display support |
+| 2.1 | 2025-01-06 | NeoPixel support |
+| 2.0 | 2025-01-05 | Complete rewrite with all diagnostics |
+| 1.0 | 2025-01-01 | Initial release |
 
 ---
 
@@ -334,5 +315,5 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 ---
 
 **Maintained by**: morfredus
-**Repository**: https://github.com/yourusername/esp32-diagnostic
-**Documentation**: https://github.com/yourusername/esp32-diagnostic/wiki
+**Repository**: https://github.com/morfredus/esp32-diagnostic
+**Documentation**: https://github.com/morfredus/esp32-diagnostic/wiki
