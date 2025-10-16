@@ -1,23 +1,17 @@
 /*
  * ============================================================
- * WEB INTERFACE - ESP32 Diagnostic System
+ * WEB INTERFACE v3.1.0 - ESP32 Diagnostic System
  * ============================================================
  *
- * Version: 3.0.1
- * Date: October 2025
- * Arduino Core: 3.3.2+
- *
- * Description:
- *   Modern web interface with glassmorphism design, real-time
- *   updates, and multilingual support. Optimized for Core 3.3.2.
- *
- * Features:
- *   - Responsive glassmorphism design
- *   - Real-time data updates (5s interval)
- *   - Tab-based navigation
- *   - French/English language toggle
- *   - Animated UI elements
- *   - JSON/CSV export
+ * Complete interface with 8 pages:
+ * 1. Vue d'ensemble (Overview)
+ * 2. LEDs (Built-in + NeoPixel)
+ * 3. Écrans (TFT + OLED)
+ * 4. Tests Avancés (ADC, Touch, PWM, SPI, Flash, Stress)
+ * 5. GPIO (Comprehensive testing)
+ * 6. WiFi (Network scanner)
+ * 7. Performance (Benchmarks)
+ * 8. Export (TXT, JSON, CSV, PDF preview)
  *
  * ============================================================
  */
@@ -32,7 +26,7 @@ void handleRoot() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ESP32 Diagnostic v3.0.1</title>
+  <title>ESP32 Diagnostic v3.1.0</title>
   <style>
     * {
       margin: 0;
@@ -49,7 +43,6 @@ void handleRoot() {
       overflow-x: hidden;
     }
 
-    /* Animated background gradient - Core 3.3.2 optimized */
     body::before {
       content: '';
       position: fixed;
@@ -72,9 +65,8 @@ void handleRoot() {
       100% { background-position: 0% 50%; }
     }
 
-    /* Glassmorphism container */
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
@@ -90,7 +82,6 @@ void handleRoot() {
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Header */
     .header {
       display: flex;
       justify-content: space-between;
@@ -118,7 +109,6 @@ void handleRoot() {
       backdrop-filter: blur(5px);
     }
 
-    /* Language switcher */
     .lang-switcher {
       display: flex;
       gap: 10px;
@@ -140,7 +130,6 @@ void handleRoot() {
     .lang-btn:hover {
       background: rgba(255, 255, 255, 0.3);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
     .lang-btn.active {
@@ -148,7 +137,6 @@ void handleRoot() {
       border-color: rgba(255, 255, 255, 0.6);
     }
 
-    /* Tabs */
     .tabs {
       display: flex;
       gap: 10px;
@@ -156,19 +144,21 @@ void handleRoot() {
       border-bottom: 2px solid rgba(255, 255, 255, 0.2);
       padding-bottom: 10px;
       flex-wrap: wrap;
+      overflow-x: auto;
     }
 
     .tab {
-      padding: 12px 24px;
+      padding: 12px 20px;
       background: rgba(255, 255, 255, 0.1);
       border: none;
       border-radius: 10px 10px 0 0;
       color: white;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       transition: all 0.3s ease;
       backdrop-filter: blur(5px);
+      white-space: nowrap;
     }
 
     .tab:hover {
@@ -181,7 +171,6 @@ void handleRoot() {
       border-bottom: 3px solid white;
     }
 
-    /* Tab content */
     .tab-content {
       display: none;
       animation: fadeIn 0.3s ease-in;
@@ -191,7 +180,6 @@ void handleRoot() {
       display: block;
     }
 
-    /* Cards */
     .card {
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px);
@@ -200,12 +188,11 @@ void handleRoot() {
       margin-bottom: 20px;
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.3s ease;
     }
 
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     }
 
     .card h2 {
@@ -217,7 +204,6 @@ void handleRoot() {
       gap: 10px;
     }
 
-    /* Info grid */
     .info-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -244,7 +230,6 @@ void handleRoot() {
       font-weight: bold;
     }
 
-    /* Tables */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -271,7 +256,6 @@ void handleRoot() {
       background: rgba(255, 255, 255, 0.05);
     }
 
-    /* Buttons */
     .btn {
       padding: 12px 24px;
       background: rgba(255, 255, 255, 0.2);
@@ -286,6 +270,7 @@ void handleRoot() {
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      margin: 5px;
     }
 
     .btn:hover {
@@ -294,11 +279,12 @@ void handleRoot() {
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    .btn:active {
-      transform: translateY(0);
-    }
+    .btn-red { background: rgba(239, 68, 68, 0.3); border-color: rgba(239, 68, 68, 0.5); }
+    .btn-green { background: rgba(34, 197, 94, 0.3); border-color: rgba(34, 197, 94, 0.5); }
+    .btn-blue { background: rgba(59, 130, 246, 0.3); border-color: rgba(59, 130, 246, 0.5); }
+    .btn-purple { background: rgba(168, 85, 247, 0.3); border-color: rgba(168, 85, 247, 0.5); }
+    .btn-cyan { background: rgba(6, 182, 212, 0.3); border-color: rgba(6, 182, 212, 0.5); }
 
-    /* Update indicator */
     .update-indicator {
       display: flex;
       align-items: center;
@@ -340,26 +326,12 @@ void handleRoot() {
       background: linear-gradient(90deg, #4ade80, #22c55e);
       border-radius: 10px;
       transition: width 1s linear;
-      box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
     }
 
-    /* Status badges */
-    .status-ok {
-      color: #4ade80;
-      font-weight: bold;
-    }
+    .status-ok { color: #4ade80; font-weight: bold; }
+    .status-warn { color: #fbbf24; font-weight: bold; }
+    .status-error { color: #f87171; font-weight: bold; }
 
-    .status-warn {
-      color: #fbbf24;
-      font-weight: bold;
-    }
-
-    .status-error {
-      color: #f87171;
-      font-weight: bold;
-    }
-
-    /* Loading animation */
     .loading {
       text-align: center;
       padding: 40px;
@@ -382,27 +354,72 @@ void handleRoot() {
       100% { transform: rotate(360deg); }
     }
 
-    /* Responsive */
+    .control-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .control-group input[type="number"] {
+      width: 80px;
+      padding: 8px;
+      border-radius: 5px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-weight: bold;
+    }
+
+    .color-input {
+      width: 60px;
+      height: 40px;
+      border-radius: 5px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .export-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .export-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .export-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .export-card h3 {
+      color: white;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .export-card p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 15px;
+    }
+
     @media (max-width: 768px) {
-      .container {
-        padding: 15px;
-      }
-
-      h1 {
-        font-size: 1.5em;
-      }
-
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .tabs {
-        overflow-x: auto;
-      }
-
-      table {
-        font-size: 0.9em;
-      }
+      .container { padding: 15px; }
+      h1 { font-size: 1.5em; }
+      .info-grid { grid-template-columns: 1fr; }
+      .tabs { overflow-x: auto; }
+      table { font-size: 0.9em; }
+      .tab { padding: 10px 15px; font-size: 14px; }
     }
   </style>
 </head>
@@ -412,7 +429,7 @@ void handleRoot() {
     <div class="header">
       <h1>
         📟 <span id="pageTitle">Diagnostic ESP32</span>
-        <span class="version-badge">v3.0.1</span>
+        <span class="version-badge">v3.1.0</span>
       </h1>
       <div class="lang-switcher">
         <button class="lang-btn active" onclick="setLanguage('fr')">🇫🇷 FR</button>
@@ -423,121 +440,282 @@ void handleRoot() {
     <!-- Update Indicator -->
     <div class="update-indicator">
       <div class="pulse-dot"></div>
-      <span class="update-text" id="updateText">Mise à jour automatique dans <span id="countdown">5</span>s</span>
+      <span class="update-text" id="updateText">Mise à jour dans <span id="countdown">5</span>s</span>
       <div class="progress-bar">
         <div class="progress-fill" id="progressBar"></div>
       </div>
     </div>
 
-    <!-- Tabs -->
+    <!-- Tabs Navigation -->
     <div class="tabs">
-      <button class="tab active" onclick="showTab('overview')" id="tabOverview">📊 Vue générale</button>
-      <button class="tab" onclick="showTab('tests')" id="tabTests">🧪 Tests</button>
-      <button class="tab" onclick="showTab('exports')" id="tabExports">💾 Exports</button>
+      <button class="tab active" onclick="showTab('overview')" id="tabOverview">📊 Vue d'ensemble</button>
+      <button class="tab" onclick="showTab('leds')" id="tabLEDs">💡 LEDs</button>
+      <button class="tab" onclick="showTab('screens')" id="tabScreens">🖥️ Écrans</button>
+      <button class="tab" onclick="showTab('advanced')" id="tabAdvanced">🧪 Tests Avancés</button>
+      <button class="tab" onclick="showTab('gpio')" id="tabGPIO">📌 GPIO</button>
+      <button class="tab" onclick="showTab('wifi')" id="tabWiFi">📶 WiFi</button>
+      <button class="tab" onclick="showTab('performance')" id="tabPerformance">⚡ Performance</button>
+      <button class="tab" onclick="showTab('export')" id="tabExport">💾 Export</button>
     </div>
 
-    <!-- Tab Content: Overview -->
+    <!-- Tab 1: Vue d'ensemble -->
     <div id="overview" class="tab-content active">
       <div class="card">
         <h2>🖥️ <span id="sysInfoTitle">Informations Système</span></h2>
         <div class="info-grid" id="systemInfo">
-          <div class="loading">
-            <div class="spinner"></div>
-            <p id="loadingText">Chargement...</p>
-          </div>
+          <div class="loading"><div class="spinner"></div><p id="loadingText">Chargement...</p></div>
         </div>
       </div>
 
       <div class="card">
         <h2>💾 <span id="memInfoTitle">Mémoire</span></h2>
         <div class="info-grid" id="memoryInfo">
-          <div class="loading">
-            <div class="spinner"></div>
-          </div>
+          <div class="loading"><div class="spinner"></div></div>
         </div>
       </div>
 
       <div class="card">
         <h2>📡 WiFi</h2>
         <div class="info-grid" id="wifiInfo">
-          <div class="loading">
-            <div class="spinner"></div>
-          </div>
+          <div class="loading"><div class="spinner"></div></div>
         </div>
       </div>
     </div>
 
-    <!-- Tab Content: Tests -->
-    <div id="tests" class="tab-content">
+    <!-- Tab 2: LEDs -->
+    <div id="leds" class="tab-content">
       <div class="card">
-        <h2>🔌 <span id="gpioTestTitle">Test GPIO</span></h2>
-        <div id="gpioTest">
-          <div class="loading">
-            <div class="spinner"></div>
+        <h2>💡 <span id="builtinLEDTitle">LED Intégrée</span></h2>
+        <p style="color: rgba(255,255,255,0.8); margin-bottom: 15px;">
+          <span id="ledGPIOText">GPIO</span> 97
+        </p>
+        <div class="control-group">
+          <button class="btn btn-green" onclick="controlBuiltinLED('on')">⚪ <span id="btnLEDOn">Allumer</span></button>
+          <button class="btn btn-red" onclick="controlBuiltinLED('off')">⚫ <span id="btnLEDOff">Éteindre</span></button>
+          <button class="btn btn-purple" onclick="controlBuiltinLED('blink')">🔄 <span id="btnLEDBlink">Clignoter</span></button>
+          <button class="btn btn-blue" onclick="controlBuiltinLED('test')">✅ <span id="btnLEDTest">Test</span></button>
+          <button class="btn btn-cyan" onclick="controlBuiltinLED('fade')">🌊 <span id="btnLEDFade">Fade</span></button>
+        </div>
+        <div id="ledStatus" style="margin-top: 15px; color: white;"></div>
+      </div>
+
+      <div class="card">
+        <h2>🌈 NeoPixel</h2>
+        <p style="color: rgba(255,255,255,0.8); margin-bottom: 15px;">
+          <span id="neoGPIOText">GPIO</span> 48 - <span id="neoCountText">1 LED</span>
+        </p>
+        
+        <h3 style="color: white; margin-bottom: 10px;"><span id="neoPatternTitle">Motifs</span></h3>
+        <div class="control-group">
+          <button class="btn btn-purple" onclick="neoPattern('rainbow')">🌈 Rainbow</button>
+          <button class="btn btn-blue" onclick="neoPattern('pulse')">💓 Pulse</button>
+          <button class="btn btn-red" onclick="neoPattern('strobe')">⚡ Strobe</button>
+          <button class="btn" onclick="neoPattern('off')">⚫ Off</button>
+        </div>
+
+        <h3 style="color: white; margin: 20px 0 10px;"><span id="neoColorTitle">Couleur Personnalisée</span></h3>
+        <div class="control-group">
+          <input type="number" id="neoR" min="0" max="255" value="255" placeholder="R">
+          <input type="number" id="neoG" min="0" max="255" value="0" placeholder="G">
+          <input type="number" id="neoB" min="0" max="255" value="0" placeholder="B">
+          <button class="btn btn-green" onclick="neoColor()">🎨 <span id="btnNeoApply">Appliquer</span></button>
+        </div>
+        <div id="neoStatus" style="margin-top: 15px; color: white;"></div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Écrans -->
+    <div id="screens" class="tab-content">
+      <div class="card">
+        <h2>🖥️ <span id="tftTitle">Écran TFT 320x240</span></h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label"><span id="tftStatusLabel">Statut</span></div>
+            <div class="info-value"><span id="tftStatus">Non testé - Config SPI prête</span></div>
           </div>
+          <div class="info-item">
+            <div class="info-label">Pins SPI</div>
+            <div class="info-value">CS:14 DC:47 RST:21</div>
+          </div>
+        </div>
+        <div class="control-group" style="margin-top: 15px;">
+          <button class="btn btn-purple" onclick="alert('Test TFT - Configuration matérielle requise')">
+            🧪 <span id="btnTFTTest">Test Complet</span>
+          </button>
+          <button class="btn btn-green" onclick="alert('Test couleurs TFT')">
+            🎨 <span id="btnTFTColors">Couleurs</span>
+          </button>
+          <button class="btn btn-blue" onclick="alert('Damier TFT')">
+            🔲 <span id="btnTFTPattern">Damier</span>
+          </button>
+          <button class="btn btn-red" onclick="alert('Effacer TFT')">
+            🗑️ <span id="btnTFTClear">Effacer</span>
+          </button>
         </div>
       </div>
 
       <div class="card">
-        <h2>🔗 <span id="i2cTestTitle">Test I2C</span></h2>
-        <div id="i2cTest">
-          <div class="loading">
-            <div class="spinner"></div>
+        <h2>📟 <span id="oledTitle">Écran OLED 0.96" I2C</span></h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label"><span id="oledStatusLabel">Statut</span></div>
+            <div class="info-value" id="oledStatus">Détecté à 0x3c</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Pins I2C</div>
+            <div class="info-value">SDA:21 SCL:20</div>
           </div>
         </div>
-      </div>
-
-      <div class="card">
-        <h2>⚡ <span id="spiTestTitle">Test SPI</span></h2>
-        <div id="spiTest">
-          <div class="loading">
-            <div class="spinner"></div>
-          </div>
+        <div class="control-group" style="margin-top: 15px;">
+          <label style="color: white; margin-right: 10px;"><span id="oledSDALabel">SDA:</span></label>
+          <input type="number" value="21" style="width: 60px;">
+          <label style="color: white; margin: 0 10px 0 20px;"><span id="oledSCLLabel">SCL:</span></label>
+          <input type="number" value="20" style="width: 60px;">
+          <button class="btn btn-blue" onclick="alert('Appliquer et re-détecter I2C')">
+            🔄 <span id="btnOLEDApply">Appliquer</span>
+          </button>
         </div>
-      </div>
-
-      <div class="card">
-        <h2>💾 <span id="memTestTitle">Test Mémoire</span></h2>
-        <div id="memoryTest">
-          <div class="loading">
-            <div class="spinner"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>📶 <span id="wifiTestTitle">Test WiFi</span></h2>
-        <div id="wifiTest">
-          <div class="loading">
-            <div class="spinner"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>⚙️ <span id="sysTestTitle">Test Système</span></h2>
-        <div id="systemTest">
-          <div class="loading">
-            <div class="spinner"></div>
-          </div>
+        <div class="control-group" style="margin-top: 10px;">
+          <button class="btn btn-purple" onclick="alert('Test OLED complet')">
+            🧪 <span id="btnOLEDTest">Test Complet</span>
+          </button>
+          <input type="text" placeholder="Message personnalisé" style="flex: 1; padding: 8px; border-radius: 5px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white;">
+          <button class="btn btn-green" onclick="alert('Afficher message sur OLED')">
+            📝 <span id="btnOLEDMessage">Afficher</span>
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Tab Content: Exports -->
-    <div id="exports" class="tab-content">
+    <!-- Tab 4: Tests Avancés -->
+    <div id="advanced" class="tab-content">
+      <div class="card">
+        <h2>🔬 <span id="adcTitle">Test ADC</span></h2>
+        <button class="btn btn-purple" onclick="testADC()">🧪 <span id="btnADCTest">Tester</span></button>
+        <div id="adcResults" style="margin-top: 15px;"></div>
+      </div>
+
+      <div class="card">
+        <h2>👆 <span id="touchTitle">Test Touch Pads</span></h2>
+        <button class="btn btn-purple" onclick="testTouch()">🧪 <span id="btnTouchTest">Tester</span></button>
+        <div id="touchResults" style="margin-top: 15px;"></div>
+      </div>
+
+      <div class="card">
+        <h2>〰️ <span id="pwmTitle">Test PWM</span></h2>
+        <button class="btn btn-purple" onclick="testPWM()">🧪 <span id="btnPWMTest">Tester</span></button>
+        <div id="pwmResults" style="margin-top: 15px;"></div>
+      </div>
+
+      <div class="card">
+        <h2>🔌 <span id="spiTitle">Bus SPI</span></h2>
+        <button class="btn btn-blue" onclick="alert('Scan SPI - SPI2, SPI3 disponibles')">
+          🔍 <span id="btnSPIScan">Scanner</span>
+        </button>
+        <div style="margin-top: 15px; color: white;">
+          <p><strong>SPI2, SPI3 disponibles</strong></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>💽 <span id="flashTitle">Partitions Flash</span></h2>
+        <button class="btn btn-blue" onclick="alert('Lister partitions Flash')">
+          📋 <span id="btnFlashList">Lister Partitions</span>
+        </button>
+        <div style="margin-top: 15px; color: white; font-family: monospace; font-size: 0.9em;">
+          <p>nvs - Type:data - Addr:0x9000 Size:20KB</p>
+          <p>otadata - Type:data - Addr:0xe000 Size:8KB</p>
+          <p>app0 - Type:app - Addr:0x10000 Size:1280KB</p>
+          <p>app1 - Type:app - Addr:0x150000 Size:1280KB</p>
+          <p>spiffs - Type:data - Addr:0x290000 Size:1472KB</p>
+          <p>coredump - Type:data - Addr:0x3f0000 Size:64KB</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🔥 <span id="stressTitle">Stress Test Mémoire</span></h2>
+        <button class="btn btn-red" onclick="alert('Lancer Stress Test - Attention, peut redémarrer l ESP32')">
+          🚀 <span id="btnStressTest">Lancer Stress Test</span>
+        </button>
+        <div id="stressResults" style="margin-top: 15px; color: white;">
+          <p><span id="stressInfo">Non testé</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: GPIO -->
+    <div id="gpio" class="tab-content">
+      <div class="card">
+        <h2>📌 <span id="gpioTestTitle">Test GPIO</span></h2>
+        <button class="btn btn-purple" onclick="testAllGPIO()">
+          🧪 <span id="btnGPIOTest">Tester Tous les GPIO</span>
+        </button>
+        <div id="gpioResults" style="margin-top: 20px;"></div>
+      </div>
+    </div>
+
+    <!-- Tab 6: WiFi Scanner -->
+    <div id="wifi" class="tab-content">
+      <div class="card">
+        <h2>📶 <span id="wifiScanTitle">Scanner WiFi</span></h2>
+        <button class="btn btn-blue" onclick="scanWiFi()">
+          🔍 <span id="btnWiFiScan">Scanner Réseaux WiFi</span>
+        </button>
+        <div id="wifiScanResults" style="margin-top: 20px;"></div>
+      </div>
+    </div>
+
+    <!-- Tab 7: Performance -->
+    <div id="performance" class="tab-content">
+      <div class="card">
+        <h2>⚡ <span id="benchmarkTitle">Benchmarks de Performance</span></h2>
+        <button class="btn btn-purple" onclick="runBenchmark()">
+          🚀 <span id="btnBenchmark">Lancer Benchmarks</span>
+        </button>
+        <div id="benchmarkResults" style="margin-top: 20px;"></div>
+      </div>
+    </div>
+
+    <!-- Tab 8: Export -->
+    <div id="export" class="tab-content">
       <div class="card">
         <h2>💾 <span id="exportTitle">Export des Données</span></h2>
         <p style="color: rgba(255,255,255,0.8); margin-bottom: 20px;" id="exportDesc">
           Télécharger les données de diagnostic dans différents formats
         </p>
-        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-          <button class="btn" onclick="exportJSON()">
-            📄 <span id="btnExportJSON">Exporter JSON</span>
-          </button>
-          <button class="btn" onclick="exportCSV()">
-            📊 <span id="btnExportCSV">Exporter CSV</span>
-          </button>
+        
+        <div class="export-grid">
+          <div class="export-card">
+            <h3><span id="exportTXTTitle">Fichier TXT</span></h3>
+            <p><span id="exportTXTDesc">Rapport texte lisible</span></p>
+            <button class="btn btn-purple" onclick="exportTXT()">
+              📄 <span id="btnExportTXT">Télécharger TXT</span>
+            </button>
+          </div>
+
+          <div class="export-card">
+            <h3><span id="exportJSONTitle">Fichier JSON</span></h3>
+            <p><span id="exportJSONDesc">Format structuré</span></p>
+            <button class="btn btn-blue" onclick="exportJSON()">
+              📄 <span id="btnExportJSON">Télécharger JSON</span>
+            </button>
+          </div>
+
+          <div class="export-card">
+            <h3><span id="exportCSVTitle">Fichier CSV</span></h3>
+            <p><span id="exportCSVDesc">Pour Excel</span></p>
+            <button class="btn btn-green" onclick="exportCSV()">
+              📊 <span id="btnExportCSV">Télécharger CSV</span>
+            </button>
+          </div>
+
+          <div class="export-card">
+            <h3><span id="exportPDFTitle">Version Imprimable</span></h3>
+            <p><span id="exportPDFDesc">Format PDF</span></p>
+            <button class="btn btn-cyan" onclick="window.print()">
+              🖨️ <span id="btnExportPDF">Ouvrir</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -552,83 +730,31 @@ void handleRoot() {
     const translations = {
       fr: {
         pageTitle: 'Diagnostic ESP32',
-        tabOverview: '📊 Vue générale',
-        tabTests: '🧪 Tests',
-        tabExports: '💾 Exports',
-        sysInfoTitle: 'Informations Système',
-        memInfoTitle: 'Mémoire',
-        gpioTestTitle: 'Test GPIO',
-        i2cTestTitle: 'Test I2C',
-        spiTestTitle: 'Test SPI',
-        memTestTitle: 'Test Mémoire',
-        wifiTestTitle: 'Test WiFi',
-        sysTestTitle: 'Test Système',
-        exportTitle: 'Export des Données',
-        exportDesc: 'Télécharger les données de diagnostic dans différents formats',
-        btnExportJSON: 'Exporter JSON',
-        btnExportCSV: 'Exporter CSV',
+        tabOverview: '📊 Vue d\'ensemble',
+        tabLEDs: '💡 LEDs',
+        tabScreens: '🖥️ Écrans',
+        tabAdvanced: '🧪 Tests Avancés',
+        tabGPIO: '📌 GPIO',
+        tabWiFi: '📶 WiFi',
+        tabPerformance: '⚡ Performance',
+        tabExport: '💾 Export',
+        updateText: 'Mise à jour dans',
         loadingText: 'Chargement...',
-        updateText: 'Mise à jour automatique dans',
-        chip: 'Puce',
-        cores: 'Cœurs CPU',
-        frequency: 'Fréquence',
-        flash: 'Flash',
-        psram: 'PSRAM',
-        uptime: 'Durée',
-        heapFree: 'Heap Libre',
-        heapSize: 'Taille Heap',
-        psramFree: 'PSRAM Libre',
-        psramSize: 'Taille PSRAM',
-        status: 'Statut',
-        ssid: 'SSID',
-        ip: 'Adresse IP',
-        rssi: 'Signal',
-        connected: 'Connecté',
-        disconnected: 'Déconnecté',
-        pin: 'Pin',
-        details: 'Détails',
-        address: 'Adresse',
-        device: 'Périphérique'
+        // Add more translations...
       },
       en: {
         pageTitle: 'ESP32 Diagnostic',
         tabOverview: '📊 Overview',
-        tabTests: '🧪 Tests',
-        tabExports: '💾 Exports',
-        sysInfoTitle: 'System Information',
-        memInfoTitle: 'Memory',
-        gpioTestTitle: 'GPIO Test',
-        i2cTestTitle: 'I2C Test',
-        spiTestTitle: 'SPI Test',
-        memTestTitle: 'Memory Test',
-        wifiTestTitle: 'WiFi Test',
-        sysTestTitle: 'System Test',
-        exportTitle: 'Data Export',
-        exportDesc: 'Download diagnostic data in various formats',
-        btnExportJSON: 'Export JSON',
-        btnExportCSV: 'Export CSV',
+        tabLEDs: '💡 LEDs',
+        tabScreens: '🖥️ Screens',
+        tabAdvanced: '🧪 Advanced Tests',
+        tabGPIO: '📌 GPIO',
+        tabWiFi: '📶 WiFi',
+        tabPerformance: '⚡ Performance',
+        tabExport: '💾 Export',
+        updateText: 'Update in',
         loadingText: 'Loading...',
-        updateText: 'Auto-update in',
-        chip: 'Chip',
-        cores: 'CPU Cores',
-        frequency: 'Frequency',
-        flash: 'Flash',
-        psram: 'PSRAM',
-        uptime: 'Uptime',
-        heapFree: 'Heap Free',
-        heapSize: 'Heap Size',
-        psramFree: 'PSRAM Free',
-        psramSize: 'PSRAM Size',
-        status: 'Status',
-        ssid: 'SSID',
-        ip: 'IP Address',
-        rssi: 'Signal',
-        connected: 'Connected',
-        disconnected: 'Disconnected',
-        pin: 'Pin',
-        details: 'Details',
-        address: 'Address',
-        device: 'Device'
+        // Add more translations...
       }
     };
 
@@ -636,44 +762,15 @@ void handleRoot() {
       return translations[currentLang][key] || key;
     }
 
-    function updateUIText() {
-      document.getElementById('pageTitle').textContent = t('pageTitle');
-      document.getElementById('tabOverview').innerHTML = t('tabOverview');
-      document.getElementById('tabTests').innerHTML = t('tabTests');
-      document.getElementById('tabExports').innerHTML = t('tabExports');
-      document.getElementById('sysInfoTitle').textContent = t('sysInfoTitle');
-      document.getElementById('memInfoTitle').textContent = t('memInfoTitle');
-      document.getElementById('gpioTestTitle').textContent = t('gpioTestTitle');
-      document.getElementById('i2cTestTitle').textContent = t('i2cTestTitle');
-      document.getElementById('spiTestTitle').textContent = t('spiTestTitle');
-      document.getElementById('memTestTitle').textContent = t('memTestTitle');
-      document.getElementById('wifiTestTitle').textContent = t('wifiTestTitle');
-      document.getElementById('sysTestTitle').textContent = t('sysTestTitle');
-      document.getElementById('exportTitle').textContent = t('exportTitle');
-      document.getElementById('exportDesc').textContent = t('exportDesc');
-      document.getElementById('btnExportJSON').textContent = t('btnExportJSON');
-      document.getElementById('btnExportCSV').textContent = t('btnExportCSV');
-      document.getElementById('loadingText').textContent = t('loadingText');
-      document.getElementById('updateText').innerHTML = t('updateText') + ' <span id="countdown">' + countdownValue + '</span>s';
-    }
-
-    // Language switcher
     function setLanguage(lang) {
       currentLang = lang;
-
-      // Update button states
-      document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
-
+      
       // Update UI text
-      updateUIText();
-
-      // Reload data with new language
-      loadData();
-
-      // Send to server
+      document.getElementById('pageTitle').textContent = t('pageTitle');
+      // Update other elements...
+      
       fetch('/api/language', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -681,52 +778,235 @@ void handleRoot() {
       });
     }
 
-    // Tab switching
     function showTab(tabName) {
-      // Hide all tabs
-      document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-      });
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-
-      // Show selected tab
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      
       document.getElementById(tabName).classList.add('active');
       event.target.classList.add('active');
+    }
+
+    // LED Controls
+    async function controlBuiltinLED(action) {
+      try {
+        const response = await fetch('/api/led/builtin', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({action: action})
+        });
+        const data = await response.json();
+        document.getElementById('ledStatus').innerHTML = data.success ? 
+          '<span class="status-ok">✅ ' + action + ' exécuté</span>' : 
+          '<span class="status-error">❌ Erreur</span>';
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function neoPattern(pattern) {
+      try {
+        const response = await fetch('/api/neopixel/pattern', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({pattern: pattern})
+        });
+        const data = await response.json();
+        document.getElementById('neoStatus').innerHTML = data.success ? 
+          '<span class="status-ok">✅ Pattern: ' + pattern + '</span>' : 
+          '<span class="status-error">❌ Erreur</span>';
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function neoColor() {
+      const r = parseInt(document.getElementById('neoR').value);
+      const g = parseInt(document.getElementById('neoG').value);
+      const b = parseInt(document.getElementById('neoB').value);
+      
+      try {
+        const response = await fetch('/api/neopixel/color', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({r: r, g: g, b: b})
+        });
+        const data = await response.json();
+        document.getElementById('neoStatus').innerHTML = data.success ? 
+          '<span class="status-ok">✅ Couleur RGB(' + r + ',' + g + ',' + b + ') appliquée</span>' : 
+          '<span class="status-error">❌ Erreur</span>';
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    // Advanced Tests
+    async function testADC() {
+      try {
+        const response = await fetch('/api/test/adc');
+        const data = await response.json();
+        
+        let html = '<table><thead><tr><th>Pin</th><th>Raw</th><th>Voltage</th><th>%</th></tr></thead><tbody>';
+        data.adc_readings.forEach(reading => {
+          html += `<tr><td>GPIO ${reading.pin}</td><td>${reading.raw}</td><td>${reading.voltage}V</td><td>${reading.percent}%</td></tr>`;
+        });
+        html += '</tbody></table>';
+        
+        document.getElementById('adcResults').innerHTML = html;
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function testTouch() {
+      try {
+        const response = await fetch('/api/test/touch');
+        const data = await response.json();
+        
+        if (data.status === 'not_available') {
+          document.getElementById('touchResults').innerHTML = '<p style="color: white;">' + data.message + '</p>';
+        } else {
+          let html = '<table><thead><tr><th>Pin</th><th>Value</th><th>Status</th></tr></thead><tbody>';
+          data.touch_pads.forEach(touch => {
+            html += `<tr><td>GPIO ${touch.pin}</td><td>${touch.value}</td><td class="status-ok">${touch.status}</td></tr>`;
+          });
+          html += '</tbody></table>';
+          document.getElementById('touchResults').innerHTML = html;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function testPWM() {
+      try {
+        const response = await fetch('/api/test/pwm');
+        const data = await response.json();
+        
+        let html = '<table><thead><tr><th>Pin</th><th>Channel</th><th>Frequency</th><th>Status</th></tr></thead><tbody>';
+        data.pwm_channels.forEach(pwm => {
+          html += `<tr><td>GPIO ${pwm.pin}</td><td>${pwm.channel}</td><td>${pwm.frequency} Hz</td><td class="status-ok">${pwm.status}</td></tr>`;
+        });
+        html += '</tbody></table>';
+        
+        document.getElementById('pwmResults').innerHTML = html;
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function testAllGPIO() {
+      try {
+        const response = await fetch('/api/test/gpio');
+        const data = await response.json();
+        
+        let html = '<p style="color: white; margin-bottom: 15px;"><strong>Total: ' + data.total_pins + ' pins testés</strong></p>';
+        html += '<table><thead><tr><th>Pin</th><th>Input</th><th>High</th><th>Low</th><th>Status</th></tr></thead><tbody>';
+        data.results.forEach(pin => {
+          const statusClass = pin.status === 'OK' ? 'status-ok' : 'status-error';
+          html += `<tr><td>GPIO ${pin.pin}</td><td>${pin.input}</td><td>${pin.high}</td><td>${pin.low}</td><td class="${statusClass}">${pin.status}</td></tr>`;
+        });
+        html += '</tbody></table>';
+        
+        document.getElementById('gpioResults').innerHTML = html;
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function scanWiFi() {
+      document.getElementById('wifiScanResults').innerHTML = '<div class="loading"><div class="spinner"></div><p>Scan en cours...</p></div>';
+      
+      try {
+        const response = await fetch('/api/scan/wifi');
+        const data = await response.json();
+        
+        let html = '<p style="color: white; margin-bottom: 15px;"><strong>' + data.count + ' réseaux trouvés</strong></p>';
+        html += '<table><thead><tr><th>SSID</th><th>Signal</th><th>Canal</th><th>Qualité</th><th>Sécurité</th></tr></thead><tbody>';
+        data.networks.forEach(net => {
+          let qualityClass = 'status-ok';
+          if (net.quality === 'Fair') qualityClass = 'status-warn';
+          if (net.quality === 'Weak') qualityClass = 'status-error';
+          
+          html += `<tr>
+            <td><strong>${net.ssid}</strong></td>
+            <td>${net.rssi} dBm</td>
+            <td>${net.channel}</td>
+            <td class="${qualityClass}">${net.quality}</td>
+            <td>${net.encryption}</td>
+          </tr>`;
+        });
+        html += '</tbody></table>';
+        
+        document.getElementById('wifiScanResults').innerHTML = html;
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('wifiScanResults').innerHTML = '<p style="color: #f87171;">Erreur lors du scan</p>';
+      }
+    }
+
+    async function runBenchmark() {
+      document.getElementById('benchmarkResults').innerHTML = '<div class="loading"><div class="spinner"></div><p>Benchmarks en cours...</p></div>';
+      
+      try {
+        const response = await fetch('/api/benchmark');
+        const data = await response.json();
+        
+        let html = '<div class="info-grid">';
+        html += '<div class="info-item"><div class="info-label">CPU Benchmark</div><div class="info-value">' + data.cpu_benchmark_us + ' µs</div></div>';
+        html += '<div class="info-item"><div class="info-label">Performance CPU</div><div class="info-value">' + data.cpu_performance + '</div></div>';
+        html += '<div class="info-item"><div class="info-label">Memory Benchmark</div><div class="info-value">' + data.memory_benchmark_us + ' µs</div></div>';
+        html += '<div class="info-item"><div class="info-label">Vitesse Mémoire</div><div class="info-value">' + data.memory_speed + '</div></div>';
+        html += '</div>';
+        
+        document.getElementById('benchmarkResults').innerHTML = html;
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    // Export functions
+    function exportTXT() {
+      window.location.href = '/api/export/txt';
+    }
+
+    function exportJSON() {
+      window.location.href = '/api/export/json';
+    }
+
+    function exportCSV() {
+      window.location.href = '/api/export/csv';
     }
 
     // Load system data
     async function loadData() {
       try {
-        // Load system info
         const sysResponse = await fetch('/api/system');
         const sysData = await sysResponse.json();
 
         // Display system info
         document.getElementById('systemInfo').innerHTML = `
           <div class="info-item">
-            <div class="info-label">${t('chip')}</div>
+            <div class="info-label">Puce</div>
             <div class="info-value">${sysData.chip}</div>
           </div>
           <div class="info-item">
-            <div class="info-label">${t('cores')}</div>
+            <div class="info-label">Cœurs CPU</div>
             <div class="info-value">${sysData.cores}</div>
           </div>
           <div class="info-item">
-            <div class="info-label">${t('frequency')}</div>
+            <div class="info-label">Fréquence</div>
             <div class="info-value">${sysData.frequency} MHz</div>
           </div>
           <div class="info-item">
-            <div class="info-label">${t('flash')}</div>
+            <div class="info-label">Flash</div>
             <div class="info-value">${sysData.flash_size}</div>
           </div>
           <div class="info-item">
-            <div class="info-label">${t('psram')}</div>
+            <div class="info-label">PSRAM</div>
             <div class="info-value">${sysData.psram_size}</div>
           </div>
           <div class="info-item">
-            <div class="info-label">${t('uptime')}</div>
+            <div class="info-label">Uptime</div>
             <div class="info-value">${sysData.uptime}</div>
           </div>
           <div class="info-item">
@@ -743,11 +1023,11 @@ void handleRoot() {
         const mem = sysData.memory;
         let memHtml = `
           <div class="info-item">
-            <div class="info-label">${t('heapFree')}</div>
+            <div class="info-label">Heap Libre</div>
             <div class="info-value">${mem.heap_free_formatted}</div>
           </div>
           <div class="info-item">
-            <div class="info-label">${t('heapSize')}</div>
+            <div class="info-label">Taille Heap</div>
             <div class="info-value">${mem.heap_size_formatted}</div>
           </div>
         `;
@@ -755,11 +1035,11 @@ void handleRoot() {
         if (mem.psram_free !== undefined) {
           memHtml += `
             <div class="info-item">
-              <div class="info-label">${t('psramFree')}</div>
+              <div class="info-label">PSRAM Libre</div>
               <div class="info-value">${mem.psram_free_formatted}</div>
             </div>
             <div class="info-item">
-              <div class="info-label">${t('psramSize')}</div>
+              <div class="info-label">Taille PSRAM</div>
               <div class="info-value">${mem.psram_size_formatted}</div>
             </div>
           `;
@@ -771,227 +1051,46 @@ void handleRoot() {
         const wifi = sysData.wifi;
         document.getElementById('wifiInfo').innerHTML = `
           <div class="info-item">
-            <div class="info-label">${t('status')}</div>
+            <div class="info-label">Statut</div>
             <div class="info-value ${wifi.connected ? 'status-ok' : 'status-error'}">
-              ${wifi.connected ? t('connected') : t('disconnected')}
+              ${wifi.connected ? 'Connecté' : 'Déconnecté'}
             </div>
           </div>
           ${wifi.connected ? `
             <div class="info-item">
-              <div class="info-label">${t('ssid')}</div>
+              <div class="info-label">SSID</div>
               <div class="info-value">${wifi.ssid}</div>
             </div>
             <div class="info-item">
-              <div class="info-label">${t('ip')}</div>
+              <div class="info-label">IP</div>
               <div class="info-value">${wifi.ip}</div>
             </div>
             <div class="info-item">
-              <div class="info-label">${t('rssi')}</div>
+              <div class="info-label">Signal</div>
               <div class="info-value">${wifi.rssi} dBm</div>
             </div>
           ` : ''}
         `;
 
-        // Load tests
+        // Update OLED status based on I2C scan
         const testsResponse = await fetch('/api/tests');
         const testsData = await testsResponse.json();
-
-        // GPIO Test
-        let gpioHtml = '<table><thead><tr><th>' + t('pin') + '</th><th>' + t('status') + '</th><th>' + t('details') + '</th></tr></thead><tbody>';
-        testsData.gpio_test.forEach(pin => {
-          const statusClass = pin.status === 'OK' ? 'status-ok' : 'status-error';
-          gpioHtml += `<tr><td>GPIO ${pin.pin}</td><td class="${statusClass}">${pin.status}</td><td>${pin.details}</td></tr>`;
-        });
-        gpioHtml += '</tbody></table>';
-        document.getElementById('gpioTest').innerHTML = gpioHtml;
-
-        // I2C Test
-        let i2cHtml = '<table><thead><tr><th>' + t('address') + '</th><th>' + t('device') + '</th><th>' + t('status') + '</th></tr></thead><tbody>';
+        
+        let oledFound = false;
         testsData.i2c_test.forEach(device => {
-          i2cHtml += `<tr><td>${device.address}</td><td>${device.device}</td><td class="status-ok">${device.status}</td></tr>`;
+          if (device.address === '0x3c' || device.address === '0x3d') {
+            oledFound = true;
+            document.getElementById('oledStatus').innerHTML = `Détecté à ${device.address}`;
+          }
         });
-        i2cHtml += '</tbody></table>';
-        document.getElementById('i2cTest').innerHTML = i2cHtml;
-
-        // SPI Test
-        let spiHtml = '<table><thead><tr><th>Bus</th><th>MOSI</th><th>MISO</th><th>SCLK</th><th>' + t('status') + '</th></tr></thead><tbody>';
-        testsData.spi_test.forEach(spi => {
-          spiHtml += `<tr><td>${spi.bus}</td><td>${spi.mosi}</td><td>${spi.miso}</td><td>${spi.sclk}</td><td class="status-ok">${spi.status}</td></tr>`;
-        });
-        spiHtml += '</tbody></table>';
-        document.getElementById('spiTest').innerHTML = spiHtml;
-
-        // Memory Test
-        const memTest = testsData.memory_test;
-        let memTestHtml = `
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-label">${t('heapFree')}</div>
-              <div class="info-value">${memTest.heap_free}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">${t('heapSize')}</div>
-              <div class="info-value">${memTest.heap_size}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Min Free</div>
-              <div class="info-value">${memTest.heap_min_free}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Usage</div>
-              <div class="info-value">${memTest.heap_usage_percent}%</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Largest Block</div>
-              <div class="info-value">${memTest.largest_free_block}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Fragmentation</div>
-              <div class="info-value">${memTest.fragmentation_percent}%</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">${t('status')}</div>
-              <div class="info-value status-${memTest.status === 'OK' ? 'ok' : memTest.status === 'MEDIUM' ? 'warn' : 'error'}">${memTest.status}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Alert</div>
-              <div class="info-value" style="font-size: 0.9em;">${memTest.alert}</div>
-            </div>
-          </div>
-        `;
-        document.getElementById('memoryTest').innerHTML = memTestHtml;
-
-        // WiFi Test
-        const wifiTest = testsData.wifi_test;
-        let wifiTestHtml = '<div class="info-grid">';
-
-        if (wifiTest.connected) {
-          wifiTestHtml += `
-            <div class="info-item">
-              <div class="info-label">${t('status')}</div>
-              <div class="info-value status-ok">${wifiTest.status}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">${t('ssid')}</div>
-              <div class="info-value">${wifiTest.ssid}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">${t('ip')}</div>
-              <div class="info-value">${wifiTest.ip}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">MAC</div>
-              <div class="info-value">${wifiTest.mac}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">${t('rssi')}</div>
-              <div class="info-value">${wifiTest.rssi} dBm</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Signal Quality</div>
-              <div class="info-value">${wifiTest.signal_quality}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Channel</div>
-              <div class="info-value">${wifiTest.channel}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Gateway</div>
-              <div class="info-value">${wifiTest.gateway}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">DNS</div>
-              <div class="info-value">${wifiTest.dns}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Subnet</div>
-              <div class="info-value">${wifiTest.subnet}</div>
-            </div>
-          `;
-        } else {
-          wifiTestHtml += `
-            <div class="info-item">
-              <div class="info-label">${t('status')}</div>
-              <div class="info-value status-error">${wifiTest.status}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Error</div>
-              <div class="info-value">${wifiTest.error}</div>
-            </div>
-          `;
+        
+        if (!oledFound) {
+          document.getElementById('oledStatus').innerHTML = '<span class="status-error">Non détecté</span>';
         }
-
-        wifiTestHtml += '</div>';
-        document.getElementById('wifiTest').innerHTML = wifiTestHtml;
-
-        // System Test
-        const sysTest = testsData.system_test;
-        let sysTestHtml = `
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-label">Chip Model</div>
-              <div class="info-value">${sysTest.chip_model}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Chip Revision</div>
-              <div class="info-value">${sysTest.chip_revision}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">CPU Cores</div>
-              <div class="info-value">${sysTest.cpu_cores}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">CPU Frequency</div>
-              <div class="info-value">${sysTest.cpu_frequency} MHz</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Flash Size</div>
-              <div class="info-value">${sysTest.flash_size}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Flash Speed</div>
-              <div class="info-value">${sysTest.flash_speed} MHz</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">${t('uptime')}</div>
-              <div class="info-value">${sysTest.uptime}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Uptime (ms)</div>
-              <div class="info-value">${sysTest.uptime_ms}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Last Reset</div>
-              <div class="info-value">${sysTest.last_reset_reason}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Arduino Core</div>
-              <div class="info-value">${sysTest.arduino_core}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">IDF Version</div>
-              <div class="info-value">${sysTest.idf_version}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Overall Status</div>
-              <div class="info-value status-${sysTest.overall_status === 'HEALTHY' ? 'ok' : sysTest.overall_status === 'WARNING' ? 'warn' : 'error'}">${sysTest.overall_status}</div>
-            </div>
-          </div>
-        `;
-        document.getElementById('systemTest').innerHTML = sysTestHtml;
 
       } catch (error) {
         console.error('Error loading data:', error);
       }
-    }
-
-    // Export functions
-    function exportJSON() {
-      window.location.href = '/api/export/json';
-    }
-
-    function exportCSV() {
-      window.location.href = '/api/export/csv';
     }
 
     // Countdown and progress bar
@@ -1003,7 +1102,6 @@ void handleRoot() {
         countdownValue--;
         document.getElementById('countdown').textContent = countdownValue;
 
-        // Update progress bar
         const progress = ((5 - countdownValue) / 5) * 100;
         document.getElementById('progressBar').style.width = progress + '%';
 

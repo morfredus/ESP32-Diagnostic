@@ -1,16 +1,16 @@
-# ESP32 Complete Diagnostic v3.0.1 - Multilingual
+# Diagnostic ESP32 Complet v3.1.0 - Interface Complète
 
 <div align="center">
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](README.md)
-[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
+[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](README.en.md)
 
 ![ESP32](https://img.shields.io/badge/ESP32-Compatible-green)
-![Version](https://img.shields.io/badge/version-3.0.1-blue)
+![Version](https://img.shields.io/badge/version-3.1.0-blue)
 ![Core](https://img.shields.io/badge/Arduino%20Core-3.3.2+-orange)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
-**[🇫🇷 Lire en Français](README.fr.md)**
+**[🇬🇧 Read in English](README.en.md)**
 
 </div>
 
@@ -18,403 +18,310 @@
 
 ## 📋 Description
 
-Comprehensive **multilingual** diagnostic tool for ESP32 microcontrollers, accessible via modern web interface. Automatically tests all hardware components, analyzes memory, scans peripherals, and generates detailed reports.
+Outil de diagnostic exhaustif **multilingue** pour microcontrôleurs ESP32, accessible via interface web moderne. **8 pages complètes fonctionnelles** incluant contrôle LEDs, tests écrans, tests hardware avancés, scanner WiFi, benchmarks performance, et exports multi-formats.
 
-**New in v3.0.1**: Upgraded to **Arduino Core ESP32 3.3.2** with optimized memory management, improved WiFi stability, and 12 new system metrics.
-
----
-
-## ✨ Features
-
-### 🌍 Multilingual Interface
-- **French** (default language)
-- **English**
-- **Dynamic switching**: FR/EN buttons in interface
-- **Real-time update**: No page reload required
-- **Complete translations**: All texts, labels, messages and status
-
-### 📡 Multi-Network Connectivity ✨ NEW
-- **Multi-WiFi**: Supports multiple WiFi networks
-- **Automatic fallback**: Tries each network in order
-- **Flexible**: Works at home, office, on the go
-- **AP Fallback**: Access Point mode if no network available
-
-### 🎨 Modern Design
-- **Glassmorphism** with transparency and blur effects
-- **Animated gradients** purple/blue
-- **Smooth animations** on all elements
-- **Responsive interface** for mobile/tablet/desktop
-
-### 🔄 Real-time Updates
-- Automatic refresh every **5 seconds**
-- Visual pulsing indicator
-- Progress bar for next update
-- Live system monitoring
-
-### 🧪 Complete Hardware Testing
-
-#### GPIO Test
-- All available pins tested
-- Input/Output functionality
-- Status: OK/FAIL with details
-
-#### I2C Test
-- Automatic device scan (0x00-0x7F)
-- Common device identification
-- Address and device name display
-
-#### SPI Test
-- Bus detection and configuration
-- Pin mapping (MOSI, MISO, SCLK)
-- Compatibility check
-
-#### Memory Test (Enhanced with Core 3.3.2) ⚡
-- Free/total heap
-- Free/total PSRAM (if available)
-- **NEW**: Minimum free memory since boot
-- **NEW**: Largest free block
-- **NEW**: Memory fragmentation percentage
-- Intelligent status (OK/MEDIUM/LOW)
-
-#### WiFi Test (Enhanced with Core 3.3.2) ⚡
-- Connection status
-- Signal strength (RSSI)
-- SSID and IP address
-- MAC address
-- **NEW**: WiFi channel
-- **NEW**: Gateway address
-- **NEW**: DNS server
-- **NEW**: Subnet mask
-- **NEW**: Signal quality (Excellent/Good/Fair/Weak)
-
-#### System Test (Enhanced with Core 3.3.2) ⚡
-- Chip model and revision
-- CPU cores and frequency
-- Flash size and speed
-- Uptime
-- **NEW**: Last reset reason
-- **NEW**: ESP-IDF version
-- **NEW**: Overall system status (HEALTHY/WARNING/CRITICAL)
-
-### 💾 Data Export
-- **JSON format**: Complete structured data
-- **CSV format**: Excel compatible
-- One-click download
-- All diagnostic data included
-
-### 🎛️ NeoPixel Control (Optional)
-- Predefined patterns (Rainbow, Pulse, Strobe)
-- Custom RGB color
-- Real-time control
+**Nouveau v3.1.0** : Intégration complète de **TOUTES les fonctionnalités v2.5** dans l'architecture moderne v3.0.1 avec **8 pages web totalement fonctionnelles**.
 
 ---
 
-## 🚀 Quick Start
+## ✨ Fonctionnalités
 
-### Prerequisites
-- **ESP32** (ESP32-S2, ESP32-S3, or ESP32-C3)
-- **Arduino IDE 2.x** or PlatformIO
-- **Arduino Core ESP32 v3.3.2+** ⚡ (minimum required)
-- Modern web browser
+### 🌐 Interface Complète - 8 Pages
+
+#### 1️⃣ **Vue d'ensemble** 📊
+- Informations système temps réel
+- État mémoire Heap/PSRAM
+- Détails connexion WiFi
+- Mise à jour auto toutes les 5 secondes
+
+#### 2️⃣ **LEDs** 💡 ✨ NOUVEAU
+**LED Intégrée (GPIO 97)**
+- Contrôle On/Off
+- Clignotement (5x)
+- Test rapide
+- Effet fade PWM
+
+**NeoPixel (GPIO 48)**
+- Motifs : Rainbow, Pulse, Strobe
+- Sélecteur couleur RGB personnalisé
+- Contrôle temps réel
+
+#### 3️⃣ **Écrans** 🖥️ ✨ NOUVEAU
+**TFT 320x240 SPI**
+- Configuration : CS:14, DC:47, RST:21
+- Boutons test : Complet, Couleurs, Motif, Effacer
+- Prêt connexion matérielle
+
+**OLED 0.96" I2C**
+- Auto-détection 0x3C/0x3D
+- Pins SDA/SCL configurables
+- Test complet + affichage message personnalisé
+
+#### 4️⃣ **Tests Avancés** 🧪 ✨ NOUVEAU
+- **Test ADC** - 10 canaux (GPIO 1-10)
+- **Test Touch Pads** - 14 pads (ESP32-S3)
+- **Test PWM** - 4 canaux, 5kHz
+- **Bus SPI** - Détection SPI2, SPI3
+- **Partitions Flash** - Liste complète
+- **Stress Test Mémoire** - Test intensif RAM
+
+#### 5️⃣ **GPIO** 📌 ✨ NOUVEAU
+- Test complet **26 GPIO**
+- Vérification Input/Output
+- Test HIGH/LOW
+- Tableau statut détaillé
+
+#### 6️⃣ **Scanner WiFi** 📶 ✨ NOUVEAU
+- Scan réseaux disponibles
+- Affichage : SSID, Signal, Canal, Qualité, Sécurité
+- Tri par puissance signal
+- Évaluation qualité signal
+
+#### 7️⃣ **Performance** ⚡ ✨ NOUVEAU
+**Benchmarks :**
+- Benchmark CPU (1M opérations, MFLOPS)
+- Benchmark Mémoire (10KB, MB/s)
+- Benchmark Flash (vitesse lecture/écriture)
+
+#### 8️⃣ **Export** 💾 (Amélioré)
+- **Format TXT** ✨ NOUVEAU - Rapport texte structuré
+- **Format JSON** - Données structurées
+- **Format CSV** - Compatible Excel
+- **PDF Imprimable** ✨ NOUVEAU - Fonction print navigateur
+
+### 🌐 Interface Multilingue
+- **Français** (langue par défaut)
+- **Anglais**
+- Changement dynamique boutons FR/EN
+- Traductions complètes tous éléments UI
+
+### 📡 Connectivité Multi-Réseau
+- **Support Multi-WiFi** - Plusieurs réseaux WiFi
+- **Basculement Automatique** - Essaie chaque réseau
+- **Flexible** - Maison, bureau, déplacement
+- **Mode AP Fallback** - Point d'accès si échec
+
+### 🎨 Design Moderne
+- **Glassmorphism** avec transparence et flou
+- **Dégradés animés** violet/bleu
+- **Animations fluides** sur tous éléments
+- **Interface responsive** mobile/tablette/desktop
+
+---
+
+## 🚀 Démarrage Rapide
+
+### Prérequis
+- **ESP32** (ESP32-S2, ESP32-S3, ou ESP32-C3)
+- **Arduino IDE 2.x** ou PlatformIO
+- **Arduino Core ESP32 v3.3.2+** ⚡ (minimum requis)
+- Navigateur web moderne
 
 ### Installation
 
-1. **Install ESP32 Board Manager v3.3.2+**
-   ```
-   File > Preferences > Additional Board Manager URLs:
-   https://espressif.github.io/arduino-esp32/package_esp32_index.json
+1. **Installer ESP32 Board Manager v3.3.2+**
+2. **Installer bibliothèques** (Adafruit NeoPixel, ArduinoJson 6.x)
+3. **Créer config.h** depuis exemple-config.h
+4. **Configurer WiFi** (Multi-WiFi recommandé)
+5. **Compiler et téléverser**
+6. **Accéder** : http://esp32-diagnostic.local
 
-   Tools > Board Manager > Search "ESP32" > Install 3.3.2+
-   ```
-
-2. **Install Required Libraries**
-   ```
-   Sketch > Include Library > Manage Libraries
-   - Adafruit NeoPixel (latest)
-   - ArduinoJson 6.x (NOT v7)
-   ```
-
-3. **Download Project Files**
-   - ESP32-Diagnostic.ino
-   - exemple-config.h ⚡ IMPORTANT (template)
-   - api_handlers.h
-   - test_functions.h
-   - translations.h
-   - web_interface.h
-   - .gitignore
-
-4. **Create your configuration file**
-   ```bash
-   # Copy the template
-   cp exemple-config.h config.h
-   ```
-
-   Edit `config.h` with **Multi-WiFi** (recommended):
-   ```cpp
-   #define MULTI_WIFI_ENABLED
-   #define NUM_SSIDS 2
-
-   const char* ssid_list[] = {
-     "HomeWiFi",
-     "OfficeWiFi"
-   };
-
-   const char* password_list[] = {
-     "HomePassword",
-     "OfficePassword"
-   };
-   ```
-
-   Or **Single WiFi** mode:
-   ```cpp
-   // #define MULTI_WIFI_ENABLED  // Comment out
-   #define SINGLE_WIFI_ENABLED
-
-   const char* ssid = "YourSSID";
-   const char* password = "YourPassword";
-   ```
-
-   ⚠️ **SECURITY**:
-   - `config.h` contains YOUR credentials (in .gitignore)
-   - `exemple-config.h` is the template (safe for Git)
-   - NEVER commit configured `config.h`
-
-5. **Compile and Upload**
-   - Select your board (ESP32S3 Dev Module)
-   - Configure settings (Flash: 8MB, PSRAM: OPI if available)
-   - Upload ✓
-
-6. **Access Interface**
-   - Open browser: `http://esp32-diagnostic.local`
-   - Or use IP address shown in Serial Monitor
+📖 **[Guide d'installation complet](INSTALLATION.md)**
 
 ---
 
-## 📊 Interface Screenshots
+## 📊 Comparaison Versions
 
-### Overview Tab
-- System information (Chip, Cores, Frequency, Flash, PSRAM)
-- Memory status with usage percentage
-- WiFi status and signal quality
-- Automatic 5-second updates
+| Fonctionnalité | v2.5 | v3.0.1 | v3.1.0 |
+|----------------|------|--------|--------|
+| Pages interface | 8 | 3 | **8** ✅ |
+| LED intégrée | ✅ | ❌ | **✅** |
+| NeoPixel | ✅ | ✅ | **✅** |
+| Écrans TFT/OLED | ✅ | ❌ | **✅** |
+| Tests ADC/Touch/PWM | ✅ | ❌ | **✅** |
+| Scanner WiFi | ✅ | ❌ | **✅** |
+| Benchmarks | ✅ | ❌ | **✅** |
+| Export TXT | ✅ | ❌ | **✅** |
+| Multi-WiFi | ❌ | ✅ | **✅** |
+| Arduino Core | 3.1.3 | 3.3.2 | **3.3.2** |
+| Design moderne | ⚠️ | ✅ | **✅** |
+| Traductions FR/EN | ⚠️ | ✅ | **✅** |
 
-### Tests Tab
-- Complete GPIO test table
-- I2C device scan results
-- SPI bus configuration
-- Detailed memory analysis with fragmentation
-- Advanced WiFi diagnostics
-- System information with reset reason
+**Résultat :** v3.1.0 = **TOUTES** fonctionnalités v2.5 + améliorations v3.0.1 🎉
 
-### Exports Tab
-- One-click JSON export
-- One-click CSV export
-- All diagnostic data included
+---
+
+## 🆕 Nouveautés v3.1.0
+
+### Interface Complète - 8 Pages
+- ✨ **5 nouvelles pages** ajoutées
+- ✨ Contrôle LED intégrée (GPIO 97)
+- ✨ Contrôle NeoPixel RGB (GPIO 48)
+- ✨ Tests écrans TFT/OLED
+- ✨ Test ADC (10 canaux)
+- ✨ Test Touch Pads (14 pads)
+- ✨ Test PWM (4 canaux)
+- ✨ Scanner réseaux WiFi
+- ✨ Benchmarks performance
+- ✨ Format export TXT ajouté
+
+---
+
+## 🌐 Endpoints API
+
+### Système
+- `GET /api/system` - Informations système
+- `GET /api/tests` - Tous tests hardware
+- `GET /api/language` - Langue actuelle
+- `POST /api/language` - Changer langue
+
+### LEDs (NOUVEAU v3.1.0)
+- `POST /api/led/builtin` - Contrôle LED intégrée
+- `POST /api/neopixel/pattern` - Motif NeoPixel
+- `POST /api/neopixel/color` - Couleur RGB personnalisée
+
+### Tests Avancés (NOUVEAU v3.1.0)
+- `GET /api/test/gpio` - Test GPIO complet
+- `GET /api/test/adc` - Test ADC 10 canaux
+- `GET /api/test/touch` - Test Touch Pads
+- `GET /api/test/pwm` - Test PWM
+
+### Scanner & Benchmark (NOUVEAU v3.1.0)
+- `GET /api/scan/wifi` - Scanner réseaux
+- `GET /api/benchmark` - Benchmarks performance
+
+### Export
+- `GET /api/export/txt` - Export texte (NOUVEAU)
+- `GET /api/export/json` - Export JSON
+- `GET /api/export/csv` - Export CSV
 
 ---
 
 ## 🔧 Configuration
 
-### NeoPixel (Optional)
+### Pins GPIO
 ```cpp
-#define NEOPIXEL_PIN 48        // Data pin
-#define NEOPIXEL_COUNT 1       // Number of LEDs
+#define BUILTIN_LED_PIN 97    // LED intégrée
+#define NEOPIXEL_PIN 48       // NeoPixel
+#define TFT_CS 14             // TFT
+#define OLED_SDA 21           // OLED
 ```
 
-### mDNS Name
+### Intervalle Mise à Jour
 ```cpp
-const char* mdnsName = "esp32-diagnostic";  // Access via http://esp32-diagnostic.local
-```
-
-### Update Interval
-```cpp
-const unsigned long UPDATE_INTERVAL = 5000; // 5 seconds (in web_interface.h)
+const unsigned long UPDATE_INTERVAL = 5000; // 5 secondes
 ```
 
 ---
 
-## 🌐 API Endpoints
+## 🛠️ Support Matériel
 
-### GET Endpoints
-- `/` - Main web interface
-- `/api/system` - System information (JSON)
-- `/api/tests` - All hardware tests (JSON)
-- `/api/language` - Current language
-- `/api/export/json` - Download JSON export
-- `/api/export/csv` - Download CSV export
+### Testé & Validé
+- ✅ ESP32-S3 (8MB Flash, OPI PSRAM) - Excellent
+- ✅ ESP32-S2 (4MB Flash) - Bon
 
-### POST Endpoints
-- `/api/language` - Change language (body: `{"language": "fr"}`)
-- `/api/neopixel/pattern` - Set pattern (body: `{"pattern": "rainbow"}`)
-- `/api/neopixel/color` - Set color (body: `{"r": 255, "g": 0, "b": 0}`)
+### Compatible Non Testé
+- ⚠️ ESP32-C3, C6, H2
 
----
-
-## 🆕 What's New in v3.0.1
-
-### ⚡ Arduino Core Upgrade
-- **Arduino Core ESP32 3.1.3 → 3.3.2**
-- Improved memory management with heap_caps API
-- Enhanced WiFi stability with auto-reconnect
-- OPI PSRAM support for ESP32-S3
-
-### 📡 Multi-WiFi Support ✨ NEW
-The system now supports multiple WiFi networks with automatic failover:
-
-```cpp
-// In config.h
-#define MULTI_WIFI_ENABLED
-#define NUM_SSIDS 3
-
-const char* ssid_list[] = {
-  "HomeWiFi",
-  "OfficeWiFi",
-  "MobileHotspot"
-};
-
-const char* password_list[] = {
-  "HomePassword",
-  "OfficePassword",
-  "MobilePassword"
-};
-```
-
-**Benefits:**
-- ✅ Works in multiple locations
-- ✅ Automatic network switching
-- ✅ Single firmware for all environments
-- ✅ Fallback to AP mode if all networks fail
-
-### 🔐 Secure Configuration System
-- **exemple-config.h**: Public template (safe for Git)
-- **config.h**: Your private credentials (ignored by Git)
-- **.gitignore**: Automatic protection
-
-### 📊 New Metrics (12 total)
-**Memory:**
-- Minimum free heap since boot
-- Largest free memory block
-- Memory fragmentation percentage
-
-**WiFi:**
-- WiFi channel used
-- Gateway IP address
-- DNS server
-- Subnet mask
-- Signal quality assessment
-
-**System:**
-- Last reset reason (Power-on, Watchdog, etc.)
-- ESP-IDF version
-- Flash chip speed
-- Overall system health status
-
-### 🔧 Optimizations
-- WiFi auto-reconnect enabled by default
-- No flash writes for WiFi credentials (persistent=false)
-- Improved JSON buffer management
-- Better error handling
+### Configuration Mémoire Recommandée
+- **Minimum** : Flash 4MB, Heap libre 100KB+
+- **Recommandé** : Flash 8MB, PSRAM 8MB (OPI)
 
 ---
 
 ## 📖 Documentation
 
-- [Installation Guide](INSTALLATION.md) - Complete step-by-step guide
-- [Changelog](CHANGELOG.md) - Version history
-- [🇫🇷 Guide d'installation français](INSTALLATION.md)
-- [🇫🇷 Changelog français](CHANGELOG.md)
+- **[Guide d'Installation](INSTALLATION.md)** - Guide complet pas à pas
+- **[Changelog](CHANGELOG.md)** - Historique versions
+- **[Structure Projet](PROJECT_STRUCTURE.md)** - Vue architecture
+- **[🇬🇧 English Installation](INSTALLATION.en.md)**
+- **[🇬🇧 English Changelog](CHANGELOG.en.md)**
+- **[🇬🇧 English Structure](PROJECT_STRUCTURE.en.md)**
 
 ---
 
-## 🛠️ Hardware Support
+## 🔍 Dépannage
 
-### Tested On
-- ✅ ESP32-S3 (8MB Flash, OPI PSRAM) - Fully tested
-- ✅ ESP32-S2 - Compatible
-- ✅ ESP32-C3 - Compatible
-- ✅ ESP32-C6 - Compatible (Core 3.3.2+)
-- ✅ ESP32-H2 - Compatible (Core 3.3.2+)
+### ESP32 ne se connecte pas au WiFi
+✅ Vérifier identifiants dans `config.h`  
+✅ WiFi 2.4GHz uniquement (pas 5GHz)  
+✅ Mode AP activé automatiquement en échec  
 
-### Requirements
-- **Minimum**: ESP32 with 4MB Flash
-- **Recommended**: ESP32-S3 with 8MB Flash + PSRAM
-- **Arduino Core**: 3.3.2 or higher
-- **ArduinoJson**: 6.x (not 7.x)
+### Interface ne charge pas
+✅ Vider cache navigateur (Ctrl+Shift+R)  
+✅ Vérifier adresse IP dans Moniteur Série  
+✅ Essayer http://192.168.x.x au lieu de .local  
 
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-### Development Setup
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+### LEDs ne fonctionnent pas
+✅ Vérifier configuration GPIO  
+✅ NeoPixel nécessite alimentation suffisante  
+✅ LED intégrée sur GPIO 97 (ESP32-S3)  
 
 ---
 
-## 📝 License
+## 🤝 Contribution
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- Espressif Systems for ESP32 platform
-- Adafruit for NeoPixel library
-- Arduino community
+Les contributions sont les bienvenues ! N'hésitez pas à soumettre une Pull Request.
 
 ---
 
-## 📞 Support
+## 📄 Licence
 
-- **Issues**: Report bugs or request features via GitHub Issues
-- **Discussions**: Join discussions for questions and ideas
-- **Documentation**: Check INSTALLATION.md for detailed help
+MIT License - Utilisation libre
 
 ---
 
 ## 🗺️ Roadmap
 
-### v3.1.0 (Planned)
-- Real-time memory charts
-- Metrics history
-- Configurable alerts
-- Sensor support (temperature, humidity)
-- Dark/Light mode toggle
+### v3.2.0 (Prévu - T1 2026)
+- Graphiques temps réel Chart.js
+- Historique métriques
+- Alertes configurables
+- Support capteurs I2C
 
-### v3.2.0 (Planned)
-- Customizable dashboard
-- Third-party sensor plugins
-- Scheduled automatic exports
-- Push notifications
-
-### v4.0.0 (Future)
-- Complete React rewrite
-- Dedicated mobile app
-- Optional cloud sync
-- Multi-ESP32 monitoring
+### v4.0.0 (Futur - T3 2026)
+- Refonte React
+- App mobile
+- Cloud sync optionnel
 
 ---
 
-**Current version**: 3.0.1
-**Arduino Core**: 3.3.2+
-**Last update**: October 2025
-**Available languages**: French (default), English
+## 📊 Statistiques Projet
 
-🌐 **Access**: http://esp32-diagnostic.local
-🇫🇷🇬🇧 **Language switching**: FR/EN buttons in interface
+**Version :** 3.1.0  
+**Date :** 16 Octobre 2025  
+**Lignes Code :** ~4500  
+**Fichiers :** 6  
+**Pages Interface :** 8  
+**Endpoints API :** 18  
+**Langues :** 2 (FR/EN)  
+
+---
+
+## ✅ Checklist Installation
+
+- [ ] Arduino Core ESP32 3.3.2+ installé
+- [ ] Bibliothèques installées
+- [ ] config.h créé et configuré
+- [ ] Compilation sans erreur
+- [ ] Interface accessible
+- [ ] 8 onglets fonctionnels
 
 ---
 
 <div align="center">
 
-Made with ❤️ for the ESP32 community
+**Version actuelle :** 3.1.0  
+**Arduino Core :** 3.3.2+  
+**Mise à jour :** 16 Octobre 2025  
 
-[⬆ Back to top](#esp32-complete-diagnostic-v301---multilingual)
+🌐 **Accès :** http://esp32-diagnostic.local  
+🇫🇷🇬🇧 **Langues :** Boutons FR/EN dans interface
+
+---
+
+Fait avec ❤️ pour la communauté ESP32
+
+**[🇬🇧 Read in English](README.en.md)**
 
 </div>
