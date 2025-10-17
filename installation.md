@@ -1,4 +1,4 @@
-# 📦 GUIDE D'INSTALLATION - ESP32 Diagnostic v3.0.0
+# 📦 GUIDE D'INSTALLATION - ESP32 Diagnostic v3.2.0
 
 [🇬🇧 Read in English](INSTALLATION.en.md) | [📖 Documentation](README.md) | [📋 Changelog](CHANGELOG.md)
 
@@ -7,6 +7,11 @@
 ## 🎯 Vue d'ensemble
 
 Ce guide vous accompagne pas à pas pour installer le système de diagnostic ESP32 avec interface web dynamique, multilingue et moderne.
+
+**Nouveautés v3.2.0** :
+- ✨ Support WiFi multi-SSID avec connexion automatique
+- 🔧 Configuration des pins matérielles via fichiers séparés
+- 🔒 Fichiers de configuration sécurisés (exclus de Git)
 
 ---
 
@@ -37,17 +42,27 @@ ArduinoJson.h v6.x        (à installer - PAS la v7)
 
 ## 📁 Structure des fichiers
 
-Votre projet doit contenir **6 fichiers** :
+Votre projet doit contenir **10 fichiers** :
 
+**Fichiers Code Source :**
 ```
 ESP32-Diagnostic/
-├── ESP32-Diagnostic.ino       # Fichier principal
-├── exemple-config.h           # Template de configuration
-├── api_handlers.h             # Handlers API REST (18 endpoints)
-├── web_interface.h            # Interface HTML/CSS/JS (8 pages)
-├── test_functions.h           # Fonctions de tests hardware
-└── translations.h             # Traductions FR/EN
+├── ESP32-Diagnostic.ino          # Fichier principal
+├── api_handlers.h                # Handlers API REST (18 endpoints)
+├── web_interface.h               # Interface HTML/CSS/JS (8 pages)
+├── translations.h                # Traductions FR/EN
+├── exemple-wifi-config.h         # ⭐ Template configuration WiFi
+├── exemple-config.h              # ⭐ Template configuration matérielle
+└── .gitignore                    # ⭐ Protection fichiers sensibles
 ```
+
+**Fichiers Configuration (à créer par vous) :**
+```
+├── wifi-config.h                 # 🔒 VOS identifiants WiFi (NON commité)
+└── config.h                      # 🔒 VOS pins matérielles (NON commité)
+```
+
+⚠️ **Important** : Les fichiers `wifi-config.h` et `config.h` contiennent des informations sensibles et ne doivent JAMAIS être partagés ou commitées sur Git.
 
 ---
 
@@ -84,35 +99,97 @@ ESP32-Diagnostic/
 
 ---
 
-### Étape 3 : Configuration WiFi
+### Étape 3 : Configuration WiFi Multi-SSID ⭐ NOUVEAU
 
-#### Option A : Utiliser le fichier de configuration (recommandé)
+#### 3.1 Créer le fichier de configuration WiFi
 
-1. Copier `exemple-config.h` vers `config.h` :
+1. **Copier le template** :
+   ```bash
+   cp exemple-wifi-config.h wifi-config.h
+   ```
+   
+   Ou manuellement : dupliquer `exemple-wifi-config.h` et le renommer en `wifi-config.h`
+
+2. **Éditer** `wifi-config.h` et configurer vos réseaux WiFi :
+
+```cpp
+const WiFiCredentials wifiNetworks[] = {
+  // Réseau principal (maison)
+  {"MonWiFi-Maison", "motdepasse123"},
+  
+  // Réseau secondaire (bureau)
+  {"WiFi-Bureau", "autremdp456"},
+  
+  // Réseau mobile (secours)
+  {"iPhone-Hotspot", "mdphotspot"},
+};
+```
+
+3. **Configurer le point d'accès de secours** (optionnel) :
+
+```cpp
+#define AP_SSID "ESP32-Diagnostic-Setup"
+#define AP_PASSWORD "diagnostic123"
+```
+
+💡 **Astuce** : Le système tentera de se connecter aux réseaux dans l'ordre défini. Placez votre réseau le plus utilisé en premier.
+
+#### 3.2 Créer le fichier de configuration matérielle
+
+1. **Copier le template** :
    ```bash
    cp exemple-config.h config.h
    ```
 
-2. Éditer `config.h` et modifier les paramètres :
-   ```cpp
-   #define WIFI_SSID "VotreSSID"
-   #define WIFI_PASSWORD "VotreMotDePasse"
-   #define DEVICE_NAME "ESP32-Diagnostic"
-   ```
+2. **Éditer** `config.h` et ajuster selon votre matériel :
 
-#### Option B : Modification directe dans le fichier principal
+```cpp
+// LED interne
+#define LED_BUILTIN_PIN 2  // Ajuster selon votre carte
 
-1. Ouvrir le fichier `ESP32-Diagnostic.ino`
-2. Localiser les lignes de configuration WiFi (vers ligne 50-51) :
-   ```cpp
-   const char* ssid = "VotreSSID";          // ← Modifier ici
-   const char* password = "VotreMotDePasse"; // ← Modifier ici
-   ```
-3. Remplacer par vos identifiants WiFi réels
+// NeoPixel (optionnel - décommenter si utilisé)
+// #define USE_NEOPIXEL
+// #define NEOPIXEL_PIN 48
+// #define NEOPIXEL_COUNT 1
+
+// OLED (optionnel - décommenter si utilisé)
+// #define USE_OLED
+// #define OLED_SDA_PIN 21
+// #define OLED_SCL_PIN 22
+
+// Pins GPIO à tester
+const int TEST_GPIO_PINS[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+```
+
+#### 3.3 Vérifier la sécurité
+
+✅ Vérifiez que le fichier `.gitignore` contient :
+```
+wifi-config.h
+config.h
+```
+
+⚠️ **IMPORTANT** : Ne commitez JAMAIS `wifi-config.h` ou `config.h` sur GitHub ! Ils contiennent vos mots de passe WiFi.
 
 ---
 
-### Étape 4 : Configuration des pins (optionnel)
+### Étape 4 : Configuration alternative (méthode rapide)
+
+Si vous ne souhaitez pas utiliser les fichiers de configuration séparés, le programme fonctionnera avec des paramètres par défaut et affichera des avertissements :
+
+```
+warning: wifi-config.h not found! Using default WiFi settings
+warning: config.h not found! Using default settings
+```
+
+Dans ce cas, l'ESP32 démarrera en mode Point d'Accès :
+- SSID : `ESP32-Diagnostic-Setup`
+- Mot de passe : `diagnostic123`
+- IP : `192.168.4.1`
+
+---
+
+### Étape 4 (ancien Étape 3) : Configuration des pins (optionnel)
 
 Si vous utilisez des composants matériels, ajustez les pins selon votre câblage :
 
@@ -200,18 +277,28 @@ Vous devriez voir :
 
 ```
 ====================================
-ESP32 Diagnostic System v3.0.0
+ESP32 Diagnostic System v3.2.0
 ====================================
 
 [INIT] Initializing system...
+[WIFI] Configuring WiFi Multi-SSID...
+  - Added network: MonWiFi-Maison
+  - Added network: WiFi-Bureau
+  - Added network: iPhone-Hotspot
 [WIFI] Connecting to WiFi...
+..........
 [WIFI] WiFi connected successfully!
-[WIFI] IP Address: 192.168.1.xxx
-[MDNS] mDNS responder started
-[MDNS] Access via: http://esp32-diag.local
+  - SSID: MonWiFi-Maison
+  - IP Address: 192.168.1.xxx
+  - Signal Strength: -45 dBm
+  - MAC Address: XX:XX:XX:XX:XX:XX
 [WEB] Web server started on port 80
 [READY] System ready!
-[INFO] Free heap: xxxxx bytes
+====================================
+Access web interface at:
+  - http://192.168.1.xxx
+  - http://esp32-diag.local
+====================================
 ```
 
 ✅ Si vous voyez ces messages, l'installation est **réussie** !
@@ -368,7 +455,7 @@ curl http://ESP32-IP/api/system/info
 Réponse attendue :
 ```json
 {
-  "version": "3.0.0",
+  "version": "3.2.0",
   "chipModel": "ESP32-S3",
   "cpuFreq": 240,
   "flashSize": 8388608,

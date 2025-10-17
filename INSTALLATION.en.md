@@ -37,17 +37,27 @@ ArduinoJson.h v6.x        (to install - NOT v7)
 
 ## 📁 File Structure
 
-Your project must contain **6 files**:
+Your project must contain **10 files** :
 
+**Source Code Files :**
 ```
 ESP32-Diagnostic/
-├── ESP32-Diagnostic.ino       # Main file
-├── exemple-config.h           # Configuration template
-├── api_handlers.h             # REST API handlers (18 endpoints)
-├── web_interface.h            # HTML/CSS/JS interface (8 pages)
-├── test_functions.h           # Hardware test functions
-└── translations.h             # FR/EN translations
+├── ESP32-Diagnostic.ino          # Main file
+├── api_handlers.h                # REST API handlers (18 endpoints)
+├── web_interface.h               # HTML/CSS/JS interface (8 pages)
+├── translations.h                # FR/EN translations
+├── exemple-wifi-config.h         # ⭐ WiFi configuration template
+├── exemple-config.h              # ⭐ Hardware configuration template
+└── .gitignore                    # ⭐ Sensitive files protection
 ```
+
+**Configuration Files (to create by you) :**
+```
+├── wifi-config.h                 # 🔒 YOUR WiFi credentials (NOT committed)
+└── config.h                      # 🔒 YOUR hardware pins (NOT committed)
+```
+
+⚠️ **Important** : Files `wifi-config.h` and `config.h` contain sensitive information and must NEVER be shared or committed to Git.
 
 ---
 
@@ -200,18 +210,28 @@ You should see:
 
 ```
 ====================================
-ESP32 Diagnostic System v3.0.0
+ESP32 Diagnostic System v3.2.0
 ====================================
 
 [INIT] Initializing system...
+[WIFI] Configuring WiFi Multi-SSID...
+  - Added network: MyHomeWiFi
+  - Added network: OfficeWiFi
+  - Added network: iPhone-Hotspot
 [WIFI] Connecting to WiFi...
+..........
 [WIFI] WiFi connected successfully!
-[WIFI] IP Address: 192.168.1.xxx
-[MDNS] mDNS responder started
-[MDNS] Access via: http://esp32-diag.local
+  - SSID: MyHomeWiFi
+  - IP Address: 192.168.1.xxx
+  - Signal Strength: -45 dBm
+  - MAC Address: XX:XX:XX:XX:XX:XX
 [WEB] Web server started on port 80
 [READY] System ready!
-[INFO] Free heap: xxxxx bytes
+====================================
+Access web interface at:
+  - http://192.168.1.xxx
+  - http://esp32-diag.local
+====================================
 ```
 
 ✅ If you see these messages, installation is **successful**!
@@ -368,7 +388,7 @@ curl http://ESP32-IP/api/system/info
 Expected response:
 ```json
 {
-  "version": "3.0.0",
+  "version": "3.2.0",
   "chipModel": "ESP32-S3",
   "cpuFreq": 240,
   "flashSize": 8388608,

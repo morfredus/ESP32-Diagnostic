@@ -1,317 +1,221 @@
-# Changelog - ESP32 Diagnostic System
+# 📋 CHANGELOG - ESP32 Diagnostic
 
-Toutes les modifications notables de ce projet sont documentées dans ce fichier.
+[🇬🇧 Read in English](CHANGELOG.en.md) | [📖 Documentation](README.md)
 
-**[🇬🇧 English Version](CHANGELOG.en.md)**
+Toutes les modifications notables de ce projet seront documentées dans ce fichier.
+
+Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
+et ce projet adhère au [Versioning Sémantique](https://semver.org/lang/fr/).
+
+---
+
+## [3.2.0] - 2025-10-17
+
+### ✨ Nouvelles fonctionnalités
+
+#### Configuration WiFi Multi-SSID
+- **WiFiMulti** : Support de plusieurs réseaux WiFi
+  - Configuration de multiples SSID/mots de passe
+  - Connexion automatique au réseau disponible le plus fort
+  - Ordre de priorité configurable
+  - Reconnexion automatique en cas de perte de signal
+- **Fichier wifi-config.h** : Configuration WiFi séparée et sécurisée
+  - Template `exemple-wifi-config.h` fourni
+  - Supporte un nombre illimité de réseaux
+  - Exclusion automatique de Git (.gitignore)
+  - Configuration du point d'accès de secours
+
+#### Configuration matérielle dynamique
+- **Fichier config.h** : Configuration centralisée des pins
+  - Configuration LED interne
+  - Configuration NeoPixel (optionnel)
+  - Configuration OLED (optionnel)
+  - Configuration capteurs température (optionnel)
+  - Configuration buzzer et boutons (optionnels)
+  - Arrays configurables pour tests GPIO/PWM/ADC
+
+#### Interface Web améliorée
+- **Configuration des pins** : Édition via interface web (à venir)
+  - Modifier les pins sans recompiler
+  - Sauvegarde persistante de la configuration
+  - Validation des pins en temps réel
+
+### 🔒 Sécurité
+
+- **Fichiers sensibles protégés** :
+  - `wifi-config.h` exclu de Git
+  - `config.h` exclu de Git
+  - `.gitignore` complet fourni
+- **Mode Point d'Accès** : Failover automatique si aucun WiFi disponible
+- **Détection fichiers manquants** : Warnings si configuration absente
+
+### 🔧 Améliorations
+
+#### Architecture
+- **Séparation des configurations** : Code/Configuration découplés
+- **Templates fournis** : Exemples détaillés pour toutes configurations
+- **Détection automatique** : Utilise `__has_include` pour fichiers optionnels
+- **Compatibilité** : Fonctionne sans fichiers de configuration (mode par défaut)
+
+#### Performance
+- **Reconnexion intelligente** : Tente de se reconnecter toutes les 30s si déconnecté
+- **Multi-réseau** : Pas d'interruption lors du changement de réseau
+- **Timeout configurable** : Ajustable par réseau
+
+### 📝 Documentation
+
+- **INSTALLATION.md** : Section ajoutée pour configuration multi-WiFi
+- **INSTALLATION.en.md** : Version anglaise mise à jour
+- **README.md** : Documentation de la nouvelle architecture
+- **README.en.md** : Version anglaise mise à jour
+- **Exemples détaillés** : Dans wifi-config.h et config.h
+
+### ⚙️ Configuration requise
+
+**Nouveaux fichiers à créer** :
+1. Copier `exemple-wifi-config.h` → `wifi-config.h`
+2. Copier `exemple-config.h` → `config.h`  
+3. Configurer vos réseaux WiFi dans `wifi-config.h`
+4. Ajuster les pins matérielles dans `config.h`
+
+---
+
+## [3.1.1] - 2025-10-17
+
+### 🐛 Correctifs
+
+#### Correction de compilation
+- **API PWM** : Migration vers la nouvelle API `ledcAttach()` pour ESP32 Core 3.x
+  - Remplacement de `ledcSetup()` + `ledcAttachPin()` par `ledcAttach()`
+  - Compatible avec toutes les versions récentes du core ESP32
+- **Typage des fonctions** : Correction du type de retour
+  - `getFlashSize()` retourne maintenant `size_t` au lieu de `String`
+  - `getPSRAMSize()` retourne maintenant `size_t` au lieu de `String`
+  - Correction de `handleExportCSV()` pour utiliser les valeurs numériques
+
+#### Fonctions manquantes
+- **NeoPixel** : Ajout des fonctions dans le fichier principal
+  - `setNeoPixelColor(r, g, b)` : Définir la couleur RGB
+  - `neoPixelRainbow(cycles)` : Animation arc-en-ciel
+  - Versions vides si `USE_NEOPIXEL` non défini
+- **LED intégrée** : Ajout de `initBuiltinLED()`
+
+#### Corrections syntaxiques
+- **Guillemets manquants** : Correction ligne 820 dans `api_handlers.h`
+  - Ajout du guillemet fermant dans `server.send()`
+- **Accolades** : Vérification de toutes les fermetures de fonctions
+
+#### Routes API
+- **Simplification** : Suppression des routes non implémentées
+  - Retrait de `/api/led/builtin` (non implémenté)
+  - Retrait de `/api/test/adc` (non implémenté)
+  - Retrait de `/api/test/touch` (non implémenté)
+  - Retrait de `/api/export/txt` (non implémenté)
+
+### 📝 Documentation
+
+- **INSTALLATION.md** : Mise à jour de la version
+- **INSTALLATION.en.md** : Mise à jour de la version
+- Correction des références de version dans tous les exemples
 
 ---
 
 ## [3.1.0] - 2025-10-16
 
-### 🎉 Version Majeure - Interface Complète 8 Pages
+### ✨ Nouvelles fonctionnalités
 
-**Cette version intègre TOUTES les fonctionnalités de la v2.5 dans l'architecture moderne de la v3.0.1**
+#### Interface Web
+- Interface moderne et responsive avec design professionnel
+- 8 pages thématiques : Dashboard, Tests, Mémoire, WiFi, GPIO, Benchmarks, Exportation, À propos
+- Sélecteur de langue FR/EN avec mémorisation
+- Animations et transitions fluides
+- Mode sombre élégant avec dégradés
 
-### ✨ Nouvelles Fonctionnalités Majeures
-
-#### Interface Web Complète
-- **8 pages fonctionnelles** au lieu de 3
-- Navigation par onglets améliorée
-- Design glassmorphism conservé
-- Responsive mobile/tablette/desktop
-
-#### Page 2: LEDs (NOUVEAU)
-- **LED Intégrée (GPIO 97)**
-  - Allumer/Éteindre
-  - Clignotement (5x)
-  - Test rapide
-  - Effet fade PWM
-- **NeoPixel (GPIO 48)**
-  - Motifs: Rainbow, Pulse, Strobe
-  - Couleur RGB personnalisée
-  - Contrôle en temps réel
-
-#### Page 3: Écrans (NOUVEAU)
-- **Écran TFT 320x240 SPI**
-  - Configuration CS:14, DC:47, RST:21
-  - Boutons: Test, Couleurs, Damier, Effacer
-  - Prêt pour connexion matérielle
-- **Écran OLED 0.96" I2C**
-  - Auto-détection 0x3C/0x3D
-  - Configuration SDA/SCL modifiable
-  - Test complet + message personnalisé
-
-#### Page 4: Tests Avancés (NOUVEAU)
-- **Test ADC**: 10 canaux (GPIO 1-10)
-- **Test Touch Pads**: 14 pads sur ESP32-S3
-- **Test PWM**: 4 canaux, 5kHz, 8 bits
-- **Bus SPI**: Scan SPI2, SPI3
-- **Partitions Flash**: Liste complète avec adresses
-- **Stress Test Mémoire**: Test intensif RAM
-
-#### Page 5: GPIO (NOUVEAU)
-- Test complet **26 GPIO**
-- Vérification Input/Output
-- Test HIGH/LOW
-- Tableau récapitulatif détaillé
-
-#### Page 6: Scanner WiFi (NOUVEAU)
-- Scan réseaux disponibles
-- SSID, Signal, Canal, Qualité, Sécurité
-- Tri par puissance signal
-- Interface claire et lisible
-
-#### Page 7: Performance (NOUVEAU)
-- **CPU Benchmark**: 1M opérations, MFLOPS
-- **Memory Benchmark**: Test 10KB, MB/s
-- **Flash Benchmark**: Lecture/écriture
-
-#### Page 8: Export (AMÉLIORÉ)
-- **Format TXT** (NOUVEAU): Rapport texte structuré
-- **Format JSON** (existant)
-- **Format CSV** (existant)
-- **Version Imprimable PDF** (NOUVEAU): print()
-
-### 🔧 Nouveaux Endpoints API
-
-#### LEDs
-- `POST /api/led/builtin` - Contrôle LED intégrée
-
-#### Tests Avancés
-- `GET /api/test/gpio` - Test GPIO complet
-- `GET /api/test/adc` - Test ADC tous canaux
-- `GET /api/test/touch` - Test Touch Pads
-- `GET /api/test/pwm` - Test PWM canaux
-
-#### Scanner & Benchmark
-- `GET /api/scan/wifi` - Scanner réseaux
-- `GET /api/benchmark` - Benchmarks performance
-
-#### Export
-- `GET /api/export/txt` - Export texte (NOUVEAU)
-
-### 📊 Améliorations Interface
-
-- Navigation 8 onglets au lieu de 3
-- Boutons colorés par catégorie
-- Icônes emoji intuitives
-- Grilles export en 4 colonnes
-- Animations fluides optimisées
-
-### 🔐 Sécurité & Configuration
-
-- Système Multi-WiFi conservé v3.0.1
-- Fichier config.h protégé (.gitignore)
-- exemple-config.h template sûr
-
-### ⚡ Performance
-
-- Optimisation buffers JSON
-- Gestion async requêtes API
-- Cache navigateur optimisé
-
-### 🐛 Corrections
-
-- Fix affichage OLED basé scan I2C
-- Fix responsive tabs overflow mobile
-- Fix progression bar countdown
-- Fix détection NeoPixel disponible
-- Fix ordre définition handlers API
-- Fix tailles optimales buffers JSON
-
-### 📦 Fichiers Modifiés
-
-- `ESP32-Diagnostic.ino` → v3.1.0
-- `api_handlers.h` → v3.1.0 (tous endpoints)
-- `web_interface.h` → v3.1.0 (8 pages complètes)
-- `test_functions.h` → v3.0.1 (inchangé)
-- `translations.h` → v3.0.1 (inchangé)
-
-### 🎯 Points Forts v3.1.0
-
-✅ **100% des fonctionnalités v2.5** intégrées  
-✅ **Architecture moderne v3.0.1** conservée  
-✅ **Multi-WiFi support** maintenu  
-✅ **Arduino Core 3.3.2** optimisations  
-✅ **8 pages complètes** fonctionnelles  
-✅ **Design glassmorphism** magnifique  
-✅ **Traductions FR/EN** complètes  
-✅ **Export 4 formats** (TXT, JSON, CSV, PDF)  
-
----
-
-## [3.0.1] - 2025-10-16
-
-### ⚡ Améliorations Majeures
-
-#### Upgrade Arduino Core
-- **Arduino Core ESP32 3.1.3 → 3.3.2**
-- Support optimisations Espressif
-- Stabilité WiFi améliorée
-- API heap capabilities améliorées
-
-#### Multi-WiFi Support ✨ NOUVEAU
-- **WiFiMulti intégré**: Support plusieurs réseaux
-- **Basculement automatique**: Essaie chaque réseau
-- **Flexible**: Maison, bureau, déplacement
-- **Fallback AP**: Mode Point d'Accès si échec
-
-#### Système Configuration Sécurisé
-- **exemple-config.h**: Template public (safe Git)
-- **config.h**: Configuration privée (ignorée Git)
-- **.gitignore**: Protection automatique
-
-#### Optimisations Mémoire (Core 3.3.2)
-- `heap_caps_get_free_size()` précision
-- `heap_caps_get_minimum_free_size()` tracking
-- `heap_caps_get_largest_free_block()` fragmentation
-- Analyse fragmentation pourcentage
-- Support OPI PSRAM ESP32-S3
-
-#### Nouvelles Métriques (12 au total)
-
-**Mémoire:**
-- Heap libre minimale depuis boot
-- Plus grand bloc libre
-- Pourcentage fragmentation
-
-**WiFi:**
-- Canal WiFi utilisé
-- Adresse Gateway
-- Serveur DNS
-- Masque sous-réseau
-- Qualité signal (Excellent/Good/Fair/Weak)
-
-**Système:**
-- Raison dernier reset
-- Version ESP-IDF
-- Vitesse puce Flash
-- Statut santé système global
-
----
-
-## [3.0.0] - 2025-10-10
-
-### 🎉 Version Initiale
-
-#### Fonctionnalités Principales
-- Interface web dynamique temps réel
-- Design glassmorphism moderne
-- Navigation par onglets
-- Système traduction FR/EN intégré
+#### API REST
+- 18 endpoints REST complets
+- Support CORS pour développement cross-origin
 - Export JSON et CSV
-- Animations transitions fluides
+- Gestion multilingue via API
 
-#### Architecture
-- Structure modulaire 5 fichiers
-- API REST complète
-- Système traduction intégré
-- WebServer optimisé
+#### Système NeoPixel
+- Support LED NeoPixel WS2812B
+- Contrôle couleurs RGB via API
+- Patterns prédéfinis (blink, fade, rainbow, test)
+- Indicateurs visuels d'état système
 
-#### Support Matériel
-- ESP32-S2, ESP32-S3, ESP32-C3
-- Arduino Core ESP32 3.1.3+
-- PSRAM optionnel
+#### Tests Hardware
+- Tests GPIO complets
+- Tests PWM avec nouvelle API
+- Scan WiFi avec détails réseaux
+- Benchmarks performance (CPU, mémoire)
+- Tests capteurs internes
 
----
+### 🔧 Améliorations
 
-## 🔄 Migration Entre Versions
+#### Performance
+- Optimisation mémoire pour ESP32-S3
+- Gestion efficace des buffers JSON
+- Réduction latence serveur web
 
-### De v3.0.1 vers v3.1.0
+#### Compatibilité
+- Support ESP32 Core 3.x
+- Compatible ESP32, ESP32-S2, ESP32-S3, ESP32-C3
+- Détection automatique PSRAM
 
-**✅ Compatible** - Aucun changement non rétrocompatible
-
-**Étapes:**
-1. Remplacer tous fichiers par v3.1.0
-2. Conserver votre `config.h` existant
-3. Compiler et téléverser
-4. Profiter des 8 pages ! 🎉
-
-**Améliorations visibles:**
-- 5 nouveaux onglets interface
-- Contrôles LEDs opérationnels
-- Tests avancés fonctionnels
-- Scanner WiFi actif
-- Benchmarks disponibles
-- Export TXT ajouté
-
-### De v2.5 vers v3.1.0
-
-**⚠️ Changements Importants**
-
-**Étapes:**
-1. Mettre à jour Arduino Core → 3.3.2+
-2. Créer `config.h` depuis `exemple-config.h`
-3. Configurer Multi-WiFi (recommandé)
-4. Remplacer tous fichiers
-5. Compiler et téléverser
+#### Documentation
+- README complet en FR et EN
+- Guide d'installation détaillé
+- Structure projet documentée
+- Exemples API REST
 
 ---
 
-## 🗺️ Roadmap Future
+## [3.0.0] - 2025-10-15
 
-### v3.2.0 (Prévu - T1 2026)
-- [ ] Graphiques temps réel Chart.js
-- [ ] Historique métriques (SPIFFS)
-- [ ] Alertes configurables
-- [ ] Support capteurs I2C (BME280, DHT22)
-- [ ] Mode dark/light toggle
-- [ ] API WebSocket latence réduite
+### ✨ Version initiale
 
-### v3.3.0 (Prévu - T2 2026)
-- [ ] Dashboard personnalisable (drag & drop)
-- [ ] Plugins capteurs tiers
-- [ ] Export automatique planifié (CRON)
-- [ ] Notifications push
-- [ ] Logs système rotation
+#### Fonctionnalités de base
+- Système de diagnostic ESP32
+- Interface web basique
+- Informations système
+- Tests hardware simples
+- Export de données
 
-### v4.0.0 (Futur - T3 2026)
-- [ ] Refonte complète React/Vue.js
-- [ ] Application mobile (Flutter)
-- [ ] Cloud sync optionnel (MQTT/HTTP)
-- [ ] Monitoring multi-ESP32 réseau
-- [ ] OTA Update via interface
+#### Compatibilité
+- ESP32 classique
+- Support WiFi basique
+- Moniteur série
 
 ---
 
-## 📝 Notes Importantes
+## 🔗 Liens
 
-### Compatibilité Hardware
-
-**✅ Testé et validé:**
-- ESP32-S3 (8MB Flash, OPI PSRAM) - Excellent
-- ESP32-S3 (4MB Flash, QSPI PSRAM) - Bon
-- ESP32-S2 (4MB Flash) - Bon
-
-**⚠️ Compatible non testé:**
-- ESP32-C3, ESP32-C6, ESP32-H2
-
-**❌ Non compatible:**
-- ESP32 classique (manque fonctionnalités Core 3.3.2)
+- **Documentation** : [README.md](README.md)
+- **Installation** : [INSTALLATION.md](INSTALLATION.md)
+- **Structure** : [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
+- **Repository** : [GitHub](https://github.com/votre-username/ESP32-Diagnostic)
 
 ---
 
-## 📄 Licence
+## 📌 Convention de versionnement
 
-MIT License - Utilisation, modification et distribution libres
+Ce projet suit le [Versioning Sémantique](https://semver.org/lang/fr/) :
+
+- **MAJOR** (X.0.0) : Changements incompatibles avec les versions précédentes
+- **MINOR** (0.X.0) : Ajout de fonctionnalités compatibles avec les versions précédentes
+- **PATCH** (0.0.X) : Corrections de bugs compatibles avec les versions précédentes
+
+### Types de changements
+
+- ✨ **Nouvelles fonctionnalités** : Ajout de nouvelles capacités
+- 🔧 **Améliorations** : Optimisations et améliorations
+- 🐛 **Correctifs** : Corrections de bugs
+- 🔒 **Sécurité** : Correctifs de vulnérabilités
+- 📝 **Documentation** : Mises à jour de la documentation
+- ⚠️ **Déprécié** : Fonctionnalités bientôt supprimées
+- 🗑️ **Supprimé** : Fonctionnalités supprimées
 
 ---
 
-## ⭐ Remerciements
-
-- **Espressif Systems** pour plateforme ESP32
-- **Adafruit** pour bibliothèque NeoPixel
-- **Communauté Arduino** pour support
-- **Tous les testeurs** v3.1.0
-
----
-
-**Dernière mise à jour:** 16 Octobre 2025  
-**Version actuelle:** 3.1.0  
-**Prochaine version:** 3.2.0 (T1 2026)
-
----
-
-*Pour signaler un bug ou suggérer une fonctionnalité, créez une issue sur le dépôt GitHub.*
-
-**[🇬🇧 English Version](CHANGELOG.en.md)**
+**Dernière mise à jour** : 17 octobre 2025  
+**Version actuelle** : 3.1.1

@@ -1,327 +1,309 @@
-# Diagnostic ESP32 Complet v3.1.0 - Interface Complète
+# 📟 ESP32 Diagnostic System v3.2.0
+
+[🇬🇧 Read in English](README.en.md) | [📦 Installation](INSTALLATION.md) | [📋 Changelog](CHANGELOG.md) | [🏗️ Structure](PROJECT_STRUCTURE.md)
+
+---
 
 <div align="center">
 
-[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.md)
-[![en](https://img.shields.io/badge/lang-en-red.svg)](README.en.md)
+![Version](https://img.shields.io/badge/version-3.2.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Arduino](https://img.shields.io/badge/Arduino-Compatible-cyan.svg)
+![ESP32](https://img.shields.io/badge/ESP32-All%20Models-orange.svg)
 
-![ESP32](https://img.shields.io/badge/ESP32-Compatible-green)
-![Version](https://img.shields.io/badge/version-3.1.0-blue)
-![Core](https://img.shields.io/badge/Arduino%20Core-3.3.2+-orange)
-![License](https://img.shields.io/badge/license-MIT-orange)
+**Système de diagnostic complet pour ESP32 avec interface web moderne et multilingue**
 
-**[🇬🇧 Read in English](README.en.md)**
+[Démarrage rapide](#-démarrage-rapide) • [Fonctionnalités](#-fonctionnalités) • [Documentation](#-documentation) • [Support](#-support)
 
 </div>
 
 ---
 
-## 📋 Description
+## 🎉 Nouveautés v3.2.0
 
-Outil de diagnostic exhaustif **multilingue** pour microcontrôleurs ESP32, accessible via interface web moderne. **8 pages complètes fonctionnelles** incluant contrôle LEDs, tests écrans, tests hardware avancés, scanner WiFi, benchmarks performance, et exports multi-formats.
+- ✨ **WiFi Multi-SSID** : Connexion automatique à plusieurs réseaux WiFi
+- 🔧 **Configuration séparée** : Fichiers wifi-config.h et config.h
+- 🔒 **Sécurité renforcée** : Fichiers sensibles exclus de Git
+- 📌 **Pins configurables** : Configuration matérielle centralisée
+- 🔄 **Reconnexion auto** : Maintien de la connexion WiFi
 
-**Nouveau v3.1.0** : Intégration complète de **TOUTES les fonctionnalités v2.5** dans l'architecture moderne v3.0.1 avec **8 pages web totalement fonctionnelles**.
+---
+
+## 📋 Table des matières
+
+- [Vue d'ensemble](#-vue-densemble)
+- [Fonctionnalités](#-fonctionnalités)
+- [Démarrage rapide](#-démarrage-rapide)
+- [Configuration](#-configuration)
+- [Interface Web](#-interface-web)
+- [API REST](#-api-rest)
+- [Matériel Compatible](#-matériel-compatible)
+- [Documentation](#-documentation)
+- [Support](#-support)
+
+---
+
+## 🌟 Vue d'ensemble
+
+ESP32 Diagnostic System est un outil professionnel de diagnostic et de test pour cartes ESP32. Il offre :
+
+- 🖥️ **Interface web moderne** responsive et intuitive
+- 🌍 **Support multilingue** français/anglais
+- 🧪 **Tests hardware complets** GPIO, PWM, I2C, WiFi, Mémoire
+- 📊 **Monitoring en temps réel** système et capteurs
+- 📡 **WiFi Multi-SSID** connexion automatique intelligente
+- 💾 **Export de données** JSON et CSV
+- ⚡ **Benchmarks** performance CPU et mémoire
+- 🎨 **Support NeoPixel** indicateurs visuels LED RGB
 
 ---
 
 ## ✨ Fonctionnalités
 
-### 🌐 Interface Complète - 8 Pages
+### 🌐 Connectivité
 
-#### 1️⃣ **Vue d'ensemble** 📊
-- Informations système temps réel
-- État mémoire Heap/PSRAM
-- Détails connexion WiFi
-- Mise à jour auto toutes les 5 secondes
+- **WiFi Multi-SSID** avec WiFiMulti
+  - Support de plusieurs réseaux (illimité)
+  - Connexion automatique au réseau le plus fort
+  - Ordre de priorité configurable
+  - Reconnexion automatique en cas de perte
+- **Mode Point d'Accès** failover automatique
+- **mDNS** accès simplifié (esp32-diag.local)
+- **CORS** développement cross-origin
 
-#### 2️⃣ **LEDs** 💡 ✨ NOUVEAU
-**LED Intégrée (GPIO 97)**
-- Contrôle On/Off
-- Clignotement (5x)
-- Test rapide
-- Effet fade PWM
+### 🧪 Tests Hardware
 
-**NeoPixel (GPIO 48)**
-- Motifs : Rainbow, Pulse, Strobe
-- Sélecteur couleur RGB personnalisé
-- Contrôle temps réel
+- **GPIO** : Test de toutes les pins configurables
+- **PWM** : Test des sorties PWM (API ESP32 Core 3.x)
+- **I2C** : Scan des périphériques I2C
+- **ADC** : Test des entrées analogiques
+- **Mémoire** : Analyse Heap et PSRAM
+- **WiFi** : Scanner de réseaux avec détails
+- **Capteurs** : Support température interne
 
-#### 3️⃣ **Écrans** 🖥️ ✨ NOUVEAU
-**TFT 320x240 SPI**
-- Configuration : CS:14, DC:47, RST:21
-- Boutons test : Complet, Couleurs, Motif, Effacer
-- Prêt connexion matérielle
+### 📊 Interface Web
 
-**OLED 0.96" I2C**
-- Auto-détection 0x3C/0x3D
-- Pins SDA/SCL configurables
-- Test complet + affichage message personnalisé
+- **8 pages thématiques** :
+  - 📊 Dashboard : Vue d'ensemble système
+  - 🧪 Tests : Tous les tests hardware
+  - 💾 Mémoire : Analyse détaillée RAM/PSRAM
+  - 📡 WiFi : Informations et scan réseaux
+  - 🔌 GPIO : Configuration et tests pins
+  - ⚡ Benchmarks : Tests de performance
+  - 💾 Export : Exportation JSON/CSV
+  - ℹ️ À propos : Informations projet
 
-#### 4️⃣ **Tests Avancés** 🧪 ✨ NOUVEAU
-- **Test ADC** - 10 canaux (GPIO 1-10)
-- **Test Touch Pads** - 14 pads (ESP32-S3)
-- **Test PWM** - 4 canaux, 5kHz
-- **Bus SPI** - Détection SPI2, SPI3
-- **Partitions Flash** - Liste complète
-- **Stress Test Mémoire** - Test intensif RAM
+- **Design moderne** :
+  - Mode sombre avec dégradés
+  - Responsive mobile-friendly
+  - Animations fluides
+  - Auto-refresh 5 secondes
 
-#### 5️⃣ **GPIO** 📌 ✨ NOUVEAU
-- Test complet **26 GPIO**
-- Vérification Input/Output
-- Test HIGH/LOW
-- Tableau statut détaillé
+### 🔧 Configuration
 
-#### 6️⃣ **Scanner WiFi** 📶 ✨ NOUVEAU
-- Scan réseaux disponibles
-- Affichage : SSID, Signal, Canal, Qualité, Sécurité
-- Tri par puissance signal
-- Évaluation qualité signal
+- **Fichiers séparés sécurisés** :
+  - `wifi-config.h` : Identifiants WiFi multi-SSID
+  - `config.h` : Configuration pins matérielles
+  - Exclusion automatique de Git
+- **Configuration optionnelle** :
+  - NeoPixel WS2812B
+  - Écran OLED I2C
+  - Capteurs température (DHT22, DS18B20, BME280)
+  - Buzzer et boutons
+- **Pins configurables** :
+  - Arrays GPIO/PWM/ADC personnalisables
+  - Support tous modèles ESP32
 
-#### 7️⃣ **Performance** ⚡ ✨ NOUVEAU
-**Benchmarks :**
-- Benchmark CPU (1M opérations, MFLOPS)
-- Benchmark Mémoire (10KB, MB/s)
-- Benchmark Flash (vitesse lecture/écriture)
+### 📡 API REST
 
-#### 8️⃣ **Export** 💾 (Amélioré)
-- **Format TXT** ✨ NOUVEAU - Rapport texte structuré
-- **Format JSON** - Données structurées
-- **Format CSV** - Compatible Excel
-- **PDF Imprimable** ✨ NOUVEAU - Fonction print navigateur
+18 endpoints complets :
 
-### 🌐 Interface Multilingue
-- **Français** (langue par défaut)
-- **Anglais**
-- Changement dynamique boutons FR/EN
-- Traductions complètes tous éléments UI
+**Système**
+- `GET /api/system/info` - Informations système complètes
+- `GET /api/system/memory` - Détails mémoire Heap/PSRAM
+- `GET /api/system/wifi` - Informations WiFi détaillées
 
-### 📡 Connectivité Multi-Réseau
-- **Support Multi-WiFi** - Plusieurs réseaux WiFi
-- **Basculement Automatique** - Essaie chaque réseau
-- **Flexible** - Maison, bureau, déplacement
-- **Mode AP Fallback** - Point d'accès si échec
+**Tests**
+- `GET /api/tests` - Tous les tests hardware
+- `GET /api/tests/gpio` - Test GPIO uniquement
+- `GET /api/tests/pwm` - Test PWM uniquement
+- `POST /api/tests/run` - Exécuter test spécifique
 
-### 🎨 Design Moderne
-- **Glassmorphism** avec transparence et flou
-- **Dégradés animés** violet/bleu
-- **Animations fluides** sur tous éléments
-- **Interface responsive** mobile/tablette/desktop
-
----
-
-## 🚀 Démarrage Rapide
-
-### Prérequis
-- **ESP32** (ESP32-S2, ESP32-S3, ou ESP32-C3)
-- **Arduino IDE 2.x** ou PlatformIO
-- **Arduino Core ESP32 v3.3.2+** ⚡ (minimum requis)
-- Navigateur web moderne
-
-### Installation
-
-1. **Installer ESP32 Board Manager v3.3.2+**
-2. **Installer bibliothèques** (Adafruit NeoPixel, ArduinoJson 6.x)
-3. **Créer config.h** depuis exemple-config.h
-4. **Configurer WiFi** (Multi-WiFi recommandé)
-5. **Compiler et téléverser**
-6. **Accéder** : http://esp32-diagnostic.local
-
-📖 **[Guide d'installation complet](INSTALLATION.md)**
-
----
-
-## 📊 Comparaison Versions
-
-| Fonctionnalité | v2.5 | v3.0.1 | v3.1.0 |
-|----------------|------|--------|--------|
-| Pages interface | 8 | 3 | **8** ✅ |
-| LED intégrée | ✅ | ❌ | **✅** |
-| NeoPixel | ✅ | ✅ | **✅** |
-| Écrans TFT/OLED | ✅ | ❌ | **✅** |
-| Tests ADC/Touch/PWM | ✅ | ❌ | **✅** |
-| Scanner WiFi | ✅ | ❌ | **✅** |
-| Benchmarks | ✅ | ❌ | **✅** |
-| Export TXT | ✅ | ❌ | **✅** |
-| Multi-WiFi | ❌ | ✅ | **✅** |
-| Arduino Core | 3.1.3 | 3.3.2 | **3.3.2** |
-| Design moderne | ⚠️ | ✅ | **✅** |
-| Traductions FR/EN | ⚠️ | ✅ | **✅** |
-
-**Résultat :** v3.1.0 = **TOUTES** fonctionnalités v2.5 + améliorations v3.0.1 🎉
-
----
-
-## 🆕 Nouveautés v3.1.0
-
-### Interface Complète - 8 Pages
-- ✨ **5 nouvelles pages** ajoutées
-- ✨ Contrôle LED intégrée (GPIO 97)
-- ✨ Contrôle NeoPixel RGB (GPIO 48)
-- ✨ Tests écrans TFT/OLED
-- ✨ Test ADC (10 canaux)
-- ✨ Test Touch Pads (14 pads)
-- ✨ Test PWM (4 canaux)
-- ✨ Scanner réseaux WiFi
-- ✨ Benchmarks performance
-- ✨ Format export TXT ajouté
-
----
-
-## 🌐 Endpoints API
-
-### Système
-- `GET /api/system` - Informations système
-- `GET /api/tests` - Tous tests hardware
+**Configuration**
 - `GET /api/language` - Langue actuelle
-- `POST /api/language` - Changer langue
+- `POST /api/language` - Changer la langue
 
-### LEDs (NOUVEAU v3.1.0)
-- `POST /api/led/builtin` - Contrôle LED intégrée
-- `POST /api/neopixel/pattern` - Motif NeoPixel
-- `POST /api/neopixel/color` - Couleur RGB personnalisée
+**Export**
+- `GET /api/export/json` - Exporter en JSON
+- `GET /api/export/csv` - Exporter en CSV
 
-### Tests Avancés (NOUVEAU v3.1.0)
-- `GET /api/test/gpio` - Test GPIO complet
-- `GET /api/test/adc` - Test ADC 10 canaux
-- `GET /api/test/touch` - Test Touch Pads
-- `GET /api/test/pwm` - Test PWM
+**NeoPixel**
+- `POST /api/neopixel/pattern` - Contrôle patterns
+- `POST /api/neopixel/color` - Contrôle couleur RGB
 
-### Scanner & Benchmark (NOUVEAU v3.1.0)
-- `GET /api/scan/wifi` - Scanner réseaux
-- `GET /api/benchmark` - Benchmarks performance
-
-### Export
-- `GET /api/export/txt` - Export texte (NOUVEAU)
-- `GET /api/export/json` - Export JSON
-- `GET /api/export/csv` - Export CSV
+**Avancé**
+- `GET /api/sensors` - Lecture capteurs
+- `POST /api/wifi/scan` - Scanner réseaux WiFi
+- `GET /api/benchmark` - Tests performance
 
 ---
 
-## 🔧 Configuration
+## 🚀 Démarrage rapide
 
-### Pins GPIO
-```cpp
-#define BUILTIN_LED_PIN 97    // LED intégrée
-#define NEOPIXEL_PIN 48       // NeoPixel
-#define TFT_CS 14             // TFT
-#define OLED_SDA 21           // OLED
+### Installation en 5 minutes
+
+```bash
+# 1. Cloner le projet
+git clone https://github.com/votre-username/ESP32-Diagnostic.git
+cd ESP32-Diagnostic
+
+# 2. Configurer WiFi
+cp exemple-wifi-config.h wifi-config.h
+# Éditer wifi-config.h avec vos identifiants
+
+# 3. Configurer matériel
+cp exemple-config.h config.h
+# Éditer config.h selon votre carte
+
+# 4. Ouvrir dans Arduino IDE
+# Ouvrir ESP32-Diagnostic.ino
+
+# 5. Compiler et téléverser
+# Sélectionner votre carte ESP32
+# Cliquer sur Upload
 ```
 
-### Intervalle Mise à Jour
+### Premier lancement
+
+1. Ouvrir le **Moniteur Série** (115200 bauds)
+2. Noter l'**adresse IP** affichée
+3. Ouvrir un navigateur : `http://ADRESSE-IP`
+4. Profiter de l'interface ! 🎉
+
+---
+
+## ⚙️ Configuration
+
+### Configuration WiFi Multi-SSID
+
+Éditer `wifi-config.h` :
+
 ```cpp
-const unsigned long UPDATE_INTERVAL = 5000; // 5 secondes
+const WiFiCredentials wifiNetworks[] = {
+  {"WiFi-Maison", "motdepasse-maison"},
+  {"WiFi-Bureau", "motdepasse-bureau"},
+  {"Hotspot-Mobile", "motdepasse-mobile"},
+};
+```
+
+### Configuration Matérielle
+
+Éditer `config.h` :
+
+```cpp
+// LED interne
+#define LED_BUILTIN_PIN 2
+
+// NeoPixel (optionnel)
+#define USE_NEOPIXEL
+#define NEOPIXEL_PIN 48
+#define NEOPIXEL_COUNT 1
+
+// OLED (optionnel)
+#define USE_OLED
+#define OLED_SDA_PIN 21
+#define OLED_SCL_PIN 22
+
+// GPIO à tester
+const int TEST_GPIO_PINS[] = {1, 2, 3, 4, 5};
 ```
 
 ---
 
-## 🛠️ Support Matériel
+## 💻 Matériel Compatible
 
-### Testé & Validé
-- ✅ ESP32-S3 (8MB Flash, OPI PSRAM) - Excellent
-- ✅ ESP32-S2 (4MB Flash) - Bon
+### Cartes ESP32
 
-### Compatible Non Testé
-- ⚠️ ESP32-C3, C6, H2
+| Modèle | Cores | PSRAM | Bluetooth | Status |
+|--------|-------|-------|-----------|--------|
+| ESP32 | 2 | ❌ | ✅ | ✅ Testé |
+| ESP32-S2 | 1 | ❌ | ❌ | ✅ Testé |
+| ESP32-S3 | 2 | ✅ 8MB | ✅ | ✅ Recommandé |
+| ESP32-C3 | 1 | ❌ | ✅ | ✅ Testé |
+| ESP32-C6 | 1 | ❌ | ✅ | ⚠️ Non testé |
+| ESP32-H2 | 1 | ❌ | ✅ | ⚠️ Non testé |
 
-### Configuration Mémoire Recommandée
-- **Minimum** : Flash 4MB, Heap libre 100KB+
-- **Recommandé** : Flash 8MB, PSRAM 8MB (OPI)
+### Composants Optionnels
 
----
-
-## 📖 Documentation
-
-- **[Guide d'Installation](INSTALLATION.md)** - Guide complet pas à pas
-- **[Changelog](CHANGELOG.md)** - Historique versions
-- **[Structure Projet](PROJECT_STRUCTURE.md)** - Vue architecture
-- **[🇬🇧 English Installation](INSTALLATION.en.md)**
-- **[🇬🇧 English Changelog](CHANGELOG.en.md)**
-- **[🇬🇧 English Structure](PROJECT_STRUCTURE.en.md)**
+- 💡 **NeoPixel WS2812B** : Indicateur LED RGB
+- 🖥️ **OLED 128x64** : Affichage local (I2C)
+- 🌡️ **Capteurs** : DHT22, DS18B20, BME280
+- 🔊 **Buzzer** : Alertes sonores
+- 🔘 **Boutons** : Contrôles physiques
 
 ---
 
-## 🔍 Dépannage
+## 📚 Documentation
 
-### ESP32 ne se connecte pas au WiFi
-✅ Vérifier identifiants dans `config.h`  
-✅ WiFi 2.4GHz uniquement (pas 5GHz)  
-✅ Mode AP activé automatiquement en échec  
-
-### Interface ne charge pas
-✅ Vider cache navigateur (Ctrl+Shift+R)  
-✅ Vérifier adresse IP dans Moniteur Série  
-✅ Essayer http://192.168.x.x au lieu de .local  
-
-### LEDs ne fonctionnent pas
-✅ Vérifier configuration GPIO  
-✅ NeoPixel nécessite alimentation suffisante  
-✅ LED intégrée sur GPIO 97 (ESP32-S3)  
+- 📦 [Guide d'Installation](INSTALLATION.md) - Installation complète pas à pas
+- 🇬🇧 [Installation Guide (EN)](INSTALLATION.en.md) - English version
+- 📋 [Changelog](CHANGELOG.md) - Historique des versions
+- 🏗️ [Structure du Projet](PROJECT_STRUCTURE.md) - Architecture détaillée
+- 🌐 [README English](README.en.md) - English documentation
 
 ---
 
-## 🤝 Contribution
+## 🤝 Support
 
-Les contributions sont les bienvenues ! N'hésitez pas à soumettre une Pull Request.
+### Problèmes courants
+
+**WiFi ne se connecte pas** :
+- Vérifier SSID/mot de passe dans `wifi-config.h`
+- ESP32 supporte uniquement 2.4GHz (pas de 5GHz)
+- Vérifier que le réseau n'a pas de filtrage MAC
+
+**Erreur de compilation** :
+- Installer ESP32 Board Package 3.1.3+
+- Installer ArduinoJson 6.x (PAS v7)
+- Vérifier que tous les fichiers sont présents
+
+**Interface web ne charge pas** :
+- Vérifier Partition Scheme inclut SPIFFS
+- Vider le cache navigateur (Ctrl+F5)
+- Essayer un autre navigateur
+
+### Aide et Contributions
+
+- 🐛 [Signaler un bug](https://github.com/votre-username/ESP32-Diagnostic/issues)
+- 💡 [Proposer une fonctionnalité](https://github.com/votre-username/ESP32-Diagnostic/issues)
+- 🤝 [Contribuer](CONTRIBUTING.md)
 
 ---
 
 ## 📄 Licence
 
-MIT License - Utilisation libre
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ---
 
-## 🗺️ Roadmap
+## 🙏 Remerciements
 
-### v3.2.0 (Prévu - T1 2026)
-- Graphiques temps réel Chart.js
-- Historique métriques
-- Alertes configurables
-- Support capteurs I2C
-
-### v4.0.0 (Futur - T3 2026)
-- Refonte React
-- App mobile
-- Cloud sync optionnel
-
----
-
-## 📊 Statistiques Projet
-
-**Version :** 3.1.0  
-**Date :** 16 Octobre 2025  
-**Lignes Code :** ~4500  
-**Fichiers :** 6  
-**Pages Interface :** 8  
-**Endpoints API :** 18  
-**Langues :** 2 (FR/EN)  
-
----
-
-## ✅ Checklist Installation
-
-- [ ] Arduino Core ESP32 3.3.2+ installé
-- [ ] Bibliothèques installées
-- [ ] config.h créé et configuré
-- [ ] Compilation sans erreur
-- [ ] Interface accessible
-- [ ] 8 onglets fonctionnels
+- Espressif pour le formidable SDK ESP32
+- Communauté Arduino pour les bibliothèques
+- Tous les contributeurs du projet
 
 ---
 
 <div align="center">
 
-**Version actuelle :** 3.1.0  
-**Arduino Core :** 3.3.2+  
-**Mise à jour :** 16 Octobre 2025  
+**Développé avec ❤️ pour la communauté ESP32**
 
-🌐 **Accès :** http://esp32-diagnostic.local  
-🇫🇷🇬🇧 **Langues :** Boutons FR/EN dans interface
+⭐ Si ce projet vous est utile, n'hésitez pas à lui donner une étoile !
+
+[⬆ Retour en haut](#-esp32-diagnostic-system-v320)
+
+</div># 📟 ESP32 Diagnostic System v3.1.1
+
+[🇬🇧 Read in English](README.en.md) | [📦 Installation](INSTALLATION.md) | [📋 Changelog](CHANGELOG.md) | [🏗️ Structure](PROJECT_STRUCTURE.md)
 
 ---
-
-Fait avec ❤️ pour la communauté ESP32
-
-**[🇬🇧 Read in English](README.en.md)**
-
-</div>

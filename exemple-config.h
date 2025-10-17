@@ -1,31 +1,16 @@
 /*
  * ============================================================
- * CONFIGURATION FILE EXAMPLE - ESP32 Diagnostic System
+ * ESP32 Diagnostic System - Main Configuration Template
+ * Version: 3.2.0
  * ============================================================
- *
- * Version: 3.0.1
- * Date: October 2025
- *
- * Description:
- *   WiFi configuration example file with Multi-WiFi support.
- *
- * IMPORTANT - INSTALLATION STEPS:
- *   1. Copy this file and rename it to "config.h"
- *   2. Edit "config.h" with your WiFi credentials
- *   3. DO NOT commit "config.h" to version control (already in .gitignore)
- *   4. Keep this "exemple-config.h" as template
- *
- * Usage:
- *   1. cp exemple-config.h config.h
- *   2. Edit config.h with your WiFi network details
- *   3. Configure single or multiple networks
- *   4. Save and upload to your ESP32
- *
- * Security:
- *   - config.h is in .gitignore (won't be committed)
- *   - exemple-config.h can be safely committed (no credentials)
- *   - Never share your config.h file
- *
+ * 
+ * INSTRUCTIONS:
+ * 1. Copier ce fichier vers "config.h"
+ * 2. Modifier les paramètres ci-dessous
+ * 3. NE PAS commiter config.h dans Git (ajouté au .gitignore)
+ * 
+ * NOTE: La configuration WiFi est maintenant dans wifi-config.h
+ * 
  * ============================================================
  */
 
@@ -33,112 +18,140 @@
 #define CONFIG_H
 
 // ============================================================
-// WiFi CONFIGURATION MODE
+// CONFIGURATION PINS HARDWARE
 // ============================================================
 
-// CHOOSE YOUR MODE:
-// Uncomment ONE of the following:
+// --- LED INTERNE ---
+#define LED_BUILTIN_PIN 2  // GPIO 2 (la plupart des ESP32)
 
-// Option A: Multi-WiFi (RECOMMENDED) - ESP32 tries multiple networks
-#define MULTI_WIFI_ENABLED
+// --- NEOPIXEL (Optionnel) ---
+// Décommenter pour activer le support NeoPixel
+// #define USE_NEOPIXEL
 
-// Option B: Single WiFi - Only one network
-// #define SINGLE_WIFI_ENABLED
-
-// ============================================================
-// MULTI-WiFi CONFIGURATION (Recommended)
-// ============================================================
-#ifdef MULTI_WIFI_ENABLED
-
-// Number of WiFi networks to try
-#define NUM_SSIDS 2
-
-// List of SSIDs (network names)
-const char* ssid_list[] = {
-  "VotreSSID1",       // First network to try
-  "VotreSSID2"        // Second network if first fails
-};
-
-// List of passwords (same order as SSIDs)
-const char* password_list[] = {
-  "MotDePasse1",      // Password for VotreSSID1
-  "MotDePasse2"       // Password for VotreSSID2
-};
-
-// You can add more networks by:
-// 1. Increasing NUM_SSIDS
-// 2. Adding entries to both arrays
-// Example for 3 networks:
-/*
-#define NUM_SSIDS 3
-const char* ssid_list[] = {"Home", "Office", "Mobile"};
-const char* password_list[] = {"pass1", "pass2", "pass3"};
-*/
-
-#endif // MULTI_WIFI_ENABLED
-
-// ============================================================
-// SINGLE WiFi CONFIGURATION (Simple mode)
-// ============================================================
-#ifdef SINGLE_WIFI_ENABLED
-
-// Single WiFi credentials
-const char* ssid = "VotreSSID";              // ← Your WiFi SSID
-const char* password = "VotreMotDePasse";    // ← Your WiFi password
-
-#endif // SINGLE_WIFI_ENABLED
-
-// ============================================================
-// ADVANCED WiFi SETTINGS (Optional)
-// ============================================================
-
-// Uncomment to use static IP instead of DHCP
-// #define USE_STATIC_IP
-
-#ifdef USE_STATIC_IP
-  IPAddress staticIP(192, 168, 1, 184);     // Your desired IP
-  IPAddress gateway(192, 168, 1, 1);        // Your router IP
-  IPAddress subnet(255, 255, 255, 0);       // Subnet mask
-  IPAddress dns1(8, 8, 8, 8);               // Primary DNS (Google)
-  IPAddress dns2(8, 8, 4, 4);               // Secondary DNS (Google)
+#ifdef USE_NEOPIXEL
+  #define NEOPIXEL_PIN 48          // GPIO 48 pour ESP32-S3
+  #define NEOPIXEL_COUNT 1         // Nombre de LEDs
+  #define NEOPIXEL_BRIGHTNESS 50   // Luminosité (0-255)
 #endif
 
-// WiFi connection timeout (seconds)
-#define WIFI_TIMEOUT 20
+// --- ÉCRAN OLED (Optionnel) ---
+// Décommenter pour activer le support OLED
+// #define USE_OLED
 
-// WiFi power settings
-// Options: WIFI_POWER_19_5dBm, WIFI_POWER_19dBm, WIFI_POWER_18_5dBm,
-//          WIFI_POWER_17dBm, WIFI_POWER_15dBm, WIFI_POWER_13dBm,
-//          WIFI_POWER_11dBm, WIFI_POWER_8_5dBm, WIFI_POWER_7dBm,
-//          WIFI_POWER_5dBm, WIFI_POWER_2dBm, WIFI_POWER_MINUS_1dBm
-#define WIFI_TX_POWER WIFI_POWER_19_5dBm  // Maximum power
+#ifdef USE_OLED
+  #define OLED_SDA_PIN 21          // Pin SDA I2C
+  #define OLED_SCL_PIN 22          // Pin SCL I2C
+  #define OLED_ADDR 0x3C           // Adresse I2C (0x3C ou 0x3D)
+  #define OLED_WIDTH 128           // Largeur en pixels
+  #define OLED_HEIGHT 64           // Hauteur en pixels
+#endif
+
+// --- CAPTEUR TEMPÉRATURE (Optionnel) ---
+// Décommenter pour activer un capteur de température
+// #define USE_TEMP_SENSOR
+
+#ifdef USE_TEMP_SENSOR
+  // DHT22
+  // #define TEMP_SENSOR_DHT22
+  // #define DHT_PIN 4
+  
+  // DS18B20
+  // #define TEMP_SENSOR_DS18B20
+  // #define DS18B20_PIN 4
+  
+  // BME280 (I2C)
+  // #define TEMP_SENSOR_BME280
+  // #define BME280_ADDR 0x76
+#endif
+
+// --- BUZZER (Optionnel) ---
+// #define USE_BUZZER
+#ifdef USE_BUZZER
+  #define BUZZER_PIN 25            // Pin du buzzer
+#endif
+
+// --- BOUTONS (Optionnel) ---
+// #define USE_BUTTONS
+#ifdef USE_BUTTONS
+  #define BUTTON1_PIN 0            // Bouton 1 (BOOT sur la plupart)
+  #define BUTTON2_PIN 35           // Bouton 2
+#endif
 
 // ============================================================
-// AP MODE CONFIGURATION (Fallback when WiFi fails)
+// CONFIGURATION TESTS HARDWARE
 // ============================================================
 
-const char* ap_ssid = "ESP32-Diagnostic";
-const char* ap_password = "12345678";  // Minimum 8 characters
+// --- PINS GPIO À TESTER ---
+// Modifier selon votre câblage
+const int TEST_GPIO_PINS[] = {
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
+  11, 12, 13, 14, 15, 16, 17, 18
+};
+const int TEST_GPIO_COUNT = sizeof(TEST_GPIO_PINS) / sizeof(int);
 
-// AP IP configuration
-IPAddress ap_local_IP(192, 168, 4, 1);
-IPAddress ap_gateway(192, 168, 4, 1);
-IPAddress ap_subnet(255, 255, 255, 0);
+// --- PINS PWM À TESTER ---
+const int TEST_PWM_PINS[] = {25, 26, 27};
+const int TEST_PWM_COUNT = sizeof(TEST_PWM_PINS) / sizeof(int);
+
+// --- PINS ADC À TESTER ---
+const int TEST_ADC_PINS[] = {32, 33, 34, 35, 36, 39};
+const int TEST_ADC_COUNT = sizeof(TEST_ADC_PINS) / sizeof(int);
 
 // ============================================================
-// INSTALLATION REMINDER
+// CONFIGURATION SERVEUR WEB
+// ============================================================
+
+#define WEB_SERVER_PORT 80         // Port du serveur web
+#define DEFAULT_LANGUAGE "fr"       // Langue par défaut ("fr" ou "en")
+#define AUTO_REFRESH_INTERVAL 5000  // Auto-refresh interface (ms)
+
+// ============================================================
+// CONFIGURATION SYSTÈME
+// ============================================================
+
+#define DEBUG_MODE true             // Activer les logs debug
+#define SERIAL_BAUD_RATE 115200     // Vitesse du port série
+
+// ============================================================
+// PARAMÈTRES AVANCÉS
+// ============================================================
+
+#define JSON_BUFFER_SIZE 4096       // Taille buffer JSON
+#define ENABLE_CORS true            // Activer CORS pour dev
+
+// ============================================================
+// CONFIGURATION PAR MODÈLE ESP32
 // ============================================================
 
 /*
- * ⚠️ REMINDER: This is the EXAMPLE file
- *
- * To use this project:
- * 1. Copy this file: cp exemple-config.h config.h
- * 2. Edit config.h with your credentials
- * 3. config.h will NOT be tracked by Git (.gitignore)
- * 4. You can safely commit exemple-config.h
- *
- * Don't modify this exemple-config.h with real credentials!
+ * ESP32 Classique:
+ * - LED_BUILTIN_PIN: 2
+ * - NEOPIXEL_PIN: 16 (recommandé)
+ * - OLED: SDA=21, SCL=22
+ * - Pas de PSRAM par défaut
+ * 
+ * ESP32-S2:
+ * - LED_BUILTIN_PIN: 15
+ * - NEOPIXEL_PIN: 18 (recommandé)
+ * - OLED: SDA=8, SCL=9
+ * - Pas de Bluetooth
+ * 
+ * ESP32-S3:
+ * - LED_BUILTIN_PIN: 48 (varie selon carte)
+ * - NEOPIXEL_PIN: 48 (recommandé)
+ * - OLED: SDA=21, SCL=22
+ * - PSRAM disponible (8MB sur certaines cartes)
+ * 
+ * ESP32-C3:
+ * - LED_BUILTIN_PIN: 8
+ * - NEOPIXEL_PIN: 8 (recommandé)
+ * - OLED: SDA=5, SCL=6
+ * - Single core
+ * 
+ * ⚠️ PINS RÉSERVÉES À ÉVITER:
+ * - GPIO 6-11: Flash interne (NE JAMAIS UTILISER)
+ * - GPIO 0: Boot (éviter si possible)
+ * - GPIO 12: Strapping pin (attention au bootloop)
  */
 
 #endif // CONFIG_H

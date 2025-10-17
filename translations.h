@@ -1,20 +1,13 @@
 /*
  * ============================================================
- * TRANSLATIONS - ESP32 Diagnostic System
+ * ESP32 Diagnostic System - Translations
+ * Version: 3.2.0
  * ============================================================
- *
- * Version: 3.0.1
- * Date: October 2025
- * Arduino Core: 3.3.2+
- *
- * Description:
- *   Bilingual support (French/English) for the web interface.
- *   All UI text strings are defined here for easy maintenance.
- *
- * Supported Languages:
- *   - French (fr) - Default
- *   - English (en)
- *
+ * 
+ * Multilingual support for French and English.
+ * Used by web interface for dynamic language switching.
+ * 
+ * Languages: FR (Français), EN (English)
  * ============================================================
  */
 
@@ -22,201 +15,248 @@
 #define TRANSLATIONS_H
 
 // ============================================================
-// FRENCH TRANSLATIONS
+// STRUCTURE DE TRADUCTION
 // ============================================================
 
-const char* TEXT_FR_TITLE = "Diagnostic ESP32";
-const char* TEXT_FR_VERSION = "Version";
-const char* TEXT_FR_CORE_VERSION = "Arduino Core";
-
-// Tabs
-const char* TEXT_FR_TAB_OVERVIEW = "Vue générale";
-const char* TEXT_FR_TAB_TESTS = "Tests";
-const char* TEXT_FR_TAB_EXPORTS = "Exports";
-
-// System Info
-const char* TEXT_FR_SYSTEM_INFO = "Informations Système";
-const char* TEXT_FR_CHIP = "Puce";
-const char* TEXT_FR_CORES = "Cœurs CPU";
-const char* TEXT_FR_FREQUENCY = "Fréquence";
-const char* TEXT_FR_FLASH = "Mémoire Flash";
-const char* TEXT_FR_PSRAM = "PSRAM";
-const char* TEXT_FR_UPTIME = "Durée de fonctionnement";
-
-// Memory
-const char* TEXT_FR_MEMORY = "Mémoire";
-const char* TEXT_FR_HEAP_FREE = "Heap Libre";
-const char* TEXT_FR_HEAP_SIZE = "Taille Heap";
-const char* TEXT_FR_PSRAM_FREE = "PSRAM Libre";
-const char* TEXT_FR_PSRAM_SIZE = "Taille PSRAM";
-
-// WiFi
-const char* TEXT_FR_WIFI = "WiFi";
-const char* TEXT_FR_WIFI_STATUS = "Statut";
-const char* TEXT_FR_WIFI_SSID = "SSID";
-const char* TEXT_FR_WIFI_IP = "Adresse IP";
-const char* TEXT_FR_WIFI_RSSI = "Signal (RSSI)";
-const char* TEXT_FR_WIFI_CONNECTED = "Connecté";
-const char* TEXT_FR_WIFI_DISCONNECTED = "Déconnecté";
-
-// Tests
-const char* TEXT_FR_GPIO_TEST = "Test GPIO";
-const char* TEXT_FR_I2C_TEST = "Test I2C";
-const char* TEXT_FR_SPI_TEST = "Test SPI";
-const char* TEXT_FR_MEMORY_TEST = "Test Mémoire";
-const char* TEXT_FR_WIFI_TEST = "Test WiFi";
-const char* TEXT_FR_SYSTEM_TEST = "Test Système";
-
-const char* TEXT_FR_PIN = "Pin";
-const char* TEXT_FR_STATUS = "Statut";
-const char* TEXT_FR_DETAILS = "Détails";
-const char* TEXT_FR_ADDRESS = "Adresse";
-const char* TEXT_FR_DEVICE = "Périphérique";
-
-// Exports
-const char* TEXT_FR_EXPORT_JSON = "Exporter JSON";
-const char* TEXT_FR_EXPORT_CSV = "Exporter CSV";
-const char* TEXT_FR_EXPORT_DESC = "Télécharger les données de diagnostic dans différents formats";
-
-// NeoPixel
-const char* TEXT_FR_NEOPIXEL = "Contrôle NeoPixel";
-const char* TEXT_FR_NEOPIXEL_PATTERN = "Motif";
-const char* TEXT_FR_NEOPIXEL_COLOR = "Couleur";
-
-// Status
-const char* TEXT_FR_LOADING = "Chargement...";
-const char* TEXT_FR_ERROR = "Erreur";
-const char* TEXT_FR_SUCCESS = "Succès";
-const char* TEXT_FR_UPDATING = "Mise à jour dans";
-const char* TEXT_FR_SECONDS = "secondes";
+struct Translation {
+  const char* key;
+  const char* fr;
+  const char* en;
+};
 
 // ============================================================
-// ENGLISH TRANSLATIONS
+// TRADUCTIONS - Interface Web
 // ============================================================
 
-const char* TEXT_EN_TITLE = "ESP32 Diagnostic";
-const char* TEXT_EN_VERSION = "Version";
-const char* TEXT_EN_CORE_VERSION = "Arduino Core";
-
-// Tabs
-const char* TEXT_EN_TAB_OVERVIEW = "Overview";
-const char* TEXT_EN_TAB_TESTS = "Tests";
-const char* TEXT_EN_TAB_EXPORTS = "Exports";
-
-// System Info
-const char* TEXT_EN_SYSTEM_INFO = "System Information";
-const char* TEXT_EN_CHIP = "Chip";
-const char* TEXT_EN_CORES = "CPU Cores";
-const char* TEXT_EN_FREQUENCY = "Frequency";
-const char* TEXT_EN_FLASH = "Flash Memory";
-const char* TEXT_EN_PSRAM = "PSRAM";
-const char* TEXT_EN_UPTIME = "Uptime";
-
-// Memory
-const char* TEXT_EN_MEMORY = "Memory";
-const char* TEXT_EN_HEAP_FREE = "Heap Free";
-const char* TEXT_EN_HEAP_SIZE = "Heap Size";
-const char* TEXT_EN_PSRAM_FREE = "PSRAM Free";
-const char* TEXT_EN_PSRAM_SIZE = "PSRAM Size";
-
-// WiFi
-const char* TEXT_EN_WIFI = "WiFi";
-const char* TEXT_EN_WIFI_STATUS = "Status";
-const char* TEXT_EN_WIFI_SSID = "SSID";
-const char* TEXT_EN_WIFI_IP = "IP Address";
-const char* TEXT_EN_WIFI_RSSI = "Signal (RSSI)";
-const char* TEXT_EN_WIFI_CONNECTED = "Connected";
-const char* TEXT_EN_WIFI_DISCONNECTED = "Disconnected";
-
-// Tests
-const char* TEXT_EN_GPIO_TEST = "GPIO Test";
-const char* TEXT_EN_I2C_TEST = "I2C Test";
-const char* TEXT_EN_SPI_TEST = "SPI Test";
-const char* TEXT_EN_MEMORY_TEST = "Memory Test";
-const char* TEXT_EN_WIFI_TEST = "WiFi Test";
-const char* TEXT_EN_SYSTEM_TEST = "System Test";
-
-const char* TEXT_EN_PIN = "Pin";
-const char* TEXT_EN_STATUS = "Status";
-const char* TEXT_EN_DETAILS = "Details";
-const char* TEXT_EN_ADDRESS = "Address";
-const char* TEXT_EN_DEVICE = "Device";
-
-// Exports
-const char* TEXT_EN_EXPORT_JSON = "Export JSON";
-const char* TEXT_EN_EXPORT_CSV = "Export CSV";
-const char* TEXT_EN_EXPORT_DESC = "Download diagnostic data in various formats";
-
-// NeoPixel
-const char* TEXT_EN_NEOPIXEL = "NeoPixel Control";
-const char* TEXT_EN_NEOPIXEL_PATTERN = "Pattern";
-const char* TEXT_EN_NEOPIXEL_COLOR = "Color";
-
-// Status
-const char* TEXT_EN_LOADING = "Loading...";
-const char* TEXT_EN_ERROR = "Error";
-const char* TEXT_EN_SUCCESS = "Success";
-const char* TEXT_EN_UPDATING = "Updating in";
-const char* TEXT_EN_SECONDS = "seconds";
+const Translation translations[] = {
+  // Navigation
+  {"nav_dashboard", "Tableau de bord", "Dashboard"},
+  {"nav_tests", "Tests", "Tests"},
+  {"nav_memory", "Mémoire", "Memory"},
+  {"nav_wifi", "WiFi", "WiFi"},
+  {"nav_gpio", "GPIO", "GPIO"},
+  {"nav_benchmarks", "Benchmarks", "Benchmarks"},
+  {"nav_export", "Exportation", "Export"},
+  {"nav_about", "À propos", "About"},
+  
+  // Dashboard
+  {"dashboard_title", "Tableau de Bord", "Dashboard"},
+  {"dashboard_system_info", "Informations Système", "System Information"},
+  {"dashboard_chip_model", "Modèle de Puce", "Chip Model"},
+  {"dashboard_cpu_cores", "Cœurs CPU", "CPU Cores"},
+  {"dashboard_cpu_freq", "Fréquence CPU", "CPU Frequency"},
+  {"dashboard_flash_size", "Taille Flash", "Flash Size"},
+  {"dashboard_psram_size", "Taille PSRAM", "PSRAM Size"},
+  {"dashboard_uptime", "Temps de fonctionnement", "Uptime"},
+  {"dashboard_memory_status", "État de la Mémoire", "Memory Status"},
+  {"dashboard_heap_free", "Heap Libre", "Free Heap"},
+  {"dashboard_heap_size", "Taille Heap", "Heap Size"},
+  {"dashboard_wifi_status", "État WiFi", "WiFi Status"},
+  {"dashboard_connected", "Connecté", "Connected"},
+  {"dashboard_disconnected", "Déconnecté", "Disconnected"},
+  {"dashboard_ssid", "SSID", "SSID"},
+  {"dashboard_ip", "Adresse IP", "IP Address"},
+  {"dashboard_rssi", "Puissance Signal", "Signal Strength"},
+  
+  // Tests
+  {"tests_title", "Tests Matériels", "Hardware Tests"},
+  {"tests_run_all", "Exécuter Tous les Tests", "Run All Tests"},
+  {"tests_gpio", "Test GPIO", "GPIO Test"},
+  {"tests_pwm", "Test PWM", "PWM Test"},
+  {"tests_i2c", "Test I2C", "I2C Test"},
+  {"tests_wifi", "Test WiFi", "WiFi Test"},
+  {"tests_memory", "Test Mémoire", "Memory Test"},
+  {"tests_running", "Test en cours...", "Running test..."},
+  {"tests_completed", "Test terminé", "Test completed"},
+  {"tests_failed", "Test échoué", "Test failed"},
+  {"tests_success", "Succès", "Success"},
+  {"tests_pin", "Pin", "Pin"},
+  {"tests_status", "État", "Status"},
+  {"tests_result", "Résultat", "Result"},
+  
+  // Memory
+  {"memory_title", "Mémoire Détaillée", "Memory Details"},
+  {"memory_heap", "Mémoire Heap", "Heap Memory"},
+  {"memory_psram", "Mémoire PSRAM", "PSRAM Memory"},
+  {"memory_free", "Libre", "Free"},
+  {"memory_used", "Utilisée", "Used"},
+  {"memory_total", "Total", "Total"},
+  {"memory_usage", "Utilisation", "Usage"},
+  {"memory_available", "Disponible", "Available"},
+  {"memory_not_available", "Non disponible", "Not available"},
+  {"memory_refresh", "Actualiser", "Refresh"},
+  
+  // WiFi
+  {"wifi_title", "Informations WiFi", "WiFi Information"},
+  {"wifi_connection", "Connexion", "Connection"},
+  {"wifi_network_name", "Nom du réseau", "Network name"},
+  {"wifi_ip_address", "Adresse IP", "IP Address"},
+  {"wifi_mac_address", "Adresse MAC", "MAC Address"},
+  {"wifi_signal_strength", "Force du signal", "Signal Strength"},
+  {"wifi_channel", "Canal", "Channel"},
+  {"wifi_gateway", "Passerelle", "Gateway"},
+  {"wifi_subnet", "Masque de sous-réseau", "Subnet Mask"},
+  {"wifi_dns", "DNS", "DNS"},
+  {"wifi_scan", "Scanner les réseaux", "Scan Networks"},
+  {"wifi_scanning", "Scan en cours...", "Scanning..."},
+  {"wifi_networks_found", "Réseaux trouvés", "Networks found"},
+  {"wifi_encryption", "Chiffrement", "Encryption"},
+  {"wifi_open", "Ouvert", "Open"},
+  {"wifi_encrypted", "Chiffré", "Encrypted"},
+  
+  // GPIO
+  {"gpio_title", "Configuration GPIO", "GPIO Configuration"},
+  {"gpio_pin_number", "Numéro de Pin", "Pin Number"},
+  {"gpio_mode", "Mode", "Mode"},
+  {"gpio_state", "État", "State"},
+  {"gpio_input", "Entrée", "Input"},
+  {"gpio_output", "Sortie", "Output"},
+  {"gpio_high", "HAUT", "HIGH"},
+  {"gpio_low", "BAS", "LOW"},
+  {"gpio_test_all", "Tester Toutes", "Test All"},
+  {"gpio_available", "Disponible", "Available"},
+  {"gpio_used", "Utilisée", "Used"},
+  
+  // Benchmarks
+  {"bench_title", "Benchmarks Performance", "Performance Benchmarks"},
+  {"bench_run", "Lancer les Benchmarks", "Run Benchmarks"},
+  {"bench_cpu", "Benchmark CPU", "CPU Benchmark"},
+  {"bench_memory", "Benchmark Mémoire", "Memory Benchmark"},
+  {"bench_wifi", "Benchmark WiFi", "WiFi Benchmark"},
+  {"bench_running", "Benchmark en cours...", "Running benchmark..."},
+  {"bench_time", "Temps d'exécution", "Execution time"},
+  {"bench_score", "Score", "Score"},
+  {"bench_operations", "Opérations/sec", "Operations/sec"},
+  
+  // Export
+  {"export_title", "Exporter les Données", "Export Data"},
+  {"export_format", "Format d'exportation", "Export Format"},
+  {"export_json", "Exporter en JSON", "Export as JSON"},
+  {"export_csv", "Exporter en CSV", "Export as CSV"},
+  {"export_success", "Exportation réussie", "Export successful"},
+  {"export_failed", "Échec de l'exportation", "Export failed"},
+  {"export_downloading", "Téléchargement...", "Downloading..."},
+  {"export_include", "Inclure dans l'exportation", "Include in export"},
+  {"export_system_info", "Informations système", "System information"},
+  {"export_test_results", "Résultats des tests", "Test results"},
+  {"export_memory_info", "Informations mémoire", "Memory information"},
+  {"export_wifi_info", "Informations WiFi", "WiFi information"},
+  
+  // About
+  {"about_title", "À Propos", "About"},
+  {"about_version", "Version", "Version"},
+  {"about_author", "Auteur", "Author"},
+  {"about_license", "Licence", "License"},
+  {"about_description", "Description", "Description"},
+  {"about_desc_text", "Système de diagnostic complet pour ESP32 avec interface web multilingue", 
+                      "Complete diagnostic system for ESP32 with multilingual web interface"},
+  {"about_features", "Fonctionnalités", "Features"},
+  {"about_support", "Support", "Support"},
+  {"about_documentation", "Documentation", "Documentation"},
+  {"about_github", "Dépôt GitHub", "GitHub Repository"},
+  
+  // NeoPixel
+  {"neo_title", "Contrôle NeoPixel", "NeoPixel Control"},
+  {"neo_color", "Couleur", "Color"},
+  {"neo_pattern", "Pattern", "Pattern"},
+  {"neo_on", "Allumer", "Turn On"},
+  {"neo_off", "Éteindre", "Turn Off"},
+  {"neo_blink", "Clignoter", "Blink"},
+  {"neo_fade", "Fondu", "Fade"},
+  {"neo_rainbow", "Arc-en-ciel", "Rainbow"},
+  {"neo_test", "Test", "Test"},
+  {"neo_not_available", "NeoPixel non disponible", "NeoPixel not available"},
+  
+  // Common
+  {"common_loading", "Chargement...", "Loading..."},
+  {"common_error", "Erreur", "Error"},
+  {"common_success", "Succès", "Success"},
+  {"common_warning", "Attention", "Warning"},
+  {"common_info", "Information", "Information"},
+  {"common_ok", "OK", "OK"},
+  {"common_cancel", "Annuler", "Cancel"},
+  {"common_yes", "Oui", "Yes"},
+  {"common_no", "Non", "No"},
+  {"common_refresh", "Actualiser", "Refresh"},
+  {"common_close", "Fermer", "Close"},
+  {"common_save", "Enregistrer", "Save"},
+  {"common_delete", "Supprimer", "Delete"},
+  {"common_download", "Télécharger", "Download"},
+  {"common_upload", "Téléverser", "Upload"},
+  {"common_search", "Rechercher", "Search"},
+  {"common_filter", "Filtrer", "Filter"},
+  {"common_sort", "Trier", "Sort"},
+  {"common_settings", "Paramètres", "Settings"},
+  {"common_help", "Aide", "Help"},
+  
+  // Messages
+  {"msg_connection_lost", "Connexion perdue", "Connection lost"},
+  {"msg_reconnecting", "Reconnexion...", "Reconnecting..."},
+  {"msg_connected", "Connecté", "Connected"},
+  {"msg_no_data", "Aucune donnée disponible", "No data available"},
+  {"msg_test_in_progress", "Test en cours, veuillez patienter", "Test in progress, please wait"},
+  {"msg_operation_failed", "L'opération a échoué", "Operation failed"},
+  {"msg_operation_success", "Opération réussie", "Operation successful"},
+  
+  // Units
+  {"unit_bytes", "octets", "bytes"},
+  {"unit_kb", "Ko", "KB"},
+  {"unit_mb", "Mo", "MB"},
+  {"unit_gb", "Go", "GB"},
+  {"unit_mhz", "MHz", "MHz"},
+  {"unit_ms", "ms", "ms"},
+  {"unit_seconds", "secondes", "seconds"},
+  {"unit_percent", "%", "%"},
+  {"unit_dbm", "dBm", "dBm"}
+};
 
 // ============================================================
-// TRANSLATION HELPER FUNCTIONS
+// FONCTION D'OBTENTION DE TRADUCTION
 // ============================================================
 
-String t(const char* textFr, const char* textEn) {
-  if (currentLanguage == "en") {
-    return String(textEn);
+String getTranslation(String key, String lang = "fr") {
+  int numTranslations = sizeof(translations) / sizeof(Translation);
+  
+  for (int i = 0; i < numTranslations; i++) {
+    if (String(translations[i].key) == key) {
+      if (lang == "en") {
+        return String(translations[i].en);
+      } else {
+        return String(translations[i].fr);
+      }
+    }
   }
-  return String(textFr);
+  
+  // Si la clé n'est pas trouvée, retourner la clé elle-même
+  return key;
 }
 
-// Convenience macros for common translations
-#define T_TITLE t(TEXT_FR_TITLE, TEXT_EN_TITLE)
-#define T_VERSION t(TEXT_FR_VERSION, TEXT_EN_VERSION)
-#define T_CORE_VERSION t(TEXT_FR_CORE_VERSION, TEXT_EN_CORE_VERSION)
+// ============================================================
+// FONCTION DE GÉNÉRATION JSON DES TRADUCTIONS
+// ============================================================
 
-#define T_TAB_OVERVIEW t(TEXT_FR_TAB_OVERVIEW, TEXT_EN_TAB_OVERVIEW)
-#define T_TAB_TESTS t(TEXT_FR_TAB_TESTS, TEXT_EN_TAB_TESTS)
-#define T_TAB_EXPORTS t(TEXT_FR_TAB_EXPORTS, TEXT_EN_TAB_EXPORTS)
-
-#define T_SYSTEM_INFO t(TEXT_FR_SYSTEM_INFO, TEXT_EN_SYSTEM_INFO)
-#define T_CHIP t(TEXT_FR_CHIP, TEXT_EN_CHIP)
-#define T_CORES t(TEXT_FR_CORES, TEXT_EN_CORES)
-#define T_FREQUENCY t(TEXT_FR_FREQUENCY, TEXT_EN_FREQUENCY)
-#define T_FLASH t(TEXT_FR_FLASH, TEXT_EN_FLASH)
-#define T_PSRAM t(TEXT_FR_PSRAM, TEXT_EN_PSRAM)
-#define T_UPTIME t(TEXT_FR_UPTIME, TEXT_EN_UPTIME)
-
-#define T_MEMORY t(TEXT_FR_MEMORY, TEXT_EN_MEMORY)
-#define T_HEAP_FREE t(TEXT_FR_HEAP_FREE, TEXT_EN_HEAP_FREE)
-#define T_HEAP_SIZE t(TEXT_FR_HEAP_SIZE, TEXT_EN_HEAP_SIZE)
-#define T_PSRAM_FREE t(TEXT_FR_PSRAM_FREE, TEXT_EN_PSRAM_FREE)
-#define T_PSRAM_SIZE t(TEXT_FR_PSRAM_SIZE, TEXT_EN_PSRAM_SIZE)
-
-#define T_WIFI t(TEXT_FR_WIFI, TEXT_EN_WIFI)
-#define T_WIFI_STATUS t(TEXT_FR_WIFI_STATUS, TEXT_EN_WIFI_STATUS)
-#define T_WIFI_SSID t(TEXT_FR_WIFI_SSID, TEXT_EN_WIFI_SSID)
-#define T_WIFI_IP t(TEXT_FR_WIFI_IP, TEXT_EN_WIFI_IP)
-#define T_WIFI_RSSI t(TEXT_FR_WIFI_RSSI, TEXT_EN_WIFI_RSSI)
-
-#define T_GPIO_TEST t(TEXT_FR_GPIO_TEST, TEXT_EN_GPIO_TEST)
-#define T_I2C_TEST t(TEXT_FR_I2C_TEST, TEXT_EN_I2C_TEST)
-#define T_SPI_TEST t(TEXT_FR_SPI_TEST, TEXT_EN_SPI_TEST)
-#define T_MEMORY_TEST t(TEXT_FR_MEMORY_TEST, TEXT_EN_MEMORY_TEST)
-#define T_WIFI_TEST t(TEXT_FR_WIFI_TEST, TEXT_EN_WIFI_TEST)
-#define T_SYSTEM_TEST t(TEXT_FR_SYSTEM_TEST, TEXT_EN_SYSTEM_TEST)
-
-#define T_PIN t(TEXT_FR_PIN, TEXT_EN_PIN)
-#define T_STATUS t(TEXT_FR_STATUS, TEXT_EN_STATUS)
-#define T_DETAILS t(TEXT_FR_DETAILS, TEXT_EN_DETAILS)
-#define T_ADDRESS t(TEXT_FR_ADDRESS, TEXT_EN_ADDRESS)
-#define T_DEVICE t(TEXT_FR_DEVICE, TEXT_EN_DEVICE)
-
-#define T_EXPORT_JSON t(TEXT_FR_EXPORT_JSON, TEXT_EN_EXPORT_JSON)
-#define T_EXPORT_CSV t(TEXT_FR_EXPORT_CSV, TEXT_EN_EXPORT_CSV)
-
-#define T_LOADING t(TEXT_FR_LOADING, TEXT_EN_LOADING)
-#define T_ERROR t(TEXT_FR_ERROR, TEXT_EN_ERROR)
-#define T_SUCCESS t(TEXT_FR_SUCCESS, TEXT_EN_SUCCESS)
+String getTranslationsJSON(String lang = "fr") {
+  String json = "{";
+  int numTranslations = sizeof(translations) / sizeof(Translation);
+  
+  for (int i = 0; i < numTranslations; i++) {
+    json += "\"" + String(translations[i].key) + "\":\"";
+    
+    if (lang == "en") {
+      json += String(translations[i].en);
+    } else {
+      json += String(translations[i].fr);
+    }
+    
+    json += "\"";
+    
+    if (i < numTranslations - 1) {
+      json += ",";
+    }
+  }
+  
+  json += "}";
+  return json;
+}
 
 #endif // TRANSLATIONS_H
