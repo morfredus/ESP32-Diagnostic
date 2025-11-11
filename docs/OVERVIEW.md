@@ -18,7 +18,7 @@ The ESP32 Diagnostic Suite delivers a production-ready toolkit for validating ES
 
 ## Release 3.8.0 focus
 - **Migration to PlatformIO:** Project migrated from Arduino IDE to PlatformIO in Visual Studio Code for improved build management.
-- **Archived repository:** The original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) repository is now archived.
+- **Archived repository:** The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) is now archived.
 - **Bluetooth support removed:** BLE/Bluetooth functionality has been removed as it is not properly supported under PlatformIO.
 - Boot-time Wi-Fi splash on OLED-equipped boards to expose association, DHCP, and completion states without opening Serial.
 
@@ -49,5 +49,5 @@ Use this map to jump directly to the right knowledge category:
 ## Related resources
 - [CHANGELOG.md](../CHANGELOG.md) – chronological list of fixes and enhancements.
 - [ESP-IDF compatibility table](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/) for comparing platform expectations.
-- [GitHub issues](https://github.com/morfredus/ESP32-Diagnostic-PIO/issues) – track bugs or request enhancements.
-- **Note:** The original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) repository is archived.
+- [GitHub issues](https://github.com/morfredus/ESP32-Diagnostic/issues) – track bugs or request enhancements.
+- **Note:** The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) is archived.

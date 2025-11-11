@@ -55,7 +55,7 @@ A: Submit pull requests updating `languages.h` with new strings and ensure both 
 
 ## Support
 **Q: Where can I report issues?**
-A: Use the [GitHub issue tracker](https://github.com/morfredus/ESP32-Diagnostic-PIO/issues) and attach the latest JSON report. Note: The original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) repository is archived.
+A: Use the [GitHub issue tracker](https://github.com/morfredus/ESP32-Diagnostic/issues) and attach the latest JSON report. Note: The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) is archived.
 
 **Q: Is commercial support available?**
 A: Not officially. Community contributions are welcome via GitHub discussions and pull requests.

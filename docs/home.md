@@ -17,7 +17,7 @@ to operate, customise, and maintain the ESP32 Diagnostic Suite across multilingu
 
 ## Release spotlight – 3.8.0
 - **Migration to PlatformIO:** The project has been migrated from Arduino IDE to PlatformIO in Visual Studio Code for improved build management and toolchain consistency.
-- **Archived repository:** The original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) repository is now archived. All development continues in [ESP32-Diagnostic-PIO](https://github.com/morfredus/ESP32-Diagnostic-PIO).
+- **Archived repository:** The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) is now archived. All development continues in [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic).
 - **Bluetooth support removed:** BLE/Bluetooth functionality has been removed as it is not properly supported under the PlatformIO platform configuration.
 - OLED-equipped boards now display Wi-Fi association, DHCP, and completion phases at boot for immediate visibility.
 
@@ -48,9 +48,9 @@ to operate, customise, and maintain the ESP32 Diagnostic Suite across multilingu
 
 ## Support & escalation
 - License: [MIT](../LICENSE)
-- Issue tracker: [GitHub Issues](https://github.com/morfredus/ESP32-Diagnostic-PIO/issues)
+- Issue tracker: [GitHub Issues](https://github.com/morfredus/ESP32-Diagnostic/issues)
 - Release history: [CHANGELOG.md](../CHANGELOG.md) / [CHANGELOG_FR.md](../CHANGELOG_FR.md)
 - Community contributions: Fork the repository and submit pull requests following the [contribution guide](../CONTRIBUTING.md).
-- **Note:** The original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) repository is archived.
+- **Note:** The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) is archived.
 
 Happy diagnostics! If you maintain internal SOPs, link back to this wiki to ensure future teams stay aligned with the 3.8.0 release.

@@ -2,7 +2,7 @@
 
 Suivez ces étapes pour déployer ESP32 Diagnostic Suite sur votre carte.
 
-> **Version 3.9.0 :** Cette version a été migrée depuis Arduino IDE vers **PlatformIO dans Visual Studio Code**. Le dépôt original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) est maintenant **archivé**. Le support Bluetooth/BLE a été **supprimé** car il n'est pas correctement géré sous la configuration de plateforme PlatformIO.
+> **Version 3.9.0 :** Cette version a été migrée depuis Arduino IDE vers **PlatformIO dans Visual Studio Code**. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé** car il n'est pas correctement géré sous la configuration de plateforme PlatformIO.
 
 ## 1. Prérequis
 - Carte ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 ou ESP32-H2 (S3 recommandée).
@@ -23,12 +23,12 @@ Les bibliothèques suivantes sont fournies avec la plateforme ESP32 : `WiFi`, `W
 ## 3. Récupérer le code source
 1. Clonez le dépôt depuis GitHub :
    ```bash
-   git clone https://github.com/morfredus/ESP32-Diagnostic-PIO.git
-   cd ESP32-Diagnostic-PIO
+   git clone https://github.com/morfredus/ESP32-Diagnostic.git
+   cd ESP32-Diagnostic
    ```
 2. Ouvrez le dossier du projet dans Visual Studio Code avec PlatformIO.
 
-**Note :** Le dépôt original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) (version Arduino IDE) est maintenant archivé.
+**Note :** La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant archivée.
 
 ## 4. Préparer les identifiants Wi-Fi
 1. Dupliquez `wifi-config-example.h` puis renommez la copie en `wifi-config.h`.

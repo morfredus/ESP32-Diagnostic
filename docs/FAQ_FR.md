@@ -52,7 +52,7 @@ R : Soumettre une pull request modifiant `languages.h` en gardant les versions 
 
 ## Support
 **Q : Où signaler un bug ?**
-R : Sur le [tracker GitHub](https://github.com/morfredus/ESP32-Diagnostic-PIO/issues) en joignant le dernier rapport JSON.
+R : Sur le [tracker GitHub](https://github.com/morfredus/ESP32-Diagnostic/issues) en joignant le dernier rapport JSON. Note : La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est archivée.
 
 **Q : Un support commercial est-il disponible ?**
 R : Non officiel. Les contributions communautaires sont encouragées via GitHub discussions et pull requests.

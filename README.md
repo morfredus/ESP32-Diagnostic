@@ -49,5 +49,5 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an intera
 
 ## Support
 - License: [MIT](LICENSE)
-- Issues & feature requests: [Open a GitHub issue](https://github.com/morfredus/ESP32-Diagnostic-PIO/issues/new/choose) with reproduction steps and board details.
-- Contributions: [Fork the repository](https://github.com/morfredus/ESP32-Diagnostic-PIO/fork) and see [CONTRIBUTING.md](CONTRIBUTING.md).
+- Issues & feature requests: [Open a GitHub issue](https://github.com/morfredus/ESP32-Diagnostic/issues/new/choose) with reproduction steps and board details.
+- Contributions: [Fork the repository](https://github.com/morfredus/ESP32-Diagnostic/fork) and see [CONTRIBUTING.md](CONTRIBUTING.md).
