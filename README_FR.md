@@ -8,10 +8,11 @@ Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de
 - Maintenabilité renforcée par la suppression des commentaires superflus et du tableau d'historique de version inutilisé.
 
 ## Structure du projet
-- `ESP32-Diagnostic.ino` – point d'entrée du firmware et ordonnanceur des diagnostics.
-- `languages.h` – catalogue de traductions et sélecteur de langue à chaud.
-- `web_interface.h` – modèles HTML/CSS/JS fournis par le firmware.
-- `wifi-config-example.h` – modèle pour stocker les identifiants Wi-Fi.
+- `src/main.cpp` – point d'entrée du firmware, boucle principale, ordonnanceur et gestionnaires HTTP.
+- `include/languages.h` – catalogue de traductions et sélecteur de langue à chaud.
+- `include/web_interface.h` – modèles HTML/CSS/JS fournis par le firmware.
+- `include/wifi-config-example.h` – modèle pour stocker les identifiants Wi-Fi.
+- `platformio.ini` – configuration PlatformIO pour toutes les cibles ESP32 supportées.
 - `docs/` – wiki complet regroupant installation, utilisation, API et guides de déploiement (FR/EN).
 
 ## Documentation

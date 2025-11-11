@@ -1,7 +1,7 @@
 # Configuration (FR)
 
 ## Identifiants Wi-Fi
-Le firmware lit les identifiants dans `wifi-config.h` placé à côté de `ESP32-Diagnostic.ino`.
+Le firmware lit les identifiants dans `include/wifi-config.h`.
 
 ```cpp
 // wifi-config.h (exemple)
