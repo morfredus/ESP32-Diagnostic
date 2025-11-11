@@ -2,7 +2,7 @@
 
 Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.8.0.
 
-> **Important :** La version 3.9.0 a été migrée depuis Arduino IDE vers **PlatformIO**. Le dépôt original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) est maintenant **archivé**. Le support Bluetooth/BLE a été **supprimé**.
+> **Important :** La version 3.9.0 a été migrée depuis Arduino IDE vers **PlatformIO**. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé**.
 
 ## Toolchains
 Le projet utilise PlatformIO pour la gestion de compilation. Toutes les dépendances sont déclarées dans `platformio.ini` :
@@ -18,7 +18,7 @@ pio run --target upload
 pio device monitor --baud 115200
 ```
 
-**Note :** Arduino IDE et Arduino CLI ne sont **plus supportés** pour cette version. Utiliser le dépôt archivé [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) pour la compatibilité Arduino IDE.
+**Note :** Arduino IDE et Arduino CLI ne sont **plus supportés** pour cette version. Utiliser le dépôt archivé [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) pour la compatibilité Arduino IDE.
 
 ## Checklist pré-déploiement
 - [ ] Mettre à jour `wifi-config.h` avec les identifiants production et, le cas échéant, les paramètres entreprise.

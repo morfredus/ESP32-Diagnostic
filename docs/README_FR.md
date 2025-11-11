@@ -49,5 +49,5 @@ Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de
 
 ## Support
 - Licence : [MIT](LICENSE)
-- Support & remontées : [ouvrir un ticket GitHub](https://github.com/morfredus/ESP32-Diagnostic-PIO/issues/new/choose) avec étapes de reproduction et détails carte.
-- Contribution : [forkez le dépôt](https://github.com/morfredus/ESP32-Diagnostic-PIO/fork) puis consultez [CONTRIBUTING_FR.md](CONTRIBUTING_FR.md).
+- Support & remontées : [ouvrir un ticket GitHub](https://github.com/morfredus/ESP32-Diagnostic/issues/new/choose) avec étapes de reproduction et détails carte.
+- Contribution : [forkez le dépôt](https://github.com/morfredus/ESP32-Diagnostic/fork) puis consultez [CONTRIBUTING_FR.md](CONTRIBUTING_FR.md).

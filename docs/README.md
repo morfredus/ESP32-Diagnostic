@@ -7,12 +7,12 @@
 **🇬🇧 English:**
 This repository is **no longer maintained**. Development has been migrated from Arduino IDE to PlatformIO for better dependency management, build consistency, and professional development workflow.
 
-**➡️ Please visit the new repository:** [ESP32-Diagnostic-PIO](https://github.com/morfredus/ESP32-Diagnostic-PIO)
+**➡️ Please visit the new repository:** [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic)
 
 **🇫🇷 Français :**
 Ce dépôt n'est **plus maintenu**. Le développement a migré d'Arduino IDE vers PlatformIO pour une meilleure gestion des dépendances, une cohérence de compilation et un flux de travail de développement professionnel.
 
-**➡️ Veuillez visiter le nouveau dépôt :** [ESP32-Diagnostic-PIO](https://github.com/morfredus/ESP32-Diagnostic-PIO)
+**➡️ Veuillez visiter le nouveau dépôt :** [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic)
 
 ---
 
@@ -65,5 +65,5 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an intera
 
 ## Support
 - License: [MIT](LICENSE)
-- Issues & feature requests: [Open a GitHub issue](https://github.com/morfredus/ESP32-Diagnostic-PIO/issues/new/choose) with reproduction steps and board details.
-- Contributions: [Fork the repository](https://github.com/morfredus/ESP32-Diagnostic-PIO/fork) and see [CONTRIBUTING.md](CONTRIBUTING.md).
+- Issues & feature requests: [Open a GitHub issue](https://github.com/morfredus/ESP32-Diagnostic/issues/new/choose) with reproduction steps and board details.
+- Contributions: [Fork the repository](https://github.com/morfredus/ESP32-Diagnostic/fork) and see [CONTRIBUTING.md](CONTRIBUTING.md).

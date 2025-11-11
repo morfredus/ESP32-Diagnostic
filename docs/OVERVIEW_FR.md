@@ -18,7 +18,7 @@ La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production
 
 ## Focus de la version 3.9.0
 - **Migration vers PlatformIO :** Projet migré depuis Arduino IDE vers PlatformIO dans Visual Studio Code pour une meilleure gestion de compilation.
-- **Dépôt archivé :** Le dépôt original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) est maintenant archivé.
+- **Dépôt archivé :** La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant archivée.
 - **Support Bluetooth supprimé :** La fonctionnalité BLE/Bluetooth a été supprimée car elle n'est pas correctement gérée sous PlatformIO.
 - Écran de démarrage Wi-Fi sur les cartes équipées d'OLED pour afficher association, DHCP et réussite sans ouvrir le port série.
 
@@ -49,5 +49,5 @@ Consultez cette carte pour accéder directement à la bonne rubrique :
 ## Ressources associées
 - [CHANGELOG_FR.md](../CHANGELOG_FR.md) – suivi chronologique des corrections et améliorations.
 - [Table de compatibilité ESP-IDF](https://docs.espressif.com/projects/esp-idf/fr/latest/esp32/) pour comparer avec les attentes de la plateforme.
-- [Issues GitHub](https://github.com/morfredus/ESP32-Diagnostic-PIO/issues) – suivi des anomalies et propositions.
-- **Note :** Le dépôt original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) est archivé.
+- [Issues GitHub](https://github.com/morfredus/ESP32-Diagnostic/issues) – suivi des anomalies et propositions.
+- **Note :** La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est archivée.

@@ -2,7 +2,7 @@
 
 Follow the steps below to deploy the ESP32 Diagnostic Suite on your board.
 
-> **Release 3.8.0:** This version has been migrated from Arduino IDE to **PlatformIO in Visual Studio Code**. The original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) repository is now **archived**. Bluetooth/BLE support has been **removed** as it is not properly supported under the PlatformIO platform configuration.
+> **Release 3.8.0:** This version has been migrated from Arduino IDE to **PlatformIO in Visual Studio Code**. The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository is now **archived**. Bluetooth/BLE support has been **removed** as it is not properly supported under the PlatformIO platform configuration.
 
 ## 1. Prerequisites
 - ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, or ESP32-H2 board (S3 recommended).
@@ -23,12 +23,12 @@ The following libraries are bundled with the ESP32 platform: `WiFi`, `WebServer`
 ## 3. Get the source code
 1. Clone the repository from GitHub:
    ```bash
-   git clone https://github.com/morfredus/ESP32-Diagnostic-PIO.git
-   cd ESP32-Diagnostic-PIO
+   git clone https://github.com/morfredus/ESP32-Diagnostic.git
+   cd ESP32-Diagnostic
    ```
 2. Open the project folder in Visual Studio Code with PlatformIO.
 
-**Note:** The original [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic) repository (Arduino IDE version) is now archived.
+**Note:** The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) is now archived.
 
 ## 4. Prepare Wi-Fi credentials
 1. Duplicate `wifi-config-example.h` and rename the copy to `wifi-config.h`.

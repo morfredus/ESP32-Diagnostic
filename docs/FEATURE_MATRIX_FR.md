@@ -4,7 +4,7 @@ Cette matrice résume la couverture des diagnostics pour les cartes Espressif le
 3.8.0. Elle aide à planifier les campagnes de validation et à vérifier si des périphériques optionnels nécessitent un câblage
 supplémentaire.
 
-> **Important :** La version 3.9.0 (PlatformIO) **ne supporte pas** la fonctionnalité Bluetooth/BLE. Pour les diagnostics BLE, utiliser la version Arduino IDE archivée [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic).
+> **Important :** La version 3.9.0 (PlatformIO) **ne supporte pas** la fonctionnalité Bluetooth/BLE. Pour les diagnostics BLE, utiliser la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
 
 ## Légende
 - ✅ – Pris en charge nativement par le firmware.
