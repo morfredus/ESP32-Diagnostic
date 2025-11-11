@@ -19,7 +19,7 @@
 // ========== DEFAULT LANGUAGE ==========
 // Set the default interface language
 // Options: LANG_EN (English) or LANG_FR (French)
-#define DEFAULT_LANGUAGE LANG_EN
+#define DEFAULT_LANGUAGE LANG_FR
 
 // ========== DEBUG OPTIONS ==========
 // Enable verbose serial output for troubleshooting
