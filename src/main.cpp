@@ -102,12 +102,12 @@
 
 // Configuration file - customize your setup
 // Copy include/config-example.h to include/config.h and customize your settings
-// config.h is excluded from version control via .gitignore
-#include <config.h>
+#include "config.h"
 
 // WiFi configuration file - customize your network credentials
 // For reference, see include/wifi-config-example.h
-#include <wifi-config.h>
+// wifi-config.h is excluded from version control via .gitignore
+#include "wifi-config.h"
 
 // Dual-language UI strings
 #include "languages.h"
