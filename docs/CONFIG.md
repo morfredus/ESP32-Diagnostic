@@ -1,7 +1,7 @@
 # Configuration (EN)
 
 ## Wi-Fi credentials
-The firmware reads credentials from `wifi-config.h` located next to `ESP32-Diagnostic.ino`.
+The firmware reads credentials from `include/wifi-config.h`.
 
 ```cpp
 // wifi-config.h (example)

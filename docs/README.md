@@ -24,10 +24,10 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an intera
 - Improved BLE scan handling by reusing NimBLE buffers safely, resuming advertising after failures, and keeping HTTP responses coherent when scans are unavailable.
 
 ## Project structure
-- `ESP32-Diagnostic.ino` – firmware entry point and diagnostic scheduler.
-- `languages.h` – translation catalog and runtime language switcher.
-- `web_interface.h` – HTML/CSS/JS templates served by the firmware.
-- `wifi-config-example.h` – template for Wi-Fi credential storage.
+- `src/main.cpp` – firmware entry point and diagnostic scheduler.
+- `include/languages.h` – translation catalog and runtime language switcher.
+- `include/web_interface.h` – HTML/CSS/JS templates served by the firmware.
+- `include/wifi-config-example.h` – template for Wi-Fi credential storage.
 - `docs/` – comprehensive wiki including installation, usage, API reference, and deployment guides (EN/FR).
 
 ## Documentation

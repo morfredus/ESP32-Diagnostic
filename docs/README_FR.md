@@ -8,10 +8,10 @@ Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de
 - Amélioration de la gestion du scan BLE grâce à la réutilisation sûre des tampons NimBLE, à la reprise de la diffusion après échec et à des réponses HTTP cohérentes lorsque le scan est indisponible.
 
 ## Structure du projet
-- `ESP32-Diagnostic.ino` – point d'entrée du firmware et ordonnanceur des diagnostics.
-- `languages.h` – catalogue de traductions et sélecteur de langue à chaud.
-- `web_interface.h` – modèles HTML/CSS/JS fournis par le firmware.
-- `wifi-config-example.h` – modèle pour stocker les identifiants Wi-Fi.
+- `src/main.cpp` – point d'entrée du firmware et ordonnanceur des diagnostics.
+- `include/languages.h` – catalogue de traductions et sélecteur de langue à chaud.
+- `include/web_interface.h` – modèles HTML/CSS/JS fournis par le firmware.
+- `include/wifi-config-example.h` – modèle pour stocker les identifiants Wi-Fi.
 - `docs/` – wiki complet regroupant installation, utilisation, API et guides de déploiement (FR/EN).
 
 ## Documentation

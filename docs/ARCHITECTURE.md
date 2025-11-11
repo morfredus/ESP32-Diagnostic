@@ -1,23 +1,30 @@
 # Firmware Architecture (EN)
 
 ## High-level overview
-The firmware is a single Arduino sketch (`ESP32-Diagnostic.ino`) that orchestrates diagnostics, serves a web interface, and exposes REST endpoints. Supporting headers encapsulate translations, HTML templates, and configuration helpers.
+The firmware is a PlatformIO project with the main code in `src/main.cpp` that orchestrates diagnostics, serves a web interface, and exposes REST endpoints. Supporting headers in `include/` encapsulate translations, HTML templates, and configuration helpers.
 
 ```
 ESP32-Diagnostic/
-├── ESP32-Diagnostic.ino      // main loop, task scheduler, HTTP handlers
-├── languages.h               // translation tables and helpers
-├── web_interface.h           // HTML/CSS/JS assets stored as PROGMEM strings
-├── wifi-config-example.h     // Wi-Fi credential template
-└── docs/...                  // documentation (EN/FR)
+├── platformio.ini            // PlatformIO configuration for all ESP32 targets
+├── src/
+│   └── main.cpp              // main loop, task scheduler, HTTP handlers
+├── include/
+│   ├── languages.h           // translation tables and helpers
+│   ├── web_interface.h       // HTML/CSS/JS assets stored as PROGMEM strings
+│   ├── wifi-config-example.h // Wi-Fi credential template
+│   ├── config.h              // configuration flags and constants
+│   └── json_helpers.h        // JSON formatting utilities
+├── lib/                      // custom libraries (if any)
+├── test/                     // test files
+└── docs/                     // documentation (EN/FR)
 ```
 
 ## Runtime flow
 1. **Boot** – initialise Serial, load Wi-Fi credentials, start WiFiMulti connection.
 2. **Services** – mount mDNS, start the HTTP server, and enable BLE advertising/service when supported.
 3. **Diagnostics** – expose REST actions that trigger tests (GPIO sweep, Wi-Fi scan, OLED routines, benchmarks, exports).
-4. **Web UI** – serve static HTML/JS from `web_interface.h`; dynamic data is injected via REST calls returning JSON.
-5. **Translations** – `languages.h` stores both FR and EN strings. The client fetches translations via `/api/get-translations` and swaps text dynamically.
+4. **Web UI** – serve static HTML/JS from `include/web_interface.h`; dynamic data is injected via REST calls returning JSON.
+5. **Translations** – `include/languages.h` stores both FR and EN strings. The client fetches translations via `/api/get-translations` and swaps text dynamically.
 
 ## Key modules
 - **Wi-Fi stack** – uses `WiFiMulti` to iterate over the configured networks until one connects.
@@ -37,6 +44,6 @@ ESP32-Diagnostic/
 - Exports stream from the microcontroller; no external storage is required.
 
 ## Extensibility guidelines
-- Add new diagnostics by extending the scheduler in `ESP32-Diagnostic.ino` and exposing minimal REST endpoints.
-- Keep translation keys consistent between FR and EN entries.
+- Add new diagnostics by extending the scheduler in `src/main.cpp` and exposing minimal REST endpoints.
+- Keep translation keys consistent between FR and EN entries in `include/languages.h`.
 - Avoid blocking calls in the main loop; prefer asynchronous scheduling to maintain web responsiveness.
