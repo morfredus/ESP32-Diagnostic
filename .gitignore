@@ -1,11 +1,37 @@
-# Fichier de configuration WiFi (sensible - ne pas versionner)
+# -----------------------------------------------------------------------------
+# 1. FICHIERS DE CONFIGURATION SENSIBLES ET SPECIFIQUES AU PROJET
+# -----------------------------------------------------------------------------
+# Fichier de configuration WiFi (sensible - NE PAS VERSIONNER)
 include/wifi-config.h
 
-# Fichiers divers
+# Fichiers divers (a ignorer si leur contenu n'est pas a partager)
 ESP32-Diagnostic.txt
 resume_modifs.md
 
-# Fichiers et répertoires générés par Arduino IDE ou la compilation
+# -----------------------------------------------------------------------------
+# 2. FICHIERS GENERES PAR COMPILATION ET OUTILS
+# -----------------------------------------------------------------------------
+
+# FICHIERS ET DOSSIERS PLATFORMIO / ARDUINO IDE
+# ---------------------------------------------
+# PlatformIO
+.pio/
+.lib/
+.cache/
+
+# Arduino IDE (fichiers temporaires ou specifiques a l'utilisateur)
+*.lss              # Fichiers de liste de compilation (Arduino IDE et autres)
+*.elf.map
+*.o
+
+# Dossiers de construction (temporaires, varient selon l'IDE/Outil)
+build/
+.build/
+tmp/
+temp/
+.arduino/
+arduino/
+hardware/
 
 # Fichiers compilés (binaires) pour le téléchargement
 *.hex
@@ -15,35 +41,42 @@ resume_modifs.md
 *.map
 *.eep
 *.sym
+*.suo
 
-# Dossier de construction (souvent caché par l'IDE)
-# Le dossier de construction varie selon l'IDE ou l'outil, voici les plus courants :
-build/
-.build/
-.arduino/
-arduino/
-hardware/
-tmp/
-temp/
+# -----------------------------------------------------------------------------
+# 3. FICHIERS GENERES PAR L'IDE (Visual Studio Code & autres)
+# -----------------------------------------------------------------------------
+# Dossier de configuration local de l'espace de travail VS Code (englobe tout)
+.vscode/
 
-# Fichiers de configuration de l'IDE/Plateforme (spécifiques à l'utilisateur)
-.vscode/ # Pour les utilisateurs de VS Code
+# Fichiers d'autres IDE/Environnements (Eclipse, etc.)
 .classpath
 .project
 .settings
 *.user
-*.suo
+*.code-workspace
 
-# Fichiers de cache macOS
+# -----------------------------------------------------------------------------
+# 4. FICHIERS ET ENVIRONNEMENTS PYTHON
+# -----------------------------------------------------------------------------
+# Environnements virtuels
+venv/
+env/
+VENV/
+ENV/
+
+# Byte-code Python et cache
+*.pyc
+__pycache__/
+*.log
+.Sphinx/
+
+# -----------------------------------------------------------------------------
+# 5. FICHIERS DE CACHE ET SYSTEME
+# -----------------------------------------------------------------------------
+# macOS
 .DS_Store
 
-# Fichiers de cache Windows
+# Windows
 Thumbs.db
-
-# Fichiers spécifiques aux outils de compilation (ex: PlatformIO)
-.pio
-.vscode/.browse.c_cpp.db*
-.vscode/c_cpp_properties.json
-.vscode/launch.json
-.vscode/ipch
-.vscode/extensions.json
+ehthumbs.db
