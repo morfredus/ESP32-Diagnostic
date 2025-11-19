@@ -407,10 +407,8 @@ class TextField {
   X(wifi_desc, "Scan nearby WiFi networks", "Analyse les réseaux WiFi et leurs paramètres radio.") \
   X(wifi_scanner, "WiFi Scanner", "Scanner WiFi") \
 
-
 namespace Texts {
-#define DECLARE_TEXT(identifier, en, fr) \
-  inline const TextField identifier = TextField(F(en), F(fr));
+#define DECLARE_TEXT(identifier, en, fr) extern const TextField identifier;
   TEXT_RESOURCE_MAP(DECLARE_TEXT)
 #undef DECLARE_TEXT
 
@@ -437,9 +435,5 @@ inline void setLanguage(Language lang) {
 inline Language getLanguage() {
   return currentLanguage;
 }
-
-#ifdef TEXT_RESOURCE_MAP
-#undef TEXT_RESOURCE_MAP
-#endif
 
 #endif  // LANGUAGES_H

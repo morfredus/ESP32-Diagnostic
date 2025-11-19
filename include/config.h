@@ -15,7 +15,6 @@
 #define CONFIG_H
 
 // ========== VERSION & HOSTNAME ==========
-#define DIAGNOSTIC_VERSION "3.9.3" // Version bumped
 #define DIAGNOSTIC_HOSTNAME "esp32-diagnostic"
 
 // ========== DEFAULT LANGUAGE ==========

@@ -1,6 +1,6 @@
 /*
- * ESP32 Diagnostic Suite v3.9.0-dev
- * Compatible: ESP32 class targets with >=4MB Flash & >=8MB PSRAM (ESP32 / ESP32-S3)
+ * ESP32 Diagnostic Suite v3.10.0
+ * Compatible: ESP32-S3 with TFT ST7789 and GPS
  * Optimized for ESP32 Arduino Core 3.3.3 / PlatformIO
  * Tested board: ESP32-S3 DevKitC-1 N16R8 with PSRAM OPI (Core 3.3.3)
  * Author: morfredus
@@ -10,9 +10,14 @@
  * v3.8.05-dev - Unified font sizes across header elements to match UI
  * v3.8.06-dev - Premium color palette with enhanced shadow system
  * v3.8.08-dev - Fixed PlatformIO compilation errors (LEDC API, MDNS)
- * v3.8.09-dev - Attempted MbedTLS CMAC fixes (linking issues persist)
- * v3.9.0-dev - Code maintenance: fixed runtimeBLE bug, cleaned comments and dead code
+ * v3.9.3 - Major hardware refactoring for TFT and GPS support
+ * v3.10.0 - Integration of TFT ST7789 and GPS functionalities
  */
+
+// Configuration file - customize your setup
+// Copy include/config-example.h to include/config.h and customize your settings
+#include "config.h"
+
 
 #include <WiFi.h>
 #include <WiFiMulti.h>
@@ -71,10 +76,6 @@
     #include <esp_netif.h>
     #define DIAGNOSTIC_HAS_ESP_NETIF 1
   #endif
-  #if __has_include(<tcpip_adapter.h>)
-    #include <tcpip_adapter.h>
-    #define DIAGNOSTIC_HAS_TCPIP_ADAPTER 1
-  #endif
 #else
   #include <esp_netif.h>
   #define DIAGNOSTIC_HAS_ESP_NETIF 1
@@ -93,16 +94,25 @@
 #endif
 #include <Wire.h>
 #include <Adafruit_NeoPixel.h>
-#include <U8g2lib.h>
+#include <DHT.h>
+#include <SPI.h>
+#if ENABLE_TFT_DISPLAY
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7789.h>
+#endif
+#if ENABLE_GPS
+#include <TinyGPS++.h>
+#include <SoftwareSerial.h>
+#endif
 #include <vector>
 #include <cstring>
 #include <string>
 #include <initializer_list>
 #include "json_helpers.h"
 
-// Configuration file - customize your setup
-// Copy include/config-example.h to include/config.h and customize your settings
-#include "config.h"
+#if ENABLE_GPS
+SoftwareSerial SerialGPS(PIN_GPS_RXD, PIN_GPS_TXD);
+#endif
 
 // WiFi configuration file - customize your network credentials
 // For reference, see include/wifi-config-example.h
@@ -114,6 +124,13 @@
 
 // Set default language from config.h
 Language currentLanguage = DEFAULT_LANGUAGE;
+
+namespace Texts {
+  #define DEFINE_TEXT(identifier, en, fr) const TextField identifier(F(en), F(fr));
+  TEXT_RESOURCE_MAP(DEFINE_TEXT)
+  #undef DEFINE_TEXT
+}
+#undef TEXT_RESOURCE_MAP
 
 static String buildActionResponseJson(bool success,
                                       const String& message,
@@ -152,8 +169,8 @@ inline void sendOperationError(int statusCode,
 #endif
 
 // ========== CONFIGURATION (from config.h) ==========
-// Version and hostname are now defined in config.h
-const char* DIAGNOSTIC_VERSION_STR = DIAGNOSTIC_VERSION;
+// Version is defined in platformio.ini (PROJECT_VERSION), hostname is in config.h
+const char* DIAGNOSTIC_VERSION_STR = PROJECT_VERSION;
 const char* MDNS_HOSTNAME_STR = DIAGNOSTIC_HOSTNAME;
 
 // HTTPS/HTTP scheme constants
@@ -210,7 +227,6 @@ int DISTANCE_TRIG_PIN = DEFAULT_DISTANCE_TRIG_PIN;
 int DISTANCE_ECHO_PIN = DEFAULT_DISTANCE_ECHO_PIN;
 int MOTION_SENSOR_PIN = DEFAULT_MOTION_SENSOR_PIN;
 
-// ========== OBJETS GLOBAUX ==========
 WebServer server(WEB_SERVER_PORT);
 WiFiMulti wifiMulti;
 #if DIAGNOSTIC_HAS_MDNS
@@ -222,7 +238,20 @@ bool mdnsLastAttemptFailed = false;
 bool mdnsResponderInitialized = false;
 #endif
 #endif
-U8G2_SSD1306_128X64_NONAME_F_HW_I2C oled(U8G2_R0, U8X8_PIN_NONE);
+
+// ========== OBJETS GLOBAUX ==========
+#if ENABLE_TFT_DISPLAY
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+TaskHandle_t tft_task_handle = NULL;
+SemaphoreHandle_t tftSemaphore;
+bool tftReady = false;
+#endif
+
+#if ENABLE_GPS
+TinyGPSPlus gps;
+#endif
+
+DHT dht(DEFAULT_DHT_PIN, DEFAULT_DHT_SENSOR_TYPE);
 
 // NeoPixel (from config.h)
 int LED_PIN = DEFAULT_NEOPIXEL_PIN;
@@ -240,9 +269,9 @@ bool builtinLedTested = false;
 bool builtinLedAvailable = false;
 String builtinLedTestResult = String(Texts::not_tested);
 
-bool oledTested = false;
-bool oledAvailable = false;
-String oledTestResult = String(Texts::not_tested);
+bool tftTested = false;
+bool tftAvailable = false;
+String tftTestResult = String(Texts::not_tested);
 
 // Exécution asynchrone des tests matériels
 typedef void (*TestRoutine)();
@@ -314,7 +343,7 @@ static bool startAsyncTest(AsyncTestRunner& runner,
 // Orchestrateurs asynchrones des tests lents
 static AsyncTestRunner builtinLedTestRunner = {"BuiltinLEDTest", nullptr, false};
 static AsyncTestRunner neopixelTestRunner = {"NeoPixelTest", nullptr, false};
-static AsyncTestRunner oledTestRunner = {"OLEDTest", nullptr, false};
+static AsyncTestRunner tftTestRunner = {"TFTTest", nullptr, false};
 static AsyncTestRunner rgbLedTestRunner = {"RgbLedTest", nullptr, false};
 static AsyncTestRunner buzzerTestRunner = {"BuzzerTest", nullptr, false};
 
@@ -352,6 +381,16 @@ float distanceValue = -1.0;
 String motionSensorTestResult = String(Texts::not_tested);
 bool motionSensorAvailable = false;
 bool motionDetected = false;
+
+// GPS Data
+#if ENABLE_GPS
+bool gpsFix = false;
+int gpsSatellites = 0;
+float gpsLat = 0.0;
+float gpsLon = 0.0;
+float gpsAltitude = 0.0;
+float gpsSpeed = 0.0;
+#endif
 
 // ========== STRUCTURES ==========
 struct DiagnosticInfo {
@@ -398,9 +437,9 @@ struct DiagnosticInfo {
   String i2cDevices;
   int i2cCount;
   
-  bool oledTested;
-  bool oledAvailable;
-  String oledResult;
+  bool tftTested;
+  bool tftAvailable;
+  String tftResult;
 } diagnosticData;
 
 // Include web interface after DiagnosticInfo definition
@@ -1461,273 +1500,151 @@ void neopixelChase() {
   strip->show();
 }
 
-void applyOLEDOrientation() {
-  const u8g2_cb_t *rotation = U8G2_R0;
-  switch(oledRotation & 0x03) {
-    case 0: rotation = U8G2_R0; break;
-    case 1: rotation = U8G2_R1; break;
-    case 2: rotation = U8G2_R2; break;
-    case 3: rotation = U8G2_R3; break;
-  }
-  oled.setDisplayRotation(rotation);
+#if ENABLE_TFT_DISPLAY
+void detectTFT() {
+  Serial.println("\r\n=== DETECTION TFT ===");
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, HIGH); // Turn on backlight
+  tft.init(TFT_WIDTH, TFT_HEIGHT, SPI_MODE3);
+  tft.setRotation(TFT_ROTATION);
+  tft.fillScreen(TFT_COLOR_BG);
+  tftAvailable = true;
+  tftReady = true;
+  tftTestResult = String(Texts::detected);
+  Serial.println("TFT: Detected and initialized!\r\n");
 }
 
-void detectOLED() {
-  Serial.println("\r\n=== DETECTION OLED ===");
-  ensureI2CBusConfigured();
-  Serial.printf("I2C: SDA=%d, SCL=%d\r\n", I2C_SDA, I2C_SCL);
+void tftTask(void *pvParameters) {
+  TickType_t xLastWakeTime;
+  const TickType_t xFrequency = pdMS_TO_TICKS(2000);
+  xLastWakeTime = xTaskGetTickCount();
 
-  Wire.beginTransmission(SCREEN_ADDRESS);
-  bool i2cDetected = (Wire.endTransmission() == 0);
+  for (;;) {
+    vTaskDelayUntil(&xLastWakeTime, xFrequency);
 
-  if(i2cDetected && oled.begin()) {
-    oledAvailable = true;
-    applyOLEDOrientation();
-    oledTestResult = String(Texts::detected) + " @ 0x" + String(SCREEN_ADDRESS, HEX);
-    Serial.println("OLED: Detecte!\r\n");
-  } else {
-    oledAvailable = false;
-    if (i2cDetected) {
-      oledTestResult = String(Texts::i2c_peripherals) + " - " + String(Texts::fail);
-    } else {
-      oledTestResult = String(Texts::not_detected) + " (SDA:" + String(I2C_SDA) + " SCL:" + String(I2C_SCL) + ")";
+    if (xSemaphoreTake(tftSemaphore, (TickType_t)10) == pdTRUE) {
+      tft.fillScreen(TFT_COLOR_BG);
+      tft.setTextColor(TFT_COLOR_HEADER);
+      tft.setTextSize(2);
+      tft.setCursor(5, 5);
+      tft.println("ESP32-DIAG");
+
+      tft.drawFastHLine(0, 25, TFT_WIDTH, TFT_COLOR_SEPARATOR);
+
+      tft.setTextColor(TFT_COLOR_TEXT);
+      tft.setTextSize(2);
+
+      // IP Address
+      tft.setCursor(5, 35);
+      tft.print("IP: ");
+      tft.setTextColor(TFT_COLOR_VALUE);
+      tft.println(WiFi.localIP().toString());
+
+      // Uptime
+      unsigned long seconds = millis() / 1000;
+      unsigned long minutes = seconds / 60;
+      unsigned long hours = minutes / 60;
+      unsigned long days = hours / 24;
+      char uptimeStr[32];
+      snprintf(uptimeStr, sizeof(uptimeStr), "%lud %luh %lum", days, hours % 24, minutes % 60);
+      tft.setTextColor(TFT_COLOR_TEXT);
+      tft.setCursor(5, 60);
+      tft.print("Up: ");
+      tft.setTextColor(TFT_COLOR_VALUE);
+      tft.println(uptimeStr);
+
+      // Temp/Humidity
+      tft.setTextColor(TFT_COLOR_TEXT);
+      tft.setCursor(5, 85);
+      if (dhtAvailable) {
+        tft.print("T:");
+        tft.setTextColor(TFT_COLOR_VALUE);
+        tft.print(dhtTemperature, 1);
+        tft.print("C ");
+        tft.setTextColor(TFT_COLOR_TEXT);
+        tft.print("H:");
+        tft.setTextColor(TFT_COLOR_VALUE);
+        tft.print(dhtHumidity, 1);
+        tft.println("%");
+      } else {
+        tft.print("DHT: ");
+        tft.setTextColor(TFT_COLOR_WARNING);
+        tft.println("N/A");
+      }
+
+      // GPS
+      #if ENABLE_GPS
+        tft.setTextColor(TFT_COLOR_TEXT);
+        tft.setCursor(5, 110);
+        tft.print("GPS: ");
+        if (gpsFix) {
+          tft.setTextColor(TFT_COLOR_VALUE);
+          tft.print(gpsSatellites);
+          tft.println(" sats");
+        } else {
+          tft.setTextColor(TFT_COLOR_WARNING);
+          tft.println("No Fix");
+        }
+      #endif
+
+      // Free Heap
+      tft.setTextColor(TFT_COLOR_TEXT);
+      tft.setCursor(5, 135);
+      tft.print("Heap: ");
+      tft.setTextColor(TFT_COLOR_VALUE);
+      tft.print(ESP.getFreeHeap() / 1024);
+      tft.println(" KB");
+
+      xSemaphoreGive(tftSemaphore);
     }
-    Serial.println("OLED: Non detecte\r\n");
   }
 }
 
-void oledStepWelcome() {
-  if (!oledAvailable) return;
-  applyOLEDOrientation();
-  oled.clearBuffer();
-  oled.setFont(u8g2_font_6x10_tf);
-  oled.drawStr(0, 10, "TEST OLED 0.96\"");
-  oled.drawStr(0, 30, "128x64 pixels");
-  char buf[32];
-  snprintf(buf, sizeof(buf), "I2C: 0x%02X", SCREEN_ADDRESS);
-  oled.drawStr(0, 45, buf);
-  snprintf(buf, sizeof(buf), "SDA:%d SCL:%d", I2C_SDA, I2C_SCL);
-  oled.drawStr(0, 60, buf);
-  oled.sendBuffer();
-  delay(700);
-}
+void testTFT() {
+  if (!tftAvailable) return;
+  Serial.println("\r\n=== TEST TFT ===");
 
-void oledStepBigText() {
-  if (!oledAvailable) return;
-  applyOLEDOrientation();
-  oled.clearBuffer();
-  oled.setFont(u8g2_font_ncenB14_tr);
-  oled.drawStr(20, 35, "ESP32");
-  oled.sendBuffer();
-  delay(450);
-}
-
-void oledStepTextSizes() {
-  if (!oledAvailable) return;
-  applyOLEDOrientation();
-  oled.clearBuffer();
-  oled.setFont(u8g2_font_6x10_tf);
-  oled.drawStr(0, 10, "Taille 1");
-  oled.setFont(u8g2_font_ncenB14_tr);
-  oled.drawStr(0, 30, "Taille 2");
-  oled.setFont(u8g2_font_6x10_tf);
-  oled.drawStr(0, 50, "Retour taille 1");
-  oled.sendBuffer();
-  delay(550);
-}
-
-void oledStepShapes() {
-  if (!oledAvailable) return;
-  applyOLEDOrientation();
-  oled.clearBuffer();
-  oled.drawFrame(10, 10, 30, 20);
-  oled.drawBox(50, 10, 30, 20);
-  oled.drawCircle(25, 50, 10);
-  oled.drawDisc(65, 50, 10);
-  oled.drawTriangle(95, 30, 85, 10, 105, 10);
-  oled.sendBuffer();
-  delay(550);
-}
-
-void oledStepHorizontalLines() {
-  if (!oledAvailable) return;
-  applyOLEDOrientation();
-  oled.clearBuffer();
-  for (int i = 0; i < SCREEN_HEIGHT; i += 4) {
-    oled.drawLine(0, i, SCREEN_WIDTH - 1, i);
-  }
-  oled.sendBuffer();
-  delay(350);
-}
-
-void oledStepDiagonals() {
-  if (!oledAvailable) return;
-  applyOLEDOrientation();
-  oled.clearBuffer();
-  for (int i = 0; i < SCREEN_WIDTH; i += 8) {
-    oled.drawLine(0, 0, i, SCREEN_HEIGHT - 1);
-    oled.drawLine(SCREEN_WIDTH - 1, 0, i, SCREEN_HEIGHT - 1);
-  }
-  oled.sendBuffer();
-  delay(350);
-}
-
-void oledStepMovingSquare() {
-  if (!oledAvailable) return;
-  applyOLEDOrientation();
-  for (int x = 0; x < SCREEN_WIDTH - 20; x += 6) {
-    oled.clearBuffer();
-    oled.drawBox(x, 22, 20, 20);
-    oled.sendBuffer();
-    delay(12);
-    yield();
-  }
-}
-
-void oledStepProgressBar() {
-  if (!oledAvailable) return;
-  applyOLEDOrientation();
-  oled.clearBuffer();
-  oled.setFont(u8g2_font_6x10_tf);
-  String loadingText = String(Texts::loading);
-  oled.drawStr(20, 15, loadingText.c_str());
-  oled.sendBuffer();
-
-  for (int i = 0; i <= 100; i += 10) {
-    oled.clearBuffer();
-    oled.setFont(u8g2_font_6x10_tf);
-    oled.drawStr(20, 15, loadingText.c_str());
-    oled.drawFrame(10, 30, 108, 15);
-    oled.drawBox(12, 32, i, 11);
-    char buf[8];
-    snprintf(buf, sizeof(buf), "%d%%", i);
-    oled.drawStr(45, 55, buf);
-    oled.sendBuffer();
-    delay(45);
-    yield();
-  }
-  delay(300);
-}
-
-void oledStepScrollText() {
-  if (!oledAvailable) return;
-  applyOLEDOrientation();
-  String scrollText = "  DIAGNOSTIC ESP32 COMPLET - OLED 0.96 pouces I2C  ";
-  int textWidth = scrollText.length() * 6;
-  for (int offset = 0; offset < textWidth; offset += 6) {
-    oled.clearBuffer();
-    oled.setFont(u8g2_font_6x10_tf);
-    oled.setCursor(-offset, 35);
-    oled.print(scrollText);
-    oled.sendBuffer();
-    delay(12);
-    yield();
-  }
-}
-
-void oledStepFinalMessage() {
-  if (!oledAvailable) return;
-  applyOLEDOrientation();
-  oled.clearBuffer();
-  oled.setFont(u8g2_font_6x10_tf);
-  oled.drawStr(30, 30, "TEST OK!");
-  oled.drawFrame(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-  oled.sendBuffer();
-  delay(600);
-  oled.clearBuffer();
-  oled.sendBuffer();
-}
-
-bool performOLEDStep(const String &stepId) {
-  if (!oledAvailable) {
-    return false;
-  }
-
-  if (stepId == "welcome") {
-    oledStepWelcome();
-  } else if (stepId == "big_text") {
-    oledStepBigText();
-  } else if (stepId == "text_sizes") {
-    oledStepTextSizes();
-  } else if (stepId == "shapes") {
-    oledStepShapes();
-  } else if (stepId == "horizontal_lines") {
-    oledStepHorizontalLines();
-  } else if (stepId == "diagonals") {
-    oledStepDiagonals();
-  } else if (stepId == "moving_square") {
-    oledStepMovingSquare();
-  } else if (stepId == "progress_bar") {
-    oledStepProgressBar();
-  } else if (stepId == "scroll_text") {
-    oledStepScrollText();
-  } else if (stepId == "final_message") {
-    oledStepFinalMessage();
+  if (xSemaphoreTake(tftSemaphore, (TickType_t)10) == pdTRUE) {
+    tft.fillScreen(ST77XX_BLACK);
+    tft.setCursor(0, 0);
+    tft.setTextColor(ST77XX_WHITE);
+    tft.setTextSize(2);
+    tft.println("TFT Test!");
+    tft.drawRect(10, 30, 20, 20, ST77XX_RED);
+    tft.fillRect(40, 30, 20, 20, ST77XX_GREEN);
+    tft.drawCircle(75, 40, 10, ST77XX_BLUE);
+    tft.fillCircle(105, 40, 10, ST77XX_YELLOW);
+    xSemaphoreGive(tftSemaphore);
+    delay(2000);
+    tftTested = true;
+    tftTestResult = String(Texts::test) + " " + String(Texts::ok);
+    Serial.println("TFT: Test OK");
   } else {
-    return false;
-  }
-
-  return true;
-}
-
-String getOLEDStepLabel(const String &stepId) {
-  if (stepId == "welcome") return String(Texts::oled_step_welcome);
-  if (stepId == "big_text") return String(Texts::oled_step_big_text);
-  if (stepId == "text_sizes") return String(Texts::oled_step_text_sizes);
-  if (stepId == "shapes") return String(Texts::oled_step_shapes);
-  if (stepId == "horizontal_lines") return String(Texts::oled_step_horizontal_lines);
-  if (stepId == "diagonals") return String(Texts::oled_step_diagonals);
-  if (stepId == "moving_square") return String(Texts::oled_step_moving_square);
-  if (stepId == "progress_bar") return String(Texts::oled_step_progress_bar);
-  if (stepId == "scroll_text") return String(Texts::oled_step_scroll_text);
-  if (stepId == "final_message") return String(Texts::oled_step_final_message);
-  return stepId;
-}
-
-void testOLED() {
-  if (!oledAvailable || oledTested) return;
-
-  Serial.println("\r\n=== TEST OLED ===");
-
-  oledStepWelcome();
-  oledStepBigText();
-  oledStepTextSizes();
-  oledStepShapes();
-  oledStepHorizontalLines();
-  oledStepDiagonals();
-  oledStepMovingSquare();
-  oledStepProgressBar();
-  oledStepScrollText();
-  oledStepFinalMessage();
-
-  oledTested = true;
-  oledTestResult = String(Texts::test) + " " + String(Texts::ok) + " - 128x64";
-  Serial.println("OLED: Tests complets OK\r\n");
-}
-
-void resetOLEDTest() {
-  oledTested = false;
-  if (oledAvailable) {
-    oled.clearBuffer();
-    oled.sendBuffer();
+    Serial.println("TFT: Could not get semaphore");
   }
 }
 
-void oledShowMessage(String message) {
-  if (!oledAvailable) return;
-  applyOLEDOrientation();
-  oled.clearBuffer();
-  oled.setFont(u8g2_font_6x10_tf);
-  oled.drawStr(0, 10, message.c_str());
-  oled.sendBuffer();
+void resetTFTTest() {
+  tftTested = false;
 }
 
-// --- [NEW FEATURE] WiFi connection status banner on OLED ---
-void oledShowWiFiStatus(const String& title,
+void tftShowMessage(String message) {
+  if (!tftAvailable) return;
+  if (xSemaphoreTake(tftSemaphore, (TickType_t)10) == pdTRUE) {
+    tft.fillScreen(TFT_COLOR_BG);
+    tft.setCursor(5, 5);
+    tft.setTextColor(TFT_COLOR_TEXT);
+    tft.setTextSize(2);
+    tft.println(message);
+    xSemaphoreGive(tftSemaphore);
+  }
+}
+
+void tftShowWiFiStatus(const String& title,
                         const String& detail,
                         const String& footer,
                         int progressPercent) {
-  if (!oledAvailable) {
+  if (!tftAvailable) {
     return;
   }
 
@@ -1738,45 +1655,66 @@ void oledShowWiFiStatus(const String& title,
     clampedProgress = 100;
   }
 
-  applyOLEDOrientation();
-  oled.clearBuffer();
-  oled.setFont(u8g2_font_6x10_tf);
-  oled.drawStr(0, 12, title.c_str());
+  if (xSemaphoreTake(tftSemaphore, (TickType_t)10) == pdTRUE) {
+    tft.fillScreen(TFT_COLOR_BG);
+    tft.setTextColor(TFT_COLOR_HEADER);
+    tft.setTextSize(2);
+    tft.setCursor(5, 30);
+    tft.println(title);
 
-  if (detail.length() > 0) {
-    oled.drawStr(0, 28, detail.c_str());
-  }
+    tft.setTextColor(TFT_COLOR_TEXT);
+    tft.setCursor(5, 60);
+    tft.println(detail);
 
-  if (footer.length() > 0) {
-    oled.drawStr(0, 44, footer.c_str());
-  }
+    tft.setTextColor(TFT_COLOR_VALUE);
+    tft.setCursor(5, 90);
+    tft.println(footer);
 
-  if (clampedProgress >= 0) {
-    const int barX = 8;
-    const int barY = 52;
-    const int barWidth = SCREEN_WIDTH - (barX * 2);
-    const int barHeight = 10;
-    oled.drawFrame(barX, barY, barWidth, barHeight);
-    int fillWidth = (barWidth - 2) * clampedProgress / 100;
-    if (fillWidth > 0) {
-      oled.drawBox(barX + 1, barY + 1, fillWidth, barHeight - 2);
+    if (clampedProgress >= 0) {
+      int barWidth = TFT_WIDTH - 20;
+      tft.drawRect(10, 120, barWidth, 15, TFT_COLOR_SEPARATOR);
+      int fillWidth = (barWidth - 4) * clampedProgress / 100;
+      if (fillWidth > 0) {
+        tft.fillRect(12, 122, fillWidth, 11, TFT_COLOR_VALUE);
+      }
     }
+    xSemaphoreGive(tftSemaphore);
   }
-
-  oled.sendBuffer();
 }
+#endif
+
+#if ENABLE_GPS
+void gpsTask(void *pvParameters) {
+  // Initialisation du port série matériel avec les bonnes broches
+  // Le format est : begin(baud_rate, config, rxPin, txPin)
+  SerialGPS.begin(GPS_BAUD_RATE, SERIAL_8N1, PIN_GPS_RXD, PIN_GPS_TXD);
+  for (;;) {
+    while (SerialGPS.available() > 0) {
+      // On lit les données du GPS et on les passe à l'encodeur TinyGPS++
+      if (gps.encode(SerialGPS.read())) {
+        if (gps.location.isUpdated()) {
+          gpsFix = gps.location.isValid();
+          gpsSatellites = gps.satellites.value();
+          gpsLat = gps.location.lat();
+          gpsLon = gps.location.lng();
+          gpsAltitude = gps.altitude.meters();
+          gpsSpeed = gps.speed.kmph();
+        }
+      }
+    }
+    vTaskDelay(pdMS_TO_TICKS(50));
+  }
+}
+#endif
 
 // ========== TEST ADC ==========
 void testADC() {
   Serial.println("\r\n=== TEST ADC ===");
   adcReadings.clear();
   
-  #ifdef CONFIG_IDF_TARGET_ESP32
-    int adcPins[] = {36, 39, 34, 35, 32, 33};
-    int numADC = 6;
-  #elif defined(CONFIG_IDF_TARGET_ESP32S3)
+  #if defined(CONFIG_IDF_TARGET_ESP32S3)
     int adcPins[] = {1, 2, 3, 4, 5, 6};
-    int numADC = 6;
+    int numADC = 10;
   #elif defined(CONFIG_IDF_TARGET_ESP32C3)
     int adcPins[] = {0, 1, 2, 3, 4};
     int numADC = 5;
@@ -1802,29 +1740,26 @@ void testADC() {
 // ========== TEST PWM ==========
 void testPWM() {
   Serial.println("\r\n=== TEST PWM ===");
-  int testPin = 2;
+  int testPin = DEFAULT_PWM_PIN;
 
-  #ifdef CONFIG_IDF_TARGET_ESP32S3
-    testPin = 48;
-  #elif defined(CONFIG_IDF_TARGET_ESP32C3)
-    testPin = 8;
-  #endif
+  if (testPin < 0) {
+    pwmTestResult = String(Texts::configuration_invalid);
+    return;
+  }
 
   Serial.printf("Test PWM sur GPIO%d\r\n", testPin);
 
-  // --- [PLATFORMIO FIX] Use legacy LEDC API for PlatformIO compatibility ---
-  uint8_t pwmChannel = 0;
-  ledcSetup(pwmChannel, 5000, 8);       // channel, freq, resolution
-  ledcAttachPin(testPin, pwmChannel);    // pin, channel
+  ledcSetup(4, 5000, 8);
+  ledcAttachPin(testPin, 4);
 
   for (int duty = 0; duty <= 255; duty += 51) {
-    ledcWrite(pwmChannel, duty);         // channel, duty
+    ledcWrite(4, duty);
     Serial.printf("PWM duty: %d/255\r\n", duty);
     delay(80);
     yield();
   }
 
-  ledcWrite(pwmChannel, 0);
+  ledcWrite(4, 0);
   ledcDetachPin(testPin);                // pin
 
   pwmTestResult = String(Texts::test) + " " + String(Texts::ok) + " - GPIO " + String(testPin);
@@ -1896,6 +1831,10 @@ void testRGBLed() {
   pinMode(RGB_LED_PIN_G, OUTPUT);
   pinMode(RGB_LED_PIN_B, OUTPUT);
 
+  // Initialize PWM channels for RGB LED if using analogWrite
+  ledcSetup(0, 5000, 8); ledcAttachPin(RGB_LED_PIN_R, 0);
+  ledcSetup(1, 5000, 8); ledcAttachPin(RGB_LED_PIN_G, 1);
+  ledcSetup(2, 5000, 8); ledcAttachPin(RGB_LED_PIN_B, 2);
   Serial.printf("Test LED RGB - R:%d G:%d B:%d\r\n", RGB_LED_PIN_R, RGB_LED_PIN_G, RGB_LED_PIN_B);
 
   digitalWrite(RGB_LED_PIN_R, LOW);
@@ -1922,9 +1861,9 @@ void testRGBLed() {
 
 void setRGBLedColor(int r, int g, int b) {
   if (RGB_LED_PIN_R >= 0 && RGB_LED_PIN_G >= 0 && RGB_LED_PIN_B >= 0) {
-    analogWrite(RGB_LED_PIN_R, r);
-    analogWrite(RGB_LED_PIN_G, g);
-    analogWrite(RGB_LED_PIN_B, b);
+    ledcWrite(0, r);
+    ledcWrite(1, g);
+    ledcWrite(2, b);
   }
 }
 
@@ -1940,6 +1879,9 @@ void testBuzzer() {
   }
 
   pinMode(BUZZER_PIN, OUTPUT);
+  // Setup PWM channel for buzzer tone
+  ledcSetup(3, 1000, 8);
+  ledcAttachPin(BUZZER_PIN, 3);
   Serial.printf("Test Buzzer - Pin:%d\r\n", BUZZER_PIN);
 
   tone(BUZZER_PIN, 1000, 160);
@@ -1948,7 +1890,7 @@ void testBuzzer() {
   delay(220);
   tone(BUZZER_PIN, 2000, 160);
   delay(220);
-  noTone(BUZZER_PIN);
+  ledcDetachPin(BUZZER_PIN);
 
   buzzerTestResult = String(Texts::ok);
   buzzerAvailable = true;
@@ -1957,7 +1899,10 @@ void testBuzzer() {
 
 void playBuzzerTone(int frequency, int duration) {
   if (BUZZER_PIN >= 0) {
-    tone(BUZZER_PIN, frequency, duration);
+    ledcAttachPin(BUZZER_PIN, 3);
+    ledcWriteTone(3, frequency);
+    delay(duration);
+    ledcWriteTone(3, 0);
   }
 }
 
@@ -1980,95 +1925,22 @@ void testDHTSensor() {
 
   Serial.printf("Lecture %s - Pin:%d\r\n", sensorName, DHT_PIN);
 
-  pinMode(DHT_PIN, OUTPUT);
-  digitalWrite(DHT_PIN, LOW);
-  delay(20);
-  digitalWrite(DHT_PIN, HIGH);
-  delayMicroseconds(40);
-  pinMode(DHT_PIN, INPUT_PULLUP);
+  dht.begin();
+  delay(2000); // Wait for sensor to stabilize
 
-  uint8_t data[5] = {0};
-  uint8_t bits[40] = {0};
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
 
-  unsigned long timeout = millis();
-  while (digitalRead(DHT_PIN) == HIGH) {
-    if (millis() - timeout > 100) {
-      dhtTestResult = String(Texts::error_label);
-      dhtAvailable = false;
-      Serial.printf("%s: Timeout\r\n", sensorName);
-      return;
-    }
-  }
-
-  timeout = millis();
-  while (digitalRead(DHT_PIN) == LOW) {
-    if (millis() - timeout > 100) {
-      dhtTestResult = String(Texts::error_label);
-      dhtAvailable = false;
-      Serial.printf("%s: Timeout\r\n", sensorName);
-      return;
-    }
-  }
-
-  timeout = millis();
-  while (digitalRead(DHT_PIN) == HIGH) {
-    if (millis() - timeout > 100) {
-      dhtTestResult = String(Texts::error_label);
-      dhtAvailable = false;
-      Serial.printf("%s: Timeout\r\n", sensorName);
-      return;
-    }
-  }
-
-  for (int i = 0; i < 40; i++) {
-    timeout = micros();
-    while (digitalRead(DHT_PIN) == LOW) {
-      if (micros() - timeout > 100) break;
-    }
-
-    unsigned long t = micros();
-    timeout = micros();
-    while (digitalRead(DHT_PIN) == HIGH) {
-      if (micros() - timeout > 100) break;
-    }
-
-    if ((micros() - t) > 40) {
-      bits[i] = 1;
-    }
-  }
-
-  for (int i = 0; i < 5; i++) {
-    data[i] = 0;
-    for (int j = 0; j < 8; j++) {
-      data[i] <<= 1;
-      data[i] |= bits[i * 8 + j];
-    }
-  }
-
-  if (data[4] == ((data[0] + data[1] + data[2] + data[3]) & 0xFF)) {
-    if (DHT_SENSOR_TYPE == 22) {
-      uint16_t rawHumidity = (static_cast<uint16_t>(data[0]) << 8) | data[1];
-      uint16_t rawTemperature = (static_cast<uint16_t>(data[2]) << 8) | data[3];
-      bool negative = rawTemperature & 0x8000;
-      if (negative) {
-        rawTemperature &= 0x7FFF;
-      }
-      dhtHumidity = rawHumidity * 0.1f;
-      dhtTemperature = rawTemperature * 0.1f;
-      if (negative) {
-        dhtTemperature = -dhtTemperature;
-      }
-    } else {
-      dhtHumidity = static_cast<float>(data[0]) + static_cast<float>(data[1]) * 0.1f;
-      dhtTemperature = static_cast<float>(data[2]) + static_cast<float>(data[3]) * 0.1f;
-    }
+  if (isnan(h) || isnan(t)) {
+    dhtTestResult = String(Texts::error_label);
+    dhtAvailable = false;
+    Serial.printf("%s: Failed to read from sensor!\r\n", sensorName);
+  } else {
+    dhtHumidity = h;
+    dhtTemperature = t;
     dhtTestResult = String(Texts::ok);
     dhtAvailable = true;
     Serial.printf("%s: T=%.1f°C H=%.1f%%\r\n", sensorName, dhtTemperature, dhtHumidity);
-  } else {
-    dhtTestResult = String(Texts::error_label);
-    dhtAvailable = false;
-    Serial.printf("%s: Checksum error\r\n", sensorName);
   }
 }
 
@@ -2288,10 +2160,10 @@ void collectDiagnosticInfo() {
   diagnosticData.neopixelAvailable = neopixelAvailable;
   diagnosticData.neopixelResult = neopixelTestResult;
   
-  diagnosticData.oledTested = oledTested;
-  diagnosticData.oledAvailable = oledAvailable;
-  diagnosticData.oledResult = oledTestResult;
-
+  diagnosticData.tftTested = tftTested;
+  diagnosticData.tftAvailable = tftAvailable;
+  diagnosticData.tftResult = tftTestResult;
+  
   heapHistory[historyIndex] = (float)diagnosticData.freeHeap / 1024.0;
   if (diagnosticData.temperature != -999) {
     tempHistory[historyIndex] = diagnosticData.temperature;
@@ -2310,9 +2182,9 @@ static void runNeopixelTestTask() {
   testNeoPixel();
 }
 
-static void runOledTestTask() {
-  resetOLEDTest();
-  testOLED();
+static void runTftTestTask() {
+  resetTFTTest();
+  testTFT();
 }
 
 static void runRgbLedTestTask() {
@@ -2557,49 +2429,26 @@ void handleNeoPixelColor() {
   sendOperationSuccess(message);
 }
 
-void handleOLEDConfig() {
-  if (server.hasArg("sda") && server.hasArg("scl") && server.hasArg("rotation")) {
-    int newSDA = server.arg("sda").toInt();
-    int newSCL = server.arg("scl").toInt();
-    int newRotation = server.arg("rotation").toInt();
-
-    if (newSDA >= 0 && newSDA <= 48 && newSCL >= 0 && newSCL <= 48 && newRotation >= 0 && newRotation <= 3) {
-      bool pinsChanged = (I2C_SDA != newSDA) || (I2C_SCL != newSCL);
-      bool rotationChanged = (oledRotation != static_cast<uint8_t>(newRotation));
-
-      I2C_SDA = newSDA;
-      I2C_SCL = newSCL;
-      oledRotation = static_cast<uint8_t>(newRotation);
-
-      if (pinsChanged || rotationChanged) {
-        resetOLEDTest();
-        Wire.end();
-        detectOLED();
-      } else if (oledAvailable) {
-        applyOLEDOrientation();
-      }
-
-      String message = "I2C reconfigure: SDA:" + String(I2C_SDA) + " SCL:" + String(I2C_SCL) + " Rot:" + String(oledRotation);
-      sendOperationSuccess(message, {
-        jsonNumberField("sda", I2C_SDA),
-        jsonNumberField("scl", I2C_SCL),
-        jsonNumberField("rotation", oledRotation)
-      });
-      return;
-    }
+void handleTFTMessage() {
+  if (!server.hasArg("message")) {
+    sendOperationError(400, Texts::configuration_invalid.str());
+    return;
   }
-  sendOperationError(400, Texts::configuration_invalid.str());
+
+  String message = server.arg("message");
+  tftShowMessage(message);
+  sendOperationSuccess(Texts::message_displayed.str());
 }
 
-void handleOLEDTest() {
+void handleTFTTest() {
   bool alreadyRunning = false;
-  bool started = startAsyncTest(oledTestRunner, runOledTestTask, alreadyRunning, 6144, 1);
+  bool started = startAsyncTest(tftTestRunner, runTftTestTask, alreadyRunning, 4096, 1);
 
   if (started) {
     sendActionResponse(202, true, String(Texts::test_in_progress), {
       jsonBoolField("running", true),
-      jsonBoolField("available", oledAvailable),
-      jsonStringField("result", oledTestResult)
+      jsonBoolField("available", tftAvailable),
+      jsonStringField("result", tftTestResult)
     });
     return;
   }
@@ -2607,55 +2456,23 @@ void handleOLEDTest() {
   if (alreadyRunning) {
     sendActionResponse(200, true, String(Texts::test_in_progress), {
       jsonBoolField("running", true),
-      jsonBoolField("available", oledAvailable),
-      jsonStringField("result", oledTestResult)
+      jsonBoolField("available", tftAvailable),
+      jsonStringField("result", tftTestResult)
     });
     return;
   }
 
-  resetOLEDTest();
-  testOLED();
-  sendActionResponse(200, oledAvailable, oledTestResult, {
+  resetTFTTest();
+  testTFT();
+  sendActionResponse(200, tftAvailable, tftTestResult, {
     jsonBoolField("running", false),
-    jsonBoolField("available", oledAvailable),
-    jsonStringField("result", oledTestResult)
+    jsonBoolField("available", tftAvailable),
+    jsonStringField("result", tftTestResult)
   });
 }
 
-void handleOLEDStep() {
-  if (!server.hasArg("step")) {
-    sendOperationError(400, Texts::oled_step_unknown.str());
-    return;
-  }
-
-  String stepId = server.arg("step");
-
-  if (!oledAvailable) {
-    sendActionResponse(200, false, Texts::oled_step_unavailable.str());
-    return;
-  }
-
-  bool ok = performOLEDStep(stepId);
-  if (!ok) {
-    sendOperationError(400, Texts::oled_step_unknown.str());
-    return;
-  }
-
-  String label = getOLEDStepLabel(stepId);
-  String message = String(Texts::oled_step_executed_prefix) + " " + label;
-  sendOperationSuccess(message);
-}
-
-void handleOLEDMessage() {
-  if (!server.hasArg("message")) {
-    sendOperationError(400, Texts::configuration_invalid.str());
-    return;
-  }
-
-  String message = server.arg("message");
-  oledShowMessage(message);
-  // Use translation key instead of hardcoded string
-  sendOperationSuccess(Texts::message_displayed.str());
+void handleTFTBacklight() {
+  digitalWrite(TFT_BL, server.hasArg("on"));
 }
 
 void handleADCTest() {
@@ -3038,11 +2855,18 @@ void handleLedsInfo() {
 void handleScreensInfo() {
   String json;
   json.reserve(300);
-  json = "{";
-  json += "\"oled\":{\"available\":" + String(oledAvailable ? "true" : "false") +
-          ",\"status\":\"" + oledTestResult + "\",";
-  json += "\"pins\":{\"sda\":" + String(I2C_SDA) + ",\"scl\":" + String(I2C_SCL) + "},";
-  json += "\"rotation\":" + String(oledRotation) + "}";
+  json = "{";  
+  #if ENABLE_TFT_DISPLAY
+  json += "\"tft\":{\"available\":" + String(tftAvailable ? "true" : "false") +
+          ",\"status\":\"" + tftTestResult + "\",";
+  json += "\"pins\":{\"mosi\":" + String(TFT_MOSI) + ",\"sclk\":" + String(TFT_SCLK) +
+          ",\"cs\":" + String(TFT_CS) + ",\"dc\":" + String(TFT_DC) +
+          ",\"rst\":" + String(TFT_RST) + ",\"bl\":" + String(TFT_BL) + "},";
+  json += "\"resolution\":\"" + String(TFT_WIDTH) + "x" + String(TFT_HEIGHT) + "\"}";
+  #else
+  json += "\"tft\":{\"available\":false, \"status\":\"disabled\"}";
+  #endif
+
   json += "}";
   server.send(200, "application/json", json);
 }
@@ -3129,7 +2953,7 @@ void handleExportTXT() {
   String txt;
   txt.reserve(4500);  // Reserve memory to avoid reallocations during export
   txt = "========================================\r\n";
-  txt += String(Texts::title) + " " + String(Texts::version) + String(DIAGNOSTIC_VERSION) + "\r\n";
+  txt += String(Texts::title) + " " + String(Texts::version) + String(PROJECT_VERSION) + "\r\n";
   txt += "========================================\r\n\r\n";
   
   txt += "=== CHIP ===\r\n";
@@ -3186,7 +3010,7 @@ void handleExportTXT() {
   txt += "=== " + String(Texts::test) + " ===\r\n";
   txt += String(Texts::builtin_led) + ": " + builtinLedTestResult + "\r\n";
   txt += String(Texts::neopixel) + ": " + neopixelTestResult + "\r\n";
-  txt += "OLED: " + oledTestResult + "\r\n";
+  txt += "TFT: " + tftTestResult + "\r\n";
   txt += "ADC: " + adcTestResult + "\r\n";
   txt += "PWM: " + pwmTestResult + "\r\n";
   txt += "\r\n";
@@ -3212,8 +3036,8 @@ void handleExportTXT() {
   txt += "========================================\r\n";
   txt += String(Texts::export_generated) + " " + String(millis()/1000) + "s " + String(Texts::export_after_boot) + "\r\n";
   txt += "========================================\r\n";
-  
-  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v"+ String(DIAGNOSTIC_VERSION) +".txt");
+
+  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v"+ String(PROJECT_VERSION) +".txt");
   server.send(200, "text/plain; charset=utf-8", txt);
 }
 
@@ -3280,7 +3104,7 @@ void handleExportJSON() {
   json += "\"hardware_tests\":{";
   json += "\"builtin_led\":\"" + builtinLedTestResult + "\",";
   json += "\"neopixel\":\"" + neopixelTestResult + "\",";
-  json += "\"oled\":\"" + oledTestResult + "\",";
+  json += "\"tft\":\"" + tftTestResult + "\",";
   json += "\"adc\":\"" + adcTestResult + "\",";
   json += "\"pwm\":\"" + pwmTestResult + "\"";
   json += "},";
@@ -3304,7 +3128,7 @@ void handleExportJSON() {
   
   json += "}";
   
-  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v" + String(DIAGNOSTIC_VERSION) + ".json");
+  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v" + String(PROJECT_VERSION) + ".json");
   server.send(200, "application/json", json);
 }
 
@@ -3356,7 +3180,7 @@ void handleExportCSV() {
   
   csv += String(Texts::test) + "," + String(Texts::builtin_led) + "," + builtinLedTestResult + "\r\n";
   csv += String(Texts::test) + "," + String(Texts::neopixel) + "," + neopixelTestResult + "\r\n";
-  csv += String(Texts::test) + ",OLED," + oledTestResult + "\r\n";
+  csv += String(Texts::test) + ",TFT," + tftTestResult + "\r\n";
   csv += String(Texts::test) + ",ADC," + adcTestResult + "\r\n";
   csv += String(Texts::test) + ",PWM," + pwmTestResult + "\r\n";
   
@@ -3368,15 +3192,15 @@ void handleExportCSV() {
   csv += "System," + String(Texts::uptime) + " ms," + String(diagnosticData.uptime) + "\r\n";
   csv += "System," + String(Texts::last_reset) + "," + getResetReason() + "\r\n";
   
-  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v" + String(DIAGNOSTIC_VERSION) + ".csv");
+  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v" + String(PROJECT_VERSION) + ".csv");
   server.send(200, "text/csv; charset=utf-8", csv);
 }
 
 void handlePrintVersion() {
   collectDiagnosticInfo();
   collectDetailedMemory();
-  
-  String html = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>" + String(Texts::title) + " " + String(Texts::version) + String(DIAGNOSTIC_VERSION) + "</title>";
+
+  String html = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>" + String(Texts::title) + " " + String(Texts::version) + String(PROJECT_VERSION) + "</title>";
   html += "<style>";
   html += "@page{size:A4;margin:10mm}";
   html += "body{font:11px Arial;margin:10px;color:#333}";
@@ -3398,7 +3222,7 @@ void handlePrintVersion() {
   html += "<body onload='window.print()'>";
   
   // Header traduit
-  html += "<h1>" + String(Texts::title) + " " + String(Texts::version) + String(DIAGNOSTIC_VERSION) + "</h1>";
+  html += "<h1>" + String(Texts::title) + " " + String(Texts::version) + String(PROJECT_VERSION) + "</h1>";
   html += "<div style='margin:10px 0;font-size:12px;color:#666'>";
   html += String(Texts::export_generated) + " " + String(millis()/1000) + "s " + String(Texts::export_after_boot) + " | IP: " + diagnosticData.ipAddress;
   html += "</div>";
@@ -3494,7 +3318,7 @@ void handlePrintVersion() {
   html += "<tr><th>" + String(Texts::parameter) + "</th><th>" + String(Texts::status) + "</th></tr>";
   html += "<tr><td>" + String(Texts::builtin_led) + "</td><td>" + builtinLedTestResult + "</td></tr>";
   html += "<tr><td>" + String(Texts::neopixel) + "</td><td>" + neopixelTestResult + "</td></tr>";
-  html += "<tr><td>" + String(Texts::oled_screen) + "</td><td>" + oledTestResult + "</td></tr>";
+  html += "<tr><td>" + String(Texts::oled_screen) + "</td><td>" + tftTestResult + "</td></tr>";
   html += "<tr><td>" + String(Texts::adc_test) + "</td><td>" + adcTestResult + "</td></tr>";
   html += "<tr><td>" + String(Texts::pwm_test) + "</td><td>" + pwmTestResult + "</td></tr>";
   html += "</table></div>";
@@ -3512,7 +3336,7 @@ void handlePrintVersion() {
   
   // Footer
   html += "<div class='footer'>";
-  html += "ESP32 Diagnostic v"+ String(DIAGNOSTIC_VERSION) + " | " + diagnosticData.chipModel + " | MAC: " + diagnosticData.macAddress;
+  html += "ESP32 Diagnostic v"+ String(PROJECT_VERSION) + " | " + diagnosticData.chipModel + " | MAC: " + diagnosticData.macAddress;
   html += "</div>";
   
   html += "</body></html>";
@@ -3807,8 +3631,10 @@ void setup() {
 
   printPSRAMDiagnostic();
 
-  // --- [NEW FEATURE] Early OLED detection for WiFi status feedback ---
-  detectOLED();
+  #if ENABLE_TFT_DISPLAY
+  tftSemaphore = xSemaphoreCreateMutex();
+  detectTFT();
+  #endif
 
   // WiFi
   WiFi.mode(WIFI_STA);
@@ -3828,27 +3654,29 @@ void setup() {
   Serial.println("Connexion WiFi...");
   const int maxWiFiAttempts = 40;
   int attempt = 0;
-  if (oledAvailable) {
-    oledShowWiFiStatus(String(Texts::wifi_connection),
+  #if ENABLE_TFT_DISPLAY
+  if (tftAvailable) {
+    tftShowWiFiStatus(String(Texts::wifi_connection),
                        String(Texts::loading),
                        "",
                        0);
   }
+  #endif
   while (wifiMulti.run() != WL_CONNECTED && attempt < maxWiFiAttempts) {
     delay(500);
     Serial.print(".");
     attempt++;
-    if (oledAvailable) {
+    #if ENABLE_TFT_DISPLAY
       int progress = (attempt * 100) / maxWiFiAttempts;
       if (progress > 100) {
         progress = 100;
       }
       String detail = String(Texts::loading) + " " + String(progress) + "%";
-      oledShowWiFiStatus(String(Texts::wifi_connection),
+      tftShowWiFiStatus(String(Texts::wifi_connection),
                          detail,
                          "",
                          progress);
-    }
+    #endif
   }
 
   bool wifiConnected = (WiFi.status() == WL_CONNECTED);
@@ -3860,11 +3688,13 @@ void setup() {
     Serial.println("\r\n\r\nWiFi OK!");
     Serial.printf("SSID: %s\r\n", WiFi.SSID().c_str());
     Serial.printf("IP: %s\r\n\r\n", WiFi.localIP().toString().c_str());
-    if (oledAvailable) {
+    #if ENABLE_TFT_DISPLAY
+    if (tftAvailable) {
       String detail = String(Texts::connected) + ": " + WiFi.SSID();
       String footer = WiFi.localIP().toString();
-      oledShowWiFiStatus(String(Texts::wifi_connection), detail, footer, 100);
+      tftShowWiFiStatus(String(Texts::wifi_connection), detail, footer, 100);
     }
+    #endif
     if (startMDNSService(true)) {
       Serial.printf("[Accès] Lien constant : %s\r\n", getStableAccessURL().c_str());
     } else {
@@ -3873,12 +3703,14 @@ void setup() {
   } else {
     Serial.println("\r\n\r\nPas de WiFi\r\n");
     Serial.printf("[Accès] Lien constant disponible après connexion : %s\r\n", getStableAccessURL().c_str());
-    if (oledAvailable) {
-      oledShowWiFiStatus(String(Texts::wifi_connection),
+    #if ENABLE_TFT_DISPLAY
+    if (tftAvailable) {
+      tftShowWiFiStatus(String(Texts::wifi_connection),
                          String(Texts::disconnected),
                          getStableAccessURL(),
                          -1);
     }
+    #endif
   }
 
   // Détections
@@ -3900,6 +3732,15 @@ void setup() {
   
   collectDiagnosticInfo();
   collectDetailedMemory();
+
+  #if ENABLE_TFT_DISPLAY
+  xTaskCreate(tftTask, "TFT_Task", TFT_TASK_STACK, NULL, 1, &tft_task_handle);
+  #endif
+
+  #if ENABLE_GPS
+  xTaskCreate(gpsTask, "GPS_Task", GPS_TASK_STACK, NULL, GPS_TASK_PRIORITY, NULL);
+  #endif
+
 
   // ========== ROUTES SERVEUR ==========
   server.on("/", handleRoot);
@@ -3936,10 +3777,10 @@ void setup() {
   server.on("/api/neopixel-color", handleNeoPixelColor);
   
   // Écrans
-  server.on("/api/oled-test", handleOLEDTest);
-  server.on("/api/oled-step", handleOLEDStep);
-  server.on("/api/oled-message", handleOLEDMessage);
-  server.on("/api/oled-config", handleOLEDConfig);
+  server.on("/api/tft-test", handleTFTTest);
+  server.on("/api/tft-message", handleTFTMessage);
+  server.on("/api/tft-backlight-on", []() { digitalWrite(TFT_BL, HIGH); server.send(200); });
+  server.on("/api/tft-backlight-off", []() { digitalWrite(TFT_BL, LOW); server.send(200); });
   
   // Tests avancés
   server.on("/api/adc-test", handleADCTest);

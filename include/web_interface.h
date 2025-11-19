@@ -130,7 +130,7 @@ String generateHTML() {
   html += "<title>";
   html += htmlEscape(Texts::title.str());
   html += " ";
-  html += htmlEscape(Texts::version.str());
+  html += htmlEscape(Texts::version.str()) + " ";
   html += DIAGNOSTIC_VERSION_STR;
   html += "</title>";
   html += "<style>";
@@ -264,7 +264,7 @@ String generateHTML() {
   html += "<h1 id='main-title'>";
   html += "<span class='status-indicator status-online' id='statusIndicator'></span>";
   html += htmlEscape(Texts::title.str());
-  html += " ";
+  html += " " + htmlEscape(Texts::version.str()) + " ";
   html += htmlEscape(Texts::version.str());
   html += DIAGNOSTIC_VERSION_STR;
   html += " - <span class='chip-type' id='chipModel'>";
