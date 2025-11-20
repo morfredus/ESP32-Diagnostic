@@ -1,11 +1,13 @@
-# ESP32 Diagnostic Suite (v3.9.0)
+# ESP32 Diagnostic Suite (v3.10.0)
 
 Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenus bilingues (FR/EN). Le firmware cible PlatformIO avec l'Arduino Core ESP32 3.3.3 et prend en charge les familles ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
 
-## Points clés de la version 3.9.0
-- Correction d'un bug critique de compilation par l'ajout de la déclaration manquante de la variable `runtimeBLE` pour les cibles ESP32-S2/S3/C3/C6/H2.
-- Amélioration de la qualité du code par le nettoyage des initialisations redondantes, la standardisation des espacements et la suppression du code mort.
-- Maintenabilité renforcée par la suppression des commentaires superflus et du tableau d'historique de version inutilisé.
+## Points clés de la version 3.10.0
+- **Refonte Matérielle Majeure** : Intégration du support pour un écran TFT ST7789 240x240 et un module GPS.
+- **Nouveau Mappage de Broches** : La configuration par défaut des broches dans `include/config.h` a été significativement mise à jour pour les nouveaux périphériques. **Ceci est un changement majeur et non rétrocompatible.**
+- **Nouvelles Bibliothèques** : Utilisation des bibliothèques Adafruit GFX et Adafruit ST7789/ST7735 pour le support TFT. Ajout de TinyGPS++ pour l'analyse des données GPS.
+- **Interface Améliorée** : L'interface web inclut désormais des cartes dédiées pour l'écran TFT, le statut GPS et d'autres capteurs, affichant des données en temps réel.
+- **Nouvelles Tâches** : Ajout de tâches FreeRTOS pour gérer les mises à jour de l'écran TFT et le traitement des données GPS en arrière-plan.
 
 ## Structure du projet
 - `src/main.cpp` – point d'entrée du firmware, boucle principale, ordonnanceur et gestionnaires HTTP.
@@ -46,7 +48,7 @@ Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de
 ## Compatibilité & prérequis
 - **Cartes :** ESP32, ESP32-S2, ESP32-S3 (recommandée), ESP32-C3, ESP32-C6, ESP32-H2.
 - **Plateforme :** PlatformIO avec l'Arduino Core ESP32 3.3.3.
-- **Bibliothèques :** Adafruit BusIO, Adafruit GFX Library, Adafruit SSD1306, Adafruit NeoPixel, U8g2 (installation automatique via platformio.ini).
+- **Bibliothèques :** Adafruit BusIO, Adafruit GFX, Adafruit ST7735 and ST7789 Library, Adafruit NeoPixel, DHT sensor library, TinyGPS++ (installation automatique via platformio.ini).
 
 ## Support
 - Licence : [MIT](LICENSE)
