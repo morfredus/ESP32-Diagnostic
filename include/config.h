@@ -69,11 +69,11 @@
 #define DEFAULT_RGB_LED_PIN_B 12
 
 // ========== BUZZER CONFIGURATION ==========
-#define DEFAULT_BUZZER_PIN 16                // -1 to disable
+#define DEFAULT_BUZZER_PIN 4                // -1 to disable
 
 // ========== SENSOR CONFIGURATION ==========
 // DHT Temperature & Humidity Sensor
-#define DEFAULT_DHT_PIN 4                    // -1 to disable
+#define DEFAULT_DHT_PIN 19                   // -1 to disable
 #define DEFAULT_DHT_SENSOR_TYPE 11           // 11 for DHT11, 22 for DHT22
 
 // Photoresistor (Light Sensor)
@@ -148,4 +148,9 @@
 
 // ========== WATCHDOG CONFIGURATION ==========
 // Task watchdog timeout (seconds)
-#define TASK_WATCHDOG_T
+#define TASK_WATCHDOG_TIMEOUT_S 10
+
+// Disable watchdog for idle tasks (recommended for diagnostics)
+#define DISABLE_IDLE_TASK_WDT true
+
+#endif // CONFIG_H
