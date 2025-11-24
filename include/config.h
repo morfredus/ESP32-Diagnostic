@@ -148,9 +148,4 @@
 
 // ========== WATCHDOG CONFIGURATION ==========
 // Task watchdog timeout (seconds)
-#define TASK_WATCHDOG_TIMEOUT_S 10
-
-// Disable watchdog for idle tasks (recommended for diagnostics)
-#define DISABLE_IDLE_TASK_WDT true
-
-#endif // CONFIG_H
+#define TASK_WATCHDOG_T
