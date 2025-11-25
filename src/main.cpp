@@ -1,19 +1,9 @@
 /*
- * ESP32 Diagnostic Suite v3.10.3
+ * ESP32 Diagnostic Suite
  * Compatible: ESP32 class targets with >=4MB Flash & >=8MB PSRAM (ESP32 / ESP32-S3)
  * Optimized for ESP32 Arduino Core 3.3.3 / PlatformIO
  * Tested board: ESP32-S3 DevKitC-1 N16R8 with PSRAM OPI (Core 3.3.3)
  * Author: morfredus
- * v3.8.01-dev - Modern responsive UI with sticky header
- * v3.8.03-dev - Complete UI redesign with shadow effects and compact header
- * v3.8.04-dev - Compact header, chip type inline, language buttons repositioned
- * v3.8.05-dev - Unified font sizes across header elements to match UI
- * v3.8.06-dev - Premium color palette with enhanced shadow system
- * v3.8.08-dev - Fixed PlatformIO compilation errors (LEDC API, MDNS)
- * v3.8.09-dev - Attempted MbedTLS CMAC fixes (linking issues persist)
- * v3.9.0-dev - Code maintenance: fixed runtimeBLE bug, cleaned comments and dead code
- * v3.10.2 - CRITICAL FIX: Corrected C++17 compilation flags to fix runtime crash
- * v3.10.3 - Fixed portGET_ARGUMENT_COUNT compilation error with stable platform version
  */
 
 #include <WiFi.h>
@@ -1727,7 +1717,7 @@ void oledShowMessage(String message) {
   oled.sendBuffer();
 }
 
-// --- [NEW FEATURE] WiFi connection status banner on OLED ---
+// WiFi connection status banner on OLED
 void oledShowWiFiStatus(const String& title,
                         const String& detail,
                         const String& footer,
@@ -3850,10 +3840,6 @@ void handleRoot() {
   server.send(200, "text/html; charset=utf-8", generateHTML());
 }
 
-void handleJavaScript() {
-  server.send(200, "application/javascript; charset=utf-8", generateJavaScript());
-}
-
 // ========== DEBUG ROUTES (Troubleshooting) ==========
 void setupDebugRoutes() {
   // Minimal test JavaScript
@@ -3891,10 +3877,10 @@ void setup() {
 
   printPSRAMDiagnostic();
 
-  // --- [NEW FEATURE] Early OLED detection for WiFi status feedback ---
+  // Early OLED detection for WiFi status feedback
   detectOLED();
 
-  // --- TFT Display initialization ---
+  // TFT Display initialization
   if (initTFT()) {
     displayBootSplash();
     delay(1000);
@@ -4080,7 +4066,7 @@ void setup() {
   Serial.println("Serveur Web OK!");
   Serial.println("\r\n===============================================");
   Serial.println("            PRET - En attente");
-  Serial.println("   Langue par defaut: FRANCAIS");
+  Serial.println("   Langue par défaut: FRANCAIS");
   Serial.println("   Changement dynamique via interface web");
   Serial.println("===============================================\r\n");
 }
@@ -4089,8 +4075,6 @@ void setup() {
 void loop() {
   server.handleClient();
   maintainNetworkServices();
-  // --- [PLATFORMIO FIX] MDNS.update() not needed in ESP32 Arduino Core 3.x+ ---
-  // mDNS service runs in background task, no manual update required
 
   static unsigned long lastUpdate = 0;
   if (millis() - lastUpdate > 30000) {
