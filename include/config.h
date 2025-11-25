@@ -52,6 +52,19 @@
 #define SCREEN_ADDRESS 0x3C
 #define DEFAULT_OLED_ROTATION 0      // 0, 1, 2, or 3 (90° increments)
 
+// ========== TFT ST7789 DISPLAY CONFIGURATION ==========
+// TFT LCD display using ST7789 controller (SPI)
+#define ENABLE_TFT_DISPLAY true      // Set to true to enable TFT display
+#define TFT_WIDTH 240
+#define TFT_HEIGHT 240
+#define TFT_MOSI 11                  // SPI MOSI pin
+#define TFT_SCLK 12                  // SPI Clock pin
+#define TFT_CS 10                    // Chip Select pin
+#define TFT_DC 9                     // Data/Command pin
+#define TFT_RST 46                   // Reset pin
+#define TFT_BL 48                    // Backlight pin (-1 to disable)
+#define TFT_ROTATION 0               // 0, 1, 2, or 3 (90° increments)
+
 // ========== LED CONFIGURATION ==========
 // Built-in LED (set to -1 if not available or to disable)
 // Common values: 2 (ESP32), 8 (ESP32-S3), -1 (disable)

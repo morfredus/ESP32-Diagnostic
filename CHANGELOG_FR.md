@@ -2,6 +2,23 @@
 
 Toutes les évolutions notables d'ESP32 Diagnostic Suite sont documentées ici. Ce projet suit [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.11.0] - 2025-11-25
+### Ajouts
+- **NOUVELLE FONCTIONNALITÉ** : Support de l'écran TFT ST7789 avec résolution 240x240.
+- Écran de démarrage sur l'affichage TFT montrant l'initialisation du système.
+- Visualisation en temps réel de l'état de connexion WiFi sur le TFT.
+- Affichage de l'adresse IP sur le TFT une fois connecté.
+- Pins TFT configurables (MOSI, SCLK, CS, DC, RST, Backlight) dans config.h.
+- Nouveau fichier d'en-tête tft_display.h pour la gestion de l'affichage TFT.
+
+### Corrections
+- Améliorations de l'initialisation de l'interface web et du chargement des onglets.
+- Amélioration de la gestion des erreurs JavaScript pour une meilleure réactivité de l'interface.
+
+### Améliorations
+- Meilleur retour visuel pendant le processus de démarrage avec l'écran TFT.
+- Support de double affichage (OLED + TFT) pour des diagnostics améliorés.
+
 ## [Version 3.10.3] - 2025-11-25
 ### Ajouts
 - Aucun.

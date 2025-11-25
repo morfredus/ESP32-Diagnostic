@@ -114,6 +114,9 @@
 // Dual-language UI strings
 #include "languages.h"
 
+// TFT Display support
+#include "tft_display.h"
+
 // Set default language from config.h
 Language currentLanguage = DEFAULT_LANGUAGE;
 
@@ -3812,6 +3815,12 @@ void setup() {
   // --- [NEW FEATURE] Early OLED detection for WiFi status feedback ---
   detectOLED();
 
+  // --- TFT Display initialization ---
+  if (initTFT()) {
+    displayBootSplash();
+    delay(1000);
+  }
+
   // WiFi
   WiFi.mode(WIFI_STA);
   WiFi.persistent(false);
@@ -3836,6 +3845,7 @@ void setup() {
                        "",
                        0);
   }
+  displayWiFiStatus("Connecting to WiFi...");
   while (wifiMulti.run() != WL_CONNECTED && attempt < maxWiFiAttempts) {
     delay(500);
     Serial.print(".");
@@ -3867,6 +3877,7 @@ void setup() {
       String footer = WiFi.localIP().toString();
       oledShowWiFiStatus(String(Texts::wifi_connection), detail, footer, 100);
     }
+    displayWiFiConnected(WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
     if (startMDNSService(true)) {
       Serial.printf("[Accès] Lien constant : %s\r\n", getStableAccessURL().c_str());
     } else {
@@ -3881,6 +3892,7 @@ void setup() {
                          getStableAccessURL(),
                          -1);
     }
+    displayWiFiFailed();
   }
 
   // Détections
