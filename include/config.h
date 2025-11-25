@@ -58,7 +58,7 @@
 
 // ========== CAPTEURS ==========
 #define DEFAULT_DHT_PIN 19         // DHT11/DHT22 (Température/Humidité)
-#define DEFAULT_DHT_SENSOR_TYPE 11 // 11=DHT11, 22=DHT22
+#define DEFAULT_DHT_SENSOR_TYPE 22 // 11=DHT11, 22=DHT22
 #define DEFAULT_LIGHT_SENSOR_PIN 4 // Capteur de lumière (photoresistor)
 
 // HC-SR04 Ultrason
