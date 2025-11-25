@@ -2,6 +2,18 @@
 
 Toutes les évolutions notables d'ESP32 Diagnostic Suite sont documentées ici. Ce projet suit [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.11.2] - 2025-11-25
+### Corrections
+- **BUILD** : Correction de l'erreur de typage FPSTR() empêchant la compilation.
+- Correction de la gestion des types de pointeurs pour les chaînes PROGMEM dans l'implémentation du transfert par morceaux.
+- Changement de `const char* staticJs = FPSTR(...)` vers un modèle d'accès PROGMEM approprié pour ESP32.
+- Résolution de l'erreur de compilation `cannot convert 'const __FlashStringHelper*' to 'const char*'`.
+
+### Changements Techniques
+- Mise à jour de `handleJavaScriptRoute()` pour utiliser l'accès direct au pointeur PROGMEM pour la vérification.
+- Maintien de l'implémentation du transfert par morceaux tout en corrigeant la compatibilité des types.
+- Ajout de commentaires expliquant le mapping mémoire PROGMEM spécifique à ESP32.
+
 ## [Version 3.11.1] - 2025-11-25
 ### Corrections
 - **CRITIQUE** : Correction du chargement JavaScript de l'interface web utilisant l'encodage de transfert par morceaux.
