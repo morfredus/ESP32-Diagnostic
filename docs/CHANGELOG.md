@@ -2,6 +2,15 @@
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.11.3] - 2025-11-25
+### Fixed
+- **CONFIG**: Corrected TFT backlight pin from GPIO 48 to GPIO 15 to resolve NeoPixel pin conflict.
+- TFT display backlight now uses dedicated GPIO 15 instead of conflicting with GPIO 48 (NeoPixel).
+
+### Technical Changes
+- Updated `TFT_BL` definition in `config.h` from pin 48 to pin 15.
+- Ensures proper TFT backlight operation without NeoPixel hardware conflicts.
+
 ## [Version 3.11.2] - 2025-11-25
 ### Fixed
 - **BUILD**: Fixed FPSTR() type casting error preventing compilation.

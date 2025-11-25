@@ -62,7 +62,7 @@
 #define TFT_CS 10                    // Chip Select pin
 #define TFT_DC 9                     // Data/Command pin
 #define TFT_RST 46                   // Reset pin
-#define TFT_BL 48                    // Backlight pin (-1 to disable)
+#define TFT_BL 15                    // Backlight pin (-1 to disable)
 #define TFT_ROTATION 0               // 0, 1, 2, or 3 (90° increments)
 
 // ========== LED CONFIGURATION ==========
