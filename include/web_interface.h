@@ -377,7 +377,7 @@ String generateHTML() {
 // Génère le JavaScript principal
 String generateJavaScript() {
   String js;
-  js.reserve(45000);  // Reserve memory to avoid reallocations (~42KB final size)
+  js.reserve(65000);  // Reserve memory to avoid reallocations (increased from 45000 to 65000)
   js = F("console.log('ESP32 Diagnostic v");
   js += DIAGNOSTIC_VERSION_STR;
   js += F(" - Initialisation');const UPDATE_INTERVAL=5000;let currentLang='");
