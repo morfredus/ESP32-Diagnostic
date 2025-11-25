@@ -2,6 +2,19 @@
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.11.1] - 2025-11-25
+### Fixed
+- **CRITICAL**: Fixed web interface JavaScript loading using chunked transfer encoding.
+- Replaced monolithic JavaScript generation with memory-efficient chunked streaming.
+- Enhanced debug logging to show JavaScript size breakdown (preamble, translations, static code).
+- Fixed memory overflow issues when JavaScript exceeded allocated buffer size.
+
+### Technical Changes
+- Implemented chunked transfer encoding in `handleJavaScriptRoute()`.
+- Separated JavaScript generation into three parts: preamble, translations, static code.
+- Added PROGMEM verification to detect missing functions before sending.
+- Reduced memory pressure by streaming JavaScript content instead of buffering.
+
 ## [Version 3.11.0] - 2025-11-25
 ### Added
 - **NEW FEATURE**: TFT ST7789 display support with 240x240 resolution.

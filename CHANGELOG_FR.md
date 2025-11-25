@@ -2,6 +2,19 @@
 
 Toutes les évolutions notables d'ESP32 Diagnostic Suite sont documentées ici. Ce projet suit [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.11.1] - 2025-11-25
+### Corrections
+- **CRITIQUE** : Correction du chargement JavaScript de l'interface web utilisant l'encodage de transfert par morceaux.
+- Remplacement de la génération JavaScript monolithique par un streaming mémoire-efficient par morceaux.
+- Amélioration des logs de débogage pour afficher la répartition de la taille JavaScript (préambule, traductions, code statique).
+- Correction des problèmes de dépassement mémoire quand le JavaScript dépassait la taille du tampon alloué.
+
+### Changements Techniques
+- Implémentation de l'encodage de transfert par morceaux dans `handleJavaScriptRoute()`.
+- Séparation de la génération JavaScript en trois parties : préambule, traductions, code statique.
+- Ajout de vérification PROGMEM pour détecter les fonctions manquantes avant envoi.
+- Réduction de la pression mémoire en streamant le contenu JavaScript au lieu de le mettre en tampon.
+
 ## [Version 3.11.0] - 2025-11-25
 ### Ajouts
 - **NOUVELLE FONCTIONNALITÉ** : Support de l'écran TFT ST7789 avec résolution 240x240.
