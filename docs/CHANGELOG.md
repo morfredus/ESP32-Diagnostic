@@ -2,6 +2,20 @@
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.11.4] - 2025-11-25
+### Improved
+- **MAINTENANCE**: Code quality improvements and cleanup.
+- Removed obsolete development version history from source code headers.
+- Removed unused `handleJavaScript()` function (dead code elimination).
+- Simplified and standardized comment style throughout codebase.
+- Fixed French typo: "defaut" → "défaut" in setup messages.
+
+### Technical Changes
+- Cleaned obsolete version comments (v3.8.x-dev through v3.10.3).
+- Deleted `handleJavaScript()` function never referenced in routing.
+- Normalized comment delimiters and removed redundant annotations.
+- Updated version to 3.11.4 in platformio.ini.
+
 ## [Version 3.11.3] - 2025-11-25
 ### Fixed
 - **CONFIG**: Corrected TFT backlight pin from GPIO 48 to GPIO 15 to resolve NeoPixel pin conflict.
