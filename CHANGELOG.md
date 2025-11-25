@@ -2,6 +2,19 @@
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.10.3] - 2025-11-25
+### Added
+- None.
+
+### Fixed
+- **CRITICAL**: Fixed `portGET_ARGUMENT_COUNT()` static assertion compilation error in FreeRTOS macros.
+- Changed platform from unstable git version to stable `espressif32@6.5.0` release.
+- Added `-DCONFIG_FREERTOS_ASSERT_ON_UNTESTED_FUNCTION=0` build flag to prevent FreeRTOS macro conflicts.
+
+### Improved
+- Enhanced build stability by using stable platform version instead of git repository.
+- Improved compatibility with FreeRTOS and Arduino-ESP32 framework.
+
 ## [Version 3.10.2] - 2025-11-25
 ### Added
 - None.
