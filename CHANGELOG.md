@@ -2,6 +2,18 @@
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.11.2] - 2025-11-25
+### Fixed
+- **BUILD**: Fixed FPSTR() type casting error preventing compilation.
+- Corrected pointer type handling for PROGMEM strings in chunked transfer implementation.
+- Changed `const char* staticJs = FPSTR(...)` to proper ESP32 PROGMEM access pattern.
+- Resolved `cannot convert 'const __FlashStringHelper*' to 'const char*'` compilation error.
+
+### Technical Changes
+- Updated `handleJavaScriptRoute()` to use direct PROGMEM pointer access for verification.
+- Maintained chunked transfer implementation while fixing type compatibility.
+- Added comments explaining ESP32-specific PROGMEM memory mapping.
+
 ## [Version 3.11.1] - 2025-11-25
 ### Fixed
 - **CRITICAL**: Fixed web interface JavaScript loading using chunked transfer encoding.
