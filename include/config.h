@@ -12,7 +12,7 @@
 
 // ========== VERSION & HOSTNAME ==========
 // These values should match the project version and can be customized for your deployment
-#define DIAGNOSTIC_VERSION "3.9.0"
+#define DIAGNOSTIC_VERSION "3.10.2"
 #define DIAGNOSTIC_HOSTNAME "esp32-diagnostic"
 
 // ========== DEFAULT LANGUAGE ==========

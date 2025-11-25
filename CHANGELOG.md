@@ -2,6 +2,20 @@
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.10.2] - 2025-11-25
+### Added
+- None.
+
+### Fixed
+- **CRITICAL**: Fixed C++17 compilation flags causing runtime crash on startup.
+- Added `build_unflags = -std=gnu++11` to properly override default C++ standard.
+- Changed `-std=gnu++17` to `-std=c++17` for stricter C++17 compliance.
+- Resolved inline variable initialization issues that prevented web interface and OLED display from functioning.
+
+### Improved
+- Cleaned up duplicate build flags in `platformio.ini`.
+- Enhanced build system configuration for better C++17 support.
+
 ## [Version 3.9.0] - 2025-11-11
 ### Added
 - Updated project documentation and repository references for PlatformIO-based deployment.
