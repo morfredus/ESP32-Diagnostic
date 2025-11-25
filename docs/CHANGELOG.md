@@ -2,6 +2,23 @@
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.11.0] - 2025-11-25
+### Added
+- **NEW FEATURE**: TFT ST7789 display support with 240x240 resolution.
+- Boot splash screen on TFT display showing system initialization.
+- Real-time WiFi connection status visualization on TFT.
+- IP address display on TFT once connected.
+- Configurable TFT pins (MOSI, SCLK, CS, DC, RST, Backlight) in config.h.
+- New tft_display.h header file for TFT display management.
+
+### Fixed
+- Web interface initialization and tab loading improvements.
+- Enhanced JavaScript error handling for better UI responsiveness.
+
+### Improved
+- Better visual feedback during boot process with TFT display.
+- Dual display support (OLED + TFT) for enhanced diagnostics.
+
 ## [Version 3.10.3] - 2025-11-25
 ### Added
 - None.
@@ -41,6 +58,20 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - Updated all documentation to reflect PlatformIO toolchain and new repository URL.
 - Standardized version references across entire project documentation.
 - Enhanced repository structure for professional development workflow.
+
+## [Version 3.8.14] - 2025-11-11
+### Added
+- None.
+
+### Fixed
+- **Critical**: Added missing `runtimeBLE` variable declaration that caused compilation errors on ESP32-S2/S3/C3/C6/H2 targets.
+- Removed unused `DIAGNOSTIC_VERSION_HISTORY` array to reduce code clutter.
+
+### Improved
+- Cleaned up redundant `String` initializations (`String foo = ""` → `String foo`) across 7 instances.
+- Standardized `for` loop spacing (`for(` → `for `) across 23 instances for better readability.
+- Removed superfluous inline comments to improve code clarity.
+- Updated version references to 3.8.14.
 
 ## [Version 3.8.0] - 2025-11-08
 ### Added

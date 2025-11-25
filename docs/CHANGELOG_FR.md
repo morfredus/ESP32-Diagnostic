@@ -2,6 +2,23 @@
 
 Toutes les évolutions notables d'ESP32 Diagnostic Suite sont documentées ici. Ce projet suit [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.11.0] - 2025-11-25
+### Ajouts
+- **NOUVELLE FONCTIONNALITÉ** : Support de l'écran TFT ST7789 avec résolution 240x240.
+- Écran de démarrage sur l'affichage TFT montrant l'initialisation du système.
+- Visualisation en temps réel de l'état de connexion WiFi sur le TFT.
+- Affichage de l'adresse IP sur le TFT une fois connecté.
+- Pins TFT configurables (MOSI, SCLK, CS, DC, RST, Backlight) dans config.h.
+- Nouveau fichier d'en-tête tft_display.h pour la gestion de l'affichage TFT.
+
+### Corrections
+- Améliorations de l'initialisation de l'interface web et du chargement des onglets.
+- Amélioration de la gestion des erreurs JavaScript pour une meilleure réactivité de l'interface.
+
+### Améliorations
+- Meilleur retour visuel pendant le processus de démarrage avec l'écran TFT.
+- Support de double affichage (OLED + TFT) pour des diagnostics améliorés.
+
 ## [Version 3.10.3] - 2025-11-25
 ### Ajouts
 - Aucun.
@@ -41,6 +58,20 @@ Toutes les évolutions notables d'ESP32 Diagnostic Suite sont documentées ici. 
 - Mise à jour de toute la documentation pour refléter la toolchain PlatformIO et la nouvelle URL du dépôt.
 - Standardisation des références de version dans toute la documentation du projet.
 - Structure de dépôt améliorée pour un flux de travail de développement professionnel.
+
+## [Version 3.8.14] - 2025-11-11
+### Ajouts
+- Aucun.
+
+### Corrections
+- **Critique** : Ajout de la déclaration manquante de la variable `runtimeBLE` qui causait des erreurs de compilation sur les cibles ESP32-S2/S3/C3/C6/H2.
+- Suppression du tableau `DIAGNOSTIC_VERSION_HISTORY` inutilisé pour réduire l'encombrement du code.
+
+### Améliorations
+- Nettoyage des initialisations redondantes de `String` (`String foo = ""` → `String foo`) sur 7 instances.
+- Standardisation de l'espacement des boucles `for` (`for(` → `for `) sur 23 instances pour améliorer la lisibilité.
+- Suppression des commentaires superflus pour clarifier le code.
+- Mise à jour des références de version vers 3.8.14.
 
 ## [Version 3.8.0] - 2025-11-08
 ### Ajouts

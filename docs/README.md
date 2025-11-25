@@ -1,34 +1,20 @@
-# ESP32 Diagnostic Suite (v3.10.3)
-
----
-
-## ⚠️ NOTICE / AVIS IMPORTANT
-
-**🇬🇧 English:**
-This repository is **no longer maintained**. Development has been migrated from Arduino IDE to PlatformIO for better dependency management, build consistency, and professional development workflow.
-
-**➡️ Please visit the new repository:** [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic)
-
-**🇫🇷 Français :**
-Ce dépôt n'est **plus maintenu**. Le développement a migré d'Arduino IDE vers PlatformIO pour une meilleure gestion des dépendances, une cohérence de compilation et un flux de travail de développement professionnel.
-
-**➡️ Veuillez visiter le nouveau dépôt :** [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic)
-
----
+# ESP32 Diagnostic Suite (v3.11.0)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports the ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, and ESP32-H2 families.
 
-## Highlights of version 3.10.3
-- **Critical compilation fix**: Resolved `portGET_ARGUMENT_COUNT()` FreeRTOS macro error by migrating to stable platform version.
-- **Enhanced build stability**: Switched from git-based platform to stable `espressif32@6.5.0` release.
-- **Improved compatibility**: Added FreeRTOS assertion flags to prevent macro conflicts.
-- **Previous fixes**: Corrected C++17 compilation flags (v3.10.2), fixed runtime crashes, and improved code quality (v3.9.0).
+## Highlights of version 3.11.0
+- **NEW FEATURE**: TFT ST7789 display support (240x240) with boot splash screen and WiFi status visualization.
+- **Enhanced visual feedback**: Real-time system status on TFT display including IP address.
+- **Dual display support**: Simultaneous OLED and TFT display capability for comprehensive diagnostics.
+- **Web interface improvements**: Enhanced tab loading and JavaScript error handling.
+- **Previous fixes**: FreeRTOS compilation fixes (v3.10.3), C++17 runtime crashes (v3.10.2), code quality improvements (v3.9.0).
 
 ## Project structure
-- `src/main.cpp` – firmware entry point and diagnostic scheduler.
+- `src/main.cpp` – firmware entry point, main loop, task scheduler, and HTTP handlers.
 - `include/languages.h` – translation catalog and runtime language switcher.
 - `include/web_interface.h` – HTML/CSS/JS templates served by the firmware.
 - `include/wifi-config-example.h` – template for Wi-Fi credential storage.
+- `platformio.ini` – PlatformIO configuration for all supported ESP32 targets.
 - `docs/` – comprehensive wiki including installation, usage, API reference, and deployment guides (EN/FR).
 
 ## Documentation
@@ -54,15 +40,17 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an intera
 ## Core capabilities
 - Multilingual interface with real-time FR/EN switching without page reload.
 - Automated hardware diagnostics covering GPIO, ADC, touch pads, PWM, I2C, SPI, PSRAM, flash, and Wi-Fi scanning.
+- **TFT ST7789 display support** with boot splash screen and real-time WiFi/IP status (240x240 resolution).
 - OLED 0.96" I2C screen test suite with per-step triggers and animation previews.
+- **Dual display support**: simultaneous OLED and TFT operation for enhanced diagnostics.
 - REST API endpoints for triggering diagnostics and retrieving reports (TXT/JSON/CSV/printable view).
 - Wi-Fi multi-AP support, mDNS discovery via `http://ESP32-Diagnostic.local`, and exportable reports.
 - Optional NeoPixel/WS2812B LED test patterns and benchmarking tools for CPU/memory.
 
 ## Compatibility & requirements
 - **Boards:** ESP32, ESP32-S2, ESP32-S3 (recommended), ESP32-C3, ESP32-C6, ESP32-H2.
-- **Arduino IDE:** 2.x or newer with ESP32 Arduino Core 3.3.3.
-- **Libraries:** Adafruit BusIO, Adafruit GFX Library, Adafruit SSD1306, Adafruit NeoPixel (install via Library Manager).
+- **Platform:** PlatformIO with ESP32 Arduino Core 3.3.3.
+- **Libraries:** Adafruit BusIO, Adafruit GFX Library, Adafruit ST7735 and ST7789 Library, Adafruit SSD1306, Adafruit NeoPixel, U8g2 (auto-installed via platformio.ini).
 
 ## Support
 - License: [MIT](LICENSE)
