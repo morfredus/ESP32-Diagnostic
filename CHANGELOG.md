@@ -2,6 +2,10 @@
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.11.4] - 2025-11-25
+### Fixes
+- **CONFIG**: Switch to the official esp32-s3-devkitc-1 board, espressif32 platform, arduino framework + co,nfig for PSRAM ok
+
 ## [Version 3.11.3] - 2025-11-25
 ### Fixed
 - **CONFIG**: Corrected TFT backlight pin from GPIO 48 to GPIO 15 to resolve NeoPixel pin conflict.
