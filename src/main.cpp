@@ -1,5 +1,5 @@
 /*
- * ESP32 Diagnostic Suite v3.10.2
+ * ESP32 Diagnostic Suite v3.10.3
  * Compatible: ESP32 class targets with >=4MB Flash & >=8MB PSRAM (ESP32 / ESP32-S3)
  * Optimized for ESP32 Arduino Core 3.3.3 / PlatformIO
  * Tested board: ESP32-S3 DevKitC-1 N16R8 with PSRAM OPI (Core 3.3.3)
@@ -13,6 +13,7 @@
  * v3.8.09-dev - Attempted MbedTLS CMAC fixes (linking issues persist)
  * v3.9.0-dev - Code maintenance: fixed runtimeBLE bug, cleaned comments and dead code
  * v3.10.2 - CRITICAL FIX: Corrected C++17 compilation flags to fix runtime crash
+ * v3.10.3 - Fixed portGET_ARGUMENT_COUNT compilation error with stable platform version
  */
 
 #include <WiFi.h>

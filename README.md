@@ -1,11 +1,12 @@
-# ESP32 Diagnostic Suite (v3.9.0)
+# ESP32 Diagnostic Suite (v3.10.3)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports the ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, and ESP32-H2 families.
 
-## Highlights of version 3.9.0
-- Fixed a critical compilation bug by adding the missing `runtimeBLE` variable declaration for ESP32-S2/S3/C3/C6/H2 targets.
-- Improved code quality through cleanup of redundant initializations, standardized spacing, and removal of dead code.
-- Enhanced maintainability by removing superfluous comments and the unused version history array.
+## Highlights of version 3.10.3
+- **Critical compilation fix**: Resolved `portGET_ARGUMENT_COUNT()` FreeRTOS macro error by migrating to stable platform version.
+- **Enhanced build stability**: Switched from git-based platform to stable `espressif32@6.5.0` release.
+- **Improved compatibility**: Added FreeRTOS assertion flags to prevent macro conflicts.
+- **Previous fixes**: Corrected C++17 compilation flags (v3.10.2), fixed runtime crashes, and improved code quality (v3.9.0).
 
 ## Project structure
 - `src/main.cpp` – firmware entry point, main loop, task scheduler, and HTTP handlers.
