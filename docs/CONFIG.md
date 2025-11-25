@@ -27,10 +27,25 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 - Translation strings live in `languages.h` inside the `Translations` structure. Add new languages by extending this file and exposing them in the UI.
 - Release 3.8.0 keeps the shared catalog in sync while adding the Wi-Fi splash and NimBLE safeguards with no extra configuration required.
 
-## OLED configuration
+## Display configuration
+
+### OLED configuration
 - Default pins: SDA=21, SCL=22 (ESP32 standard).
 - Change wiring on the fly with `/api/oled-config?sda=<pin>&scl=<pin>`.
 - After updating pins, the firmware automatically reinitialises the display and stores the mapping in RAM.
+
+### TFT ST7789 configuration (v3.11.0+)
+- Default pins configured in `include/config.h`:
+  - MOSI: GPIO 11
+  - SCLK: GPIO 12
+  - CS: GPIO 10
+  - DC: GPIO 9
+  - RST: GPIO 46
+  - BL (backlight): GPIO 15
+- TFT resolution: 240x240 pixels
+- Displays boot splash screen and real-time WiFi/IP status
+- Enable/disable via `ENABLE_TFT_DISPLAY` flag in config.h
+- Supports simultaneous OLED and TFT operation (dual display mode)
 
 ## Bluetooth® naming rules
 - Names must be 3–31 characters, ASCII alphanumeric plus hyphen or underscore.

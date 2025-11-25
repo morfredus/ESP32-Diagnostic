@@ -20,6 +20,14 @@
 - Contrôlez l'adresse I2C (0x3C par défaut). Remplacez l'écran s'il ne répond pas sur le bus.
 - Assurez une alimentation stable (3,3 V, masse commune avec l'ESP32).
 
+## L'écran TFT reste noir (v3.11.0+)
+- Vérifiez que la configuration des pins TFT dans `include/config.h` correspond au câblage matériel.
+- Assurez-vous que le pin de rétro-éclairage (TFT_BL) est correctement configuré sur GPIO 15 et ne conflicte pas avec NeoPixel (GPIO 48).
+- Vérifiez les connexions SPI : MOSI (GPIO 11), SCLK (GPIO 12), CS (GPIO 10), DC (GPIO 9), RST (GPIO 46).
+- Vérifiez que `ENABLE_TFT_DISPLAY` est défini à `true` dans config.h.
+- Assurez une alimentation suffisante pour l'écran TFT (3.3V ou 5V selon le modèle, masse commune avec l'ESP32).
+- Consultez le moniteur série pour les messages d'initialisation TFT : "[TFT] Initializing ST7789 display..."
+
 ## La connexion Wi-Fi échoue
 - Revérifiez les couples SSID/mot de passe dans `wifi-config.h`.
 - Surveillez le moniteur série pour les codes `WL_NO_SSID_AVAIL` ou `WL_CONNECT_FAILED`.
