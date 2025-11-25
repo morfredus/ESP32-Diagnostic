@@ -1,13 +1,13 @@
-# ESP32 Diagnostic Suite (v3.11.0)
+# ESP32 Diagnostic Suite (v3.11.1)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports the ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, and ESP32-H2 families.
 
-## Highlights of version 3.11.0
-- **NEW FEATURE**: TFT ST7789 display support (240x240) with boot splash screen and WiFi status visualization.
-- **Enhanced visual feedback**: Real-time system status on TFT display including IP address.
-- **Dual display support**: Simultaneous OLED and TFT display capability for comprehensive diagnostics.
-- **Web interface improvements**: Enhanced tab loading and JavaScript error handling.
-- **Previous fixes**: FreeRTOS compilation fixes (v3.10.3), C++17 runtime crashes (v3.10.2), code quality improvements (v3.9.0).
+## Highlights of version 3.11.1
+- **CRITICAL FIX**: Resolved web interface JavaScript loading issues using chunked transfer encoding (v3.11.1).
+- **Memory optimization**: Implemented streaming JavaScript delivery to prevent memory overflow.
+- **NEW FEATURE**: TFT ST7789 display support (240x240) with boot splash screen and WiFi status (v3.11.0).
+- **Enhanced diagnostics**: Real-time JavaScript size monitoring and function verification.
+- **Previous fixes**: FreeRTOS compilation (v3.10.3), C++17 runtime crashes (v3.10.2), code quality (v3.9.0).
 
 ## Project structure
 - `src/main.cpp` – firmware entry point, main loop, task scheduler, and HTTP handlers.

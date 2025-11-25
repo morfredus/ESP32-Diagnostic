@@ -3788,33 +3788,59 @@ void handleGetTranslations() {
 // Unique JavaScript handler defined in sketch (handleJavaScriptRoute)
 void handleJavaScriptRoute() {
   unsigned long startTime = millis();
-  String js = generateJavaScript();
-  unsigned long generateTime = millis() - startTime;
 
-  // Debug logs
-  Serial.println("\n========== JAVASCRIPT DEBUG ==========");
-  Serial.printf("Generation time: %lu ms\n", generateTime);
-  Serial.printf("JavaScript size: %d bytes\n", js.length());
-  Serial.printf("Free heap before: %d bytes\n", ESP.getFreeHeap());
+  // Use chunked transfer to avoid memory issues
+  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  server.send(200, "application/javascript; charset=utf-8", "");
 
-  // Check for critical functions
-  bool hasShowTab = (js.indexOf("function showTab") != -1);
-  bool hasChangeLang = (js.indexOf("function changeLang") != -1);
-  bool hasLoadTab = (js.indexOf("function loadTab") != -1);
+  // ===== LOGS DE DÉBOGAGE =====
+  Serial.println("\n========== JAVASCRIPT DEBUG (CHUNKED) ==========");
+  Serial.printf("Free heap at start: %d bytes\n", ESP.getFreeHeap());
+
+  // Send preamble
+  String preamble = "console.log('ESP32 Diagnostic v";
+  preamble += DIAGNOSTIC_VERSION_STR;
+  preamble += " - Initialisation');const UPDATE_INTERVAL=5000;let currentLang='";
+  preamble += (currentLanguage == LANG_FR) ? "fr" : "en";
+  preamble += "';let updateTimer=null;let isConnected=true;";
+
+  Serial.printf("Sending preamble: %d bytes\n", preamble.length());
+  server.sendContent(preamble);
+
+  // Send translations
+  String translations = "const DEFAULT_TRANSLATIONS=";
+  translations += buildTranslationsJSON();
+  translations += ";let translationsCache=DEFAULT_TRANSLATIONS;";
+
+  Serial.printf("Sending translations: %d bytes\n", translations.length());
+  server.sendContent(translations);
+
+  // Send main JavaScript from PROGMEM
+  const char* staticJs = FPSTR(DIAGNOSTIC_JS_STATIC);
+  size_t staticJsLen = strlen(staticJs);
+
+  Serial.printf("Sending static JS: %d bytes\n", staticJsLen);
+  server.sendContent(staticJs);
+
+  // Verify critical functions are present
+  bool hasShowTab = (strstr(staticJs, "function showTab") != NULL);
+  bool hasChangeLang = (strstr(staticJs, "function changeLang") != NULL);
 
   Serial.printf("Function showTab: %s\n", hasShowTab ? "YES" : "NO [ERROR]");
   Serial.printf("Function changeLang: %s\n", hasChangeLang ? "YES" : "NO [ERROR]");
-  Serial.printf("Function loadTab: %s\n", hasLoadTab ? "YES" : "NO [ERROR]");
 
   if (!hasShowTab || !hasChangeLang) {
-    Serial.println("WARNING: Critical JS functions missing!");
-    Serial.println("Possible cause: JavaScript too large or generation error");
+    Serial.println("CRITICAL ERROR: JS functions missing in PROGMEM!");
+    Serial.println("Check DIAGNOSTIC_JS_STATIC in web_interface.h");
   }
 
-  Serial.println("======================================\n");
+  // End chunked transfer
+  server.sendContent("");
 
-  server.send(200, "application/javascript; charset=utf-8", js);
-  Serial.printf("Free heap after: %d bytes\n", ESP.getFreeHeap());
+  unsigned long generateTime = millis() - startTime;
+  Serial.printf("Total generation time: %lu ms\n", generateTime);
+  Serial.printf("Free heap at end: %d bytes\n", ESP.getFreeHeap());
+  Serial.println("======================================\n");
 }
 
 // Modern web interface with dynamic tabs
