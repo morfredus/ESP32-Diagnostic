@@ -1,8 +1,9 @@
-# ESP32 Diagnostic Suite (v3.11.2)
+# ESP32 Diagnostic Suite (v3.11.3)
 
 Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenus bilingues (FR/EN). Le firmware cible PlatformIO avec l'Arduino Core ESP32 3.3.3 et prend en charge les familles ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
 
-## Points clés de la version 3.11.2
+## Points clés de la version 3.11.3
+- **CORRECTION CONFIG** : Correction du pin backlight TFT de GPIO 48 à GPIO 15 pour éviter conflit avec NeoPixel (v3.11.3).
 - **CORRECTION BUILD** : Résolution de l'erreur de typage FPSTR() dans l'implémentation du transfert par morceaux (v3.11.2).
 - **CORRECTION CRITIQUE** : Résolution des problèmes de chargement JavaScript de l'interface web via encodage par morceaux (v3.11.1).
 - **Optimisation mémoire** : Implémentation de la livraison JavaScript en streaming pour éviter le dépassement mémoire.

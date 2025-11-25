@@ -2,6 +2,15 @@
 
 Toutes les évolutions notables d'ESP32 Diagnostic Suite sont documentées ici. Ce projet suit [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.11.3] - 2025-11-25
+### Corrections
+- **CONFIG** : Correction du pin backlight TFT de GPIO 48 à GPIO 15 pour résoudre le conflit avec NeoPixel.
+- Le rétro-éclairage du TFT utilise maintenant le GPIO 15 dédié au lieu du GPIO 48 (conflit NeoPixel).
+
+### Changements Techniques
+- Mise à jour de la définition `TFT_BL` dans `config.h` du pin 48 au pin 15.
+- Assure le bon fonctionnement du rétro-éclairage TFT sans conflit matériel avec NeoPixel.
+
 ## [Version 3.11.2] - 2025-11-25
 ### Corrections
 - **BUILD** : Correction de l'erreur de typage FPSTR() empêchant la compilation.
