@@ -153,8 +153,8 @@ inline void sendOperationError(int statusCode,
 #endif
 
 // ========== CONFIGURATION (from config.h) ==========
-// Version and hostname are now defined in config.h
-const char* DIAGNOSTIC_VERSION_STR = DIAGNOSTIC_VERSION;
+// Version is now defined in platformio.ini as PROJECT_VERSION
+const char* DIAGNOSTIC_VERSION_STR = PROJECT_VERSION;
 const char* MDNS_HOSTNAME_STR = DIAGNOSTIC_HOSTNAME;
 
 // HTTPS/HTTP scheme constants
@@ -3130,7 +3130,7 @@ void handleExportTXT() {
   String txt;
   txt.reserve(4500);  // Reserve memory to avoid reallocations during export
   txt = "========================================\r\n";
-  txt += String(Texts::title) + " " + String(Texts::version) + String(DIAGNOSTIC_VERSION) + "\r\n";
+  txt += String(Texts::title) + " " + String(Texts::version) + String(PROJECT_VERSION) + "\r\n";
   txt += "========================================\r\n\r\n";
   
   txt += "=== CHIP ===\r\n";
@@ -3214,7 +3214,7 @@ void handleExportTXT() {
   txt += String(Texts::export_generated) + " " + String(millis()/1000) + "s " + String(Texts::export_after_boot) + "\r\n";
   txt += "========================================\r\n";
   
-  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v"+ String(DIAGNOSTIC_VERSION) +".txt");
+  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v"+ String(PROJECT_VERSION) +".txt");
   server.send(200, "text/plain; charset=utf-8", txt);
 }
 
@@ -3305,7 +3305,7 @@ void handleExportJSON() {
   
   json += "}";
   
-  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v" + String(DIAGNOSTIC_VERSION) + ".json");
+  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v" + String(PROJECT_VERSION) + ".json");
   server.send(200, "application/json", json);
 }
 
@@ -3369,7 +3369,7 @@ void handleExportCSV() {
   csv += "System," + String(Texts::uptime) + " ms," + String(diagnosticData.uptime) + "\r\n";
   csv += "System," + String(Texts::last_reset) + "," + getResetReason() + "\r\n";
   
-  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v" + String(DIAGNOSTIC_VERSION) + ".csv");
+  server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v" + String(PROJECT_VERSION) + ".csv");
   server.send(200, "text/csv; charset=utf-8", csv);
 }
 
@@ -3377,7 +3377,7 @@ void handlePrintVersion() {
   collectDiagnosticInfo();
   collectDetailedMemory();
   
-  String html = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>" + String(Texts::title) + " " + String(Texts::version) + String(DIAGNOSTIC_VERSION) + "</title>";
+  String html = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>" + String(Texts::title) + " " + String(Texts::version) + String(PROJECT_VERSION) + "</title>";
   html += "<style>";
   html += "@page{size:A4;margin:10mm}";
   html += "body{font:11px Arial;margin:10px;color:#333}";
@@ -3399,7 +3399,7 @@ void handlePrintVersion() {
   html += "<body onload='window.print()'>";
   
   // Header traduit
-  html += "<h1>" + String(Texts::title) + " " + String(Texts::version) + String(DIAGNOSTIC_VERSION) + "</h1>";
+  html += "<h1>" + String(Texts::title) + " " + String(Texts::version) + String(PROJECT_VERSION) + "</h1>";
   html += "<div style='margin:10px 0;font-size:12px;color:#666'>";
   html += String(Texts::export_generated) + " " + String(millis()/1000) + "s " + String(Texts::export_after_boot) + " | IP: " + diagnosticData.ipAddress;
   html += "</div>";
@@ -3513,7 +3513,7 @@ void handlePrintVersion() {
   
   // Footer
   html += "<div class='footer'>";
-  html += "ESP32 Diagnostic v"+ String(DIAGNOSTIC_VERSION) + " | " + diagnosticData.chipModel + " | MAC: " + diagnosticData.macAddress;
+  html += "ESP32 Diagnostic v"+ String(PROJECT_VERSION) + " | " + diagnosticData.chipModel + " | MAC: " + diagnosticData.macAddress;
   html += "</div>";
   
   html += "</body></html>";
