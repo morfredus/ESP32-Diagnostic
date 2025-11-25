@@ -20,6 +20,14 @@
 - Check the I2C address (0x3C by default). Replace the display if it does not answer on the bus.
 - Ensure the display has adequate power (3.3 V, GND shared with the ESP32).
 
+## TFT screen stays blank (v3.11.0+)
+- Verify TFT pin configuration in `include/config.h` matches your hardware wiring.
+- Ensure backlight pin (TFT_BL) is correctly set to GPIO 15 and not conflicting with NeoPixel (GPIO 48).
+- Check SPI connections: MOSI (GPIO 11), SCLK (GPIO 12), CS (GPIO 10), DC (GPIO 9), RST (GPIO 46).
+- Verify `ENABLE_TFT_DISPLAY` is set to `true` in config.h.
+- Ensure the TFT display has adequate power (3.3V or 5V depending on model, GND shared with ESP32).
+- Check Serial Monitor for TFT initialization messages: "[TFT] Initializing ST7789 display..."
+
 ## Wi-Fi connection fails
 - Double-check SSID/password pairs in `wifi-config.h`.
 - Watch the Serial Monitor for `WL_NO_SSID_AVAIL` or `WL_CONNECT_FAILED` codes.

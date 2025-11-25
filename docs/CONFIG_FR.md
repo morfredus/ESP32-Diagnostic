@@ -27,10 +27,25 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 - Les chaînes de traduction résident dans `languages.h` au sein de la structure `Translations`. Ajoutez une langue en étendant cette structure et en l'exposant dans l'interface.
 - La version 3.9.0 conserve le catalogue partagé synchronisé tout en ajoutant l'écran Wi-Fi et les garde-fous NimBLE sans configuration supplémentaire.
 
-## Configuration OLED
+## Configuration des affichages
+
+### Configuration OLED
 - Broches par défaut : SDA=21, SCL=22 (standard ESP32).
 - Modifiez le câblage à chaud via `/api/oled-config?sda=<pin>&scl=<pin>`.
 - Après modification, l'écran est réinitialisé automatiquement et la cartographie reste en RAM.
+
+### Configuration TFT ST7789 (v3.11.0+)
+- Broches par défaut configurées dans `include/config.h` :
+  - MOSI : GPIO 11
+  - SCLK : GPIO 12
+  - CS : GPIO 10
+  - DC : GPIO 9
+  - RST : GPIO 46
+  - BL (rétro-éclairage) : GPIO 15
+- Résolution TFT : 240x240 pixels
+- Affiche l'écran de démarrage et l'état WiFi/IP en temps réel
+- Activation/désactivation via le flag `ENABLE_TFT_DISPLAY` dans config.h
+- Support du fonctionnement simultané OLED et TFT (mode double affichage)
 
 ## Règles de nommage Bluetooth®
 - Les noms doivent comporter 3 à 31 caractères ASCII alphanumériques (+ tiret ou underscore).
