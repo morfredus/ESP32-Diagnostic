@@ -1,18 +1,20 @@
-# ESP32 Diagnostic Suite (v3.10.3)
+# ESP32 Diagnostic Suite (v3.11.0)
 
 Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenus bilingues (FR/EN). Le firmware cible PlatformIO avec l'Arduino Core ESP32 3.3.3 et prend en charge les familles ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
 
-## Points clés de la version 3.10.3
-- **Correction critique de compilation** : Résolution de l'erreur de macro FreeRTOS `portGET_ARGUMENT_COUNT()` par migration vers une version stable de la plateforme.
-- **Stabilité de build améliorée** : Passage de la plateforme git vers la version stable `espressif32@6.5.0`.
-- **Compatibilité renforcée** : Ajout de flags d'assertion FreeRTOS pour prévenir les conflits de macros.
-- **Corrections précédentes** : Flags de compilation C++17 corrigés (v3.10.2), crashes au démarrage résolus et qualité de code améliorée (v3.9.0).
+## Points clés de la version 3.11.0
+- **NOUVELLE FONCTIONNALITÉ** : Support de l'écran TFT ST7789 (240x240) avec écran de démarrage et visualisation de l'état WiFi.
+- **Retour visuel amélioré** : Affichage en temps réel de l'état du système sur écran TFT incluant l'adresse IP.
+- **Support double affichage** : Capacité d'utiliser simultanément les écrans OLED et TFT pour des diagnostics complets.
+- **Améliorations de l'interface web** : Chargement des onglets et gestion des erreurs JavaScript améliorés.
+- **Corrections précédentes** : Corrections de compilation FreeRTOS (v3.10.3), crashes C++17 (v3.10.2), améliorations de qualité de code (v3.9.0).
 
 ## Structure du projet
-- `src/main.cpp` – point d'entrée du firmware et ordonnanceur des diagnostics.
+- `src/main.cpp` – point d'entrée du firmware, boucle principale, ordonnanceur et gestionnaires HTTP.
 - `include/languages.h` – catalogue de traductions et sélecteur de langue à chaud.
 - `include/web_interface.h` – modèles HTML/CSS/JS fournis par le firmware.
 - `include/wifi-config-example.h` – modèle pour stocker les identifiants Wi-Fi.
+- `platformio.ini` – configuration PlatformIO pour toutes les cibles ESP32 supportées.
 - `docs/` – wiki complet regroupant installation, utilisation, API et guides de déploiement (FR/EN).
 
 ## Documentation
@@ -38,15 +40,17 @@ Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de
 ## Capacités principales
 - Interface multilingue avec bascule FR/EN en temps réel sans rechargement.
 - Diagnostics matériels automatisés couvrant GPIO, ADC, pads tactiles, PWM, I2C, SPI, PSRAM, flash et scan Wi-Fi.
+- **Support écran TFT ST7789** avec écran de démarrage et état WiFi/IP en temps réel (résolution 240x240).
 - Batterie de tests OLED 0,96" I2C avec déclenchement pas-à-pas et animations prévisualisées.
+- **Support double affichage** : fonctionnement simultané OLED et TFT pour diagnostics améliorés.
 - Endpoints REST pour lancer les diagnostics et récupérer les rapports (TXT/JSON/CSV/vue imprimable).
 - Support multi-AP Wi-Fi, découverte mDNS via `http://ESP32-Diagnostic.local` et exports complets.
 - Motifs NeoPixel/WS2812B optionnels et outils de benchmark CPU/mémoire.
 
 ## Compatibilité & prérequis
 - **Cartes :** ESP32, ESP32-S2, ESP32-S3 (recommandée), ESP32-C3, ESP32-C6, ESP32-H2.
-- **Arduino IDE :** 2.x ou supérieur avec l'Arduino Core ESP32 3.3.3.
-- **Bibliothèques :** Adafruit BusIO, Adafruit GFX Library, Adafruit SSD1306, Adafruit NeoPixel (installées via Library Manager).
+- **Plateforme :** PlatformIO avec l'Arduino Core ESP32 3.3.3.
+- **Bibliothèques :** Adafruit BusIO, Adafruit GFX Library, Adafruit ST7735 and ST7789 Library, Adafruit SSD1306, Adafruit NeoPixel, U8g2 (installation automatique via platformio.ini).
 
 ## Support
 - Licence : [MIT](LICENSE)
