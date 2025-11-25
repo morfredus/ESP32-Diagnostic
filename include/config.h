@@ -11,8 +11,8 @@
 #define CONFIG_H
 
 // ========== VERSION & HOSTNAME ==========
-// These values should match the project version and can be customized for your deployment
-#define DIAGNOSTIC_VERSION "3.9.0"
+// Version is now defined in platformio.ini as PROJECT_VERSION
+// Hostname can be customized for your deployment
 #define DIAGNOSTIC_HOSTNAME "esp32-diagnostic"
 
 // ========== DEFAULT LANGUAGE ==========
