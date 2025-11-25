@@ -3816,15 +3816,17 @@ void handleJavaScriptRoute() {
   server.sendContent(translations);
 
   // Send main JavaScript from PROGMEM
-  const char* staticJs = FPSTR(DIAGNOSTIC_JS_STATIC);
-  size_t staticJsLen = strlen(staticJs);
+  // On ESP32, PROGMEM strings are directly accessible in memory
+  const char* staticJsPtr = DIAGNOSTIC_JS_STATIC;
+  size_t staticJsLen = strlen(staticJsPtr);
 
   Serial.printf("Sending static JS: %d bytes\n", staticJsLen);
-  server.sendContent(staticJs);
+  // Send as String constructed from PROGMEM
+  server.sendContent(String(FPSTR(DIAGNOSTIC_JS_STATIC)));
 
-  // Verify critical functions are present
-  bool hasShowTab = (strstr(staticJs, "function showTab") != NULL);
-  bool hasChangeLang = (strstr(staticJs, "function changeLang") != NULL);
+  // Verify critical functions are present (direct pointer access works on ESP32)
+  bool hasShowTab = (strstr(staticJsPtr, "function showTab") != NULL);
+  bool hasChangeLang = (strstr(staticJsPtr, "function changeLang") != NULL);
 
   Serial.printf("Function showTab: %s\n", hasShowTab ? "YES" : "NO [ERROR]");
   Serial.printf("Function changeLang: %s\n", hasChangeLang ? "YES" : "NO [ERROR]");

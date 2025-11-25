@@ -1,8 +1,9 @@
-# ESP32 Diagnostic Suite (v3.11.1)
+# ESP32 Diagnostic Suite (v3.11.2)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports the ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, and ESP32-H2 families.
 
-## Highlights of version 3.11.1
+## Highlights of version 3.11.2
+- **BUILD FIX**: Resolved FPSTR() type casting error in chunked transfer implementation (v3.11.2).
 - **CRITICAL FIX**: Resolved web interface JavaScript loading issues using chunked transfer encoding (v3.11.1).
 - **Memory optimization**: Implemented streaming JavaScript delivery to prevent memory overflow.
 - **NEW FEATURE**: TFT ST7789 display support (240x240) with boot splash screen and WiFi status (v3.11.0).
