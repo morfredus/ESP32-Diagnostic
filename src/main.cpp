@@ -3787,7 +3787,34 @@ void handleGetTranslations() {
 // ========== INTERFACE WEB PRINCIPALE MULTILINGUE ==========
 // Unique JavaScript handler defined in sketch (handleJavaScriptRoute)
 void handleJavaScriptRoute() {
-  server.send(200, "application/javascript; charset=utf-8", generateJavaScript());
+  unsigned long startTime = millis();
+  String js = generateJavaScript();
+  unsigned long generateTime = millis() - startTime;
+
+  // Debug logs
+  Serial.println("\n========== JAVASCRIPT DEBUG ==========");
+  Serial.printf("Generation time: %lu ms\n", generateTime);
+  Serial.printf("JavaScript size: %d bytes\n", js.length());
+  Serial.printf("Free heap before: %d bytes\n", ESP.getFreeHeap());
+
+  // Check for critical functions
+  bool hasShowTab = (js.indexOf("function showTab") != -1);
+  bool hasChangeLang = (js.indexOf("function changeLang") != -1);
+  bool hasLoadTab = (js.indexOf("function loadTab") != -1);
+
+  Serial.printf("Function showTab: %s\n", hasShowTab ? "YES" : "NO [ERROR]");
+  Serial.printf("Function changeLang: %s\n", hasChangeLang ? "YES" : "NO [ERROR]");
+  Serial.printf("Function loadTab: %s\n", hasLoadTab ? "YES" : "NO [ERROR]");
+
+  if (!hasShowTab || !hasChangeLang) {
+    Serial.println("WARNING: Critical JS functions missing!");
+    Serial.println("Possible cause: JavaScript too large or generation error");
+  }
+
+  Serial.println("======================================\n");
+
+  server.send(200, "application/javascript; charset=utf-8", js);
+  Serial.printf("Free heap after: %d bytes\n", ESP.getFreeHeap());
 }
 
 // Modern web interface with dynamic tabs
@@ -3797,6 +3824,30 @@ void handleRoot() {
 
 void handleJavaScript() {
   server.send(200, "application/javascript; charset=utf-8", generateJavaScript());
+}
+
+// ========== DEBUG ROUTES (Troubleshooting) ==========
+void setupDebugRoutes() {
+  // Minimal test JavaScript
+  server.on("/js/test.js", []() {
+    String js = "console.log('Test JS loaded successfully');\n";
+    js += "function showTab(n,b){console.log('showTab called:',n);alert('Test showTab: '+n);}\n";
+    js += "function changeLang(l,b){console.log('changeLang called:',l);alert('Test changeLang: '+l);}\n";
+    js += "console.log('Test functions defined');\n";
+    server.send(200, "application/javascript; charset=utf-8", js);
+  });
+
+  // Debug status endpoint
+  server.on("/debug/status", []() {
+    String json = "{";
+    json += "\"freeHeap\":" + String(ESP.getFreeHeap()) + ",";
+    json += "\"jsSize\":" + String(generateJavaScript().length()) + ",";
+    json += "\"version\":\"" + String(DIAGNOSTIC_VERSION_STR) + "\"";
+    json += "}";
+    server.send(200, "application/json", json);
+  });
+
+  Serial.println("[DEBUG] Debug routes installed: /js/test.js, /debug/status");
 }
 
 // ========== SETUP COMPLET ==========
@@ -3992,8 +4043,12 @@ void setup() {
   server.on("/export/json", handleExportJSON);
   server.on("/export/csv", handleExportCSV);
   server.on("/print", handlePrintVersion);
-  
+
   server.begin();
+
+  // Install debug routes for troubleshooting
+  setupDebugRoutes();
+
   Serial.println("Serveur Web OK!");
   Serial.println("\r\n===============================================");
   Serial.println("            PRET - En attente");
