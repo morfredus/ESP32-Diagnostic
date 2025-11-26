@@ -2106,6 +2106,18 @@ void testDistanceSensor() {
     return;
   }
 
+  // ESP32-S3 (OPI Flash/PSRAM): GPIO 35..48 sont généralement réservées
+  // Si utilisées pour TRIG/ECHO, la mesure échouera systématiquement
+  if ((DISTANCE_TRIG_PIN >= 35 && DISTANCE_TRIG_PIN <= 48) ||
+      (DISTANCE_ECHO_PIN >= 35 && DISTANCE_ECHO_PIN <= 48)) {
+    distanceSensorTestResult = String(Texts::configuration_invalid);
+    distanceSensorAvailable = false;
+    Serial.printf("Distance Sensor: Pins invalides sur ESP32-S3 OPI (TRIG=%d, ECHO=%d). Evitez GPIO 35..48.\r\n",
+                  DISTANCE_TRIG_PIN, DISTANCE_ECHO_PIN);
+    Serial.println("Suggestion: TRIG=26 (sortie), ECHO=25 (entrée) si le bus I2C secondaire est inactif.");
+    return;
+  }
+
   pinMode(DISTANCE_TRIG_PIN, OUTPUT);
   pinMode(DISTANCE_ECHO_PIN, INPUT);
 
