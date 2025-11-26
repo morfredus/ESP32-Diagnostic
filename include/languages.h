@@ -406,6 +406,21 @@ class TextField {
   X(white, "White", "Blanc") \
   X(wifi_desc, "Scan nearby WiFi networks", "Analyse les réseaux WiFi et leurs paramètres radio.") \
   X(wifi_scanner, "WiFi Scanner", "Scanner WiFi") \
+  X(tft_screen, "TFT Display", "Écran TFT") \
+  X(tft_step_boot, "Boot splash", "Écran de démarrage") \
+  X(tft_step_colors, "Color test", "Test des couleurs") \
+  X(tft_step_shapes, "Shapes", "Formes géométriques") \
+  X(tft_step_text, "Text rendering", "Rendu de texte") \
+  X(tft_step_lines, "Lines patterns", "Motifs de lignes") \
+  X(tft_step_animation, "Animation", "Animation") \
+  X(tft_step_progress, "Progress bar", "Barre de progression") \
+  X(tft_step_final, "Final message", "Message final") \
+  X(boot_screen, "Boot Screen", "Écran de démarrage") \
+  X(resolution, "Resolution", "Résolution") \
+  X(spi_pins, "SPI Pins", "Pins SPI") \
+  X(tft_test_running, "TFT test in progress...", "Test TFT en cours...") \
+  X(tft_step_running, "TFT step executing...", "Étape TFT en cours...") \
+  X(restoring_boot_screen, "Restoring boot screen...", "Restauration de l'écran de démarrage...") \
 
 
 namespace Texts {

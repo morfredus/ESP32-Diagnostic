@@ -1,3 +1,21 @@
+## [Version 3.14.0] - 2025-11-27
+
+### New Features
+1. **TFT Web Interface**: Added complete cartouche for testing TFT ST7789 display (240x240) via web interface.
+2. **TFT Tests**: 8 individual tests available: boot splash, colors, shapes, text rendering, line patterns, animation, progress bar, final message.
+3. **Boot Screen Button**: New button to restore startup display on both OLED and TFT.
+4. **TFT REST API**: 3 new endpoints: `/api/tft-test` (full test), `/api/tft-step?step=<id>` (individual test), `/api/tft-boot` (boot screen restore).
+5. **OLED REST API**: New endpoint `/api/oled-boot` to restore OLED boot screen.
+
+### Improvements
+6. Web Interface: TFT cartouche with similar structure to OLED for consistency.
+7. Translations: 13 new bilingual keys (EN/FR) for TFT interface.
+8. Architecture: TFT tests follow same pattern as OLED tests for maintainability.
+
+### Technical
+9. Version: Bumped from 3.13.1 to 3.14.0 (new minor feature).
+10. Compilation: Validated on all three environments `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`.
+
 ## [Version 3.13.1] - 2025-11-26
 
 ### Updates
