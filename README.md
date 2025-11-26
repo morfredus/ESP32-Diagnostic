@@ -1,6 +1,10 @@
-# ESP32 Diagnostic Suite (v3.12.2)
+# ESP32 Diagnostic Suite (v3.12.3)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports the ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, and ESP32-H2 families.
+
+## Highlights of version 3.12.3
+- Default HC‑SR04 pins set to TRIG=16 and ECHO=17; web UI defaults aligned for quick testing.
+- New quick reference: `docs/PIN_MAPPING.md` (FR: `docs/PIN_MAPPING_FR.md`).
 
 ## Highlights of version 3.12.2
 - **BUGFIX**: Robust HC-SR04 distance test on ESP32/ESP32-S3 (pre-echo settle, `pulseInLong` with extended timeout, stable conversion). Prevents false "No echo" errors (v3.12.2).

@@ -30,7 +30,7 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 ## Display configuration
 
 ### OLED configuration
-- Default pins: SDA=21, SCL=22 (ESP32 standard).
+- Default pins: SDA=21, SCL=20 (ESP32-S3 default in this project).
 - Change wiring on the fly with `/api/oled-config?sda=<pin>&scl=<pin>`.
 - After updating pins, the firmware automatically reinitialises the display and stores the mapping in RAM.
 
@@ -54,7 +54,8 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 - TRIG is an output pin; ECHO is an input pin.
 - Power the sensor at 5V and protect the ECHO line with a resistor divider (5V to 3.3V) before the ESP32 input.
 - ESP32-S3 with Octal PSRAM/Flash (e.g., DevKitC-1 N16R8): avoid using GPIO 35..48 for TRIG/ECHO because these pins are reserved by the OPI memory interface. The firmware will flag this configuration as invalid.
-- Suggested mapping on ESP32-S3 if the secondary I2C bus is disabled: TRIG = GPIO 26 (output), ECHO = GPIO 25 (input).
+- Defaults since v3.12.3: TRIG = GPIO 16, ECHO = GPIO 17.
+- Suggested alternative on ESP32-S3 if the secondary I2C bus is disabled: TRIG = GPIO 26 (output), ECHO = GPIO 25 (input).
 
 ## Bluetooth® naming rules
 - Names must be 3–31 characters, ASCII alphanumeric plus hyphen or underscore.
