@@ -1757,6 +1757,260 @@ void oledShowWiFiStatus(const String& title,
   oled.sendBuffer();
 }
 
+// ========== TEST TFT ==========
+// Individual TFT test steps
+void tftStepBoot() {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) return;
+  displayBootSplash();
+  delay(1000);
+#endif
+}
+
+void tftStepColors() {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) return;
+  
+  uint16_t colors[] = {TFT_RED, TFT_GREEN, TFT_BLUE, TFT_YELLOW, TFT_CYAN, TFT_MAGENTA, TFT_WHITE};
+  const char* names[] = {"RED", "GREEN", "BLUE", "YELLOW", "CYAN", "MAGENTA", "WHITE"};
+  
+  for (int i = 0; i < 7; i++) {
+    tft.fillScreen(colors[i]);
+    tft.setTextColor(TFT_BLACK);
+    tft.setTextSize(2);
+    tft.setCursor(60, 110);
+    tft.print(names[i]);
+    delay(500);
+  }
+#endif
+}
+
+void tftStepShapes() {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) return;
+  
+  tft.fillScreen(TFT_BLACK);
+  
+  // Rectangles
+  tft.drawRect(20, 20, 80, 60, TFT_RED);
+  tft.fillRect(140, 20, 80, 60, TFT_GREEN);
+  
+  // Circles
+  tft.drawCircle(60, 140, 30, TFT_BLUE);
+  tft.fillCircle(180, 140, 30, TFT_YELLOW);
+  
+  // Triangles
+  tft.drawTriangle(60, 180, 40, 220, 80, 220, TFT_CYAN);
+  tft.fillTriangle(180, 180, 160, 220, 200, 220, TFT_MAGENTA);
+  
+  delay(1500);
+#endif
+}
+
+void tftStepText() {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) return;
+  
+  tft.fillScreen(TFT_BLACK);
+  
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(1);
+  tft.setCursor(10, 10);
+  tft.println("Text Size 1");
+  
+  tft.setTextSize(2);
+  tft.setCursor(10, 40);
+  tft.println("Size 2");
+  
+  tft.setTextSize(3);
+  tft.setCursor(10, 80);
+  tft.println("Size 3");
+  
+  tft.setTextColor(TFT_CYAN);
+  tft.setTextSize(2);
+  tft.setCursor(10, 140);
+  tft.println("Colored Text");
+  
+  delay(1500);
+#endif
+}
+
+void tftStepLines() {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) return;
+  
+  tft.fillScreen(TFT_BLACK);
+  
+  // Horizontal lines
+  for (int y = 0; y < TFT_HEIGHT; y += 10) {
+    tft.drawFastHLine(0, y, TFT_WIDTH, TFT_CYAN);
+  }
+  delay(700);
+  
+  tft.fillScreen(TFT_BLACK);
+  
+  // Vertical lines
+  for (int x = 0; x < TFT_WIDTH; x += 10) {
+    tft.drawFastVLine(x, 0, TFT_HEIGHT, TFT_MAGENTA);
+  }
+  delay(700);
+  
+  tft.fillScreen(TFT_BLACK);
+  
+  // Diagonal lines
+  for (int i = 0; i < TFT_WIDTH; i += 20) {
+    tft.drawLine(0, 0, i, TFT_HEIGHT - 1, TFT_YELLOW);
+    tft.drawLine(TFT_WIDTH - 1, 0, i, TFT_HEIGHT - 1, TFT_GREEN);
+  }
+  delay(700);
+#endif
+}
+
+void tftStepAnimation() {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) return;
+  
+  tft.fillScreen(TFT_BLACK);
+  
+  // Moving square
+  int squareSize = 30;
+  for (int x = 0; x <= TFT_WIDTH - squareSize; x += 5) {
+    tft.fillRect(x, (TFT_HEIGHT - squareSize) / 2, squareSize, squareSize, TFT_BLUE);
+    delay(20);
+    if (x + squareSize < TFT_WIDTH) {
+      tft.fillRect(x, (TFT_HEIGHT - squareSize) / 2, squareSize, squareSize, TFT_BLACK);
+    }
+    yield();
+  }
+  
+  delay(500);
+#endif
+}
+
+void tftStepProgressBar() {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) return;
+  
+  tft.fillScreen(TFT_BLACK);
+  
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(2);
+  tft.setCursor(60, 40);
+  tft.print("Loading...");
+  
+  int barX = 30;
+  int barY = 100;
+  int barWidth = 180;
+  int barHeight = 30;
+  
+  tft.drawRect(barX, barY, barWidth, barHeight, TFT_WHITE);
+  
+  for (int i = 0; i <= 100; i += 5) {
+    int fillWidth = (barWidth - 4) * i / 100;
+    tft.fillRect(barX + 2, barY + 2, fillWidth, barHeight - 4, TFT_GREEN);
+    
+    tft.fillRect(40, 150, 160, 20, TFT_BLACK);
+    tft.setTextColor(TFT_CYAN);
+    tft.setTextSize(2);
+    tft.setCursor(90, 155);
+    tft.print(i);
+    tft.print("%");
+    
+    delay(30);
+    yield();
+  }
+  
+  delay(500);
+#endif
+}
+
+void tftStepFinal() {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) return;
+  
+  tft.fillScreen(TFT_BLACK);
+  
+  tft.setTextColor(TFT_GREEN);
+  tft.setTextSize(3);
+  tft.setCursor(40, 80);
+  tft.println("TEST");
+  tft.setCursor(20, 120);
+  tft.println("COMPLETE!");
+  
+  // Success indicator
+  tft.fillCircle(120, 180, 20, TFT_GREEN);
+  tft.setTextColor(TFT_BLACK);
+  tft.setTextSize(3);
+  tft.setCursor(108, 172);
+  tft.print("OK");
+  
+  delay(2000);
+#endif
+}
+
+bool performTFTStep(const String &stepId) {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) {
+    return false;
+  }
+
+  if (stepId == "boot") {
+    tftStepBoot();
+  } else if (stepId == "colors") {
+    tftStepColors();
+  } else if (stepId == "shapes") {
+    tftStepShapes();
+  } else if (stepId == "text") {
+    tftStepText();
+  } else if (stepId == "lines") {
+    tftStepLines();
+  } else if (stepId == "animation") {
+    tftStepAnimation();
+  } else if (stepId == "progress") {
+    tftStepProgressBar();
+  } else if (stepId == "final") {
+    tftStepFinal();
+  } else {
+    return false;
+  }
+
+  return true;
+#else
+  return false;
+#endif
+}
+
+String getTFTStepLabel(const String &stepId) {
+  if (stepId == "boot") return "Boot Screen";
+  if (stepId == "colors") return "Colors";
+  if (stepId == "shapes") return "Shapes";
+  if (stepId == "text") return "Text";
+  if (stepId == "lines") return "Lines";
+  if (stepId == "animation") return "Animation";
+  if (stepId == "progress") return "Progress Bar";
+  if (stepId == "final") return "Final Message";
+  return stepId;
+}
+
+void testTFT() {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) return;
+
+  Serial.println("\r\n=== TEST TFT ===");
+
+  tftStepBoot();
+  tftStepColors();
+  tftStepShapes();
+  tftStepText();
+  tftStepLines();
+  tftStepAnimation();
+  tftStepProgressBar();
+  tftStepFinal();
+
+  Serial.println("TFT: Tests complets OK\r\n");
+#endif
+}
+
 // ========== TEST ADC ==========
 void testADC() {
   Serial.println("\r\n=== TEST ADC ===");
@@ -2676,6 +2930,78 @@ void handleOLEDMessage() {
   oledShowMessage(message);
   // Use translation key instead of hardcoded string
   sendOperationSuccess(Texts::message_displayed.str());
+}
+
+void handleOLEDBoot() {
+  if (!oledAvailable) {
+    sendActionResponse(200, false, "OLED not available");
+    return;
+  }
+
+  oledShowWiFiStatus("ESP32 Diagnostic", "System Ready", WiFi.localIP().toString(), 100);
+  sendOperationSuccess("Boot screen displayed");
+}
+
+void handleTFTTest() {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) {
+    sendActionResponse(200, false, "TFT not available", {
+      jsonBoolField("available", false)
+    });
+    return;
+  }
+
+  testTFT();
+  sendActionResponse(200, true, "TFT test complete", {
+    jsonBoolField("available", true)
+  });
+#else
+  sendActionResponse(200, false, "TFT not enabled", {
+    jsonBoolField("available", false)
+  });
+#endif
+}
+
+void handleTFTStep() {
+#if ENABLE_TFT_DISPLAY
+  if (!server.hasArg("step")) {
+    sendOperationError(400, "Step parameter missing");
+    return;
+  }
+
+  String stepId = server.arg("step");
+
+  if (!tftAvailable) {
+    sendActionResponse(200, false, "TFT not available");
+    return;
+  }
+
+  bool ok = performTFTStep(stepId);
+  if (!ok) {
+    sendOperationError(400, "Unknown TFT step");
+    return;
+  }
+
+  String label = getTFTStepLabel(stepId);
+  String message = "Step executed: " + label;
+  sendOperationSuccess(message);
+#else
+  sendActionResponse(200, false, "TFT not enabled");
+#endif
+}
+
+void handleTFTBoot() {
+#if ENABLE_TFT_DISPLAY
+  if (!tftAvailable) {
+    sendActionResponse(200, false, "TFT not available");
+    return;
+  }
+
+  displayBootSplash();
+  sendOperationSuccess("Boot screen displayed");
+#else
+  sendActionResponse(200, false, "TFT not enabled");
+#endif
 }
 
 void handleADCTest() {
@@ -4044,6 +4370,12 @@ void setup() {
   server.on("/api/oled-step", handleOLEDStep);
   server.on("/api/oled-message", handleOLEDMessage);
   server.on("/api/oled-config", handleOLEDConfig);
+  server.on("/api/oled-boot", handleOLEDBoot);
+  
+  // TFT display routes
+  server.on("/api/tft-test", handleTFTTest);
+  server.on("/api/tft-step", handleTFTStep);
+  server.on("/api/tft-boot", handleTFTBoot);
   
   // Tests avancés
   server.on("/api/adc-test", handleADCTest);
