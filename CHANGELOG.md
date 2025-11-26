@@ -2,6 +2,36 @@
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.12.3] - 2025-11-26
+### Changed
+- Default HC‑SR04 pins set to `TRIG=16`, `ECHO=17` in `config.h` and aligned defaults in the web interface.
+
+### Added
+- New quick reference documents: `docs/PIN_MAPPING.md` and `docs/PIN_MAPPING_FR.md`.
+
+### Technical Changes
+- Bumped `PROJECT_VERSION` to 3.12.3 in `platformio.ini`.
+- No other functional changes.
+
+## [Version 3.12.2] - 2025-11-26
+### Fixed
+- **HC-SR04**: Hardened distance measurement by waiting for ECHO to settle LOW before triggering and using `pulseInLong()` with an extended timeout. Prevents false "No echo" results.
+
+### Technical Changes
+- No pin mapping changes. Only measurement sequence and timeout handling adjusted.
+
+## [Version 3.12.1] - 2025-11-26
+### Fixed
+- **PSRAM Activation**: Ensured PSRAM is enabled on ESP32-S3 DevKitC-1 N16R8 in PlatformIO by adding `board_build.psram = enabled` and defining `BOARD_HAS_PSRAM`. This resolves memory tests failing to allocate in external PSRAM.
+
+### Improved
+- PlatformIO configuration refined for consistent PSRAM detection and usage across Arduino-ESP32 3.3.x.
+- Updated FR/EN documentation and version references to 3.12.1.
+
+### Technical Changes
+- Bumped `PROJECT_VERSION` to 3.12.1 in `platformio.ini`.
+- No pin-mapping changes (config.h remains unchanged).
+
 ## [Version 3.12.0] - 2025-11-26
 ### Fixed
 - **CONFIG**: Validated and confirmed TFT backlight pin configuration (GPIO 15).

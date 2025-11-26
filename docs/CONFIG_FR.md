@@ -30,7 +30,7 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 ## Configuration des affichages
 
 ### Configuration OLED
-- Broches par défaut : SDA=21, SCL=22 (standard ESP32).
+- Broches par défaut : SDA=21, SCL=20 (défaut ESP32-S3 dans ce projet).
 - Modifiez le câblage à chaud via `/api/oled-config?sda=<pin>&scl=<pin>`.
 - Après modification, l'écran est réinitialisé automatiquement et la cartographie reste en RAM.
 
@@ -46,6 +46,16 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 - Affiche l'écran de démarrage et l'état WiFi/IP en temps réel
 - Activation/désactivation via le flag `ENABLE_TFT_DISPLAY` dans config.h
 - Support du fonctionnement simultané OLED et TFT (mode double affichage)
+
+## Configuration des capteurs
+
+### Capteur de distance (HC-SR04)
+
+- TRIG est une broche de sortie ; ECHO est une broche d'entrée.
+- Alimentez le capteur en 5V et protégez la ligne ECHO avec un pont diviseur (5V vers 3,3V) avant l'entrée ESP32.
+- ESP32‑S3 avec mémoire Octal PSRAM/Flash (ex. DevKitC‑1 N16R8) : évitez d'utiliser les GPIO 35..48 pour TRIG/ECHO car ces broches sont réservées par l'interface OPI. Le firmware signalera cette configuration comme invalide.
+- Défauts depuis v3.12.3 : TRIG = GPIO 16, ECHO = GPIO 17.
+- Cartographie alternative sur ESP32‑S3 si le bus I2C secondaire est inactif : TRIG = GPIO 26 (sortie), ECHO = GPIO 25 (entrée).
 
 ## Règles de nommage Bluetooth®
 - Les noms doivent comporter 3 à 31 caractères ASCII alphanumériques (+ tiret ou underscore).

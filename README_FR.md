@@ -1,6 +1,13 @@
+# ESP32 Diagnostic Suite (v3.12.3)
+
+Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenus bilingues (FR/EN). Le firmware cible PlatformIO avec l'Arduino Core ESP32 3.3.3 et prend en charge les familles ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
 # ESP32 Diagnostic Suite (v3.12.0)
 
 Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenus bilingues (FR/EN). Le firmware cible PlatformIO avec l'Arduino Core ESP32 3.3.3 et prend en charge les familles ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
+
+## Points clés de la version 3.12.3
+- Pins par défaut du HC‑SR04 : TRIG=16 et ECHO=17 ; valeurs par défaut alignées dans l'interface web pour des essais rapides.
+- Nouveau mémo visuel : `docs/PIN_MAPPING_FR.md` (EN : `docs/PIN_MAPPING.md`).
 
 ## Points clés de la version 3.12.0
 - **RELEASE** : Version de production avec configuration TFT validée et structure de dépôt nettoyée (v3.12.0).
@@ -11,6 +18,13 @@ Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de
 - **CORRECTIONS BUILD** : Résolution erreur typage FPSTR() et problèmes chargement JavaScript interface web (v3.11.2, v3.11.1).
 - **NOUVELLE FONCTIONNALITÉ** : Support TFT ST7789 (240x240) avec écran de démarrage et état WiFi (v3.11.0).
 - **Optimisation mémoire** : Implémentation de la livraison JavaScript en streaming pour éviter le dépassement mémoire.
+- **CORRECTION** : Test HC‑SR04 rendu robuste sur ESP32/ESP32‑S3 (attente de stabilisation ECHO à LOW, `pulseInLong` avec timeout étendu, conversion fiable). Évite les faux "No echo" (v3.12.2).
+
+## Points clés de la version 3.12.1
+- **CORRECTION** : Activation fiable de la PSRAM pour ESP32-S3 DevKitC-1 N16R8 sous PlatformIO (`board_build.psram`, `BOARD_HAS_PSRAM`). Garantit que les tests mémoire et allocations utilisent la PSRAM externe lorsque disponible (v3.12.1).
+- **RELEASE** : Version de production avec configuration TFT validée et structure de dépôt nettoyée (v3.12.0).
+- **CONFIG** : Validation du pin backlight TFT (GPIO 15) et résolution des déclarations dupliquées (v3.12.0).
+- **DOCUMENTATION** : Suppression de tous les artefacts de développement et débogage pour structure de projet plus claire (v3.12.0).
 
 ## Structure du projet
 - `src/main.cpp` – point d'entrée du firmware, boucle principale, ordonnanceur et gestionnaires HTTP.

@@ -63,8 +63,8 @@
 #define DEFAULT_LIGHT_SENSOR_PIN 4 // Capteur de lumière (photoresistor)
 
 // HC-SR04 Ultrason
-#define DEFAULT_DISTANCE_TRIG_PIN 41  // TRIG (GPIO output-capable)
-#define DEFAULT_DISTANCE_ECHO_PIN 36  // ECHO (GPIO input-only OK)
+#define DEFAULT_DISTANCE_TRIG_PIN 16  // TRIG (GPIO output-capable)
+#define DEFAULT_DISTANCE_ECHO_PIN 17  // ECHO (GPIO input-only OK)
 
 // PIR Motion Sensor
 #define DEFAULT_MOTION_SENSOR_PIN 39  // PIR (GPIO input-capable)
