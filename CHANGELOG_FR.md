@@ -1,3 +1,10 @@
+## [Version 3.13.1] - 2025-11-26
+
+### Mises à jour
+1. Dépendances : passage des bibliothèques Adafruit dans `platformio.ini` aux intervalles avec chapeau (`^`) pour autoriser les mises à jour mineures/patch sûres.
+2. Build : compilation validée sans erreur sur les trois environnements : `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`.
+3. Portée : maintenance documentaire et de configuration de build ; aucun changement fonctionnel du firmware.
+
 ## [Version 3.13.0] - 2025-11-26
 
 ### Changements

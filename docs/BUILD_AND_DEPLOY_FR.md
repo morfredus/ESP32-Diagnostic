@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Compilation & déploiement (v3.12.0)
+# ESP32 Diagnostic Suite – Compilation & déploiement (v3.13.1)
 
-Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.8.0.
+Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.13.1.
 
 > **Important :** La version 3.9.0 a été migrée depuis Arduino IDE vers **PlatformIO**. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé**.
 
@@ -17,11 +17,22 @@ Le projet utilise PlatformIO pour la gestion de compilation. Toutes les dépenda
 
 Alternativement, utiliser la ligne de commande PlatformIO :
 ```bash
+# Build & upload (environnement par défaut)
 pio run --target upload
 pio device monitor --baud 115200
+
+# Builder des environnements spécifiques
+pio run -e esp32s3_n16r8
+pio run -e esp32s3_n8r8
+pio run -e esp32devkitc
 ```
 
 **Note :** Arduino IDE et Arduino CLI ne sont **plus supportés** pour cette version. Utiliser le dépôt archivé [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) pour la compatibilité Arduino IDE.
+
+## Statut de build (2025-11-26)
+1. `esp32s3_n16r8` : build OK, upload OK.
+2. `esp32s3_n8r8` : build OK.
+3. `esp32devkitc` : build OK.
 
 ## Checklist pré-déploiement
 - [ ] Mettre à jour `wifi-config.h` avec les identifiants production et, le cas échéant, les paramètres entreprise.

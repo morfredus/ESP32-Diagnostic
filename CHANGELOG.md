@@ -1,3 +1,10 @@
+## [Version 3.13.1] - 2025-11-26
+
+### Updates
+1. Dependencies: switched Adafruit libraries in `platformio.ini` to caret ranges (`^`) to allow safe minor/patch updates.
+2. Build: verified clean compilation on all three environments: `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`.
+3. Scope: documentation-only and build configuration maintenance; no functional firmware changes.
+
 ## [Version 3.13.0] - 2025-11-26
 
 ### Changed
