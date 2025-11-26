@@ -2,6 +2,24 @@
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.12.0] - 2025-11-26
+### Fixed
+- **CONFIG**: Validated and confirmed TFT backlight pin configuration (GPIO 15).
+- Resolved duplicate TFT display declarations causing compilation warnings.
+- Corrected pin mapping documentation in config.h for ESP32-S3 DevKitC-1 N16R8.
+
+### Improved
+- **DOCUMENTATION**: Removed obsolete development and debugging files for cleaner repository structure.
+- Deleted temporary files: CORRECTIFS_APPLIQUES.md, CORRECTIF_v3.11.1.md, DEBUGGING_WEB_UI.md, PATCH_WEB_UI.cpp, RESUME_FINAL.md, RESUME_v3.11.1_FINAL.md.
+- Consolidated pin mapping comments and organization in config.h.
+- Enhanced PlatformIO configuration with improved PSRAM settings.
+
+### Technical Changes
+- Finalized TFT pin configuration for production use on ESP32-S3 N16R8.
+- Cleaned repository of development artifacts and maintenance notes.
+- Standardized configuration file structure and comments.
+- Updated version to 3.12.0 in platformio.ini.
+
 ## [Version 3.11.4] - 2025-11-25
 ### Improved
 - **MAINTENANCE**: Code quality improvements and cleanup.
