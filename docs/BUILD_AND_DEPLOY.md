@@ -8,7 +8,10 @@ This document describes the supported toolchains and the recommended release che
 The project uses PlatformIO for build management. All dependencies are declared in `platformio.ini`:
 
 1. Open the project in **Visual Studio Code** with the **PlatformIO IDE** extension.
-2. Select your target environment (e.g., `esp32-s3-devkit`).
+2. Select your target environment:
+   - **esp32s3_n16r8** (default) — ESP32-S3 16MB Flash, 8MB PSRAM
+   - **esp32s3_n8r8** — ESP32-S3 8MB Flash, 8MB PSRAM
+   - **esp32devkitc** — Classic ESP32 4MB Flash, no PSRAM
 3. Run **Build** to compile, then **Upload** to flash.
 4. Open **Serial Monitor** at 115200 baud to verify.
 

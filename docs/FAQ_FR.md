@@ -1,8 +1,13 @@
 # ESP32 Diagnostic Suite – FAQ (v3.12.0)
 
 ## Généralités
-**Q : Quelles cartes sont officiellement supportées ?**
-R : ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2. Voir [FEATURE_MATRIX_FR.md](FEATURE_MATRIX_FR.md) pour le détail des capacités.
+**Q : Quelles cartes sont officiellement supportées ?**
+R : Trois cartes sont officiellement supportées dans cette version :
+- ESP32-S3-DevKitC-1 N16R8 (16Mo Flash, 8Mo PSRAM) — Cible principale
+- ESP32-S3-DevKitC-1 N8R8 (8Mo Flash, 8Mo PSRAM)
+- ESP32-DevKitC (4Mo Flash, sans PSRAM)
+
+Voir [FEATURE_MATRIX_FR.md](FEATURE_MATRIX_FR.md) pour la comparaison détaillée des capacités.
 
 **Q : Puis-je lancer les diagnostics sans Wi-Fi ?**
 R : Oui. La suite fonctionne en mode hotspot hors ligne ou via commandes série USB. Les modules réseau sont simplement ignorés.
@@ -34,8 +39,8 @@ R : En RAM jusqu'à l'export. Utiliser le tableau de bord ou `/api/report` imm�
 **Q : Le module OLED est indisponible.**
 R : Vérifier le câblage I2C (SDA/SCL), l'adresse 0x3C et l'activation `ENABLE_OLED_TESTS`.
 
-**Q : Les tests NeoPixel échouent sur ESP32-C3/C6.**
-R : Remapper la broche LED vers GPIO 8 ou 9 et mettre à jour `config.h`. Certaines cartes nécessitent une alimentation dédiée pour le ruban LED.
+**Q : Les tests NeoPixel échouent sur ma carte.**
+R : Vérifier que l'assignation de broche LED dans `config.h` correspond au câblage matériel. Certaines cartes nécessitent une alimentation externe dédiée pour le ruban LED (5V externe).
 
 **Q : L'API REST renvoie 409.**
 R : Un autre cycle est en cours. Attendre la fin ou appeler `POST /api/stop` avant de relancer.

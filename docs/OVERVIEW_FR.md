@@ -3,7 +3,8 @@
 La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version 3.12.0 apporte un support écran TFT validé, une stabilité améliorée et une configuration optimisée pour le matériel ESP32-S3 DevKitC-1 N16R8.
 
 ## Mission
-- Proposer une méthodologie homogène pour qualifier les cartes ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
+- Proposer une méthodologie homogène pour qualifier les cartes ESP32-S3 et ESP32 avec plusieurs variantes matérielles.
+- Supporter trois cartes spécifiques : ESP32-S3 N16R8 (principale), ESP32-S3 N8R8, et ESP32 DevKitC.
 - Offrir une interface web dédiée aux diagnostics en laboratoire comme sur le terrain, avec un minimum de configuration.
 - Maintenir l'alignement entre firmware, documentation et rapports exportés afin de faciliter la traçabilité des anomalies.
 
