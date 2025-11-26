@@ -47,6 +47,15 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 - Activation/désactivation via le flag `ENABLE_TFT_DISPLAY` dans config.h
 - Support du fonctionnement simultané OLED et TFT (mode double affichage)
 
+## Configuration des capteurs
+
+### Capteur de distance (HC-SR04)
+
+- TRIG est une broche de sortie ; ECHO est une broche d'entrée.
+- Alimentez le capteur en 5V et protégez la ligne ECHO avec un pont diviseur (5V vers 3,3V) avant l'entrée ESP32.
+- ESP32‑S3 avec mémoire Octal PSRAM/Flash (ex. DevKitC‑1 N16R8) : évitez d'utiliser les GPIO 35..48 pour TRIG/ECHO car ces broches sont réservées par l'interface OPI. Le firmware signalera cette configuration comme invalide.
+- Cartographie suggérée sur ESP32‑S3 si le bus I2C secondaire est inactif : TRIG = GPIO 26 (sortie), ECHO = GPIO 25 (entrée).
+
 ## Règles de nommage Bluetooth®
 - Les noms doivent comporter 3 à 31 caractères ASCII alphanumériques (+ tiret ou underscore).
 - Une saisie invalide renvoie HTTP 400 sans relancer la diffusion.
