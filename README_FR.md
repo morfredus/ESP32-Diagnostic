@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite (v3.12.3)
+# ESP32 Diagnostic Suite (v3.13.0)
 
 Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenus bilingues (FR/EN). Le firmware cible PlatformIO avec l'Arduino Core ESP32 3.3.3 et prend en charge les familles ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
 # ESP32 Diagnostic Suite (v3.12.0)
@@ -9,9 +9,10 @@ Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de
 - Pins par défaut du HC‑SR04 : TRIG=16 et ECHO=17 ; valeurs par défaut alignées dans l'interface web pour des essais rapides.
 - Nouveau mémo visuel : `docs/PIN_MAPPING_FR.md` (EN : `docs/PIN_MAPPING.md`).
 
-## Points clés de la version 3.12.0
-- **RELEASE** : Version de production avec configuration TFT validée et structure de dépôt nettoyée (v3.12.0).
-- **CONFIG** : Validation du pin backlight TFT (GPIO 15) et résolution des déclarations dupliquées (v3.12.0).
+## Points clés de la version 3.13.0
+- Documentation multi-cartes synchronisée : environnements `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc` clairement listés avec consignes de build.
+- Nettoyage des guides pour ôter les cartes non supportées (ESP32‑S2/C3/C6/H2) des sections et matrices.
+- Corrections cohérentes des valeurs par défaut I2C (SCL=20) et maintien des défauts HC‑SR04 (TRIG=16, ECHO=17).
 - **DOCUMENTATION** : Suppression de tous les artefacts de développement et débogage pour structure de projet plus claire (v3.12.0).
 - **MAINTENANCE** : Amélioration de la configuration PlatformIO avec paramètres PSRAM optimisés (v3.12.0).
 - **PRÉCÉDENT** : Améliorations de la qualité du code et nettoyage (v3.11.4).
