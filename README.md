@@ -1,19 +1,23 @@
-# ESP32 Diagnostic Suite (v3.13.1)
+# ESP32 Diagnostic Suite (v3.14.0)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports the ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, and ESP32-H2 families.
 
-## Highlights of version 3.12.3
-- Default HC‑SR04 pins set to TRIG=16 and ECHO=17; web UI defaults aligned for quick testing.
-- New quick reference: `docs/PIN_MAPPING.md` (FR: `docs/PIN_MAPPING_FR.md`).
+## New in version 3.14.0
+1. **TFT Web Interface**: Complete cartouche for testing TFT ST7789 display (240x240) via web interface.
+2. **Individual TFT Tests**: 8 tests available (boot splash, colors, shapes, text, lines, animation, progress, final message).
+3. **Boot Screen Buttons**: Quick restore startup display for both OLED and TFT.
+4. **TFT REST API**: `/api/tft-test`, `/api/tft-step`, `/api/tft-boot` for programmatic control.
+5. **OLED REST API**: `/api/oled-boot` to restore OLED boot screen.
+6. **Consistent Architecture**: TFT tests follow OLED test pattern for maintainability.
+
+## Highlights of version 3.13.1
+1. `platformio.ini`: switched Adafruit library versions to caret ranges (`^`) for safe minor/patch updates.
+2. Build verified across environments: `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`.
 
 ## Highlights of version 3.13.0
 - Multi-board documentation synced: clearly listed environments `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc` with build instructions.
 - Cleaned docs to remove unsupported boards (ESP32‑S2/C3/C6/H2) from guides and matrices.
 - Consistent I2C default doc corrections (SCL=20) and HC‑SR04 defaults maintained (TRIG=16, ECHO=17).
-
-## Latest maintenance (2025-11-26)
-1. `platformio.ini`: switched Adafruit library versions to caret ranges (`^`) for safe minor/patch updates.
-2. Build verified across environments: `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`.
 ## Highlights of version 3.12.1
 - **BUGFIX**: PSRAM reliably enabled for ESP32-S3 DevKitC-1 N16R8 on PlatformIO (board_build.psram, BOARD_HAS_PSRAM). Ensures memory tests and allocations use external PSRAM where available (v3.12.1).
 - **RELEASE**: Production-ready release with validated TFT configuration and cleaned repository structure (v3.12.0).

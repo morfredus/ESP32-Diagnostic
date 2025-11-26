@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Compilation & déploiement (v3.13.1)
+# ESP32 Diagnostic Suite – Compilation & déploiement (v3.14.0)
 
-Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.13.1.
+Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.14.0.
 
 > **Important :** La version 3.9.0 a été migrée depuis Arduino IDE vers **PlatformIO**. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé**.
 
@@ -29,14 +29,20 @@ pio run -e esp32devkitc
 
 **Note :** Arduino IDE et Arduino CLI ne sont **plus supportés** pour cette version. Utiliser le dépôt archivé [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) pour la compatibilité Arduino IDE.
 
-## Statut de build (2025-11-26)
+## Statut de build (2025-11-27)
 1. `esp32s3_n16r8` : build OK, upload OK.
 2. `esp32s3_n8r8` : build OK.
 3. `esp32devkitc` : build OK.
 
+## Nouveautés v3.14.0
+1. Interface web TFT avec 8 tests individuels et bouton retour écran de démarrage.
+2. Nouveaux endpoints API REST : `/api/tft-test`, `/api/tft-step`, `/api/tft-boot`, `/api/oled-boot`.
+3. 13 nouvelles clés de traduction bilangues (EN/FR) pour interface TFT.
+4. Architecture cohérente : tests TFT suivent le modèle OLED.
+
 ## Checklist pré-déploiement
 - [ ] Mettre à jour `wifi-config.h` avec les identifiants production et, le cas échéant, les paramètres entreprise.
-- [ ] Vérifier que `DIAGNOSTIC_VERSION` vaut `3.8.0` dans le firmware et la documentation.
+- [ ] Vérifier que `DIAGNOSTIC_VERSION` vaut `3.14.0` dans le firmware et la documentation.
 - [ ] Compiler les ressources multilingues sans avertissement (`languages.h`).
 - [ ] Exécuter un cycle complet sur une carte de référence et exporter les rapports JSON/CSV.
 - [ ] Capturer des captures d'écran ou impressions du tableau de bord pour les notes de version si nécessaire.
