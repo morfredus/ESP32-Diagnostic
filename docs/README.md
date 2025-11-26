@@ -1,16 +1,16 @@
-# ESP32 Diagnostic Suite (v3.11.4)
+# ESP32 Diagnostic Suite (v3.12.0)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports the ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, and ESP32-H2 families.
 
-## Highlights of version 3.11.4
-- **MAINTENANCE**: Code quality improvements and cleanup (v3.11.4).
-- **CONFIG FIX**: Corrected TFT backlight pin from GPIO 48 to GPIO 15 to avoid NeoPixel conflict (v3.11.3).
-- **BUILD FIX**: Resolved FPSTR() type casting error in chunked transfer implementation (v3.11.2).
-- **CRITICAL FIX**: Resolved web interface JavaScript loading issues using chunked transfer encoding (v3.11.1).
-- **Memory optimization**: Implemented streaming JavaScript delivery to prevent memory overflow.
+## Highlights of version 3.12.0
+- **RELEASE**: Production-ready release with validated TFT configuration and cleaned repository structure (v3.12.0).
+- **CONFIG**: Validated TFT backlight pin (GPIO 15) and resolved duplicate declarations (v3.12.0).
+- **DOCUMENTATION**: Removed all development and debugging artifacts for cleaner project structure (v3.12.0).
+- **MAINTENANCE**: Enhanced PlatformIO configuration with improved PSRAM settings (v3.12.0).
+- **PREVIOUS**: Code quality improvements and cleanup (v3.11.4).
+- **BUILD FIX**: Resolved FPSTR() type casting error and web interface JavaScript loading issues (v3.11.2, v3.11.1).
 - **NEW FEATURE**: TFT ST7789 display support (240x240) with boot splash screen and WiFi status (v3.11.0).
-- **Enhanced diagnostics**: Real-time JavaScript size monitoring and function verification.
-- **Previous fixes**: FreeRTOS compilation (v3.10.3), C++17 runtime crashes (v3.10.2), code quality (v3.9.0).
+- **Memory optimization**: Implemented streaming JavaScript delivery to prevent memory overflow.
 
 ## Project structure
 - `src/main.cpp` – firmware entry point, main loop, task scheduler, and HTTP handlers.
