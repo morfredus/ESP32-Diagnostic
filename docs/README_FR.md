@@ -1,16 +1,16 @@
-# ESP32 Diagnostic Suite (v3.11.4)
+# ESP32 Diagnostic Suite (v3.12.0)
 
 Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenus bilingues (FR/EN). Le firmware cible PlatformIO avec l'Arduino Core ESP32 3.3.3 et prend en charge les familles ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
 
-## Points clés de la version 3.11.4
-- **MAINTENANCE** : Améliorations de la qualité du code et nettoyage (v3.11.4).
-- **CORRECTION CONFIG** : Correction du pin backlight TFT de GPIO 48 à GPIO 15 pour éviter conflit avec NeoPixel (v3.11.3).
-- **CORRECTION BUILD** : Résolution de l'erreur de typage FPSTR() dans l'implémentation du transfert par morceaux (v3.11.2).
-- **CORRECTION CRITIQUE** : Résolution des problèmes de chargement JavaScript de l'interface web via encodage par morceaux (v3.11.1).
-- **Optimisation mémoire** : Implémentation de la livraison JavaScript en streaming pour éviter le dépassement mémoire.
+## Points clés de la version 3.12.0
+- **RELEASE** : Version de production avec configuration TFT validée et structure de dépôt nettoyée (v3.12.0).
+- **CONFIG** : Validation du pin backlight TFT (GPIO 15) et résolution des déclarations dupliquées (v3.12.0).
+- **DOCUMENTATION** : Suppression de tous les artefacts de développement et débogage pour structure de projet plus claire (v3.12.0).
+- **MAINTENANCE** : Amélioration de la configuration PlatformIO avec paramètres PSRAM optimisés (v3.12.0).
+- **PRÉCÉDENT** : Améliorations de la qualité du code et nettoyage (v3.11.4).
+- **CORRECTIONS BUILD** : Résolution erreur typage FPSTR() et problèmes chargement JavaScript interface web (v3.11.2, v3.11.1).
 - **NOUVELLE FONCTIONNALITÉ** : Support TFT ST7789 (240x240) avec écran de démarrage et état WiFi (v3.11.0).
-- **Diagnostics améliorés** : Surveillance en temps réel de la taille JavaScript et vérification des fonctions.
-- **Corrections précédentes** : Compilation FreeRTOS (v3.10.3), crashes C++17 (v3.10.2), qualité code (v3.9.0).
+- **Optimisation mémoire** : Implémentation de la livraison JavaScript en streaming pour éviter le dépassement mémoire.
 
 ## Structure du projet
 - `src/main.cpp` – point d'entrée du firmware, boucle principale, ordonnanceur et gestionnaires HTTP.
