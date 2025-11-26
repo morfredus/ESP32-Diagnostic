@@ -2111,23 +2111,40 @@ void testDistanceSensor() {
 
   Serial.printf("Distance Sensor - Trig:%d Echo:%d\r\n", DISTANCE_TRIG_PIN, DISTANCE_ECHO_PIN);
 
+  // Assurer ECHO à LOW avant de déclencher (éviter faux négatifs)
+  {
+    unsigned long waitStart = micros();
+    while (digitalRead(DISTANCE_ECHO_PIN) == HIGH && (micros() - waitStart) < 200000UL) {
+      yield();
+    }
+  }
+
+  // Séquence TRIG: 10 µs HIGH après stabilisation LOW
   digitalWrite(DISTANCE_TRIG_PIN, LOW);
-  delayMicroseconds(2);
+  delayMicroseconds(4);
   digitalWrite(DISTANCE_TRIG_PIN, HIGH);
   delayMicroseconds(10);
   digitalWrite(DISTANCE_TRIG_PIN, LOW);
 
-  long duration = pulseIn(DISTANCE_ECHO_PIN, HIGH, 30000);
+  // Mesure de l'impulsion ECHO (timeout élargi)
+  unsigned long timeoutUs = 60000UL; // 60 ms
+  unsigned long duration = 0UL;
+#if defined(ARDUINO_ARCH_ESP32)
+  duration = pulseInLong(DISTANCE_ECHO_PIN, HIGH, timeoutUs);
+#else
+  duration = pulseIn(DISTANCE_ECHO_PIN, HIGH, timeoutUs);
+#endif
 
-  if (duration > 0) {
-    distanceValue = duration * 0.034 / 2;
+  if (duration > 0UL) {
+    // Vitesse du son ~0.034 cm/µs ; aller-retour => /2
+    distanceValue = (double)duration * 0.034 / 2.0;
     distanceSensorTestResult = String(Texts::ok);
     distanceSensorAvailable = true;
     Serial.printf("Distance: %.2f cm\r\n", distanceValue);
   } else {
     distanceSensorTestResult = String(Texts::error_label);
     distanceSensorAvailable = false;
-    Serial.println("Distance Sensor: No echo");
+    Serial.println("Distance Sensor: No echo (check wiring/level shifting/target distance)");
   }
 }
 
