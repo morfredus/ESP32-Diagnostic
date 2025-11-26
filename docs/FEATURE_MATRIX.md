@@ -11,19 +11,16 @@ validation campaigns and to verify whether optional peripherals require addition
 - ⛔ – Not available for the target board or requires custom firmware extensions.
 
 ## Core board capabilities
-| Board family | Wi-Fi scan | BLE advert scan | PSRAM probe | Flash integrity | NeoPixel test | OLED 0.96" test | Notes |
-|--------------|-----------|-----------------|-------------|-----------------|---------------|-----------------|-------|
-| ESP32 (WROOM/DevKitC) | ✅ | ⛔ | ⚙️ | ✅ | ✅ | ✅ | BLE removed in PlatformIO version. PSRAM detection available on WROVER variants. |
-| ESP32-S2 | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | Native USB supported; BLE hardware absent. |
-| ESP32-S3 | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | BLE removed in PlatformIO version. Dual USB/Serial supported. |
-| ESP32-C3 | ✅ | ⛔ | ⛔ | ✅ | ⚙️ | ⚙️ | BLE removed in PlatformIO version. Requires pin remapping for NeoPixel. |
-| ESP32-C6 | ✅ | ⛔ | ⛔ | ✅ | ⚙️ | ⚙️ | BLE removed in PlatformIO version. Configure pins for LED/OLED. |
-| ESP32-H2 | ⛔ | ⛔ | ⛔ | ✅ | ⛔ | ⚙️ | Wi-Fi and BLE absent in PlatformIO version. Limited GPIO diagnostics only. |
+| Board | Environment | Wi-Fi scan | BLE scan | PSRAM probe | Flash integrity | NeoPixel test | OLED test | TFT test | Notes |
+|-------|-------------|-----------|----------|-------------|-----------------|---------------|-----------|----------|-------|
+| ESP32-S3 N16R8 | `esp32s3_n16r8` | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | ✅ | Primary target. 16MB Flash, 8MB PSRAM. OPI memory (GPIO 35-48 reserved). |
+| ESP32-S3 N8R8 | `esp32s3_n8r8` | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | ✅ | 8MB Flash, 8MB PSRAM. Same pin restrictions as N16R8. |
+| ESP32 DevKitC | `esp32devkitc` | ✅ | ⛔ | ⛔ | ✅ | ✅ | ✅ | ✅ | Classic ESP32. 4MB Flash, no PSRAM. No GPIO 35-48 restrictions. |
 
 ## Peripheral bus coverage
 | Bus / Peripheral | Default pins | Supported boards | Notes |
 |------------------|--------------|------------------|-------|
-| I2C primary bus | SDA 21, SCL 22 (overridable) | All (except remap on ESP32-C3/C6/H2) | Used for OLED, sensor packs, EEPROM. |
+| I2C primary bus | SDA 21, SCL 20 (overridable) | All supported boards | Used for OLED, sensor packs, EEPROM. |
 | I2C secondary bus | Disabled by default | ESP32, ESP32-S3 | Enable via `ENABLE_SECONDARY_I2C` flag in `config.h`. |
 | SPI test bus | MOSI 23, MISO 19, CLK 18, CS 5 | ESP32, ESP32-S3 | Validates external flash/SD adaptors. |
 | UART loopback | TX0/RX0 & optional UART1 | All | Requires jumper wire TX↔RX on chosen UART. |

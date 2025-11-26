@@ -63,7 +63,7 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 - Successful renaming persists until reboot.
 
 ## Advanced options
-- Enable PSRAM in the Arduino IDE board menu for ESP32-S3 boards to unlock extended memory diagnostics.
-- The firmware auto-detects chip variants and enables BLE support on compatible targets (ESP32, ESP32-S3, ESP32-C3, ESP32-C6, ESP32-H2).
-- For debugging, open the Serial Monitor to observe Wi-Fi retries (mirrored on the OLED splash), BLE state transitions, and diagnostic progress, then poll `/api/memory-details` if you need precise fragmentation metrics.
-- NimBLE is auto-selected on ESP32-S3 and USB-enabled boards; 3.8.0 now validates scan results before exposing them, so no manual toggles are necessary.
+- **PSRAM:** Automatically enabled for ESP32-S3 N16R8 and N8R8 builds via `platformio.ini` configuration.
+- **BLE support:** Not available in this PlatformIO version. BLE functionality has been removed.
+- **Debugging:** Open the Serial Monitor to observe Wi-Fi connection retries (mirrored on OLED if present), diagnostic progress, and sensor readings. Poll `/api/memory-details` for precise fragmentation metrics.
+- **Multi-board support:** Select the appropriate environment in PlatformIO (`esp32s3_n16r8`, `esp32s3_n8r8`, or `esp32devkitc`) before building.

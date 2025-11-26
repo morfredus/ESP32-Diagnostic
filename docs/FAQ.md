@@ -2,7 +2,12 @@
 
 ## General
 **Q: Which boards are officially supported?**
-A: ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, and ESP32-H2. See [FEATURE_MATRIX.md](FEATURE_MATRIX.md) for capability details.
+A: Three boards are officially supported in this version:
+- ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM) — Primary target
+- ESP32-S3-DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
+- ESP32-DevKitC (4MB Flash, no PSRAM)
+
+See [FEATURE_MATRIX.md](FEATURE_MATRIX.md) for detailed capability comparison.
 
 **Q: Can I run the diagnostics without Wi-Fi?**
 A: Yes. The suite can operate in offline hotspot mode or via USB serial commands. Network-specific modules will be skipped.
@@ -36,8 +41,8 @@ A: In RAM until exported. Use the web dashboard or `/api/report` to download the
 **Q: The OLED module is marked as unavailable.**
 A: Check I2C wiring (SDA/SCL), confirm the display address (0x3C by default), and ensure `ENABLE_OLED_TESTS` remains enabled.
 
-**Q: NeoPixel tests fail on ESP32-C3/C6.**
-A: Remap the LED pin to GPIO 8 or 9 and update `config.h`. Some boards require powering the LED strip separately.
+**Q: NeoPixel tests fail on my board.**
+A: Verify the LED pin assignment in `config.h` matches your hardware wiring. Some boards require powering the LED strip separately (5V external power).
 
 **Q: REST API requests return 409 errors.**
 A: Another diagnostic run is active. Wait for completion or issue `POST /api/stop` before retrying.

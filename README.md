@@ -58,9 +58,13 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an intera
 - Optional NeoPixel/WS2812B LED test patterns and benchmarking tools for CPU/memory.
 
 ## Compatibility & requirements
-- **Boards:** ESP32, ESP32-S2, ESP32-S3 (recommended), ESP32-C3, ESP32-C6, ESP32-H2.
+- **Boards:** 
+  - ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM) — Primary target
+  - ESP32-S3-DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
+  - ESP32-DevKitC (4MB Flash, no PSRAM)
 - **Platform:** PlatformIO with ESP32 Arduino Core 3.3.3.
-- **Libraries:** Adafruit BusIO, Adafruit GFX Library, Adafruit ST7735 and ST7789 Library, Adafruit SSD1306, Adafruit NeoPixel, U8g2 (auto-installed via platformio.ini).
+- **Build Environments:** `esp32s3_n16r8` (default), `esp32s3_n8r8`, `esp32devkitc`.
+- **Libraries:** Adafruit BusIO, Adafruit GFX Library, Adafruit ST7735 and ST7789 Library, Adafruit NeoPixel, U8g2 (auto-installed via platformio.ini).
 
 ## Support
 - License: [MIT](LICENSE)

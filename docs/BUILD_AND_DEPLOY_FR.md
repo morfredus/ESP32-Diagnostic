@@ -8,7 +8,10 @@ Ce document décrit les toolchains supportées et la checklist recommandée pour
 Le projet utilise PlatformIO pour la gestion de compilation. Toutes les dépendances sont déclarées dans `platformio.ini` :
 
 1. Ouvrir le projet dans **Visual Studio Code** avec l'extension **PlatformIO IDE**.
-2. Sélectionner votre environnement cible (ex. `esp32-s3-devkit`).
+2. Sélectionner votre environnement cible :
+   - **esp32s3_n16r8** (défaut) — ESP32-S3 16Mo Flash, 8Mo PSRAM
+   - **esp32s3_n8r8** — ESP32-S3 8Mo Flash, 8Mo PSRAM
+   - **esp32devkitc** — ESP32 classique 4Mo Flash, sans PSRAM
 3. Lancer **Build** pour compiler, puis **Upload** pour flasher.
 4. Ouvrir **Serial Monitor** à 115200 bauds pour vérifier.
 

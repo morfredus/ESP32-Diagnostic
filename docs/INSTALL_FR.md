@@ -5,9 +5,12 @@ Suivez ces étapes pour déployer ESP32 Diagnostic Suite sur votre carte.
 > **Version 3.12.0 :** Cette version a été migrée depuis Arduino IDE vers **PlatformIO dans Visual Studio Code**. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé** car il n'est pas correctement géré sous la configuration de plateforme PlatformIO.
 
 ## 1. Prérequis
-- Carte ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 ou ESP32-H2 (S3 recommandée).
+- **Cartes supportées :**
+  - ESP32-S3-DevKitC-1 N16R8 (16Mo Flash, 8Mo PSRAM) — Cible principale
+  - ESP32-S3-DevKitC-1 N8R8 (8Mo Flash, 8Mo PSRAM)
+  - ESP32-DevKitC (4Mo Flash, sans PSRAM)
 - Câble USB avec transfert de données.
-- Optionnel : bandeau NeoPixel/WS2812B et écran OLED 0,96" SSD1306 pour les tests avancés.
+- Optionnel : bandeau NeoPixel/WS2812B et écran OLED 0,96" pour les tests avancés.
 - **Visual Studio Code** avec l'extension **PlatformIO IDE** installée.
 - PlatformIO gèrera automatiquement la toolchain ESP32 (plateforme espressif32).
 
@@ -39,10 +42,12 @@ Les précisions de configuration sont détaillées dans [CONFIG_FR.md](CONFIG_FR
 
 ## 5. Compilation et téléversement
 1. Dans Visual Studio Code, ouvrez la barre latérale PlatformIO.
-2. Sélectionnez votre environnement cible depuis `platformio.ini` (ex. `esp32-s3-devkit`).
-3. Assurez-vous que la **PSRAM** est activée dans votre configuration de carte pour les ESP32-S3 afin de profiter de tous les diagnostics.
-4. Cliquez sur **Build** pour compiler, puis sur **Upload** pour flasher le firmware.
-5. Ouvrez le **Serial Monitor** (115200 bauds) pour visualiser la séquence de démarrage.
+2. Sélectionnez votre environnement cible depuis `platformio.ini` :
+   - **esp32s3_n16r8** (défaut) — ESP32-S3 avec 16Mo Flash, 8Mo PSRAM
+   - **esp32s3_n8r8** — ESP32-S3 avec 8Mo Flash, 8Mo PSRAM
+   - **esp32devkitc** — ESP32 classique avec 4Mo Flash, sans PSRAM
+3. Cliquez sur **Build** pour compiler, puis sur **Upload** pour flasher le firmware.
+4. Ouvrez le **Serial Monitor** (115200 bauds) pour visualiser la séquence de démarrage.
 
 En cas de succès, le moniteur série affiche la version du firmware et l'état de connexion. L'OLED (si présent) reflète les phases de connexion Wi-Fi (association, DHCP, réussite).
 

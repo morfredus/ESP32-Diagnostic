@@ -12,19 +12,16 @@ supplémentaire.
 - ⛔ – Non disponible pour la carte cible ou nécessite une extension firmware spécifique.
 
 ## Capacités des cartes principales
-| Famille de carte | Scan Wi-Fi | Scan BLE | Sonde PSRAM | Intégrité flash | Test NeoPixel | Test OLED 0,96" | Notes |
-|------------------|-----------|----------|-------------|-----------------|--------------|------------------|-------|
-| ESP32 (WROOM/DevKitC) | ✅ | ⛔ | ⚙️ | ✅ | ✅ | ✅ | BLE supprimé dans version PlatformIO. Détection PSRAM sur variantes WROVER. |
-| ESP32-S2 | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | USB natif supporté ; matériel BLE absent. |
-| ESP32-S3 | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | BLE supprimé dans version PlatformIO. Double USB/Série supporté. |
-| ESP32-C3 | ✅ | ⛔ | ⛔ | ✅ | ⚙️ | ⚙️ | BLE supprimé dans version PlatformIO. Remappage broches NeoPixel requis. |
-| ESP32-C6 | ✅ | ⛔ | ⛔ | ✅ | ⚙️ | ⚙️ | BLE supprimé dans version PlatformIO. Configurer broches LED/OLED. |
-| ESP32-H2 | ⛔ | ⛔ | ⛔ | ✅ | ⛔ | ⚙️ | Wi-Fi et BLE absents dans version PlatformIO. Diagnostics GPIO limités uniquement. |
+| Carte | Environnement | Scan Wi-Fi | Scan BLE | Sonde PSRAM | Intégrité flash | Test NeoPixel | Test OLED | Test TFT | Notes |
+|-------|---------------|-----------|----------|-------------|-----------------|---------------|-----------|----------|-------|
+| ESP32-S3 N16R8 | `esp32s3_n16r8` | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | ✅ | Cible principale. 16Mo Flash, 8Mo PSRAM. Mémoire OPI (GPIO 35-48 réservés). |
+| ESP32-S3 N8R8 | `esp32s3_n8r8` | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | ✅ | 8Mo Flash, 8Mo PSRAM. Mêmes restrictions broches que N16R8. |
+| ESP32 DevKitC | `esp32devkitc` | ✅ | ⛔ | ⛔ | ✅ | ✅ | ✅ | ✅ | ESP32 classique. 4Mo Flash, sans PSRAM. Pas de restriction GPIO 35-48. |
 
 ## Couverture des bus et périphériques
 | Bus / Périphérique | Broches par défaut | Cartes supportées | Notes |
 |--------------------|--------------------|-------------------|-------|
-| I2C principal | SDA 21, SCL 22 (reconfigurable) | Toutes (remappage nécessaire sur ESP32-C3/C6/H2) | Utilisé pour l'OLED, les packs capteurs, l'EEPROM. |
+| I2C principal | SDA 21, SCL 20 (reconfigurable) | Toutes les cartes supportées | Utilisé pour l'OLED, les packs capteurs, l'EEPROM. |
 | I2C secondaire | Désactivé par défaut | ESP32, ESP32-S3 | Activer via le flag `ENABLE_SECONDARY_I2C` dans `config.h`. |
 | Bus SPI test | MOSI 23, MISO 19, CLK 18, CS 5 | ESP32, ESP32-S3 | Valide la flash externe / adaptateurs SD. |
 | Boucle UART | TX0/RX0 & UART1 optionnel | Toutes | Nécessite un cavalier TX↔RX sur l'UART choisi. |

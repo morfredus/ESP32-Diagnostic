@@ -65,9 +65,13 @@ Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de
 - Motifs NeoPixel/WS2812B optionnels et outils de benchmark CPU/mémoire.
 
 ## Compatibilité & prérequis
-- **Cartes :** ESP32, ESP32-S2, ESP32-S3 (recommandée), ESP32-C3, ESP32-C6, ESP32-H2.
+- **Cartes :**
+  - ESP32-S3-DevKitC-1 N16R8 (16Mo Flash, 8Mo PSRAM) — Cible principale
+  - ESP32-S3-DevKitC-1 N8R8 (8Mo Flash, 8Mo PSRAM)
+  - ESP32-DevKitC (4Mo Flash, sans PSRAM)
 - **Plateforme :** PlatformIO avec l'Arduino Core ESP32 3.3.3.
-- **Bibliothèques :** Adafruit BusIO, Adafruit GFX Library, Adafruit ST7735 and ST7789 Library, Adafruit SSD1306, Adafruit NeoPixel, U8g2 (installation automatique via platformio.ini).
+- **Environnements de build :** `esp32s3_n16r8` (défaut), `esp32s3_n8r8`, `esp32devkitc`.
+- **Bibliothèques :** Adafruit BusIO, Adafruit GFX Library, Adafruit ST7735 and ST7789 Library, Adafruit NeoPixel, U8g2 (installation automatique via platformio.ini).
 
 ## Support
 - Licence : [MIT](LICENSE)
