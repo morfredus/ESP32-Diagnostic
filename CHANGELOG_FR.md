@@ -2,6 +2,13 @@
 
 Toutes les évolutions notables d'ESP32 Diagnostic Suite sont documentées ici. Ce projet suit [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.12.2] - 2025-11-26
+### Corrections
+- **HC‑SR04** : Séquence de mesure durcie en attendant que ECHO repasse à LOW avant déclenchement et en utilisant `pulseInLong()` avec timeout étendu. Évite les faux résultats « No echo ».
+
+### Changements Techniques
+- Aucun changement de pin mapping. Ajustements limités à la séquence de mesure et à la gestion du timeout.
+
 ## [Version 3.12.1] - 2025-11-26
 ### Corrections
 - **Activation PSRAM** : Activation garantie de la PSRAM sur ESP32-S3 DevKitC-1 N16R8 sous PlatformIO via `board_build.psram = enabled` et définition de `BOARD_HAS_PSRAM`. Corrige les échecs des tests mémoire utilisant la PSRAM externe.

@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite (v3.12.1)
+# ESP32 Diagnostic Suite (v3.12.2)
 
 Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenus bilingues (FR/EN). Le firmware cible PlatformIO avec l'Arduino Core ESP32 3.3.3 et prend en charge les familles ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
 # ESP32 Diagnostic Suite (v3.12.0)
@@ -14,6 +14,8 @@ Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de
 - **CORRECTIONS BUILD** : Résolution erreur typage FPSTR() et problèmes chargement JavaScript interface web (v3.11.2, v3.11.1).
 - **NOUVELLE FONCTIONNALITÉ** : Support TFT ST7789 (240x240) avec écran de démarrage et état WiFi (v3.11.0).
 - **Optimisation mémoire** : Implémentation de la livraison JavaScript en streaming pour éviter le dépassement mémoire.
+- **CORRECTION** : Test HC‑SR04 rendu robuste sur ESP32/ESP32‑S3 (attente de stabilisation ECHO à LOW, `pulseInLong` avec timeout étendu, conversion fiable). Évite les faux "No echo" (v3.12.2).
+
 ## Points clés de la version 3.12.1
 - **CORRECTION** : Activation fiable de la PSRAM pour ESP32-S3 DevKitC-1 N16R8 sous PlatformIO (`board_build.psram`, `BOARD_HAS_PSRAM`). Garantit que les tests mémoire et allocations utilisent la PSRAM externe lorsque disponible (v3.12.1).
 - **RELEASE** : Version de production avec configuration TFT validée et structure de dépôt nettoyée (v3.12.0).
