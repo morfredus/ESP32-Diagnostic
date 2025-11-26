@@ -70,15 +70,16 @@
 #define DEFAULT_MOTION_SENSOR_PIN 39  // PIR (GPIO input-capable)
 
 // ========== TFT DISPLAY ST7789 ==========
+#define ENABLE_TFT_DISPLAY  true  // Active l'écran TFT ST7789
 #define TFT_WIDTH           240
 #define TFT_HEIGHT          240
 #define TFT_MOSI            11    // SPI MOSI
 #define TFT_SCLK            12    // SPI SCLK
 #define TFT_CS              10    // Chip Select
-#define TFT_DC              6     // Data/Command
-#define TFT_RST             7     // Reset
+#define TFT_DC              9     // Data/Command
+#define TFT_RST             46    // Reset
 #define TFT_BL              15    // Backlight
-#define TFT_ROTATION        2     // Orientation par défaut
+#define TFT_ROTATION        0     // Orientation par défaut (0, 1, 2, or 3)
 #define TFT_BACKLIGHT_PWM   255   // Luminosité max
 
 // ========== GPS (UART2) ==========
