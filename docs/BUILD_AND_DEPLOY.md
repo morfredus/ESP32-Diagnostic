@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Build & Deploy (v3.13.1)
+# ESP32 Diagnostic Suite – Build & Deploy (v3.14.0)
 
-This document describes the supported toolchains and the recommended release checklist for firmware version 3.13.1.
+This document describes the supported toolchains and the recommended release checklist for firmware version 3.14.0.
 
 > **Important:** Version 3.12.0 has been migrated from Arduino IDE to **PlatformIO**. The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository is now **archived**. Bluetooth/BLE support has been **removed**.
 
@@ -29,14 +29,20 @@ pio run -e esp32devkitc
 
 **Note:** Arduino IDE and Arduino CLI are **no longer supported** for this version. Use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository for Arduino IDE compatibility.
 
-## Build status (2025-11-26)
+## Build status (2025-11-27)
 1. `esp32s3_n16r8`: build OK, upload OK.
 2. `esp32s3_n8r8`: build OK.
 3. `esp32devkitc`: build OK.
 
+## New in v3.14.0
+1. TFT web interface with 8 individual tests and boot screen restore button.
+2. New REST API endpoints: `/api/tft-test`, `/api/tft-step`, `/api/tft-boot`, `/api/oled-boot`.
+3. 13 new bilingual translation keys (EN/FR) for TFT interface.
+4. Consistent architecture: TFT tests follow OLED pattern.
+
 ## Pre-deployment checklist
 - [ ] Update `wifi-config.h` with production SSID/passwords and optional enterprise credentials.
-- [ ] Confirm `DIAGNOSTIC_VERSION` matches `3.8.0` in both firmware and documentation.
+- [ ] Confirm `DIAGNOSTIC_VERSION` matches `3.14.0` in both firmware and documentation.
 - [ ] Verify multilingual assets compile without warnings (`languages.h`).
 - [ ] Run a full diagnostic cycle on a reference board and export JSON/CSV reports.
 - [ ] Capture screenshots or printouts of the dashboard for release notes if required.

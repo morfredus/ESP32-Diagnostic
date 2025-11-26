@@ -1,22 +1,23 @@
-# ESP32 Diagnostic Suite (v3.13.1)
-
-Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenus bilingues (FR/EN). Le firmware cible PlatformIO avec l'Arduino Core ESP32 3.3.3 et prend en charge les familles ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
-# ESP32 Diagnostic Suite (v3.12.0)
+# ESP32 Diagnostic Suite (v3.14.0)
 
 Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenus bilingues (FR/EN). Le firmware cible PlatformIO avec l'Arduino Core ESP32 3.3.3 et prend en charge les familles ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
 
-## Points clés de la version 3.12.3
-- Pins par défaut du HC‑SR04 : TRIG=16 et ECHO=17 ; valeurs par défaut alignées dans l'interface web pour des essais rapides.
-- Nouveau mémo visuel : `docs/PIN_MAPPING_FR.md` (EN : `docs/PIN_MAPPING.md`).
+## Nouveautés de la version 3.14.0
+1. **Interface web TFT** : Cartouche complet pour tester l'affichage TFT ST7789 (240x240) via l'interface web.
+2. **Tests TFT individuels** : 8 tests disponibles (écran démarrage, couleurs, formes, texte, lignes, animation, progression, message final).
+3. **Boutons de retour écran de démarrage** : Restauration rapide de l'affichage de démarrage pour OLED et TFT.
+4. **API REST TFT** : `/api/tft-test`, `/api/tft-step`, `/api/tft-boot` pour contrôle programmatique.
+5. **API REST OLED** : `/api/oled-boot` pour restaurer l'écran de démarrage OLED.
+6. **Architecture cohérente** : Tests TFT suivent le modèle des tests OLED pour maintenabilité.
+
+## Points clés de la version 3.13.1
+1. `platformio.ini` : passage aux intervalles avec chapeau (`^`) pour les bibliothèques Adafruit afin de bénéficier des mises à jour mineures/patch.
+2. Build validé sur les environnements : `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`.
 
 ## Points clés de la version 3.13.0
 - Documentation multi-cartes synchronisée : environnements `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc` clairement listés avec consignes de build.
 - Nettoyage des guides pour ôter les cartes non supportées (ESP32‑S2/C3/C6/H2) des sections et matrices.
 - Corrections cohérentes des valeurs par défaut I2C (SCL=20) et maintien des défauts HC‑SR04 (TRIG=16, ECHO=17).
-
-## Maintenance récente (2025-11-26)
-1. `platformio.ini` : passage aux intervalles avec chapeau (`^`) pour les bibliothèques Adafruit afin de bénéficier des mises à jour mineures/patch.
-2. Build validé sur les environnements : `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`.
 - **DOCUMENTATION** : Suppression de tous les artefacts de développement et débogage pour structure de projet plus claire (v3.12.0).
 - **MAINTENANCE** : Amélioration de la configuration PlatformIO avec paramètres PSRAM optimisés (v3.12.0).
 - **PRÉCÉDENT** : Améliorations de la qualité du code et nettoyage (v3.11.4).
