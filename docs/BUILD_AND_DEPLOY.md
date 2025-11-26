@@ -1,8 +1,8 @@
-# ESP32 Diagnostic Suite – Build & Deploy (v3.9.0)
+# ESP32 Diagnostic Suite – Build & Deploy (v3.12.0)
 
-This document describes the supported toolchains and the recommended release checklist for firmware version 3.9.0.
+This document describes the supported toolchains and the recommended release checklist for firmware version 3.12.0.
 
-> **Important:** Version 3.9.0 has been migrated from Arduino IDE to **PlatformIO**. The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository is now **archived**. Bluetooth/BLE support has been **removed**.
+> **Important:** Version 3.12.0 has been migrated from Arduino IDE to **PlatformIO**. The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository is now **archived**. Bluetooth/BLE support has been **removed**.
 
 ## Toolchains
 The project uses PlatformIO for build management. All dependencies are declared in `platformio.ini`:

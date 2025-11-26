@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Directives de sécurité (v3.9.0)
+# ESP32 Diagnostic Suite – Directives de sécurité (v3.12.0)
 
 Même si la suite est majoritairement utilisée en laboratoire, ces recommandations limitent l'exposition lors des tests de
 matériel pré-production.

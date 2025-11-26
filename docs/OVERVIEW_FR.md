@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Vue d'ensemble (v3.9.0)
+# ESP32 Diagnostic Suite – Vue d'ensemble (v3.12.0)
 
-La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version 3.9.0 met l'accent sur la visibilité Wi-Fi via l'écran OLED, la compatibilité BLE inter-piles et une documentation actualisée pour les derniers toolchains.
+La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version 3.12.0 apporte un support écran TFT validé, une stabilité améliorée et une configuration optimisée pour le matériel ESP32-S3 DevKitC-1 N16R8.
 
 ## Mission
 - Proposer une méthodologie homogène pour qualifier les cartes ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6 et ESP32-H2.
@@ -16,11 +16,13 @@ La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production
 | Localisation | Bascule FR/EN à l'exécution côté firmware (sortie série) et interface web. |
 | Extensibilité | Registre modulaire de tests, bus d'événements pour callbacks personnalisés et helpers OLED/NeoPixel optionnels. |
 
-## Focus de la version 3.9.0
-- **Migration vers PlatformIO :** Projet migré depuis Arduino IDE vers PlatformIO dans Visual Studio Code pour une meilleure gestion de compilation.
-- **Dépôt archivé :** La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant archivée.
-- **Support Bluetooth supprimé :** La fonctionnalité BLE/Bluetooth a été supprimée car elle n'est pas correctement gérée sous PlatformIO.
-- Écran de démarrage Wi-Fi sur les cartes équipées d'OLED pour afficher association, DHCP et réussite sans ouvrir le port série.
+## Focus de la version 3.12.0
+- **Version de production :** Configuration TFT validée et structure de dépôt nettoyée pour déploiement en production.
+- **Support écran TFT ST7789 :** Support complet des écrans TFT 240x240 avec écran de démarrage et statut WiFi/IP en temps réel (v3.11.0+).
+- **Double affichage :** Fonctionnement simultané OLED et TFT pour visualisation diagnostique améliorée.
+- **Stabilité améliorée :** Résolution des problèmes de chargement JavaScript, erreurs de compilation FPSTR(), et optimisation mémoire avec livraison en streaming.
+- **Validation configuration :** Finalisation du mapping des pins pour ESP32-S3 DevKitC-1 N16R8 avec rétro-éclairage TFT sur GPIO 15.
+- **Optimisation PlatformIO :** Configuration PSRAM améliorée avec stabilité et performance accrues.
 
 ## Carte du wiki
 Consultez cette carte pour accéder directement à la bonne rubrique :
