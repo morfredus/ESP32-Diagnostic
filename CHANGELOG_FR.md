@@ -2,6 +2,18 @@
 
 Toutes les évolutions notables d'ESP32 Diagnostic Suite sont documentées ici. Ce projet suit [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.12.1] - 2025-11-26
+### Corrections
+- **Activation PSRAM** : Activation garantie de la PSRAM sur ESP32-S3 DevKitC-1 N16R8 sous PlatformIO via `board_build.psram = enabled` et définition de `BOARD_HAS_PSRAM`. Corrige les échecs des tests mémoire utilisant la PSRAM externe.
+
+### Améliorations
+- Configuration PlatformIO affinée pour une détection et une utilisation cohérentes de la PSRAM avec Arduino-ESP32 3.3.x.
+- Mise à jour des documentations FR/EN et des références de version vers 3.12.1.
+
+### Changements Techniques
+- Incrément de `PROJECT_VERSION` vers 3.12.1 dans `platformio.ini`.
+- Aucun changement de pin mapping (config.h inchangé).
+
 ## [Version 3.12.0] - 2025-11-26
 ### Corrections
 - **CONFIG** : Validation et confirmation de la configuration du pin backlight TFT (GPIO 15).
