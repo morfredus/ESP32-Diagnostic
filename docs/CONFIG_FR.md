@@ -64,6 +64,7 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 
 ## Options avancées
 - Activez la PSRAM dans le menu carte de l'Arduino IDE pour les ESP32-S3 afin d'accéder aux diagnostics mémoire étendus.
-- Le firmware détecte automatiquement les variantes et active le support BLE sur les cibles compatibles (ESP32, ESP32-S3, ESP32-C3, ESP32-C6, ESP32-H2).
+- **Support BLE :** Non disponible dans cette version PlatformIO. La fonctionnalité BLE a été supprimée.
+- **Support multi-cartes :** Sélectionner l'environnement approprié dans PlatformIO (`esp32s3_n16r8`, `esp32s3_n8r8`, ou `esp32devkitc`) avant compilation.
 - Pour le debug, suivez le moniteur série : les retraits Wi-Fi (également reflétés sur l'écran OLED), les états BLE et la progression des tests y sont journalisés, puis interrogez `/api/memory-details` pour obtenir les métriques de fragmentation détaillées.
 - NimBLE est sélectionné automatiquement sur les cartes ESP32-S3 et les cibles USB ; en 3.8.0, les résultats de scan sont validés avant exposition, évitant toute manipulation manuelle.
