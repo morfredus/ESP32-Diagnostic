@@ -1,3 +1,14 @@
+## [Version 3.13.0] - 2025-11-26
+
+### Changements
+- Synchronisation de la documentation pour les environnements multi-cartes : `esp32s3_n16r8`, `esp32s3_n8r8` et `esp32devkitc`.
+- Suppression des références aux cartes non supportées (ESP32-S2/C3/C6/H2) dans les guides et matrices.
+- Corrections des valeurs par défaut I2C (SCL=20) et maintien des défauts HC‑SR04 (TRIG=16, ECHO=17).
+- Mise à jour de `PROJECT_VERSION` vers 3.13.0 dans `platformio.ini`.
+
+### Notes
+- Builds validés pour esp32s3_n16r8 et esp32s3_n8r8. Compilation `esp32devkitc` présente mais non testée faute de matériel.
+
 # Changelog (FR)
 
 Toutes les évolutions notables d'ESP32 Diagnostic Suite sont documentées ici. Ce projet suit [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

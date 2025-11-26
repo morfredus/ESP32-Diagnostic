@@ -1,3 +1,14 @@
+## [Version 3.13.0] - 2025-11-26
+
+### Changed
+- Synchronized documentation for multi-board environments: `esp32s3_n16r8`, `esp32s3_n8r8`, and `esp32devkitc`.
+- Removed references to unsupported boards (ESP32-S2/C3/C6/H2) across guides and feature matrices.
+- Corrected I2C default documentation (SCL=20) and kept HC-SR04 defaults (TRIG=16, ECHO=17).
+- Updated `PROJECT_VERSION` to 3.13.0 in `platformio.ini`.
+
+### Notes
+- Builds validated for esp32s3_n16r8 and esp32s3_n8r8. `esp32devkitc` compilation configuration present but not hardware-tested.
+
 # Changelog
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
