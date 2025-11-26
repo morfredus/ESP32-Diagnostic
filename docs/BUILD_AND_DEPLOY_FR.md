@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Compilation & déploiement (v3.9.0)
+# ESP32 Diagnostic Suite – Compilation & déploiement (v3.12.0)
 
 Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.8.0.
 

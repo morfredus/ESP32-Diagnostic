@@ -1,9 +1,9 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.9.0)
+# ESP32 Diagnostic Suite – Feature Matrix (v3.12.0)
 
 This matrix summarises the diagnostic coverage for the most common Espressif boards supported by version 3.9.0. Use it to plan
 validation campaigns and to verify whether optional peripherals require additional wiring.
 
-> **Important:** Version 3.9.0 (PlatformIO) **does not support Bluetooth/BLE** functionality. For BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+> **Important:** Version 3.12.0 (PlatformIO) **does not support Bluetooth/BLE** functionality. For BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
 
 ## Legend
 - ✅ – Supported out of the box by the firmware.
