@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite (v3.13.0)
+# ESP32 Diagnostic Suite (v3.13.1)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports the ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, and ESP32-H2 families.
 
@@ -10,6 +10,10 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an intera
 - Multi-board documentation synced: clearly listed environments `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc` with build instructions.
 - Cleaned docs to remove unsupported boards (ESP32‑S2/C3/C6/H2) from guides and matrices.
 - Consistent I2C default doc corrections (SCL=20) and HC‑SR04 defaults maintained (TRIG=16, ECHO=17).
+
+## Latest maintenance (2025-11-26)
+1. `platformio.ini`: switched Adafruit library versions to caret ranges (`^`) for safe minor/patch updates.
+2. Build verified across environments: `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`.
 ## Highlights of version 3.12.1
 - **BUGFIX**: PSRAM reliably enabled for ESP32-S3 DevKitC-1 N16R8 on PlatformIO (board_build.psram, BOARD_HAS_PSRAM). Ensures memory tests and allocations use external PSRAM where available (v3.12.1).
 - **RELEASE**: Production-ready release with validated TFT configuration and cleaned repository structure (v3.12.0).
