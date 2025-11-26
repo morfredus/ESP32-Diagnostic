@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Accueil du wiki (v3.9.0)
+# ESP32 Diagnostic Suite – Accueil du wiki (v3.12.0)
 
-Bienvenue sur le wiki officiel de la version **3.8.0**. Cet espace centralise tous les guides, références et checklists nécessaires
+Bienvenue sur le wiki officiel de la version **3.12.0**. Cet espace centralise tous les guides, références et checklists nécessaires
 pour exploiter, personnaliser et maintenir la suite ESP32 Diagnostic au sein d'équipes bilingues.
 
 ## Sommaire
@@ -15,11 +15,13 @@ pour exploiter, personnaliser et maintenir la suite ESP32 Diagnostic au sein d'�
 - Guides fondamentaux : [Installation](INSTALL_FR.md), [Configuration](CONFIG_FR.md), [Utilisation](USAGE_FR.md),
   [Dépannage](TROUBLESHOOTING_FR.md), [Architecture](ARCHITECTURE_FR.md), [Contribution](../CONTRIBUTING_FR.md)
 
-## Mise en avant – 3.8.0
-- **Migration vers PlatformIO :** Le projet a été migré depuis Arduino IDE vers PlatformIO dans Visual Studio Code pour une meilleure gestion de compilation et cohérence de la toolchain.
-- **Dépôt archivé :** La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant archivée. Tout le développement continue dans [ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic).
-- **Support Bluetooth supprimé :** La fonctionnalité BLE/Bluetooth a été supprimée car elle n'est pas correctement gérée sous la configuration de plateforme PlatformIO.
-- Les cartes équipées d'un OLED affichent désormais les phases de connexion Wi-Fi (association, DHCP, réussite) dès le démarrage.
+## Mise en avant – 3.12.0
+- **Version de production :** Configuration TFT validée et structure de dépôt nettoyée pour déploiement en production.
+- **Support écran TFT ST7789 :** Support complet des écrans TFT 240x240 avec écran de démarrage et statut WiFi/IP en temps réel (v3.11.0+).
+- **Double affichage :** Fonctionnement simultané OLED et TFT pour visualisation diagnostique améliorée.
+- **Stabilité améliorée :** Résolution des problèmes de chargement JavaScript, erreurs de compilation FPSTR(), et optimisation mémoire avec livraison en streaming.
+- **Validation configuration :** Finalisation du mapping des pins pour ESP32-S3 DevKitC-1 N16R8 avec rétro-éclairage TFT sur GPIO 15.
+- **Optimisation PlatformIO :** Configuration PSRAM améliorée avec stabilité et performance accrues.
 
 ## Démarrage rapide
 1. Suivre le [guide d'installation](INSTALL_FR.md) pour configurer la toolchain PlatformIO dans Visual Studio Code.

@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – REST API Reference (v3.9.0)
+# ESP32 Diagnostic Suite – REST API Reference (v3.12.0)
 
 The REST API mirrors the web dashboard controls and exposes diagnostics data for automation. All endpoints are served over HTTP on
 the same port as the dashboard. Authentication is sessionless; secure deployments should restrict access at the network level.
