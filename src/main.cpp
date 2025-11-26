@@ -235,6 +235,10 @@ bool oledTested = false;
 bool oledAvailable = false;
 String oledTestResult = String(Texts::not_tested);
 
+#if ENABLE_TFT_DISPLAY
+String tftTestResult = String(Texts::not_tested);
+#endif
+
 // Exécution asynchrone des tests matériels
 typedef void (*TestRoutine)();
 
@@ -1994,7 +1998,10 @@ String getTFTStepLabel(const String &stepId) {
 
 void testTFT() {
 #if ENABLE_TFT_DISPLAY
-  if (!tftAvailable) return;
+  if (!tftAvailable) {
+    tftTestResult = String(Texts::not_available);
+    return;
+  }
 
   Serial.println("\r\n=== TEST TFT ===");
 
@@ -2007,6 +2014,7 @@ void testTFT() {
   tftStepProgressBar();
   tftStepFinal();
 
+  tftTestResult = "OK - Tests complets";
   Serial.println("TFT: Tests complets OK\r\n");
 #endif
 }
@@ -2998,6 +3006,14 @@ void handleTFTBoot() {
   }
 
   displayBootSplash();
+  
+  // Display WiFi info if connected
+  if (WiFi.status() == WL_CONNECTED) {
+    displayWiFiConnected(WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
+  } else {
+    displayWiFiStatus("WiFi not connected", TFT_ORANGE);
+  }
+  
   sendOperationSuccess("Boot screen displayed");
 #else
   sendActionResponse(200, false, "TFT not enabled");
@@ -3383,12 +3399,23 @@ void handleLedsInfo() {
 
 void handleScreensInfo() {
   String json;
-  json.reserve(300);
+  json.reserve(500);
   json = "{";
   json += "\"oled\":{\"available\":" + String(oledAvailable ? "true" : "false") +
           ",\"status\":\"" + oledTestResult + "\",";
   json += "\"pins\":{\"sda\":" + String(I2C_SDA) + ",\"scl\":" + String(I2C_SCL) + "},";
   json += "\"rotation\":" + String(oledRotation) + "}";
+  
+  #if ENABLE_TFT_DISPLAY
+  json += ",\"tft\":{\"available\":true,";
+  json += "\"status\":\"" + String(tftTestResult.length() > 0 ? tftTestResult : "Ready") + "\",";
+  json += "\"width\":240,\"height\":240,";
+  json += "\"pins\":{\"mosi\":" + String(TFT_MOSI) + ",\"sclk\":" + String(TFT_SCLK) + 
+          ",\"cs\":" + String(TFT_CS) + ",\"dc\":" + String(TFT_DC) + ",\"rst\":" + String(TFT_RST) + "}}";
+  #else
+  json += ",\"tft\":{\"available\":false,\"status\":\"Not enabled\"}";
+  #endif
+  
   json += "}";
   server.send(200, "application/json", json);
 }
