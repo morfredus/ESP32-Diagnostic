@@ -1,9 +1,7 @@
 # Troubleshooting (EN)
 
-## BLE advertising not visible
-- Confirm your board supports BLE (ESP32, ESP32-S3, ESP32-C3, ESP32-C6, ESP32-H2).
-- Check the Serial Monitor for BLE initialisation errors.
-- Ensure no other application is holding the BLE stack (restart the board).
+## BLE functionality
+**Note:** BLE support has been removed in this PlatformIO version. For BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) version.
 
 ## Language switch does not change texts
 - Ensure you are running firmware 3.8.0 so the live translation bindings remain intact while the Wi-Fi splash and NimBLE safeguards are active.

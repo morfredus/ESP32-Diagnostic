@@ -1,8 +1,12 @@
-# Pin Mapping (ESP32-S3 DevKitC-1 N16R8) — Quick Reference
+# Pin Mapping — Quick Reference
 
-- Board: ESP32-S3 DevKitC-1 (N16R8, OPI flash/psram)
+- **Supported boards:**
+  - ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM) — `esp32s3_n16r8`
+  - ESP32-S3-DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM) — `esp32s3_n8r8`
+  - ESP32-DevKitC (4MB Flash, no PSRAM) — `esp32devkitc`
 - Firmware: ESP32 Diagnostic Suite v3.12.3
-- Important: On ESP32-S3 OPI variants, GPIO 35..48 are reserved by the octal memory interface. Do not use them for peripherals.
+- **Important (ESP32-S3 only):** On ESP32-S3 OPI variants, GPIO 35..48 are reserved by the octal memory interface. Do not use them for peripherals.
+- **Note:** ESP32 classic (DevKitC) does not have this restriction.
 
 ## Defaults (config.h)
 - Built-in LED: `-1` (disabled)
