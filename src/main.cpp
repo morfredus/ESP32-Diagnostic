@@ -63,10 +63,6 @@
     #include <esp_netif.h>
     #define DIAGNOSTIC_HAS_ESP_NETIF 1
   #endif
-  #if __has_include(<tcpip_adapter.h>)
-    #include <tcpip_adapter.h>
-    #define DIAGNOSTIC_HAS_TCPIP_ADAPTER 1
-  #endif
 #else
   #include <esp_netif.h>
   #define DIAGNOSTIC_HAS_ESP_NETIF 1
