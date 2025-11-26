@@ -79,7 +79,7 @@
 #define TFT_DC              9     // Data/Command
 #define TFT_RST             7     // Reset
 #define TFT_BL              15    // Backlight
-#define TFT_ROTATION        0     // Orientation par défaut (0, 1, 2, or 3)
+#define TFT_ROTATION        2     // Orientation par défaut (0, 1, 2, or 3)
 #define TFT_BACKLIGHT_PWM   255   // Luminosité max
 
 // ========== GPS (UART2) ==========
