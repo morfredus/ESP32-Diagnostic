@@ -2,6 +2,17 @@
 
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Version 3.12.3] - 2025-11-26
+### Changed
+- Default HC‑SR04 pins set to `TRIG=16`, `ECHO=17` in `config.h` and aligned defaults in the web interface.
+
+### Added
+- New quick reference documents: `docs/PIN_MAPPING.md` and `docs/PIN_MAPPING_FR.md`.
+
+### Technical Changes
+- Bumped `PROJECT_VERSION` to 3.12.3 in `platformio.ini`.
+- No other functional changes.
+
 ## [Version 3.12.2] - 2025-11-26
 ### Fixed
 - **HC-SR04**: Hardened distance measurement by waiting for ECHO to settle LOW before triggering and using `pulseInLong()` with an extended timeout. Prevents false "No echo" results.
