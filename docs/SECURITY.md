@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Security Guidelines (v3.15.0)
+# ESP32 Diagnostic Suite – Security Guidelines (v3.15.1)
 
 Although the ESP32 Diagnostic Suite is typically used in controlled lab environments, following these security guidelines reduces
 exposure when testing pre-production hardware across all supported build environments (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic).
@@ -17,7 +17,7 @@ exposure when testing pre-production hardware across all supported build environ
 ## Firmware integrity
 - Verify the SHA-256 hash of compiled binaries before flashing large batches.
 - Keep the build environment patched and reproducible (documented in [BUILD_AND_DEPLOY.md](BUILD_AND_DEPLOY.md)).
-- Tag releases with annotated Git tags (e.g., `v3.15.0`) to ensure traceability between code and deployed firmware.
+- Tag releases with annotated Git tags (e.g., `v3.15.1`) to ensure traceability between code and deployed firmware.
 - When deploying to multiple hardware targets (ESP32-S3 / ESP32 Classic), validate that the correct build environment binary is flashed to each device type to avoid pin mapping conflicts.
 
 ## Web interface best practices
@@ -32,7 +32,7 @@ exposure when testing pre-production hardware across all supported build environ
 - Purge device caches after retrieving reports by issuing `POST /api/stop` followed by a power cycle.
 
 ## Incident response
-- If tampering is suspected, perform a factory reset: erase flash via `esptool.py erase_flash`, then reflash v3.15.0 with the correct build environment for your hardware.
+- If tampering is suspected, perform a factory reset: erase flash via `esptool.py erase_flash`, then reflash v3.15.1 with the correct build environment for your hardware.
 - Revoke associated Wi-Fi credentials and update audit logs with report exports for the affected unit.
 - File an incident ticket referencing the report `run_id` for traceability.
 

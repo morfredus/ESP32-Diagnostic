@@ -1,7 +1,7 @@
-# ESP32 Diagnostic Suite – Web Interface Guide (v3.15.0)
+# ESP32 Diagnostic Suite – Web Interface Guide (v3.15.1)
 
 The built-in web dashboard is the primary control surface for technicians. This guide covers the layout, interaction patterns, and
-customisation hooks available in version 3.15.0. This release supports three build environments (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) with hardware-specific configurations.
+customisation hooks available in version 3.15.1. This release supports three build environments (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) with hardware-specific configurations and critical memory optimizations for ESP32 Classic.
 
 ## Layout overview
 ```
@@ -41,7 +41,7 @@ customisation hooks available in version 3.15.0. This release supports three bui
 ## Accessibility & localisation
 - All actionable controls include ARIA labels and keyboard shortcuts (`Space/Enter` to trigger primary buttons).
 - Language switch toggles between English and French without reloading the page; text resources are loaded from `languages.h`.
-- Version 3.15.0 supports multiple build environments with hardware-specific pin mappings automatically configured at compile time.
+- Version 3.15.1 supports multiple build environments with hardware-specific pin mappings automatically configured at compile time. Includes critical memory fix for ESP32 Classic.
 - High-contrast theme activated automatically when the browser prefers dark mode.
 
 ## Custom branding

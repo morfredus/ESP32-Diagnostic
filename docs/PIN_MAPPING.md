@@ -1,4 +1,4 @@
-# Pin Mapping — Quick Reference (v3.15.0)
+# Pin Mapping — Quick Reference (v3.15.1)
 
 ## Supported Environments
 
@@ -209,6 +209,7 @@ pio run -e esp32devkitc --target upload
 ---
 
 ## Version History
+- **v3.15.1:** Critical memory fix for ESP32 Classic web UI
 - **v3.15.0:** Multi-environment support with dedicated pin mappings
 - **v3.12.3:** HC-SR04 default pins set to TRIG=16, ECHO=17
 - **v3.11.3:** TFT backlight corrected to GPIO 15 (was 48)
