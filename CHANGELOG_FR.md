@@ -1,3 +1,20 @@
+## [Version 3.15.1] - 2025-11-27
+
+### Corrections de bugs
+1. **Correction mémoire critique pour ESP32 Classic** : Correction de l'échec de chargement de l'interface web sur l'environnement `esp32devkitc` causé par épuisement du heap lors du service de gros fichiers JavaScript.
+2. **Streaming PROGMEM** : Implémentation du transfert par morceaux (blocs de 1Ko) pour le contenu JavaScript servi depuis PROGMEM, éliminant les grosses allocations String qui causaient des plantages sur cartes sans PSRAM.
+3. **Amélioration universelle** : Optimisation mémoire bénéficiant à tous les environnements (esp32s3_n16r8, esp32s3_n8r8, esp32devkitc) avec fragmentation du heap réduite pendant le service des pages web.
+
+### Détails techniques
+4. Modification de `handleJavaScriptRoute()` dans `src/main.cpp` pour streamer le contenu `DIAGNOSTIC_JS_STATIC` en utilisant `memcpy_P()` et `sendContent()` par petits morceaux.
+5. Remplacement de l'unique grosse allocation `String(FPSTR(DIAGNOSTIC_JS_STATIC))` par transfert itératif par morceaux.
+6. Aucun changement de fonctionnalité UI ou expérience utilisateur – optimisation purement interne.
+
+### Impact
+7. **ESP32 Classic (esp32devkitc)** : L'interface web se charge désormais de manière fiable sur configurations 4Mo Flash / sans PSRAM.
+8. **Variantes ESP32-S3** : Efficacité mémoire améliorée sans régression.
+9. Version : Release patch suivant le versioning sémantique (3.15.0 → 3.15.1).
+
 ## [Version 3.15.0] - 2025-11-27
 
 ### Nouvelles fonctionnalités

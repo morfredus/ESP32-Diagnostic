@@ -1,6 +1,9 @@
-# ESP32 Diagnostic Suite (v3.15.0)
+# ESP32 Diagnostic Suite (v3.15.1)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
+
+## New in version 3.15.1
+**Critical Bug Fix**: Resolved web interface loading failure on ESP32 Classic (`esp32devkitc`) caused by memory exhaustion. JavaScript content is now streamed in small chunks from PROGMEM, eliminating heap crashes on boards without PSRAM. All environments benefit from improved memory efficiency.
 
 ## New in version 3.15.0
 1. **Multi-Environment Support**: Three distinct build environments for different ESP32 boards:
