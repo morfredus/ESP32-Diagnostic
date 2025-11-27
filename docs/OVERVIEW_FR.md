@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Vue d'ensemble (v3.15.0)
+# ESP32 Diagnostic Suite – Vue d'ensemble (v3.15.1)
 
-La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version 3.15.0 introduit le **support multi-environnements** avec trois configurations de build distinctes optimisées pour différentes variantes matérielles ESP32.
+La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version 3.15.1 inclut des **optimisations mémoire critiques pour ESP32 Classic** et le support multi-environnements avec trois configurations de build distinctes optimisées pour différentes variantes matérielles ESP32.
 
 ## Mission
 - Proposer une méthodologie homogène pour qualifier les cartes ESP32-S3 et ESP32 avec plusieurs variantes matérielles.
@@ -18,7 +18,11 @@ La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production
 | Localisation | Bascule FR/EN à l'exécution côté firmware (sortie série) et interface web. |
 | Extensibilité | Registre modulaire de tests, bus d'événements pour callbacks personnalisés et helpers OLED/NeoPixel optionnels. |
 
-## Focus de la version 3.15.0
+## Focus de la version 3.15.1
+
+**Correction mémoire critique** : La version 3.15.1 résout les échecs de chargement de l'interface web sur cartes ESP32 Classic en implémentant le streaming PROGMEM par morceaux pour le contenu JavaScript, réduisant le pic d'allocation heap de ~50Ko.
+
+## Focus de la version 3.15.0 (Support multi-environnements)
 - **Support multi-environnements :** Trois environnements de build PlatformIO (`esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`) avec configurations de broches spécifiques au matériel.
 - **Compilation conditionnelle :** Chemins de code spécifiques à la cible utilisant les defines `TARGET_ESP32_S3` et `TARGET_ESP32_CLASSIC`.
 - **Déploiement flexible :** Base de code unique supporte ESP32-S3 (Flash 16Mo/8Mo avec PSRAM) et ESP32 Classic (Flash 4Mo, sans PSRAM).

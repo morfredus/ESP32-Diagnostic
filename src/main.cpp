@@ -4183,14 +4183,22 @@ void handleJavaScriptRoute() {
   Serial.printf("Sending translations: %d bytes\n", translations.length());
   server.sendContent(translations);
 
-  // Send main JavaScript from PROGMEM
-  // On ESP32, PROGMEM strings are directly accessible in memory
+  // Send main JavaScript from PROGMEM without allocating a giant String
+  // Stream in chunks to avoid heap exhaustion on ESP32 classic
   const char* staticJsPtr = DIAGNOSTIC_JS_STATIC;
-  size_t staticJsLen = strlen(staticJsPtr);
+  size_t staticJsLen = strlen_P(staticJsPtr);
 
-  Serial.printf("Sending static JS: %d bytes\n", staticJsLen);
-  // Send as String constructed from PROGMEM
-  server.sendContent(String(FPSTR(DIAGNOSTIC_JS_STATIC)));
+  Serial.printf("Sending static JS (chunked): %d bytes\n", staticJsLen);
+  const size_t CHUNK_SIZE = 1024;
+  char chunkBuf[CHUNK_SIZE + 1];
+  size_t sent = 0;
+  while (sent < staticJsLen) {
+    size_t n = (staticJsLen - sent) > CHUNK_SIZE ? CHUNK_SIZE : (staticJsLen - sent);
+    memcpy_P(chunkBuf, staticJsPtr + sent, n);
+    chunkBuf[n] = '\0';
+    server.sendContent(chunkBuf);
+    sent += n;
+  }
 
   // Verify critical functions are present (direct pointer access works on ESP32)
   bool hasShowTab = (strstr(staticJsPtr, "function showTab") != NULL);

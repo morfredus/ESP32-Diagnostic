@@ -23,8 +23,10 @@ String htmlEscape(const String& raw);
 String buildTranslationsJSON();
 String generateHTML();
 String generateJavaScript();
+// Variante UI Lite (ESP32 classique uniquement)
+String generateHTMLLite();
 
-// JavaScript static chunk stored in PROGMEM
+// JavaScript static chunk stored in PROGMEM (Full UI)
 static const char PROGMEM DIAGNOSTIC_JS_STATIC[] = R"JS(
 function getCurrentTranslations(){return translationsCache||DEFAULT_TRANSLATIONS;}
 function setTranslationsCache(t){if(t&&typeof t==='object'){translationsCache=Object.assign({},DEFAULT_TRANSLATIONS,t);}else{translationsCache=DEFAULT_TRANSLATIONS;}}
@@ -118,6 +120,34 @@ function setStatus(id,value,state){const el=document.getElementById(id);if(!el){
 function updateRealtimeValues(d){const u=document.getElementById('uptime');if(u)u.textContent=formatUptime(d.uptime);const t=document.getElementById('temperature');if(t&&d.temperature!==-999)t.textContent=d.temperature.toFixed(1)+' °C';const sf=document.getElementById('sram-free');if(sf)sf.textContent=(d.sram.free/1024).toFixed(2)+' KB';const su=document.getElementById('sram-used');if(su)su.textContent=(d.sram.used/1024).toFixed(2)+' KB';const sp=document.getElementById('sram-progress');if(sp&&d.sram.total>0){const pct=((d.sram.used/d.sram.total)*100).toFixed(1);sp.style.width=pct+'%';sp.textContent=pct+'%';}if(d.psram&&d.psram.total>0){const pf=document.getElementById('psram-free');if(pf)pf.textContent=(d.psram.free/1048576).toFixed(2)+' MB';const pu=document.getElementById('psram-used');if(pu)pu.textContent=(d.psram.used/1048576).toFixed(2)+' MB';const pp=document.getElementById('psram-progress');if(pp){const pct=((d.psram.used/d.psram.total)*100).toFixed(1);pp.style.width=pct+'%';pp.textContent=pct+'%';}}const f=document.getElementById('fragmentation');if(f)f.textContent=d.fragmentation.toFixed(1)+'%';}
 function changeLang(lang,btn){fetch('/api/set-language?lang='+lang,{cache:'no-store'}).then(r=>r.json()).then(d=>{if(!d.success){throw new Error('language switch rejected');}currentLang=lang;document.documentElement.setAttribute('lang',lang);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));if(btn){btn.classList.add('active');}else{document.querySelectorAll('.lang-btn').forEach(b=>{if(b.getAttribute('data-lang')===lang){b.classList.add('active');}});}return fetchTranslations(lang);}).then(translations=>{setTranslationsCache(translations);updateInterfaceTexts();const ind=document.getElementById('updateIndicator');if(ind){setElementTranslation(ind,{key:'language_updated',suffix:' ('+lang.toUpperCase()+')'});showUpdateIndicator();hideUpdateIndicator();}}).catch(err=>{const ind=document.getElementById('updateIndicator');if(ind){setElementTranslation(ind,{key:'language_switch_error',suffix:': '+String(err)});showUpdateIndicator();hideUpdateIndicator();}refetchTranslations().catch(retryErr=>console.error('Translations retry failed',retryErr));});}
 )JS";
+// JavaScript Lite (réduit) pour ESP32 classique
+#if defined(TARGET_ESP32_CLASSIC)
+static const char PROGMEM DIAGNOSTIC_JS_STATIC_LITE[] = R"JS(
+function tr(k){try{return (DEFAULT_TRANSLATIONS&&DEFAULT_TRANSLATIONS[k])||k;}catch(e){return k;}}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));}
+function formatUptime(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),h=Math.floor(m/60),d=Math.floor(h/24);return d+'j '+(h%24)+'h '+(m%60)+'m';}
+function buildOverviewLite(d){let h='<div class="section">';
+h+='<h2>'+esc(tr('chip_info'))+'</h2><div class="info-grid">';
+h+='<div class="info-item"><div class="info-label">'+esc(tr('full_model'))+'</div><div class="info-value">'+esc(d.chip.model)+' '+esc(tr('revision'))+' '+esc(d.chip.revision)+'</div></div>';
+const cpu=d.chip.cores+' '+esc(tr('cores'))+' @ '+d.chip.freq+' MHz';
+h+='<div class="info-item"><div class="info-label">'+esc(tr('cpu_cores'))+'</div><div class="info-value">'+cpu+'</div></div>';
+h+='<div class="info-item"><div class="info-label">'+esc(tr('mac_wifi'))+'</div><div class="info-value">'+esc(d.chip.mac)+'</div></div>';
+h+='<div class="info-item"><div class="info-label">'+esc(tr('uptime'))+'</div><div class="info-value" id="uptime">'+formatUptime(d.chip.uptime)+'</div></div>';
+h+='</div></div>';
+h+='<div class="section"><h2>'+esc(tr('memory_details'))+'</h2><div class="info-grid">';
+h+='<div class="info-item"><div class="info-label">'+esc(tr('internal_sram'))+'</div><div class="info-value">'+(d.memory.sram.total/1024).toFixed(2)+' KB ('+(d.memory.sram.free/1024).toFixed(2)+' KB '+esc(tr('free'))+')</div></div>';
+if(d.memory.psram&&d.memory.psram.total>0){h+='<div class="info-item"><div class="info-label">PSRAM</div><div class="info-value">'+(d.memory.psram.total/1048576).toFixed(2)+' MB</div></div>';}
+h+='</div></div>';
+h+='<div class="section"><h2>'+esc(tr('wifi_connection'))+'</h2><div class="info-grid">';
+h+='<div class="info-item"><div class="info-label">'+esc(tr('connected_ssid'))+'</div><div class="info-value">'+esc(d.wifi.ssid||'')+'</div></div>';
+h+='<div class="info-item"><div class="info-label">IP</div><div class="info-value">'+esc(d.wifi.ip||'')+'</div></div>';
+h+='</div></div>';
+return h;}
+async function loadLite(){try{const r=await fetch('/api/overview');const d=await r.json();const c=document.getElementById('overviewContainer');if(c){c.innerHTML=buildOverviewLite(d);}startLiteAutoUpdate();}catch(e){const c=document.getElementById('overviewContainer');if(c){c.innerHTML='<div class="section"><p>Erreur: '+esc(String(e))+'</p></div>';}}}
+function startLiteAutoUpdate(){setInterval(async()=>{try{const r=await fetch('/api/status');const d=await r.json();const u=document.getElementById('uptime');if(u)u.textContent=formatUptime(d.uptime);}catch(e){}},5000);}
+document.addEventListener('DOMContentLoaded',()=>{loadLite();});
+)JS";
+#endif
 // PWM & SPI diagnostics panels plus enhanced benchmark telemetry
 void handleJavaScriptRoute();
 
@@ -389,9 +419,46 @@ String generateJavaScript() {
   js += F("';let updateTimer=null;let isConnected=true;const DEFAULT_TRANSLATIONS=");
   js += buildTranslationsJSON();
   js += F(";let translationsCache=DEFAULT_TRANSLATIONS;");
-  // JavaScript static chunk streamed from PROGMEM
+  // JavaScript static chunk streamed from PROGMEM (note: in production, we use chunked route)
+#if defined(TARGET_ESP32_CLASSIC)
+  js += FPSTR(DIAGNOSTIC_JS_STATIC_LITE);
+#else
   js += FPSTR(DIAGNOSTIC_JS_STATIC);
+#endif
   return js;
+}
+
+// Génère le HTML simplifié (UI Lite) pour ESP32 classique
+String generateHTMLLite() {
+  const char* langCode = (currentLanguage == LANG_FR) ? "fr" : "en";
+  String html;
+  html.reserve(2800);
+  html = "<!DOCTYPE html><html lang='";
+  html += langCode;
+  html += "'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>";
+  html += "<title>"; html += htmlEscape(Texts::title.str()); html += " "; html += htmlEscape(Texts::version.str()); html += DIAGNOSTIC_VERSION_STR; html += "</title>";
+  html += "<style>body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#f7f9fb;color:#111} .header{position:sticky;top:0;background:#1e293b;color:#fff;padding:10px 14px;font-weight:600} .content{padding:14px} .section{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-bottom:12px} .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px} .info-item{border:1px solid #e5e7eb;border-radius:8px;padding:10px;background:#fafafa} .info-label{font-size:.85em;color:#374151;margin-bottom:6px} .info-value{font-weight:600} .small{font-size:.9em;opacity:.8} .access{font-size:.9em;margin-top:6px} a{color:#0ea5e9;text-decoration:none}</style>";
+  html += "</head><body>";
+  html += "<div class='header'>";
+  html += htmlEscape(Texts::title.str()); html += " "; html += htmlEscape(Texts::version.str()); html += DIAGNOSTIC_VERSION_STR;
+  html += " <span class='small'>- "; html += diagnosticData.chipModel; html += "</span>";
+  html += "</div>";
+  html += "<div class='content'>";
+  // Liens d'accès minimaux
+  bool ipAvailable = diagnosticData.ipAddress.length() > 0;
+  String mdns = String(MDNS_HOSTNAME_STR) + ".local";
+  String href = ipAvailable ? String(DIAGNOSTIC_LEGACY_SCHEME) + diagnosticData.ipAddress : String("#");
+  html += "<div class='section'><div class='access'>";
+  html += "mDNS: <a href='http://"; html += mdns; html += "'>"; html += mdns; html += "</a>";
+  html += " &nbsp; | &nbsp; IP: ";
+  if (ipAvailable) { html += "<a href='"; html += href; html += "'>"; html += href; html += "</a>"; } else { html += htmlEscape(Texts::ip_unavailable.str()); }
+  html += "</div></div>";
+  // Conteneur d’aperçu
+  html += "<div id='overviewContainer' class='section'>"; html += htmlEscape(Texts::loading.str()); html += "...</div>";
+  html += "</div>";
+  html += "<script src='/js/app.js'></script>";
+  html += "</body></html>";
+  return html;
 }
 
 
