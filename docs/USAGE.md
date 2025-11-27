@@ -1,6 +1,6 @@
-# Usage Guide (EN) – v3.15.0
+# Usage Guide (EN) – v3.15.1
 
-**Multi-environment support:** Version 3.15.0 introduces three build environments with hardware-specific configurations. Before first use, ensure you've selected and flashed the correct environment for your board (see [BUILD_AND_DEPLOY.md](BUILD_AND_DEPLOY.md)).
+**Multi-environment support:** Version 3.15.1 includes critical memory optimizations for ESP32 Classic and supports three build environments with hardware-specific configurations. Before first use, ensure you've selected and flashed the correct environment for your board (see [BUILD_AND_DEPLOY.md](BUILD_AND_DEPLOY.md)).
 
 ## 1. First boot
 1. Open the Serial Monitor at 115200 baud immediately after flashing.
@@ -21,7 +21,7 @@ The dashboard is organised into tabs:
 - **Wi-Fi** – detailed scan results (RSSI, channel, security, PHY, bandwidth).
 - **Performance** – benchmark history and runtime metrics.
 - **Export** – download TXT/JSON/CSV reports or open the printable report.
-- Version 3.15.0 supports three build environments with different pin mappings for I2C, TFT, RGB LED, and buttons. Hardware-specific configurations are automatically compiled based on the selected environment.
+- Version 3.15.1 supports three build environments with different pin mappings for I2C, TFT, RGB LED, and buttons. Hardware-specific configurations are automatically compiled based on the selected environment. ESP32 Classic benefits from memory optimizations for reliable web UI operation.
 
 The navigation bar collapses gracefully on mobile devices and preserves active tab state.
 

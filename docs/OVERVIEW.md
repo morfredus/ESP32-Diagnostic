@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Overview (v3.15.0)
+# ESP32 Diagnostic Suite – Overview (v3.15.1)
 
-The ESP32 Diagnostic Suite delivers a production-ready toolkit for validating ESP32-based boards before deployment. Version 3.15.0 introduces **multi-environment support** with three distinct build configurations optimized for different ESP32 hardware variants.
+The ESP32 Diagnostic Suite delivers a production-ready toolkit for validating ESP32-based boards before deployment. Version 3.15.1 includes **critical memory optimizations for ESP32 Classic** and multi-environment support with three distinct build configurations optimized for different ESP32 hardware variants.
 
 ## Mission statement
 - Provide a consistent methodology to qualify ESP32-S3 and ESP32 boards with multiple hardware variants.
@@ -18,7 +18,11 @@ The ESP32 Diagnostic Suite delivers a production-ready toolkit for validating ES
 | Localisation | Runtime FR/EN switching at both the firmware (serial output) and interface levels. |
 | Extensibility | Modular test registry, event bus for user-defined callbacks, and optional OLED/NeoPixel helpers. |
 
-## Release 3.15.0 focus
+## Release 3.15.1 focus
+
+**Critical Memory Fix**: Version 3.15.1 resolves web interface loading failures on ESP32 Classic boards by implementing chunked PROGMEM streaming for JavaScript content, reducing peak heap allocation by ~50KB.
+
+## Release 3.15.0 focus (Multi-environment support)
 - **Multi-environment support:** Three PlatformIO build environments (`esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`) with hardware-specific pin configurations.
 - **Conditional compilation:** Target-specific code paths using `TARGET_ESP32_S3` and `TARGET_ESP32_CLASSIC` defines.
 - **Flexible deployment:** Single codebase supports ESP32-S3 (16MB/8MB Flash with PSRAM) and ESP32 Classic (4MB Flash, no PSRAM).
