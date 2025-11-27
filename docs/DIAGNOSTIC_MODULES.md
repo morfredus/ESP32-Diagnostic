@@ -1,7 +1,9 @@
-# ESP32 Diagnostic Suite – Diagnostic Modules (v3.12.0)
+# ESP32 Diagnostic Suite – Diagnostic Modules (v3.15.0)
 
-This guide dives into each automated diagnostic module shipped with version 3.9.0. Use it to understand the execution order,
+This guide dives into each automated diagnostic module shipped with version 3.15.0. Use it to understand the execution order,
 metrics collected, and interpretation guidelines when reviewing reports.
+
+**New in v3.15.0:** Multi-environment support with hardware-specific configurations for ESP32-S3 (N16R8/N8R8) and ESP32 Classic targets. Pin mappings adapt automatically based on the selected build environment.
 
 ## Execution pipeline
 The scheduler processes modules in the order shown below. Each module publishes status events consumed by the web dashboard,

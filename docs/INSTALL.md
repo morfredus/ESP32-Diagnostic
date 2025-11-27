@@ -5,14 +5,19 @@ Follow the steps below to deploy the ESP32 Diagnostic Suite on your board.
 > **Release 3.8.0:** This version has been migrated from Arduino IDE to **PlatformIO in Visual Studio Code**. The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository is now **archived**. Bluetooth/BLE support has been **removed** as it is not properly supported under the PlatformIO platform configuration.
 
 ## 1. Prerequisites
-- **Supported boards:**
-  - ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM) — Primary target
-  - ESP32-S3-DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
-  - ESP32-DevKitC (4MB Flash, no PSRAM)
+
+### Hardware
+- **Supported boards (v3.15.0):**
+  - **ESP32-S3-DevKitC-1 N16R8** (16MB Flash, 8MB PSRAM) — Primary target, environment: `esp32s3_n16r8`
+  - **ESP32-S3-DevKitC-1 N8R8** (8MB Flash, 8MB PSRAM) — Environment: `esp32s3_n8r8`
+  - **ESP32-DevKitC Classic** (4MB Flash, no PSRAM) — Environment: `esp32devkitc`
 - USB cable with data capability.
-- Optional: NeoPixel/WS2812B LED strip and 0.96" OLED screen for extended tests.
+- Optional: NeoPixel/WS2812B LED strip, 0.96" OLED screen, TFT ST7789 display, sensors (DHT, HC-SR04, etc.).
+
+### Software
 - **Visual Studio Code** with **PlatformIO IDE** extension installed.
-- PlatformIO will automatically manage the ESP32 toolchain (espressif32 platform).
+- PlatformIO will automatically manage the ESP32 toolchain (espressif32 platform ^6).
+- Git for cloning the repository.
 
 ## 2. Library dependencies
 All required libraries are declared in `platformio.ini` and will be installed automatically by PlatformIO:

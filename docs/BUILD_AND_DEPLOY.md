@@ -1,48 +1,94 @@
-# ESP32 Diagnostic Suite – Build & Deploy (v3.14.0)
+# ESP32 Diagnostic Suite – Build & Deploy (v3.15.0)
 
-This document describes the supported toolchains and the recommended release checklist for firmware version 3.14.0.
+This document describes the supported toolchains and the recommended release checklist for firmware version 3.15.0.
 
 > **Important:** Version 3.12.0 has been migrated from Arduino IDE to **PlatformIO**. The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository is now **archived**. Bluetooth/BLE support has been **removed**.
 
-## Toolchains
+## Build Environments
+
+The project supports three distinct hardware configurations via PlatformIO environments defined in `platformio.ini`:
+
+### 1. esp32s3_n16r8 (Default)
+- **Board:** ESP32-S3-DevKitC-1 N16R8
+- **Flash:** 16MB (QIO mode, 80MHz)
+- **PSRAM:** 8MB OPI/QSPI (80MHz, enabled)
+- **Partition:** `huge_app.csv`
+- **Target Define:** `TARGET_ESP32_S3`
+- **Pin Mapping:** Optimized for ESP32-S3 GPIO layout
+
+### 2. esp32s3_n8r8
+- **Board:** ESP32-S3-DevKitC-1 N8R8
+- **Flash:** 8MB
+- **PSRAM:** 8MB (enabled)
+- **Partition:** `huge_app.csv`
+- **Target Define:** `TARGET_ESP32_S3`
+- **Pin Mapping:** Same as N16R8 (ESP32-S3 layout)
+
+### 3. esp32devkitc
+- **Board:** ESP32-DevKitC (Classic)
+- **Flash:** 4MB
+- **PSRAM:** Not available
+- **Partition:** `default.csv`
+- **Target Define:** `TARGET_ESP32_CLASSIC`
+- **Pin Mapping:** Adapted for ESP32 Classic GPIO constraints
+
+## Toolchain Setup
+
 The project uses PlatformIO for build management. All dependencies are declared in `platformio.ini`:
 
 1. Open the project in **Visual Studio Code** with the **PlatformIO IDE** extension.
-2. Select your target environment:
-   - **esp32s3_n16r8** (default) — ESP32-S3 16MB Flash, 8MB PSRAM
-   - **esp32s3_n8r8** — ESP32-S3 8MB Flash, 8MB PSRAM
-   - **esp32devkitc** — Classic ESP32 4MB Flash, no PSRAM
-3. Run **Build** to compile, then **Upload** to flash.
-4. Open **Serial Monitor** at 115200 baud to verify.
+2. Select your target environment in `platformio.ini`:
+   ```ini
+   [platformio]
+   default_envs = esp32s3_n16r8  ; Change to esp32s3_n8r8 or esp32devkitc
+   ```
+3. Run **Build** (Ctrl+Alt+B) to compile, then **Upload** (Ctrl+Alt+U) to flash.
+4. Open **Serial Monitor** (Ctrl+Alt+S) at 115200 baud to verify.
 
 Alternatively, use the PlatformIO CLI:
 ```bash
-# Build & upload (default env)
+# Build & upload default environment
 pio run --target upload
 pio device monitor --baud 115200
 
-# Build specific environments
-pio run -e esp32s3_n16r8
-pio run -e esp32s3_n8r8
-pio run -e esp32devkitc
+# Build specific environment
+pio run -e esp32s3_n16r8 --target upload
+pio run -e esp32s3_n8r8 --target upload
+pio run -e esp32devkitc --target upload
+
+# Build all environments
+pio run
+
+# Clean build
+pio run --target clean
 ```
 
 **Note:** Arduino IDE and Arduino CLI are **no longer supported** for this version. Use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository for Arduino IDE compatibility.
 
-## Build status (2025-11-27)
-1. `esp32s3_n16r8`: build OK, upload OK.
-2. `esp32s3_n8r8`: build OK.
-3. `esp32devkitc`: build OK.
+## Build Status (2025-11-27)
+1. `esp32s3_n16r8`: ✓ Build OK, ✓ Upload OK, ✓ Tested
+2. `esp32s3_n8r8`: ✓ Build OK, ✓ Compilation validated
+3. `esp32devkitc`: ✓ Build OK, ⚠ Hardware testing pending
 
-## New in v3.14.0
-1. TFT web interface with 8 individual tests and boot screen restore button.
-2. New REST API endpoints: `/api/tft-test`, `/api/tft-step`, `/api/tft-boot`, `/api/oled-boot`.
-3. 13 new bilingual translation keys (EN/FR) for TFT interface.
-4. Consistent architecture: TFT tests follow OLED pattern.
+## Pin Configuration Notes
 
-## Pre-deployment checklist
+Each environment has dedicated pin mappings in `include/config.h`:
+- **ESP32-S3:** I2C on SDA=21/SCL=20, RGB LED on 14/13/18, TFT on GPIOs 7-15
+- **ESP32 Classic:** I2C on SDA=21/SCL=22, RGB LED on 25/26/27, TFT on GPIOs 2-32
+
+See [PIN_MAPPING.md](PIN_MAPPING.md) for complete reference.
+
+## New in v3.15.0
+1. **Multi-environment support:** Three distinct build configurations with hardware-specific pin mappings.
+2. **Conditional compilation:** `TARGET_ESP32_S3` and `TARGET_ESP32_CLASSIC` defines for platform-specific code.
+3. **Shared mappings:** Common pin assignments between ESP32-S3 N8R8 and ESP32 Classic where possible.
+4. **Documentation:** Updated pin mapping reference and build instructions for all three targets.
+
+## Pre-deployment Checklist
 - [ ] Update `wifi-config.h` with production SSID/passwords and optional enterprise credentials.
-- [ ] Confirm `DIAGNOSTIC_VERSION` matches `3.14.0` in both firmware and documentation.
+- [ ] Confirm `DIAGNOSTIC_VERSION` matches `3.15.0` in `platformio.ini` and documentation.
+- [ ] Verify target environment is set correctly in `platformio.ini` (`default_envs`).
+- [ ] Review pin mappings in `config.h` for your specific hardware configuration.
 - [ ] Verify multilingual assets compile without warnings (`languages.h`).
 - [ ] Run a full diagnostic cycle on a reference board and export JSON/CSV reports.
 - [ ] Capture screenshots or printouts of the dashboard for release notes if required.

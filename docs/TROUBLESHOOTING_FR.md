@@ -1,4 +1,12 @@
-# Dépannage (FR)
+# Dépannage (FR) – v3.15.0
+
+**Support multi-environnements :** Cette version supporte trois environnements de compilation (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) avec des mappages de broches spécifiques au matériel. Assurez-vous d'avoir sélectionné et flashé le bon environnement pour votre carte avant de dépanner.
+
+## Mauvais environnement de compilation sélectionné
+- **Symptôme :** Périphériques non fonctionnels, conflits de broches, comportement inattendu.
+- **Solution :** Vérifiez que votre matériel correspond à l'environnement de compilation. Les cartes ESP32-S3 nécessitent les environnements `esp32s3_n16r8` ou `esp32s3_n8r8`. Les cartes ESP32 Classic DevKitC nécessitent l'environnement `esp32devkitc`.
+- **Vérification CLI :** Exécutez `pio run -t envlist` pour voir les environnements disponibles. Flashez le bon avec `pio run -e <env_name> -t upload`.
+- **Vérification des broches :** Consultez [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) pour confirmer que votre configuration matérielle correspond au firmware compilé.
 
 ## Fonctionnalité BLE
 **Note :** Le support BLE a été supprimé dans cette version PlatformIO. Pour les diagnostics BLE, utilisez la version archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).

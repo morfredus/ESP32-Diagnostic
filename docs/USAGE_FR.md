@@ -1,4 +1,6 @@
-# Guide d'utilisation (FR)
+# Guide d'utilisation (FR) – v3.15.0
+
+**Support multi-environnements :** La version 3.15.0 introduit trois environnements de compilation avec des configurations spécifiques au matériel. Avant la première utilisation, assurez-vous d'avoir sélectionné et flashé le bon environnement pour votre carte (voir [BUILD_AND_DEPLOY_FR.md](BUILD_AND_DEPLOY_FR.md)).
 
 ## 1. Premier démarrage
 1. Ouvrez le moniteur série à 115200 bauds juste après le flash.
@@ -20,7 +22,7 @@ Le tableau de bord est organisé en onglets :
 - **Performance** – historique des benchmarks et métriques temps réel.
 - **Export** – téléchargement des rapports TXT/JSON/CSV ou ouverture de la vue imprimable.
 
-La version 3.9.0 maintient la cohérence des widgets BLE, des scans et des tuiles de progression Wi-Fi que le firmware utilise Bluedroid ou NimBLE.
+La version 3.15.0 supporte trois environnements de compilation avec différents mappages de broches pour I2C, TFT, LED RGB et boutons. Les configurations spécifiques au matériel sont automatiquement compilées selon l'environnement sélectionné.
 
 La barre de navigation s'adapte aux mobiles et conserve l'onglet actif.
 

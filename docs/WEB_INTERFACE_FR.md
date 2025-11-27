@@ -1,7 +1,7 @@
-# ESP32 Diagnostic Suite – Guide de l'interface web (v3.12.0)
+# ESP32 Diagnostic Suite – Guide de l'interface web (v3.15.0)
 
 Le tableau de bord web embarqué constitue la surface de contrôle principale pour les techniciens. Ce guide couvre la disposition,
-les interactions et les points d'extension disponibles en version 3.9.0.
+les interactions et les points d'extension disponibles en version 3.15.0. Cette version supporte trois environnements de compilation (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) avec des configurations spécifiques au matériel.
 
 ## Vue d'ensemble de la mise en page
 ```
@@ -41,7 +41,7 @@ les interactions et les points d'extension disponibles en version 3.9.0.
 ## Accessibilité & localisation
 - Toutes les actions disposent d'étiquettes ARIA et de raccourcis clavier (`Espace/Entrée`).
 - Le basculement de langue FR/EN s'effectue sans rechargement grâce aux ressources définies dans `languages.h`.
-- La version 3.9.0 conserve le rendu synchronisé tout en gérant l'écran Wi-Fi et les garde-fous NimBLE en arrière-plan.
+- La version 3.15.0 supporte plusieurs environnements de compilation avec des mappages de broches spécifiques au matériel configurés automatiquement à la compilation.
 - Un thème haut contraste s'active automatiquement lorsque le navigateur annonce un mode sombre.
 
 ## Personnalisation graphique

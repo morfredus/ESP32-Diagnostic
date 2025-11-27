@@ -1,48 +1,94 @@
-# ESP32 Diagnostic Suite – Compilation & déploiement (v3.14.0)
+# ESP32 Diagnostic Suite – Compilation & Déploiement (v3.15.0)
 
-Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.14.0.
+Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.15.0.
 
-> **Important :** La version 3.9.0 a été migrée depuis Arduino IDE vers **PlatformIO**. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé**.
+> **Important :** La version 3.12.0 a été migrée depuis Arduino IDE vers **PlatformIO**. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé**.
 
-## Toolchains
+## Environnements de Build
+
+Le projet supporte trois configurations matérielles distinctes via les environnements PlatformIO définis dans `platformio.ini` :
+
+### 1. esp32s3_n16r8 (Par défaut)
+- **Carte :** ESP32-S3-DevKitC-1 N16R8
+- **Flash :** 16Mo (mode QIO, 80MHz)
+- **PSRAM :** 8Mo OPI/QSPI (80MHz, activée)
+- **Partition :** `huge_app.csv`
+- **Define Cible :** `TARGET_ESP32_S3`
+- **Pin Mapping :** Optimisé pour disposition GPIO ESP32-S3
+
+### 2. esp32s3_n8r8
+- **Carte :** ESP32-S3-DevKitC-1 N8R8
+- **Flash :** 8Mo
+- **PSRAM :** 8Mo (activée)
+- **Partition :** `huge_app.csv`
+- **Define Cible :** `TARGET_ESP32_S3`
+- **Pin Mapping :** Identique au N16R8 (disposition ESP32-S3)
+
+### 3. esp32devkitc
+- **Carte :** ESP32-DevKitC (Classic)
+- **Flash :** 4Mo
+- **PSRAM :** Non disponible
+- **Partition :** `default.csv`
+- **Define Cible :** `TARGET_ESP32_CLASSIC`
+- **Pin Mapping :** Adapté aux contraintes GPIO ESP32 Classic
+
+## Configuration Toolchain
+
 Le projet utilise PlatformIO pour la gestion de compilation. Toutes les dépendances sont déclarées dans `platformio.ini` :
 
 1. Ouvrir le projet dans **Visual Studio Code** avec l'extension **PlatformIO IDE**.
-2. Sélectionner votre environnement cible :
-   - **esp32s3_n16r8** (défaut) — ESP32-S3 16Mo Flash, 8Mo PSRAM
-   - **esp32s3_n8r8** — ESP32-S3 8Mo Flash, 8Mo PSRAM
-   - **esp32devkitc** — ESP32 classique 4Mo Flash, sans PSRAM
-3. Lancer **Build** pour compiler, puis **Upload** pour flasher.
-4. Ouvrir **Serial Monitor** à 115200 bauds pour vérifier.
+2. Sélectionner votre environnement cible dans `platformio.ini` :
+   ```ini
+   [platformio]
+   default_envs = esp32s3_n16r8  ; Changer pour esp32s3_n8r8 ou esp32devkitc
+   ```
+3. Lancer **Build** (Ctrl+Alt+B) pour compiler, puis **Upload** (Ctrl+Alt+U) pour flasher.
+4. Ouvrir **Serial Monitor** (Ctrl+Alt+S) à 115200 bauds pour vérifier.
 
 Alternativement, utiliser la ligne de commande PlatformIO :
 ```bash
-# Build & upload (environnement par défaut)
+# Build & upload environnement par défaut
 pio run --target upload
 pio device monitor --baud 115200
 
-# Builder des environnements spécifiques
-pio run -e esp32s3_n16r8
-pio run -e esp32s3_n8r8
-pio run -e esp32devkitc
+# Build environnement spécifique
+pio run -e esp32s3_n16r8 --target upload
+pio run -e esp32s3_n8r8 --target upload
+pio run -e esp32devkitc --target upload
+
+# Build tous les environnements
+pio run
+
+# Nettoyage
+pio run --target clean
 ```
 
 **Note :** Arduino IDE et Arduino CLI ne sont **plus supportés** pour cette version. Utiliser le dépôt archivé [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) pour la compatibilité Arduino IDE.
 
-## Statut de build (2025-11-27)
-1. `esp32s3_n16r8` : build OK, upload OK.
-2. `esp32s3_n8r8` : build OK.
-3. `esp32devkitc` : build OK.
+## Statut de Build (2025-11-27)
+1. `esp32s3_n16r8` : ✓ Build OK, ✓ Upload OK, ✓ Testé
+2. `esp32s3_n8r8` : ✓ Build OK, ✓ Compilation validée
+3. `esp32devkitc` : ✓ Build OK, ⚠ Tests matériels en attente
 
-## Nouveautés v3.14.0
-1. Interface web TFT avec 8 tests individuels et bouton retour écran de démarrage.
-2. Nouveaux endpoints API REST : `/api/tft-test`, `/api/tft-step`, `/api/tft-boot`, `/api/oled-boot`.
-3. 13 nouvelles clés de traduction bilangues (EN/FR) pour interface TFT.
-4. Architecture cohérente : tests TFT suivent le modèle OLED.
+## Notes Configuration des Broches
 
-## Checklist pré-déploiement
+Chaque environnement possède des mappings de broches dédiés dans `include/config.h` :
+- **ESP32-S3 :** I2C sur SDA=21/SCL=20, LED RGB sur 14/13/18, TFT sur GPIOs 7-15
+- **ESP32 Classic :** I2C sur SDA=21/SCL=22, LED RGB sur 25/26/27, TFT sur GPIOs 2-32
+
+Voir [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) pour la référence complète.
+
+## Nouveautés v3.15.0
+1. **Support multi-environnements :** Trois configurations de build distinctes avec mappings de broches spécifiques au matériel.
+2. **Compilation conditionnelle :** Defines `TARGET_ESP32_S3` et `TARGET_ESP32_CLASSIC` pour code spécifique à la plateforme.
+3. **Mappings partagés :** Affectations de broches communes entre ESP32-S3 N8R8 et ESP32 Classic lorsque possible.
+4. **Documentation :** Références pin mapping et instructions de build mises à jour pour les trois cibles.
+
+## Checklist Pré-déploiement
 - [ ] Mettre à jour `wifi-config.h` avec les identifiants production et, le cas échéant, les paramètres entreprise.
-- [ ] Vérifier que `DIAGNOSTIC_VERSION` vaut `3.14.0` dans le firmware et la documentation.
+- [ ] Vérifier que `DIAGNOSTIC_VERSION` vaut `3.15.0` dans `platformio.ini` et la documentation.
+- [ ] Vérifier que l'environnement cible est correctement défini dans `platformio.ini` (`default_envs`).
+- [ ] Réviser les mappings de broches dans `config.h` pour votre configuration matérielle spécifique.
 - [ ] Compiler les ressources multilingues sans avertissement (`languages.h`).
 - [ ] Exécuter un cycle complet sur une carte de référence et exporter les rapports JSON/CSV.
 - [ ] Capturer des captures d'écran ou impressions du tableau de bord pour les notes de version si nécessaire.

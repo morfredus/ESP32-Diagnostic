@@ -1,7 +1,9 @@
-# ESP32 Diagnostic Suite – Modules de diagnostic (v3.12.0)
+# ESP32 Diagnostic Suite – Modules de diagnostic (v3.15.0)
 
-Ce guide détaille chaque module de diagnostic automatisé livré avec la version 3.9.0. Il décrit l'ordre d'exécution, les métriques
+Ce guide détaille chaque module de diagnostic automatisé livré avec la version 3.15.0. Il décrit l'ordre d'exécution, les métriques
 collectées et les clés d'exportation à surveiller lors de l'analyse des rapports.
+
+**Support multi-environnements :** Cette version introduit trois environnements de compilation (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) avec des configurations matérielles spécifiques. Les tests de bus et de périphériques utilisent automatiquement les bonnes broches selon l'environnement compilé.
 
 ## Pipeline d'exécution
 Le planificateur traite les modules dans l'ordre suivant. Chaque module publie des événements de statut consommés par le tableau de
@@ -24,7 +26,7 @@ bord web, la REST API et le logger série.
 | Débit réseau | Mesure latence et taille de réponse HTTP selon les cibles configurées. | Ping min/moy/max, statut HTTP, débit (kB/s). | `net.ping`, `net.http.status`, `net.http.kbps`. |
 | Mémoire & stockage | Effectue stress tests du tas et validation CRC de la flash. | Marque haute du tas, taille PSRAM, statut CRC flash. | `memory.heap_max`, `memory.psram`, `storage.flash_crc`. |
 | Balayage GPIO | Pulse les sorties digitales, échantillonne les entrées analogiques, valide les pull-ups (routine tactile retirée). | Liste de broches ok/erreur, moyenne/variance ADC, synthèse PWM via les tests matériels. | `gpio.list`, `hardware_tests.pwm`. |
-| Bus périphériques | Confirme l'initialisation des bus et la détection optionnelle (OLED, capteurs, INA219...). | IDs I2C détectés, statut boucle SPI, checksum UART, présence OneWire. | `bus.i2c.devices[]`, `bus.spi.status`, `bus.uart.loopback`. |
+| Bus périphériques | Confirme l'initialisation des bus et la détection optionnelle (OLED, capteurs, INA219...). Les broches I2C/SPI varient selon la cible (voir PIN_MAPPING_FR.md). | IDs I2C détectés, statut boucle SPI, checksum UART, présence OneWire. | `bus.i2c.devices[]`, `bus.spi.status`, `bus.uart.loopback`. |
 | Afficheur & LEDs | Exerce la sortie graphique et les routines LED. | Checksum trame OLED, FPS, saturation & gamma NeoPixel. | `display.oled.frames`, `display.oled.fps`, `led.neopixel.status`. |
 | Reporting | Sérialise les résultats en JSON, CSV, TXT et gère le cache REST. | Taille par format, horodatage, notes opérateur. | `report.generated_at`, `report.formats`, `report.operator`. |
 

@@ -1,4 +1,32 @@
-# Configuration (EN)
+# Configuration (EN) — v3.15.0
+
+## Build Environment Selection
+
+**New in v3.15.0:** The firmware supports three hardware configurations via PlatformIO environments:
+
+- **`esp32s3_n16r8`** (default): ESP32-S3 with 16MB Flash, 8MB PSRAM
+- **`esp32s3_n8r8`**: ESP32-S3 with 8MB Flash, 8MB PSRAM  
+- **`esp32devkitc`**: ESP32 Classic with 4MB Flash, no PSRAM
+
+Select your target in `platformio.ini`:
+```ini
+[platformio]
+default_envs = esp32s3_n16r8  ; Change to esp32s3_n8r8 or esp32devkitc
+```
+
+Or via command line:
+```bash
+pio run -e esp32devkitc --target upload
+```
+
+## Hardware-Specific Pin Mappings
+
+Pin configurations are defined in `include/config.h` using conditional compilation:
+
+- **ESP32-S3 targets** (`esp32s3_n16r8`, `esp32s3_n8r8`): Use `TARGET_ESP32_S3` define
+- **ESP32 Classic** (`esp32devkitc`): Use `TARGET_ESP32_CLASSIC` define
+
+See [PIN_MAPPING.md](PIN_MAPPING.md) for complete pin reference for each environment.
 
 ## Wi-Fi credentials
 The firmware reads credentials from `include/wifi-config.h`.
@@ -35,17 +63,23 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 - After updating pins, the firmware automatically reinitialises the display and stores the mapping in RAM.
 
 ### TFT ST7789 configuration (v3.11.0+)
-- Default pins configured in `include/config.h`:
-  - MOSI: GPIO 11
-  - SCLK: GPIO 12
-  - CS: GPIO 10
-  - DC: GPIO 9
-  - RST: GPIO 46
-  - BL (backlight): GPIO 15
+- **Pins vary by environment** (configured in `include/config.h`):
+
+**ESP32-S3 (esp32s3_n16r8 / esp32s3_n8r8):**
+  - MOSI: GPIO 11, SCLK: GPIO 12
+  - CS: GPIO 10, DC: GPIO 9
+  - RST: GPIO 7, BL: GPIO 15
+
+**ESP32 Classic (esp32devkitc):**
+  - MOSI: GPIO 23, SCLK: GPIO 18
+  - CS: GPIO 15, DC: GPIO 2
+  - RST: GPIO 4, BL: GPIO 32
+
 - TFT resolution: 240x240 pixels
 - Displays boot splash screen and real-time WiFi/IP status
 - Enable/disable via `ENABLE_TFT_DISPLAY` flag in config.h
 - Supports simultaneous OLED and TFT operation (dual display mode)
+- **Note:** On ESP32 Classic, SCLK (GPIO 18) conflicts with HC-SR04 ECHO pin
 
 ## Sensors configuration
 

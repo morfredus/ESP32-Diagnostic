@@ -1,4 +1,12 @@
-# Troubleshooting (EN)
+# Troubleshooting (EN) – v3.15.0
+
+**Multi-environment support:** This release supports three build environments (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) with hardware-specific pin mappings. Ensure you've selected and flashed the correct environment for your board before troubleshooting.
+
+## Wrong build environment selected
+- **Symptom:** Peripherals not working, pin conflicts, unexpected behavior.
+- **Solution:** Verify your hardware matches the build environment. ESP32-S3 boards require `esp32s3_n16r8` or `esp32s3_n8r8` environments. ESP32 Classic DevKitC requires `esp32devkitc` environment.
+- **CLI check:** Run `pio run -t envlist` to see available environments. Flash the correct one with `pio run -e <env_name> -t upload`.
+- **Pin verification:** Consult [PIN_MAPPING.md](PIN_MAPPING.md) to confirm your hardware configuration matches the compiled firmware.
 
 ## BLE functionality
 **Note:** BLE support has been removed in this PlatformIO version. For BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) version.

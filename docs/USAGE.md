@@ -1,4 +1,6 @@
-# Usage Guide (EN)
+# Usage Guide (EN) – v3.15.0
+
+**Multi-environment support:** Version 3.15.0 introduces three build environments with hardware-specific configurations. Before first use, ensure you've selected and flashed the correct environment for your board (see [BUILD_AND_DEPLOY.md](BUILD_AND_DEPLOY.md)).
 
 ## 1. First boot
 1. Open the Serial Monitor at 115200 baud immediately after flashing.
@@ -19,7 +21,7 @@ The dashboard is organised into tabs:
 - **Wi-Fi** – detailed scan results (RSSI, channel, security, PHY, bandwidth).
 - **Performance** – benchmark history and runtime metrics.
 - **Export** – download TXT/JSON/CSV reports or open the printable report.
-- Release 3.8.0 keeps the BLE widgets, scan actions, and Wi-Fi progress tiles in sync whether the firmware runs on the legacy Bluedroid stack or NimBLE.
+- Version 3.15.0 supports three build environments with different pin mappings for I2C, TFT, RGB LED, and buttons. Hardware-specific configurations are automatically compiled based on the selected environment.
 
 The navigation bar collapses gracefully on mobile devices and preserves active tab state.
 
