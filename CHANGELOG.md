@@ -1,3 +1,37 @@
+## [Version 3.15.0] - 2025-11-27
+
+### New Features
+1. **Multi-Environment Support**: Added three distinct build environments in `platformio.ini`:
+   - `esp32s3_n16r8` (default): ESP32-S3 with 16MB Flash + 8MB PSRAM (QSPI/OPI)
+   - `esp32s3_n8r8`: ESP32-S3 with 8MB Flash + 8MB PSRAM
+   - `esp32devkitc`: ESP32 Classic with 4MB Flash (no PSRAM)
+2. **Hardware-Specific Pin Mapping**: Dedicated pin configurations in `config.h` for each target using conditional compilation (`TARGET_ESP32_S3` / `TARGET_ESP32_CLASSIC`).
+3. **Shared Pin Mapping**: ESP32-S3 N8R8 and ESP32 Classic use common pin assignments where hardware allows.
+
+### Configuration Changes
+4. **ESP32-S3 Pin Mapping** (N16R8 / N8R8):
+   - I2C: SDA=21, SCL=20
+   - RGB LED: R=14, G=13, B=18
+   - Sensors: DHT=19, Light=4, Distance TRIG=16/ECHO=17, Motion=39, Buzzer=3
+   - TFT ST7789: MOSI=11, SCLK=12, CS=10, DC=9, RST=7, BL=15
+   - GPS: RXD=8, TXD=5, PPS=38
+
+5. **ESP32 Classic Pin Mapping** (DevKitC):
+   - I2C: SDA=21, SCL=22
+   - RGB LED: R=25, G=26, B=27
+   - Sensors: DHT=4, Light=34, Distance TRIG=5/ECHO=18, Motion=36, Buzzer=13
+   - TFT ST7789: MOSI=23, SCLK=18, CS=15, DC=2, RST=4, BL=32
+   - GPS: RXD=16, TX=17, PPS=39
+   - Buttons: BTN1=0 (BOOT), BTN2=35
+
+### Documentation
+6. Complete pin mapping reference documented in `config.h` with clear separation by target.
+7. Build environment selection guide added to documentation.
+
+### Technical
+8. Version: Bumped from 3.14.1 to 3.15.0 (new minor feature: multi-environment support).
+9. Compilation: Validated on all three environments with proper target-specific defines.
+
 ## [Version 3.14.0] - 2025-11-27
 
 ### New Features

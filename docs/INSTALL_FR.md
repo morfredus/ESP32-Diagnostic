@@ -5,14 +5,19 @@ Suivez ces étapes pour déployer ESP32 Diagnostic Suite sur votre carte.
 > **Version 3.12.0 :** Cette version a été migrée depuis Arduino IDE vers **PlatformIO dans Visual Studio Code**. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé** car il n'est pas correctement géré sous la configuration de plateforme PlatformIO.
 
 ## 1. Prérequis
-- **Cartes supportées :**
-  - ESP32-S3-DevKitC-1 N16R8 (16Mo Flash, 8Mo PSRAM) — Cible principale
-  - ESP32-S3-DevKitC-1 N8R8 (8Mo Flash, 8Mo PSRAM)
-  - ESP32-DevKitC (4Mo Flash, sans PSRAM)
+
+### Matériel
+- **Cartes supportées (v3.15.0) :**
+  - **ESP32-S3-DevKitC-1 N16R8** (16Mo Flash, 8Mo PSRAM) — Cible principale, environnement : `esp32s3_n16r8`
+  - **ESP32-S3-DevKitC-1 N8R8** (8Mo Flash, 8Mo PSRAM) — Environnement : `esp32s3_n8r8`
+  - **ESP32-DevKitC Classic** (4Mo Flash, sans PSRAM) — Environnement : `esp32devkitc`
 - Câble USB avec transfert de données.
-- Optionnel : bandeau NeoPixel/WS2812B et écran OLED 0,96" pour les tests avancés.
+- Optionnel : bandeau NeoPixel/WS2812B, écran OLED 0,96", écran TFT ST7789, capteurs (DHT, HC-SR04, etc.).
+
+### Logiciel
 - **Visual Studio Code** avec l'extension **PlatformIO IDE** installée.
-- PlatformIO gèrera automatiquement la toolchain ESP32 (plateforme espressif32).
+- PlatformIO gèrera automatiquement la toolchain ESP32 (plateforme espressif32 ^6).
+- Git pour cloner le dépôt.
 
 ## 2. Dépendances des bibliothèques
 Toutes les bibliothèques requises sont déclarées dans `platformio.ini` et seront installées automatiquement par PlatformIO :

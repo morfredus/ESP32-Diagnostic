@@ -19,14 +19,14 @@ supplémentaire.
 | ESP32 DevKitC | `esp32devkitc` | ✅ | ⛔ | ⛔ | ✅ | ✅ | ✅ | ✅ | ESP32 classique. 4Mo Flash, sans PSRAM. Pas de restriction GPIO 35-48. |
 
 ## Couverture des bus et périphériques
-| Bus / Périphérique | Broches par défaut | Cartes supportées | Notes |
+| Bus / Périphérique | Broches par cible | Cartes supportées | Notes |
 |--------------------|--------------------|-------------------|-------|
-| I2C principal | SDA 21, SCL 20 (reconfigurable) | Toutes les cartes supportées | Utilisé pour l'OLED, les packs capteurs, l'EEPROM. |
-| I2C secondaire | Désactivé par défaut | ESP32, ESP32-S3 | Activer via le flag `ENABLE_SECONDARY_I2C` dans `config.h`. |
-| Bus SPI test | MOSI 23, MISO 19, CLK 18, CS 5 | ESP32, ESP32-S3 | Valide la flash externe / adaptateurs SD. |
+| I2C principal | **ESP32-S3:** SDA=21, SCL=20 · **ESP32 Classic:** SDA=21, SCL=22 | Toutes les cartes supportées | Utilisé pour l'OLED, les packs capteurs, l'EEPROM. |
+| LED RGB | **ESP32-S3:** R=14, G=13, B=18 · **ESP32 Classic:** R=25, G=26, B=27 | Toutes les cartes supportées | Broches PWM pour LED RGB commune anode/cathode. |
+| Boutons | **ESP32-S3:** BTN1=1, BTN2=2 · **ESP32 Classic:** BTN1=0 (BOOT), BTN2=35 | Toutes les cartes supportées | Pull-ups internes activés. |
+| TFT ST7789 | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=46, BL=15 · **ESP32 Classic:** MOSI=23, SCLK=18, CS=15, DC=2, RST=4, BL=32 | Toutes les cartes supportées | SPI dédié pour affichage TFT. Voir PIN_MAPPING_FR.md pour conflits potentiels. |
 | Boucle UART | TX0/RX0 & UART1 optionnel | Toutes | Nécessite un cavalier TX↔RX sur l'UART choisi. |
-| Sonde CAN (TWAI) | GPIO 4 / 5 | ESP32, ESP32-S3 | Demande un transceiver externe (ex. SN65HVD230). |
-| Température OneWire | GPIO 15 | ESP32, ESP32-S3 | Détection DS18B20 lorsque `ENABLE_ONEWIRE` est actif. |
+| Température OneWire | Variable par cible | ESP32, ESP32-S3 | Détection DS18B20 lorsque `ENABLE_ONEWIRE` est actif. Voir PIN_MAPPING_FR.md. |
 
 ## Modules optionnels
 | Module | Flag firmware | État par défaut | Description |

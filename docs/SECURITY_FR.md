@@ -1,7 +1,7 @@
-# ESP32 Diagnostic Suite – Directives de sécurité (v3.12.0)
+# ESP32 Diagnostic Suite – Directives de sécurité (v3.15.0)
 
 Même si la suite est majoritairement utilisée en laboratoire, ces recommandations limitent l'exposition lors des tests de
-matériel pré-production.
+matériel pré-production pour tous les environnements supportés (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic).
 
 ## Renforcement réseau
 - Préférer un réseau Wi-Fi QA dédié avec chiffrement WPA2-PSK ou WPA2-Enterprise.
@@ -17,7 +17,8 @@ matériel pré-production.
 ## Intégrité firmware
 - Vérifier le hash SHA-256 des binaires avant les flashs de masse.
 - Maintenir l'environnement de build à jour et reproductible (cf. [BUILD_AND_DEPLOY_FR.md](BUILD_AND_DEPLOY_FR.md)).
-- Taguer les releases avec des tags Git annotés (ex. `v3.9.0`) pour assurer la traçabilité code ↔ firmware.
+- Taguer les releases avec des tags Git annotés (ex. `v3.15.0`) pour assurer la traçabilité code ↔ firmware.
+- Lors du déploiement sur différentes cibles matérielles (ESP32-S3 / ESP32 Classic), valider que le bon binaire d'environnement est flashé sur chaque type d'appareil pour éviter les conflits de mappage des broches.
 
 ## Bonnes pratiques interface web
 - Ne pas exposer directement le tableau de bord sur Internet.
@@ -31,7 +32,7 @@ matériel pré-production.
 - Purger le cache de l'appareil après extraction via `POST /api/stop` puis un cycle d'alimentation.
 
 ## Réponse à incident
-- En cas de suspicion, effectuer un factory reset : `esptool.py erase_flash`, puis reflasher 3.8.0.
+- En cas de suspicion, effectuer un factory reset : `esptool.py erase_flash`, puis reflasher v3.15.0 avec le bon environnement de compilation pour votre matériel.
 - Révoquer les identifiants Wi-Fi associés et mettre à jour les journaux d'audit avec les exports concernés.
 - Ouvrir un ticket d'incident en mentionnant l'identifiant de rapport (`run_id`) pour la traçabilité.
 

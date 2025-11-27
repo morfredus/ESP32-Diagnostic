@@ -1,4 +1,32 @@
-# Configuration (FR)
+# Configuration (FR) — v3.15.0
+
+## Sélection de l'Environnement de Build
+
+**Nouveau dans v3.15.0 :** Le firmware supporte trois configurations matérielles via les environnements PlatformIO :
+
+- **`esp32s3_n16r8`** (par défaut) : ESP32-S3 avec Flash 16Mo, PSRAM 8Mo
+- **`esp32s3_n8r8`** : ESP32-S3 avec Flash 8Mo, PSRAM 8Mo
+- **`esp32devkitc`** : ESP32 Classic avec Flash 4Mo, sans PSRAM
+
+Sélectionnez votre cible dans `platformio.ini` :
+```ini
+[platformio]
+default_envs = esp32s3_n16r8  ; Changer pour esp32s3_n8r8 ou esp32devkitc
+```
+
+Ou via ligne de commande :
+```bash
+pio run -e esp32devkitc --target upload
+```
+
+## Mappings de Broches Spécifiques au Matériel
+
+Les configurations de broches sont définies dans `include/config.h` via compilation conditionnelle :
+
+- **Cibles ESP32-S3** (`esp32s3_n16r8`, `esp32s3_n8r8`) : Utilisent le define `TARGET_ESP32_S3`
+- **ESP32 Classic** (`esp32devkitc`) : Utilise le define `TARGET_ESP32_CLASSIC`
+
+Voir [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) pour la référence complète des broches par environnement.
 
 ## Identifiants Wi-Fi
 Le firmware lit les identifiants dans `include/wifi-config.h`.
@@ -35,17 +63,23 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 - Après modification, l'écran est réinitialisé automatiquement et la cartographie reste en RAM.
 
 ### Configuration TFT ST7789 (v3.11.0+)
-- Broches par défaut configurées dans `include/config.h` :
-  - MOSI : GPIO 11
-  - SCLK : GPIO 12
-  - CS : GPIO 10
-  - DC : GPIO 9
-  - RST : GPIO 46
-  - BL (rétro-éclairage) : GPIO 15
+- **Les broches varient selon l'environnement** (configurées dans `include/config.h`) :
+
+**ESP32-S3 (esp32s3_n16r8 / esp32s3_n8r8) :**
+  - MOSI : GPIO 11, SCLK : GPIO 12
+  - CS : GPIO 10, DC : GPIO 9
+  - RST : GPIO 7, BL : GPIO 15
+
+**ESP32 Classic (esp32devkitc) :**
+  - MOSI : GPIO 23, SCLK : GPIO 18
+  - CS : GPIO 15, DC : GPIO 2
+  - RST : GPIO 4, BL : GPIO 32
+
 - Résolution TFT : 240x240 pixels
 - Affiche l'écran de démarrage et l'état WiFi/IP en temps réel
 - Activation/désactivation via le flag `ENABLE_TFT_DISPLAY` dans config.h
 - Support du fonctionnement simultané OLED et TFT (mode double affichage)
+- **Note :** Sur ESP32 Classic, SCLK (GPIO 18) entre en conflit avec la broche ECHO du HC-SR04
 
 ## Configuration des capteurs
 

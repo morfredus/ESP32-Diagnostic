@@ -1,3 +1,37 @@
+## [Version 3.15.0] - 2025-11-27
+
+### Nouvelles fonctionnalités
+1. **Support Multi-Environnements** : Ajout de trois environnements de build distincts dans `platformio.ini` :
+   - `esp32s3_n16r8` (par défaut) : ESP32-S3 avec 16Mo Flash + 8Mo PSRAM (QSPI/OPI)
+   - `esp32s3_n8r8` : ESP32-S3 avec 8Mo Flash + 8Mo PSRAM
+   - `esp32devkitc` : ESP32 Classic avec 4Mo Flash (sans PSRAM)
+2. **Pin Mapping Spécifique Matériel** : Configurations de broches dédiées dans `config.h` pour chaque cible via compilation conditionnelle (`TARGET_ESP32_S3` / `TARGET_ESP32_CLASSIC`).
+3. **Pin Mapping Partagé** : ESP32-S3 N8R8 et ESP32 Classic utilisent des affectations de broches communes là où le matériel le permet.
+
+### Modifications de Configuration
+4. **Pin Mapping ESP32-S3** (N16R8 / N8R8) :
+   - I2C : SDA=21, SCL=20
+   - LED RGB : R=14, G=13, B=18
+   - Capteurs : DHT=19, Lumière=4, Distance TRIG=16/ECHO=17, Mouvement=39, Buzzer=3
+   - TFT ST7789 : MOSI=11, SCLK=12, CS=10, DC=9, RST=7, BL=15
+   - GPS : RXD=8, TXD=5, PPS=38
+
+5. **Pin Mapping ESP32 Classic** (DevKitC) :
+   - I2C : SDA=21, SCL=22
+   - LED RGB : R=25, G=26, B=27
+   - Capteurs : DHT=4, Lumière=34, Distance TRIG=5/ECHO=18, Mouvement=36, Buzzer=13
+   - TFT ST7789 : MOSI=23, SCLK=18, CS=15, DC=2, RST=4, BL=32
+   - GPS : RXD=16, TX=17, PPS=39
+   - Boutons : BTN1=0 (BOOT), BTN2=35
+
+### Documentation
+6. Référence complète du pin mapping documentée dans `config.h` avec séparation claire par cible.
+7. Guide de sélection d'environnement de build ajouté à la documentation.
+
+### Technique
+8. Version : Passage de 3.14.1 à 3.15.0 (nouvelle fonctionnalité mineure : support multi-environnements).
+9. Compilation : Validée sur les trois environnements avec defines spécifiques à chaque cible.
+
 ## [Version 3.14.0] - 2025-11-27
 
 ### Nouvelles fonctionnalités

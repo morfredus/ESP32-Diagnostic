@@ -1,9 +1,11 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.12.0)
+# ESP32 Diagnostic Suite – Feature Matrix (v3.15.0)
 
-This matrix summarises the diagnostic coverage for the most common Espressif boards supported by version 3.9.0. Use it to plan
-validation campaigns and to verify whether optional peripherals require additional wiring.
+This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.15.0 with three distinct build environments.
+Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.
 
-> **Important:** Version 3.12.0 (PlatformIO) **does not support Bluetooth/BLE** functionality. For BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+> **Important:** Version 3.15.0 (PlatformIO) **does not support Bluetooth/BLE** functionality. For BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+
+**New in v3.15.0:** Multi-environment build system with hardware-specific pin mappings. Select your target board in `platformio.ini` to automatically configure pins and peripherals.
 
 ## Legend
 - ✅ – Supported out of the box by the firmware.
@@ -13,19 +15,19 @@ validation campaigns and to verify whether optional peripherals require addition
 ## Core board capabilities
 | Board | Environment | Wi-Fi scan | BLE scan | PSRAM probe | Flash integrity | NeoPixel test | OLED test | TFT test | Notes |
 |-------|-------------|-----------|----------|-------------|-----------------|---------------|-----------|----------|-------|
-| ESP32-S3 N16R8 | `esp32s3_n16r8` | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | ✅ | Primary target. 16MB Flash, 8MB PSRAM. OPI memory (GPIO 35-48 reserved). |
-| ESP32-S3 N8R8 | `esp32s3_n8r8` | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | ✅ | 8MB Flash, 8MB PSRAM. Same pin restrictions as N16R8. |
-| ESP32 DevKitC | `esp32devkitc` | ✅ | ⛔ | ⛔ | ✅ | ✅ | ✅ | ✅ | Classic ESP32. 4MB Flash, no PSRAM. No GPIO 35-48 restrictions. |
+| ESP32-S3 N16R8 | `esp32s3_n16r8` | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | ✅ | **Primary target.** 16MB Flash, 8MB PSRAM OPI. GPIO 35-48 reserved. Dedicated pin mapping. |
+| ESP32-S3 N8R8 | `esp32s3_n8r8` | ✅ | ⛔ | ✅ | ✅ | ✅ | ✅ | ✅ | 8MB Flash, 8MB PSRAM. Shares pin mapping with N16R8. GPIO 35-48 reserved. |
+| ESP32 Classic | `esp32devkitc` | ✅ | ⛔ | ⛔ | ✅ | ✅ | ✅ | ✅ | 4MB Flash, **no PSRAM**. Different pin mapping (see PIN_MAPPING.md). No GPIO 35-48 restrictions. |
 
 ## Peripheral bus coverage
 | Bus / Peripheral | Default pins | Supported boards | Notes |
 |------------------|--------------|------------------|-------|
-| I2C primary bus | SDA 21, SCL 20 (overridable) | All supported boards | Used for OLED, sensor packs, EEPROM. |
+| I2C primary bus | **ESP32-S3:** SDA 21, SCL 20<br>**ESP32 Classic:** SDA 21, SCL 22 | All supported boards | Used for OLED, sensor packs, EEPROM. Pins vary by target. |
 | I2C secondary bus | Disabled by default | ESP32, ESP32-S3 | Enable via `ENABLE_SECONDARY_I2C` flag in `config.h`. |
-| SPI test bus | MOSI 23, MISO 19, CLK 18, CS 5 | ESP32, ESP32-S3 | Validates external flash/SD adaptors. |
-| UART loopback | TX0/RX0 & optional UART1 | All | Requires jumper wire TX↔RX on chosen UART. |
-| CAN (TWAI) probe | GPIO 4 / 5 | ESP32, ESP32-S3 | Needs external transceiver (e.g. SN65HVD230). |
-| OneWire temperature | GPIO 15 | ESP32, ESP32-S3 | Dallas DS18B20 detection when `ENABLE_ONEWIRE` is set. |
+| SPI test bus | **Varies by target** (see PIN_MAPPING.md) | ESP32, ESP32-S3 | Validates external flash/SD adaptors. |
+| UART loopback | TX0/RX0 & optional UART1/UART2 | All | Requires jumper wire TX↔RX on chosen UART. |
+| TFT ST7789 display | **ESP32-S3:** GPIO 7-15<br>**ESP32 Classic:** GPIO 2-32 | All supported boards | 240x240 display. Pins hardware-specific. |
+| RGB LED (separate) | **ESP32-S3:** R=14, G=13, B=18<br>**ESP32 Classic:** R=25, G=26, B=27 | All | Individual RGB control pins. |
 
 ## Optional module checklist
 | Module | Firmware flag | Default state | Description |

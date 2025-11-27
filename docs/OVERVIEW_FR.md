@@ -1,10 +1,11 @@
-# ESP32 Diagnostic Suite – Vue d'ensemble (v3.12.0)
+# ESP32 Diagnostic Suite – Vue d'ensemble (v3.15.0)
 
-La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version 3.12.0 apporte un support écran TFT validé, une stabilité améliorée et une configuration optimisée pour le matériel ESP32-S3 DevKitC-1 N16R8.
+La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version 3.15.0 introduit le **support multi-environnements** avec trois configurations de build distinctes optimisées pour différentes variantes matérielles ESP32.
 
 ## Mission
 - Proposer une méthodologie homogène pour qualifier les cartes ESP32-S3 et ESP32 avec plusieurs variantes matérielles.
-- Supporter trois cartes spécifiques : ESP32-S3 N16R8 (principale), ESP32-S3 N8R8, et ESP32 DevKitC.
+- Supporter trois cartes spécifiques avec environnements dédiés : **ESP32-S3 N16R8** (principale), **ESP32-S3 N8R8**, et **ESP32 Classic DevKitC**.
+- Mappings de broches spécifiques au matériel via compilation conditionnelle pour placement périphérique optimal.
 - Offrir une interface web dédiée aux diagnostics en laboratoire comme sur le terrain, avec un minimum de configuration.
 - Maintenir l'alignement entre firmware, documentation et rapports exportés afin de faciliter la traçabilité des anomalies.
 
@@ -17,8 +18,11 @@ La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production
 | Localisation | Bascule FR/EN à l'exécution côté firmware (sortie série) et interface web. |
 | Extensibilité | Registre modulaire de tests, bus d'événements pour callbacks personnalisés et helpers OLED/NeoPixel optionnels. |
 
-## Focus de la version 3.12.0
-- **Version de production :** Configuration TFT validée et structure de dépôt nettoyée pour déploiement en production.
+## Focus de la version 3.15.0
+- **Support multi-environnements :** Trois environnements de build PlatformIO (`esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`) avec configurations de broches spécifiques au matériel.
+- **Compilation conditionnelle :** Chemins de code spécifiques à la cible utilisant les defines `TARGET_ESP32_S3` et `TARGET_ESP32_CLASSIC`.
+- **Déploiement flexible :** Base de code unique supporte ESP32-S3 (Flash 16Mo/8Mo avec PSRAM) et ESP32 Classic (Flash 4Mo, sans PSRAM).
+- **Documentation complète :** Référence pin mapping, guides de build et détails de configuration mis à jour pour les trois cibles.
 - **Support écran TFT ST7789 :** Support complet des écrans TFT 240x240 avec écran de démarrage et statut WiFi/IP en temps réel (v3.11.0+).
 - **Double affichage :** Fonctionnement simultané OLED et TFT pour visualisation diagnostique améliorée.
 - **Stabilité améliorée :** Résolution des problèmes de chargement JavaScript, erreurs de compilation FPSTR(), et optimisation mémoire avec livraison en streaming.

@@ -1,32 +1,23 @@
-# ESP32 Diagnostic Suite (v3.14.0)
+# ESP32 Diagnostic Suite (v3.15.0)
 
-Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports the ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, and ESP32-H2 families.
+Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## New in version 3.14.0
+## New in version 3.15.0
+1. **Multi-Environment Support**: Three distinct build environments for different ESP32 boards:
+   - `esp32s3_n16r8` (default): ESP32-S3 with 16MB Flash + 8MB PSRAM
+   - `esp32s3_n8r8`: ESP32-S3 with 8MB Flash + 8MB PSRAM
+   - `esp32devkitc`: ESP32 Classic with 4MB Flash (no PSRAM)
+2. **Hardware-Specific Pin Mapping**: Dedicated pin configurations in `config.h` for each target.
+3. **ESP32-S3 Configuration**: I2C (SDA=21, SCL=20), RGB LED (R=14, G=13, B=18), sensors optimized for S3 GPIO layout.
+4. **ESP32 Classic Configuration**: I2C (SDA=21, SCL=22), RGB LED (R=25, G=26, B=27), sensors adapted for Classic GPIO.
+5. **Shared Mappings**: Common pin assignments between ESP32-S3 N8R8 and ESP32 Classic where hardware permits.
+
+## Highlights of version 3.14.0
 1. **TFT Web Interface**: Complete cartouche for testing TFT ST7789 display (240x240) via web interface.
 2. **Individual TFT Tests**: 8 tests available (boot splash, colors, shapes, text, lines, animation, progress, final message).
 3. **Boot Screen Buttons**: Quick restore startup display for both OLED and TFT.
 4. **TFT REST API**: `/api/tft-test`, `/api/tft-step`, `/api/tft-boot` for programmatic control.
 5. **OLED REST API**: `/api/oled-boot` to restore OLED boot screen.
-6. **Consistent Architecture**: TFT tests follow OLED test pattern for maintainability.
-
-## Highlights of version 3.13.1
-1. `platformio.ini`: switched Adafruit library versions to caret ranges (`^`) for safe minor/patch updates.
-2. Build verified across environments: `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`.
-
-## Highlights of version 3.13.0
-- Multi-board documentation synced: clearly listed environments `esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc` with build instructions.
-- Cleaned docs to remove unsupported boards (ESP32‑S2/C3/C6/H2) from guides and matrices.
-- Consistent I2C default doc corrections (SCL=20) and HC‑SR04 defaults maintained (TRIG=16, ECHO=17).
-## Highlights of version 3.12.1
-- **BUGFIX**: PSRAM reliably enabled for ESP32-S3 DevKitC-1 N16R8 on PlatformIO (board_build.psram, BOARD_HAS_PSRAM). Ensures memory tests and allocations use external PSRAM where available (v3.12.1).
-- **RELEASE**: Production-ready release with validated TFT configuration and cleaned repository structure (v3.12.0).
-- **CONFIG**: Validated TFT backlight pin (GPIO 15) and resolved duplicate declarations (v3.12.0).
-- **DOCUMENTATION**: Removed all development and debugging artifacts for cleaner project structure (v3.12.0).
-- **PREVIOUS**: Code quality improvements and cleanup (v3.11.4).
-- **BUILD FIX**: Resolved FPSTR() type casting error and web interface JavaScript loading issues (v3.11.2, v3.11.1).
-- **NEW FEATURE**: TFT ST7789 display support (240x240) with boot splash screen and WiFi status (v3.11.0).
-- **Memory optimization**: Implemented streaming JavaScript delivery to prevent memory overflow.
 
 ## Project structure
 - `src/main.cpp` – firmware entry point, main loop, task scheduler, and HTTP handlers.
@@ -68,12 +59,16 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an intera
 
 ## Compatibility & requirements
 - **Boards:** 
-  - ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM) — Primary target
+  - ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM OPI/QSPI) — Primary target
   - ESP32-S3-DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
-  - ESP32-DevKitC (4MB Flash, no PSRAM)
-- **Platform:** PlatformIO with ESP32 Arduino Core 3.3.3.
-- **Build Environments:** `esp32s3_n16r8` (default), `esp32s3_n8r8`, `esp32devkitc`.
-- **Libraries:** Adafruit BusIO, Adafruit GFX Library, Adafruit ST7735 and ST7789 Library, Adafruit NeoPixel, U8g2 (auto-installed via platformio.ini).
+  - ESP32-DevKitC Classic (4MB Flash, no PSRAM)
+- **Platform:** PlatformIO with ESP32 Arduino Core 3.3.3+
+- **Build Environments:** 
+  - `esp32s3_n16r8` (default): ESP32-S3 with huge_app partition, PSRAM enabled, OPI support
+  - `esp32s3_n8r8`: ESP32-S3 with huge_app partition, 8MB Flash
+  - `esp32devkitc`: ESP32 Classic with default partition, 4MB Flash
+- **Environment Selection:** Change `default_envs` in `platformio.ini` or use `pio run -e <environment>`
+- **Libraries:** Adafruit BusIO ^1.17, Adafruit GFX ^1.12, Adafruit ST7735/ST7789 ^1.11, Adafruit NeoPixel ^1.12, U8g2 ^2.36 (auto-installed via platformio.ini).
 
 ## Support
 - License: [MIT](LICENSE)
