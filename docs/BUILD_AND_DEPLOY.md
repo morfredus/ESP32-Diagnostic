@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Build & Deploy (v3.15.0)
+# ESP32 Diagnostic Suite – Build & Deploy (v3.16.0)
 
-This document describes the supported toolchains and the recommended release checklist for firmware version 3.15.0.
+This document describes the supported toolchains and the recommended release checklist for firmware version 3.16.0.
 
 > **Important:** Version 3.12.0 has been migrated from Arduino IDE to **PlatformIO**. The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository is now **archived**. Bluetooth/BLE support has been **removed**.
 
@@ -78,6 +78,9 @@ Each environment has dedicated pin mappings in `include/config.h`:
 
 See [PIN_MAPPING.md](PIN_MAPPING.md) for complete reference.
 
+## New in v3.16.0
+Dynamic configuration of OLED and TFT displays through web interface, including resolution and pin mapping. Network monitoring with client IP logging. See CHANGELOG.md for details.
+
 ## New in v3.15.0
 1. **Multi-environment support:** Three distinct build configurations with hardware-specific pin mappings.
 2. **Conditional compilation:** `TARGET_ESP32_S3` and `TARGET_ESP32_CLASSIC` defines for platform-specific code.
@@ -86,7 +89,7 @@ See [PIN_MAPPING.md](PIN_MAPPING.md) for complete reference.
 
 ## Pre-deployment Checklist
 - [ ] Update `wifi-config.h` with production SSID/passwords and optional enterprise credentials.
-- [ ] Confirm `DIAGNOSTIC_VERSION` matches `3.15.0` in `platformio.ini` and documentation.
+- [ ] Confirm `DIAGNOSTIC_VERSION` matches `3.16.0` in `platformio.ini` and documentation.
 - [ ] Verify target environment is set correctly in `platformio.ini` (`default_envs`).
 - [ ] Review pin mappings in `config.h` for your specific hardware configuration.
 - [ ] Verify multilingual assets compile without warnings (`languages.h`).

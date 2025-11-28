@@ -1,7 +1,7 @@
-# ESP32 Diagnostic Suite – Guide de l'interface web (v3.15.1)
+# ESP32 Diagnostic Suite – Guide de l'interface web (v3.16.0)
 
 Le tableau de bord web embarqué constitue la surface de contrôle principale pour les techniciens. Ce guide couvre la disposition,
-les interactions et les points d'extension disponibles en version 3.15.1. Cette version supporte trois environnements de compilation (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) avec des configurations spécifiques au matériel et optimisations mémoire critiques pour ESP32 Classic.
+les interactions et les points d'extension disponibles en version 3.16.0. Cette version introduit la surveillance en temps réel de la connexion WiFi, la configuration dynamique des écrans, et des capacités améliorées de diagnostic réseau.
 
 ## Vue d'ensemble de la mise en page
 ```
@@ -27,6 +27,17 @@ les interactions et les points d'extension disponibles en version 3.15.1. Cette 
 - **Version** – reflète `DIAGNOSTIC_VERSION` et l'horodatage de compilation.
 - **Stockage** – indique la mémoire libre et la PSRAM lorsqu'elle est détectée.
 
+### Moniteur Réseau Sans Fil (Nouveau dans v3.16.0)
+L'onglet **Sans fil** inclut maintenant un affichage en temps réel de l'état de connexion réseau montrant :
+- **État de Connexion** – Indicateur visuel (vert/rouge) montrant si l'ESP32 est connecté au WiFi
+- **SSID Actuel** – Nom du réseau connecté
+- **Adresse IP** – Adresse IP actuelle assignée à l'ESP32
+- **Passerelle** – Adresse de la passerelle réseau
+- **Serveur DNS** – Adresse du serveur DNS en usage
+- **Force du Signal** – Valeur RSSI en dBm indiquant la qualité du signal WiFi
+
+Cette grille d'informations apparaît automatiquement lors de l'ouverture de l'onglet Sans fil, avant la section du scanner WiFi. Les données sont récupérées depuis le point d'API `/api/wifi-info` et se mettent à jour dynamiquement.
+
 ### Commandes de diagnostic
 - `Run full diagnostics` – exécute le pipeline complet.
 - `Run quick check` – se limite aux modules connectivité, mémoire et reporting.
@@ -41,7 +52,7 @@ les interactions et les points d'extension disponibles en version 3.15.1. Cette 
 ## Accessibilité & localisation
 - Toutes les actions disposent d'étiquettes ARIA et de raccourcis clavier (`Espace/Entrée`).
 - Le basculement de langue FR/EN s'effectue sans rechargement grâce aux ressources définies dans `languages.h`.
-- La version 3.15.1 supporte plusieurs environnements de compilation avec des mappages de broches spécifiques au matériel configurés automatiquement à la compilation. Inclut correction mémoire critique pour ESP32 Classic.
+- La version 3.16.0 supporte la configuration dynamique des écrans (résolution et pin mapping OLED/TFT) via l'interface web sans recompilation du code.
 - Un thème haut contraste s'active automatiquement lorsque le navigateur annonce un mode sombre.
 
 ## Personnalisation graphique

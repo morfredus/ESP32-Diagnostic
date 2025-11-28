@@ -1,6 +1,14 @@
-# ESP32 Diagnostic Suite (v3.15.1)
+# ESP32 Diagnostic Suite (v3.16.0)
 
-Micrologiciel de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenus bilingues (FR/EN). Le firmware cible PlatformIO avec l'Arduino Core ESP32 3.3.3 et prend en charge les cibles ESP32-S3 et ESP32 Classic.
+Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
+
+## Nouveautés de la version 3.16.0
+1. **Surveillance Réseau** : Journalisation automatique des adresses IP des clients connectés dans le moniteur série pour un diagnostic amélioré.
+2. **Affichage Statut WiFi** : Affichage en temps réel du statut de connexion réseau dans l'onglet WiFi montrant l'adresse IP actuelle, le SSID, la passerelle, le DNS et la force du signal.
+3. **Configuration Résolution OLED** : Configuration dynamique de la résolution de l'écran OLED (largeur × hauteur) via l'interface web.
+4. **Interface Configuration TFT** : Configuration complète de l'écran TFT incluant le pin mapping (MOSI, SCLK, CS, DC, RST, BL), la résolution et les paramètres de rotation.
+5. **Nouveau Point d'API** : `/api/tft-config` pour une configuration TFT complète avec validation en temps réel.
+6. **Info Écrans Améliorée** : Mise à jour de `/api/screens-info` pour inclure les détails complets de résolution et de broches pour OLED et TFT.
 
 ## Nouveautés de la version 3.15.1
 **Correction critique** : Résolution de l'échec de chargement de l'interface web sur ESP32 Classic (`esp32devkitc`) causé par épuisement mémoire. Le contenu JavaScript est maintenant streamé par petits morceaux depuis PROGMEM, éliminant les crashes heap sur cartes sans PSRAM. Tous les environnements bénéficient d'une efficacité mémoire améliorée.

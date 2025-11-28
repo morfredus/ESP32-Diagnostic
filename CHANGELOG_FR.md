@@ -1,3 +1,28 @@
+## [Version 3.16.0] - 2025-11-28
+
+### Nouvelles fonctionnalités
+1. **Journalisation des IP des Clients Connectés** : Ajout de la journalisation automatique des adresses IP des clients connectés dans le moniteur série pour une meilleure surveillance réseau et diagnostics.
+2. **Configuration de la Résolution OLED** : Ajout de la possibilité de configurer la résolution de l'écran OLED (largeur × hauteur) dynamiquement via l'interface web.
+3. **Interface de Configuration TFT** : Ajout d'une configuration complète de l'écran TFT via l'interface web incluant :
+   - Configuration du pin mapping (MOSI, SCLK, CS, DC, RST, BL)
+   - Configuration de la résolution d'affichage (largeur × hauteur)
+   - Paramètres de rotation
+4. **Point d'API `/api/tft-config`** : Nouveau endpoint pour la configuration TFT avec validation et mises à jour en temps réel.
+5. **API Info Écrans Améliorée** : Mise à jour de `/api/screens-info` pour inclure les détails de résolution et de broches pour les écrans OLED et TFT.
+
+### Améliorations
+6. **Surveillance Réseau** : Les connexions clients sont maintenant enregistrées au format `[Client] <endpoint> connected from IP: <address>` pour un débogage plus facile.
+7. **Configuration Dynamique** : Tous les paramètres d'affichage (OLED/TFT) peuvent maintenant être modifiés sans recompilation du code.
+
+### Détails Techniques
+8. Ajout de variables globales pour la configuration runtime : `oledWidth`, `oledHeight`, `tftMOSI`, `tftSCLK`, `tftCS`, `tftDC`, `tftRST`, `tftBL`, `tftWidth`, `tftHeight`, `tftRotation`.
+9. Amélioration de `handleOLEDConfig()` pour supporter les paramètres de résolution (largeur, hauteur).
+10. Implémentation de la fonction helper `logClientConnection()` pour une journalisation cohérente des IP.
+11. Version : Passage de 3.15.1 à 3.16.0 suivant le versioning sémantique (nouvelles fonctionnalités mineures).
+
+### Améliorations de l'Interface Web
+12. **Moniteur Réseau Sans Fil** : Ajout de l'affichage en temps réel du statut de connexion dans l'onglet WiFi montrant l'adresse IP actuelle, le SSID, la passerelle, le serveur DNS et la force du signal dans une grille d'information dédiée avant le scanner WiFi.
+
 ## [Version 3.15.1] - 2025-11-27
 
 ### Corrections de bugs
