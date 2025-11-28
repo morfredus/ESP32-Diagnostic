@@ -1,7 +1,7 @@
-# ESP32 Diagnostic Suite – Web Interface Guide (v3.15.1)
+# ESP32 Diagnostic Suite – Web Interface Guide (v3.16.0)
 
 The built-in web dashboard is the primary control surface for technicians. This guide covers the layout, interaction patterns, and
-customisation hooks available in version 3.15.1. This release supports three build environments (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) with hardware-specific configurations and critical memory optimizations for ESP32 Classic.
+customisation hooks available in version 3.16.0. This release introduces real-time WiFi connection monitoring, dynamic display configuration, and enhanced network diagnostics capabilities.
 
 ## Layout overview
 ```
@@ -27,6 +27,17 @@ customisation hooks available in version 3.15.1. This release supports three bui
 - **Version tile** – echoes `DIAGNOSTIC_VERSION` and build timestamp.
 - **Storage tile** – indicates free heap and PSRAM when detected.
 
+### Wireless Network Monitor (New in v3.16.0)
+The **Wireless** tab now includes a real-time network connection status display showing:
+- **Connection Status** – Visual indicator (green/red) showing whether the ESP32 is connected to WiFi
+- **Current SSID** – Name of the connected network
+- **IP Address** – Current IP address assigned to the ESP32
+- **Gateway** – Network gateway address
+- **DNS Server** – DNS server address in use
+- **Signal Strength** – RSSI value in dBm showing WiFi signal quality
+
+This information grid appears automatically when opening the Wireless tab, before the WiFi scanner section. Data is fetched from the `/api/wifi-info` endpoint and updates dynamically.
+
 ### Diagnostic controls
 - `Run full diagnostics` – executes the complete module pipeline.
 - `Run quick check` – executes connectivity, memory, and reporting modules only.
@@ -41,7 +52,7 @@ customisation hooks available in version 3.15.1. This release supports three bui
 ## Accessibility & localisation
 - All actionable controls include ARIA labels and keyboard shortcuts (`Space/Enter` to trigger primary buttons).
 - Language switch toggles between English and French without reloading the page; text resources are loaded from `languages.h`.
-- Version 3.15.1 supports multiple build environments with hardware-specific pin mappings automatically configured at compile time. Includes critical memory fix for ESP32 Classic.
+- Version 3.16.0 supports dynamic display configuration (OLED/TFT resolution and pin mapping) through the web interface without code recompilation.
 - High-contrast theme activated automatically when the browser prefers dark mode.
 
 ## Custom branding

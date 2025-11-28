@@ -188,6 +188,8 @@ int I2C_SDA = DEFAULT_I2C_SDA;
 
 // OLED display settings (from config.h)
 uint8_t oledRotation = DEFAULT_OLED_ROTATION;
+int oledWidth = SCREEN_WIDTH;
+int oledHeight = SCREEN_HEIGHT;
 
 // Runtime pin variables (initialized from config.h, modifiable via web interface)
 int RGB_LED_PIN_R = DEFAULT_RGB_LED_PIN_R;
@@ -218,6 +220,19 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C oled(U8G2_R0, U8X8_PIN_NONE);
 // NeoPixel (from config.h)
 int LED_PIN = DEFAULT_NEOPIXEL_PIN;
 int LED_COUNT = DEFAULT_NEOPIXEL_COUNT;
+
+// TFT pins (modifiables via web)
+#if ENABLE_TFT_DISPLAY
+int tftMOSI = TFT_MOSI;
+int tftSCLK = TFT_SCLK;
+int tftCS = TFT_CS;
+int tftDC = TFT_DC;
+int tftRST = TFT_RST;
+int tftBL = TFT_BL;
+int tftWidth = TFT_WIDTH;
+int tftHeight = TFT_HEIGHT;
+int tftRotation = TFT_ROTATION;
+#endif
 Adafruit_NeoPixel *strip = nullptr;
 
 bool neopixelTested = false;
@@ -2844,16 +2859,23 @@ void handleOLEDConfig() {
     int newSDA = server.arg("sda").toInt();
     int newSCL = server.arg("scl").toInt();
     int newRotation = server.arg("rotation").toInt();
+    
+    // Optional resolution parameters
+    int newWidth = server.hasArg("width") ? server.arg("width").toInt() : oledWidth;
+    int newHeight = server.hasArg("height") ? server.arg("height").toInt() : oledHeight;
 
     if (newSDA >= 0 && newSDA <= 48 && newSCL >= 0 && newSCL <= 48 && newRotation >= 0 && newRotation <= 3) {
       bool pinsChanged = (I2C_SDA != newSDA) || (I2C_SCL != newSCL);
       bool rotationChanged = (oledRotation != static_cast<uint8_t>(newRotation));
+      bool resolutionChanged = (oledWidth != newWidth) || (oledHeight != newHeight);
 
       I2C_SDA = newSDA;
       I2C_SCL = newSCL;
       oledRotation = static_cast<uint8_t>(newRotation);
+      oledWidth = newWidth;
+      oledHeight = newHeight;
 
-      if (pinsChanged || rotationChanged) {
+      if (pinsChanged || rotationChanged || resolutionChanged) {
         resetOLEDTest();
         Wire.end();
         detectOLED();
@@ -2861,11 +2883,13 @@ void handleOLEDConfig() {
         applyOLEDOrientation();
       }
 
-      String message = "I2C reconfigure: SDA:" + String(I2C_SDA) + " SCL:" + String(I2C_SCL) + " Rot:" + String(oledRotation);
+      String message = "I2C reconfigure: SDA:" + String(I2C_SDA) + " SCL:" + String(I2C_SCL) + " Rot:" + String(oledRotation) + " Res:" + String(oledWidth) + "x" + String(oledHeight);
       sendOperationSuccess(message, {
         jsonNumberField("sda", I2C_SDA),
         jsonNumberField("scl", I2C_SCL),
-        jsonNumberField("rotation", oledRotation)
+        jsonNumberField("rotation", oledRotation),
+        jsonNumberField("width", oledWidth),
+        jsonNumberField("height", oledHeight)
       });
       return;
     }
@@ -3015,6 +3039,70 @@ void handleTFTBoot() {
   }
   
   sendOperationSuccess("Boot screen displayed");
+#else
+  sendActionResponse(200, false, "TFT not enabled");
+#endif
+}
+
+void handleTFTConfig() {
+#if ENABLE_TFT_DISPLAY
+  // Check for required parameters
+  if (server.hasArg("mosi") && server.hasArg("sclk") && server.hasArg("cs") && 
+      server.hasArg("dc") && server.hasArg("rst")) {
+    
+    int newMOSI = server.arg("mosi").toInt();
+    int newSCLK = server.arg("sclk").toInt();
+    int newCS = server.arg("cs").toInt();
+    int newDC = server.arg("dc").toInt();
+    int newRST = server.arg("rst").toInt();
+    
+    // Optional parameters
+    int newBL = server.hasArg("bl") ? server.arg("bl").toInt() : tftBL;
+    int newWidth = server.hasArg("width") ? server.arg("width").toInt() : tftWidth;
+    int newHeight = server.hasArg("height") ? server.arg("height").toInt() : tftHeight;
+    int newRotation = server.hasArg("rotation") ? server.arg("rotation").toInt() : tftRotation;
+
+    // Validate pin ranges
+    if (newMOSI >= 0 && newMOSI <= 48 && newSCLK >= 0 && newSCLK <= 48 &&
+        newCS >= 0 && newCS <= 48 && newDC >= 0 && newDC <= 48 && 
+        newRST >= -1 && newRST <= 48 && newBL >= -1 && newBL <= 48 &&
+        newRotation >= 0 && newRotation <= 3) {
+      
+      // Update configuration
+      tftMOSI = newMOSI;
+      tftSCLK = newSCLK;
+      tftCS = newCS;
+      tftDC = newDC;
+      tftRST = newRST;
+      tftBL = newBL;
+      tftWidth = newWidth;
+      tftHeight = newHeight;
+      tftRotation = newRotation;
+
+      // Reinitialize TFT with new settings
+      tftAvailable = false;
+      // Note: Complete reinitialization would require SPI reconfiguration
+      // For now, we just store the values for next reboot
+      
+      String message = "TFT config updated: MOSI:" + String(tftMOSI) + " SCLK:" + String(tftSCLK) + 
+                       " CS:" + String(tftCS) + " DC:" + String(tftDC) + " RST:" + String(tftRST) +
+                       " Res:" + String(tftWidth) + "x" + String(tftHeight) + " Rot:" + String(tftRotation);
+      
+      sendOperationSuccess(message, {
+        jsonNumberField("mosi", tftMOSI),
+        jsonNumberField("sclk", tftSCLK),
+        jsonNumberField("cs", tftCS),
+        jsonNumberField("dc", tftDC),
+        jsonNumberField("rst", tftRST),
+        jsonNumberField("bl", tftBL),
+        jsonNumberField("width", tftWidth),
+        jsonNumberField("height", tftHeight),
+        jsonNumberField("rotation", tftRotation)
+      });
+      return;
+    }
+  }
+  sendOperationError(400, Texts::configuration_invalid.str());
 #else
   sendActionResponse(200, false, "TFT not enabled");
 #endif
@@ -3399,19 +3487,22 @@ void handleLedsInfo() {
 
 void handleScreensInfo() {
   String json;
-  json.reserve(500);
+  json.reserve(800);
   json = "{";
   json += "\"oled\":{\"available\":" + String(oledAvailable ? "true" : "false") +
           ",\"status\":\"" + oledTestResult + "\",";
   json += "\"pins\":{\"sda\":" + String(I2C_SDA) + ",\"scl\":" + String(I2C_SCL) + "},";
-  json += "\"rotation\":" + String(oledRotation) + "}";
+  json += "\"rotation\":" + String(oledRotation) + ",";
+  json += "\"width\":" + String(oledWidth) + ",\"height\":" + String(oledHeight) + "}";
   
   #if ENABLE_TFT_DISPLAY
   json += ",\"tft\":{\"available\":true,";
   json += "\"status\":\"" + String(tftTestResult.length() > 0 ? tftTestResult : "Ready") + "\",";
-  json += "\"width\":240,\"height\":240,";
-  json += "\"pins\":{\"mosi\":" + String(TFT_MOSI) + ",\"sclk\":" + String(TFT_SCLK) + 
-          ",\"cs\":" + String(TFT_CS) + ",\"dc\":" + String(TFT_DC) + ",\"rst\":" + String(TFT_RST) + "}}";
+  json += "\"width\":" + String(tftWidth) + ",\"height\":" + String(tftHeight) + ",";
+  json += "\"rotation\":" + String(tftRotation) + ",";
+  json += "\"pins\":{\"mosi\":" + String(tftMOSI) + ",\"sclk\":" + String(tftSCLK) + 
+          ",\"cs\":" + String(tftCS) + ",\"dc\":" + String(tftDC) + ",\"rst\":" + String(tftRST) + 
+          ",\"bl\":" + String(tftBL) + "}}";
   #else
   json += ",\"tft\":{\"available\":false,\"status\":\"Not enabled\"}";
   #endif
@@ -4151,10 +4242,18 @@ void handleGetTranslations() {
   server.send(200, "application/json; charset=utf-8", buildTranslationsJSON(target));
 }
 
+// Log client connection with IP address
+void logClientConnection(const char* endpoint) {
+  if (server.client()) {
+    IPAddress clientIP = server.client().remoteIP();
+    Serial.printf("[Client] %s connected from IP: %s\r\n", endpoint, clientIP.toString().c_str());
+  }
+}
 
 // ========== INTERFACE WEB PRINCIPALE MULTILINGUE ==========
 // Unique JavaScript handler defined in sketch (handleJavaScriptRoute)
 void handleJavaScriptRoute() {
+  logClientConnection("JS Resource");
   unsigned long startTime = millis();
 
   // Use chunked transfer to avoid memory issues
@@ -4223,6 +4322,7 @@ void handleJavaScriptRoute() {
 
 // Modern web interface with dynamic tabs
 void handleRoot() {
+  logClientConnection("Web Interface");
   server.send(200, "text/html; charset=utf-8", generateHTML());
 }
 
@@ -4411,6 +4511,7 @@ void setup() {
   server.on("/api/tft-test", handleTFTTest);
   server.on("/api/tft-step", handleTFTStep);
   server.on("/api/tft-boot", handleTFTBoot);
+  server.on("/api/tft-config", handleTFTConfig);
   
   // Tests avancés
   server.on("/api/adc-test", handleADCTest);

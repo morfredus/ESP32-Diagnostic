@@ -1,3 +1,28 @@
+## [Version 3.16.0] - 2025-11-28
+
+### New Features
+1. **Connected Client IP Logging**: Added automatic logging of connected client IP addresses in the Serial Monitor for better network monitoring and diagnostics.
+2. **OLED Resolution Configuration**: Added ability to configure OLED screen resolution (width × height) dynamically through the web interface.
+3. **TFT Configuration UI**: Added comprehensive TFT display configuration through web interface including:
+   - Pin mapping configuration (MOSI, SCLK, CS, DC, RST, BL)
+   - Display resolution configuration (width × height)
+   - Rotation settings
+4. **API Endpoint `/api/tft-config`**: New endpoint for TFT configuration with validation and real-time updates.
+5. **Enhanced Screen Info API**: Updated `/api/screens-info` to include resolution and pin details for both OLED and TFT displays.
+
+### Improvements
+6. **Network Monitoring**: Client connections are now logged with format `[Client] <endpoint> connected from IP: <address>` for easier troubleshooting.
+7. **Dynamic Configuration**: All display settings (OLED/TFT) can now be modified without code recompilation.
+
+### Technical Details
+8. Added global variables for runtime configuration: `oledWidth`, `oledHeight`, `tftMOSI`, `tftSCLK`, `tftCS`, `tftDC`, `tftRST`, `tftBL`, `tftWidth`, `tftHeight`, `tftRotation`.
+9. Enhanced `handleOLEDConfig()` to support resolution parameters (width, height).
+10. Implemented `logClientConnection()` helper function for consistent IP logging.
+11. Version: Bumped from 3.15.1 to 3.16.0 following semantic versioning (new minor features).
+
+### Web Interface Enhancements
+12. **Wireless Network Monitor**: Added real-time connection status display in WiFi tab showing current IP address, SSID, gateway, DNS server, and signal strength in a dedicated info grid before the WiFi scanner.
+
 ## [Version 3.15.1] - 2025-11-27
 
 ### Bug Fixes

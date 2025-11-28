@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Compilation & Déploiement (v3.15.0)
+# ESP32 Diagnostic Suite – Compilation & Déploiement (v3.16.0)
 
-Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.15.0.
+Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.16.0.
 
 > **Important :** La version 3.12.0 a été migrée depuis Arduino IDE vers **PlatformIO**. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé**.
 
@@ -78,6 +78,9 @@ Chaque environnement possède des mappings de broches dédiés dans `include/con
 
 Voir [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) pour la référence complète.
 
+## Nouveautés v3.16.0
+Configuration dynamique des écrans OLED et TFT via interface web, incluant résolution et pin mapping. Surveillance réseau avec journalisation des IP clients. Voir CHANGELOG_FR.md pour détails.
+
 ## Nouveautés v3.15.0
 1. **Support multi-environnements :** Trois configurations de build distinctes avec mappings de broches spécifiques au matériel.
 2. **Compilation conditionnelle :** Defines `TARGET_ESP32_S3` et `TARGET_ESP32_CLASSIC` pour code spécifique à la plateforme.
@@ -86,7 +89,7 @@ Voir [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) pour la référence complète.
 
 ## Checklist Pré-déploiement
 - [ ] Mettre à jour `wifi-config.h` avec les identifiants production et, le cas échéant, les paramètres entreprise.
-- [ ] Vérifier que `DIAGNOSTIC_VERSION` vaut `3.15.0` dans `platformio.ini` et la documentation.
+- [ ] Vérifier que `DIAGNOSTIC_VERSION` vaut `3.16.0` dans `platformio.ini` et la documentation.
 - [ ] Vérifier que l'environnement cible est correctement défini dans `platformio.ini` (`default_envs`).
 - [ ] Réviser les mappings de broches dans `config.h` pour votre configuration matérielle spécifique.
 - [ ] Compiler les ressources multilingues sans avertissement (`languages.h`).
