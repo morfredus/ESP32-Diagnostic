@@ -5,8 +5,6 @@
 include/wifi-config.h
 
 # Fichiers divers (a ignorer si leur contenu n'est pas a partager)
-ESP32-Diagnostic.txt
-resume_modifs.md
 
 # -----------------------------------------------------------------------------
 # 2. FICHIERS GENERES PAR COMPILATION ET OUTILS
