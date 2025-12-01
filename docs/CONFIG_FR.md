@@ -83,6 +83,15 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 
 ## Configuration des capteurs
 
+## Boutons matériels (v3.17.0+)
+- Fonctionnalité optionnelle activable via `ENABLE_BUTTONS` dans `include/config.h`.
+- Utilise les broches `PIN_BUTTON_1` et `PIN_BUTTON_2` déjà définies par cible dans `config.h` (aucun changement de mapping).
+- Actions par défaut :
+  - BTN1 : appui court → bip bref du buzzer (feedback utilisateur).
+  - BTN2 : appui court → cycle des couleurs de la LED RGB (rouge → vert → bleu → blanc).
+- Note ESP32 Classic : les GPIO 34–39 sont en entrée seule et sans pull‑up interne. Prévoir des résistances de tirage externes si nécessaire lorsque BTN2 est câblé sur GPIO 35.
+
+
 ### Capteur de distance (HC-SR04)
 
 - TRIG est une broche de sortie ; ECHO est une broche d'entrée.

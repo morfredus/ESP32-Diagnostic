@@ -1,3 +1,11 @@
+## [Version 3.17.0] - 2025-12-01
+1. Fonctionnalité : Prise en charge basique des boutons matériels (BTN1/BTN2) activée via `ENABLE_BUTTONS` sans modifier le pin mapping.
+   - BTN1 : appui court → bip bref du buzzer (feedback).
+   - BTN2 : appui court → cycle des couleurs de la LED RGB (rouge → vert → bleu → blanc).
+2. Documentation : Mise à jour des références de version et description du comportement des boutons (FR/EN) dans les documents utilisateur.
+3. Build : Passage de `PROJECT_VERSION` à `3.17.0` dans `platformio.ini`.
+4. Pin mapping : Aucun changement ; respect des `PIN_BUTTON_1`/`PIN_BUTTON_2` selon la cible.
+
 ## [Version 3.16.0] - 2025-11-28
 
 ### Nouvelles fonctionnalités

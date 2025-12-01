@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.15.0)
+# ESP32 Diagnostic Suite – Feature Matrix (v3.17.0)
 
 This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.15.0 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.
@@ -26,8 +26,8 @@ Use it to plan validation campaigns and to verify whether optional peripherals r
 | I2C secondary bus | Disabled by default | ESP32, ESP32-S3 | Enable via `ENABLE_SECONDARY_I2C` flag in `config.h`. |
 | SPI test bus | **Varies by target** (see PIN_MAPPING.md) | ESP32, ESP32-S3 | Validates external flash/SD adaptors. |
 | UART loopback | TX0/RX0 & optional UART1/UART2 | All | Requires jumper wire TX↔RX on chosen UART. |
-| TFT ST7789 display | **ESP32-S3:** GPIO 7-15<br>**ESP32 Classic:** GPIO 2-32 | All supported boards | 240x240 display. Pins hardware-specific. |
-| RGB LED (separate) | **ESP32-S3:** R=14, G=13, B=18<br>**ESP32 Classic:** R=25, G=26, B=27 | All | Individual RGB control pins. |
+| TFT ST7789 display | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=7, BL=15<br>**ESP32 Classic:** MOSI=23, SCLK=18, CS=15, DC=2, RST=4, BL=32 | All supported boards | 240x240 display. Pins hardware-specific. || RGB LED (separate) | **ESP32-S3:** R=14, G=13, B=18<br>**ESP32 Classic:** R=25, G=26, B=27 | All | Individual RGB control pins. |
+| Buttons | **ESP32-S3:** BTN1=1, BTN2=2<br>**ESP32 Classic:** BTN1=0 (BOOT), BTN2=35 | All supported boards | Internal pull-ups enabled where available; Classic GPIO 34–39 are input-only (use external pull-up if needed). |
 
 ## Optional module checklist
 | Module | Firmware flag | Default state | Description |

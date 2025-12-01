@@ -1,4 +1,4 @@
-# Usage Guide (EN) – v3.15.1
+# Usage Guide (EN) – v3.17.0
 
 **Multi-environment support:** Version 3.15.1 includes critical memory optimizations for ESP32 Classic and supports three build environments with hardware-specific configurations. Before first use, ensure you've selected and flashed the correct environment for your board (see [BUILD_AND_DEPLOY.md](BUILD_AND_DEPLOY.md)).
 
@@ -49,12 +49,18 @@ All endpoints return JSON unless stated otherwise:
 - Keep JSON exports for machine parsing and TXT/CSV for manual analysis.
 - Use the `/api/memory-details` endpoint when reports warn about fragmentation and, on 3.8.0, double-check that BLE scan responses include either fresh results or a clear error message if the radio is busy.
 
-## 7. Best practices
+## 7. Hardware buttons (optional)
+- If enabled via `ENABLE_BUTTONS`, the following defaults apply without changing pin mapping:
+  - BTN1: short press plays a brief buzzer tone.
+  - BTN2: short press cycles RGB LED colors (red → green → blue → white).
+- Pins are target-specific (`PIN_BUTTON_1` / `PIN_BUTTON_2` defined in `config.h`). On ESP32 Classic, GPIO 34–39 have no internal pull-ups; use external pull-ups if required for BTN2=35.
+
+## 8. Best practices
 - Re-run Wi-Fi scans after moving the device to a new location to refresh RSSI values.
 - Stop NeoPixel animations before powering down external LEDs to avoid ghosting.
 - When changing OLED pins, run `/api/oled-config` followed by `/api/oled-test` to validate wiring.
 
-## 8. Post-release debugging checklist (3.8.0)
+## 9. Post-release debugging checklist (3.8.0)
 - Power-cycle the board with an OLED connected and confirm the Wi-Fi splash advances through association, DHCP, and completion before the dashboard loads.
 - Trigger `/api/wifi-scan` and `/api/ble-scan` (or the UI scan button) to ensure NimBLE builds return valid results and resume advertising without raising conversion errors.
 - Download TXT/JSON/CSV exports and verify the filenames embed version 3.9.0 while the BLE and Wi-Fi sections reflect the refreshed compatibility guidance.
