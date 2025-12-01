@@ -1,6 +1,12 @@
-# ESP32 Diagnostic Suite (v3.16.0)
+# ESP32 Diagnostic Suite (v3.17.0)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
+
+## New in version 3.17.0
+1. **Hardware Buttons (Optional)**: Simple actions bound to BTN1/BTN2 without changing pin mapping.
+  - BTN1: short press plays a brief buzzer tone for user feedback.
+  - BTN2: short press cycles RGB LED colors (red → green → blue → white).
+  - Enable via `ENABLE_BUTTONS` in `include/config.h`.
 
 ## New in version 3.16.0
 1. **Network Monitoring**: Automatic logging of connected client IP addresses in the Serial Monitor for enhanced diagnostics.

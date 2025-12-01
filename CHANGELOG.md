@@ -112,6 +112,14 @@
 
 # Changelog
 
+## Version 3.17.0 - 2025-12-01
+- Feature: Basic hardware button support (BTN1/BTN2) enabled via `ENABLE_BUTTONS` without changing pin mapping.
+   - BTN1: short press plays a short buzzer tone for feedback.
+   - BTN2: short press cycles RGB LED colors (red → green → blue → white).
+- Docs: Updated version references and described button behavior in FR/EN docs.
+- Build: Bump `PROJECT_VERSION` to `3.17.0` in `platformio.ini`.
+- No pin mapping changes; existing `PIN_BUTTON_1`/`PIN_BUTTON_2` respected per target.
+
 All notable changes to ESP32 Diagnostic Suite are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Version 3.12.3] - 2025-11-26

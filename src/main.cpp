@@ -217,6 +217,7 @@ bool mdnsResponderInitialized = false;
 #endif
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C oled(U8G2_R0, U8X8_PIN_NONE);
 
+
 // NeoPixel (from config.h)
 int LED_PIN = DEFAULT_NEOPIXEL_PIN;
 int LED_COUNT = DEFAULT_NEOPIXEL_COUNT;
@@ -362,6 +363,96 @@ float distanceValue = -1.0;
 String motionSensorTestResult = String(Texts::not_tested);
 bool motionSensorAvailable = false;
 bool motionDetected = false;
+
+// ========== BOUTONS ==========
+// Gestion simple avec anti-rebond et actions utiles par défaut
+#if ENABLE_BUTTONS
+static int button1Pin = PIN_BUTTON_1;
+static int button2Pin = PIN_BUTTON_2;
+static int button1Last = HIGH;
+static int button2Last = HIGH;
+static unsigned long button1LastChange = 0;
+static unsigned long button2LastChange = 0;
+static const unsigned long debounceMs = 30;
+
+static void initButtons() {
+  if (button1Pin >= 0 && button1Pin <= 48) {
+#if defined(CONFIG_IDF_TARGET_ESP32)
+    if (button1Pin >= 34 && button1Pin <= 39) {
+      pinMode(button1Pin, INPUT);
+    } else {
+      pinMode(button1Pin, INPUT_PULLUP);
+    }
+#else
+    pinMode(button1Pin, INPUT_PULLUP);
+#endif
+  }
+  if (button2Pin >= 0 && button2Pin <= 48) {
+#if defined(CONFIG_IDF_TARGET_ESP32)
+    if (button2Pin >= 34 && button2Pin <= 39) {
+      pinMode(button2Pin, INPUT);
+    } else {
+      pinMode(button2Pin, INPUT_PULLUP);
+    }
+#else
+    pinMode(button2Pin, INPUT_PULLUP);
+#endif
+  }
+}
+
+static void onButton1Pressed() {
+  // Action par défaut: bip bref sur le buzzer pour feedback
+  if (BUZZER_PIN >= 0) {
+    tone(BUZZER_PIN, 1000, 200);
+  }
+}
+
+static void onButton2Pressed() {
+  // Action par défaut: cycle couleur RGB si disponible
+  static int step = 0;
+  int r = 0, g = 0, b = 0;
+  switch (step % 4) {
+    case 0: r = 255; g = 0; b = 0; break; // Rouge
+    case 1: r = 0; g = 255; b = 0; break; // Vert
+    case 2: r = 0; g = 0; b = 255; break; // Bleu
+    default: r = 255; g = 255; b = 255; break; // Blanc
+  }
+  if (RGB_LED_PIN_R >= 0 && RGB_LED_PIN_G >= 0 && RGB_LED_PIN_B >= 0) {
+    analogWrite(RGB_LED_PIN_R, r);
+    analogWrite(RGB_LED_PIN_G, g);
+    analogWrite(RGB_LED_PIN_B, b);
+  }
+  step++;
+}
+
+static void maintainButtons() {
+  unsigned long now = millis();
+  if (button1Pin >= 0) {
+    int s = digitalRead(button1Pin);
+    if (s != button1Last) {
+      if (now - button1LastChange > debounceMs) {
+        button1LastChange = now;
+        button1Last = s;
+        if (s == LOW) {
+          onButton1Pressed();
+        }
+      }
+    }
+  }
+  if (button2Pin >= 0) {
+    int s = digitalRead(button2Pin);
+    if (s != button2Last) {
+      if (now - button2LastChange > debounceMs) {
+        button2LastChange = now;
+        button2Last = s;
+        if (s == LOW) {
+          onButton2Pressed();
+        }
+      }
+    }
+  }
+}
+#endif
 
 // ========== STRUCTURES ==========
 struct DiagnosticInfo {
@@ -4562,12 +4653,21 @@ void setup() {
   Serial.println("   Langue par défaut: FRANCAIS");
   Serial.println("   Changement dynamique via interface web");
   Serial.println("===============================================\r\n");
+
+#if ENABLE_BUTTONS
+  initButtons();
+  Serial.printf("Boutons actifs: BTN1=%d, BTN2=%d\r\n", button1Pin, button2Pin);
+#endif
 }
 
 // ========== LOOP ==========
 void loop() {
   server.handleClient();
   maintainNetworkServices();
+
+#if ENABLE_BUTTONS
+  maintainButtons();
+#endif
 
   static unsigned long lastUpdate = 0;
   if (millis() - lastUpdate > 30000) {
