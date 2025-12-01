@@ -1,4 +1,4 @@
-# Guide d’utilisation (FR) – v3.15.1
+# Guide d’utilisation (FR) – v3.17.0
 
 **Support multi-environnements :** La version 3.15.1 inclut des optimisations mémoire critiques pour ESP32 Classic et supporte trois environnements de compilation avec des configurations spécifiques au matériel. Avant la première utilisation, assurez-vous d'avoir sélectionné et flashé le bon environnement pour votre carte (voir [BUILD_AND_DEPLOY_FR.md](BUILD_AND_DEPLOY_FR.md)).
 
@@ -50,12 +50,18 @@ Toutes les routes renvoient du JSON sauf mention contraire :
 - Utilisez le JSON pour l'analyse automatisée et TXT/CSV pour la consultation manuelle.
 - Exploitez l'endpoint `/api/memory-details` lorsque les exports signalent une fragmentation et, en 3.8.0, contrôlez que les réponses de scan BLE renvoient soit des résultats frais, soit un message d'erreur explicite si la radio est occupée.
 
-## 7. Bonnes pratiques
+## 7. Boutons matériels (optionnel)
+- Si activés via `ENABLE_BUTTONS`, les actions par défaut s’appliquent sans modifier le pin mapping :
+  - BTN1 : appui court → bip bref du buzzer.
+  - BTN2 : appui court → cycle des couleurs de la LED RGB (rouge → vert → bleu → blanc).
+- Les broches sont spécifiques à la cible (`PIN_BUTTON_1` / `PIN_BUTTON_2` définies dans `config.h`). Sur ESP32 Classic, les GPIO 34–39 n’ont pas de pull‑up interne ; prévoir une résistance externe si nécessaire pour BTN2=35.
+
+## 8. Bonnes pratiques
 - Relancez un scan Wi-Fi après tout déplacement pour rafraîchir les RSSI.
 - Arrêtez les animations NeoPixel avant de couper l'alimentation des LED externes.
 - Après changement des broches OLED, exécutez `/api/oled-config` puis `/api/oled-test` pour valider le câblage.
 
-## 8. Checklist de débogage post-release (3.8.0)
+## 9. Checklist de débogage post-release (3.8.0)
 - Redémarrez la carte avec un OLED connecté et vérifiez que l'écran de démarrage Wi-Fi progresse bien sur association, DHCP puis réussite avant chargement du tableau de bord.
 - Déclenchez `/api/wifi-scan` et `/api/ble-scan` (ou le bouton d'interface) pour confirmer que les builds NimBLE renvoient des résultats valides et reprennent la diffusion sans conversion erronée.
 - Téléchargez les rapports TXT/JSON/CSV et assurez-vous que les noms de fichiers incluent la version 3.9.0 tandis que les sections BLE et Wi-Fi reflètent les consignes de compatibilité renforcées.

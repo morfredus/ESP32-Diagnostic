@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.12.0)
+# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.17.0)
 
 Cette matrice résume la couverture des diagnostics pour les cartes Espressif les plus courantes prises en charge par la version
 3.8.0. Elle aide à planifier les campagnes de validation et à vérifier si des périphériques optionnels nécessitent un câblage
@@ -23,9 +23,8 @@ supplémentaire.
 |--------------------|--------------------|-------------------|-------|
 | I2C principal | **ESP32-S3:** SDA=21, SCL=20 · **ESP32 Classic:** SDA=21, SCL=22 | Toutes les cartes supportées | Utilisé pour l'OLED, les packs capteurs, l'EEPROM. |
 | LED RGB | **ESP32-S3:** R=14, G=13, B=18 · **ESP32 Classic:** R=25, G=26, B=27 | Toutes les cartes supportées | Broches PWM pour LED RGB commune anode/cathode. |
-| Boutons | **ESP32-S3:** BTN1=1, BTN2=2 · **ESP32 Classic:** BTN1=0 (BOOT), BTN2=35 | Toutes les cartes supportées | Pull-ups internes activés. |
-| TFT ST7789 | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=46, BL=15 · **ESP32 Classic:** MOSI=23, SCLK=18, CS=15, DC=2, RST=4, BL=32 | Toutes les cartes supportées | SPI dédié pour affichage TFT. Voir PIN_MAPPING_FR.md pour conflits potentiels. |
-| Boucle UART | TX0/RX0 & UART1 optionnel | Toutes | Nécessite un cavalier TX↔RX sur l'UART choisi. |
+| Boutons | **ESP32-S3:** BTN1=1, BTN2=2 · **ESP32 Classic:** BTN1=0 (BOOT), BTN2=35 | Toutes les cartes supportées | Pull-ups internes si disponibles (les GPIO 34–39 du Classic n'ont pas de pull‑up interne). |
+| TFT ST7789 | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=7, BL=15 · **ESP32 Classic:** MOSI=23, SCLK=18, CS=15, DC=2, RST=4, BL=32 | Toutes les cartes supportées | SPI dédié pour affichage TFT. Voir PIN_MAPPING_FR.md pour conflits potentiels. || Boucle UART | TX0/RX0 & UART1 optionnel | Toutes | Nécessite un cavalier TX↔RX sur l'UART choisi. |
 | Température OneWire | Variable par cible | ESP32, ESP32-S3 | Détection DS18B20 lorsque `ENABLE_ONEWIRE` est actif. Voir PIN_MAPPING_FR.md. |
 
 ## Modules optionnels

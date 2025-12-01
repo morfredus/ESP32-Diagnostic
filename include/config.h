@@ -144,6 +144,9 @@
 #define ENABLE_MEMORY_STRESS_TEST true
 #define ENABLE_CPU_BENCHMARK true
 
+// --- Buttons Common ---
+#define ENABLE_BUTTONS true
+
 #define WEB_SERVER_PORT 80
 #define ENABLE_CORS false
 #define MAX_WEB_CLIENTS 4
