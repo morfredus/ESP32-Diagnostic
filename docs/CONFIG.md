@@ -83,6 +83,15 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 
 ## Sensors configuration
 
+## Hardware buttons (v3.17.0+)
+- Optional feature enabled by `ENABLE_BUTTONS` in `include/config.h`.
+- Uses existing `PIN_BUTTON_1` and `PIN_BUTTON_2` defined per target in `config.h` (no pin mapping changes).
+- Default actions:
+  - BTN1: short press plays a brief buzzer tone for user feedback.
+  - BTN2: short press cycles RGB LED colors (red → green → blue → white).
+- Note for ESP32 Classic: GPIO 34–39 are input-only and have no internal pull-ups. Use external pull-ups if required when mapping BTN2 to GPIO 35.
+
+
 ### Distance Sensor (HC-SR04)
 
 - TRIG is an output pin; ECHO is an input pin.
