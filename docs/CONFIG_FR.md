@@ -83,7 +83,7 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 
 ## Configuration des capteurs
 
-## Boutons matériels (v3.17.0+)
+## Boutons matériels (v3.17.1+)
 - Fonctionnalité optionnelle activable via `ENABLE_BUTTONS` dans `include/config.h`.
 - Utilise les broches `PIN_BUTTON_1` et `PIN_BUTTON_2` déjà définies par cible dans `config.h` (aucun changement de mapping).
 - Actions par défaut :

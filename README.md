@@ -1,6 +1,10 @@
-# ESP32 Diagnostic Suite (v3.17.0)
+# ESP32 Diagnostic Suite (v3.17.1)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
+
+## New in version 3.17.1
+1. **Refreshed pin mapping (ESP32-S3 & Classic):** Updated defaults in `include/config.h` to align GPS, TFT, RGB, and sensor pins with DevKitC-1 layout and to keep buttons intact. ESP32-S3 defaults now use GPS RX=18/TX=17/PPS=8; TFT MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7; RGB R=47/G=48/B=45; BTN1=1, BTN2=2; PWM/Buzzer=14; DHT=5; Motion=4; Light=19; HC-SR04 TRIG=3/ECHO=6. ESP32 Classic defaults now use GPS RX=16/TX=17/PPS=4; TFT MOSI=23, SCLK=18, CS=19, DC=27, RST=26, BL=13; RGB R=12/G=14/B=15; BTN1=34, BTN2=35; PWM/Buzzer=5; DHT=25; Motion=36; Light=2; HC-SR04 TRIG=32/ECHO=33.
+2. **Docs + version bump:** Pin mapping guides (EN/FR), README, feature matrix, usage, and build notes updated to reflect the new defaults; `PROJECT_VERSION` set to `3.17.1`.
 
 ## New in version 3.17.0
 1. **Hardware Buttons (Optional)**: Simple actions bound to BTN1/BTN2 without changing pin mapping.
@@ -25,8 +29,8 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an intera
    - `esp32s3_n8r8`: ESP32-S3 with 8MB Flash + 8MB PSRAM
    - `esp32devkitc`: ESP32 Classic with 4MB Flash (no PSRAM)
 2. **Hardware-Specific Pin Mapping**: Dedicated pin configurations in `config.h` for each target.
-3. **ESP32-S3 Configuration**: I2C (SDA=21, SCL=20), RGB LED (R=14, G=13, B=18), sensors optimized for S3 GPIO layout.
-4. **ESP32 Classic Configuration**: I2C (SDA=21, SCL=22), RGB LED (R=25, G=26, B=27), sensors adapted for Classic GPIO.
+3. **ESP32-S3 Configuration (updated in 3.17.1)**: I2C (SDA=21, SCL=20), RGB LED (R=47, G=48, B=45), buttons BTN1=1 / BTN2=2, GPS RX=18/TX=17/PPS=8, TFT MOSI=11/SCLK=12/CS=10/DC=9/RST=13/BL=7, sensors (PWM/Buzzer=14, DHT=5, Motion=4, Light=19, HC-SR04 TRIG=3/ECHO=6).
+4. **ESP32 Classic Configuration (updated in 3.17.1)**: I2C (SDA=21, SCL=22), RGB LED (R=12, G=14, B=15), buttons BTN1=34 / BTN2=35, GPS RX=16/TX=17/PPS=4, TFT MOSI=23/SCLK=18/CS=19/DC=27/RST=26/BL=13, sensors (PWM/Buzzer=5, DHT=25, Motion=36, Light=2, HC-SR04 TRIG=32/ECHO=33).
 5. **Shared Mappings**: Common pin assignments between ESP32-S3 N8R8 and ESP32 Classic where hardware permits.
 
 ## Highlights of version 3.14.0

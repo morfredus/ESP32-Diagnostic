@@ -83,7 +83,7 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 
 ## Sensors configuration
 
-## Hardware buttons (v3.17.0+)
+## Hardware buttons (v3.17.1+)
 - Optional feature enabled by `ENABLE_BUTTONS` in `include/config.h`.
 - Uses existing `PIN_BUTTON_1` and `PIN_BUTTON_2` defined per target in `config.h` (no pin mapping changes).
 - Default actions:
