@@ -9,85 +9,114 @@
 #define DIAGNOSTIC_PREFER_SECURE 0
 
 // =========================================================
-//                  MAPPING ESP32-S3 (N16R8 / N8R8)
+//      Configuration Pinout ESP32-S3 DevKitC-1 N16R8
 // =========================================================
 #if defined(TARGET_ESP32_S3)
 
-    // --- I2C ---
-    #define DEFAULT_I2C_SDA 21
-    #define DEFAULT_I2C_SCL 20
+// BROCHES RÉSERVÉES POUR FUTUR UART2
+// Ces broches sont laissées libres pour toute communication série additionnelle.
+//#define UART2_TX_PIN         15    // GPIO15: LIBRE - Futur UART2 Transmission.
+//#define UART2_RX_PIN         16    // GPIO16: LIBRE - Futur UART2 Réception.
 
-    // --- BOUTONS ---
-    #define PIN_BUTTON_1     1
-    #define PIN_BUTTON_2     2
+// ------------------------------------
+// GPS (UART1)
+// ------------------------------------
+#define PIN_GPS_RXD          18    // Côté Gauche
+#define PIN_GPS_TXD          17    // Côté Gauche
+#define PIN_GPS_PPS          8     // Côté Gauche
 
-    // --- LED RGB ---
-    #define DEFAULT_RGB_LED_PIN_R 14
-    #define DEFAULT_RGB_LED_PIN_G 13
-    #define DEFAULT_RGB_LED_PIN_B 18
+// ------------------------------------
+// TFT ST7789 (SPI - TOUT Côté Gauche)
+// ------------------------------------
+#define TFT_MOSI             11    // SPI Master Out Slave In (MOSI).
+#define TFT_SCLK             12    // SPI Clock (SCLK).
+#define TFT_CS               10    // Chip Select.
+#define TFT_DC               9     // Data/Command.
+#define TFT_RST              13    // Reset de l'écran.
+#define TFT_BL               7     // Backlight (Rétroéclairage).
 
-    // --- CAPTEURS ---
-    #define DEFAULT_DHT_PIN 19
-    #define DEFAULT_LIGHT_SENSOR_PIN 4
-    #define DEFAULT_DISTANCE_TRIG_PIN 16
-    #define DEFAULT_DISTANCE_ECHO_PIN 17
-    #define DEFAULT_MOTION_SENSOR_PIN 39
-    #define DEFAULT_BUZZER_PIN 3
-    #define DEFAULT_PWM_PIN 27
+// ------------------------------------
+// I2C (Côté Droit)
+// ------------------------------------
+#define DEFAULT_I2C_SDA      21    // I2C Data (SDA).
+#define DEFAULT_I2C_SCL      20    // I2C Clock (SCL).
 
-    // --- TFT ST7789 (S3 Specific SPI) ---
-    #define TFT_MOSI            11
-    #define TFT_SCLK            12
-    #define TFT_CS              10
-    #define TFT_DC              9
-    #define TFT_RST             7
-    #define TFT_BL              15
+// ------------------------------------
+// LED RGB & Boutons (Côté Droit)
+// ------------------------------------
+#define DEFAULT_RGB_LED_PIN_R 47   // Côté Droit
+#define DEFAULT_RGB_LED_PIN_G 48   // Côté Droit
+#define DEFAULT_RGB_LED_PIN_B 45   // Côté Droit
 
-    // --- GPS ---
-    #define PIN_GPS_RXD         8
-    #define PIN_GPS_TXD         5
-    #define PIN_GPS_PPS         38
+#define PIN_BUTTON_1         1     // Côté Droit
+#define PIN_BUTTON_2         2     // Côté Droit
+
+// ------------------------------------
+// Capteurs & Sorties
+// ------------------------------------
+#define DEFAULT_PWM_PIN      14    // Sortie PWM/Buzzer (broche libre idéale Côté Gauche).
+#define DEFAULT_BUZZER_PIN   14    // Peut être la même broche que le PWM.
+
+#define DEFAULT_DHT_PIN      5     // Capteur DHT (Temp/Hum).
+#define DEFAULT_MOTION_SENSOR_PIN 4  // Capteur de mouvement (PIR)
+#define DEFAULT_LIGHT_SENSOR_PIN 19  // Capteur de lumière (ADC - Côté Droit).
+
+// ------------------------------------
+// Capteurs de Distance (utilisation de broches voisines)
+// ------------------------------------
+#define DEFAULT_DISTANCE_TRIG_PIN 3  // Sortie (Trigger).
+#define DEFAULT_DISTANCE_ECHO_PIN 6  // Entrée (Écho).
 
 // =========================================================
 //                  MAPPING ESP32 CLASSIQUE (DevKitC)
 // =========================================================
 #elif defined(TARGET_ESP32_CLASSIC)
 
-    // --- I2C (Standard ESP32) ---
-    #define DEFAULT_I2C_SDA 21
-    #define DEFAULT_I2C_SCL 22  // SCL est généralement 22 sur Classic
+// ------------------------------------
+// GPS (UART2)
+// ------------------------------------
+#define PIN_GPS_RXD          16    // UART2 RX (vers TX du GPS).
+#define PIN_GPS_TXD          17    // UART2 TX (vers RX du GPS).
+#define PIN_GPS_PPS          4    // Signal Pulse Per Second.
 
-    // --- BOUTONS ---
-    // Attention : GPIO 1/2 sont TX/RX sur Classic. On change.
-    #define PIN_BUTTON_1     0   // Bouton BOOT
-    #define PIN_BUTTON_2     35  // Input only
+// ------------------------------------
+// TFT ST7789 (Interface SPI - Broches groupées)
+// ------------------------------------
+#define TFT_MOSI             23    // SPI Master Out Slave In (MOSI).
+#define TFT_SCLK             18    // SPI Clock (SCLK).
+#define TFT_CS               19    // Chip Select.
+#define TFT_DC               27    // Data/Command.
+#define TFT_RST              26    // Reset de l'écran.
+#define TFT_BL               13    // Backlight (Utilisation de GPIO13, broche sûre).
 
-    // --- LED RGB ---
-    #define DEFAULT_RGB_LED_PIN_R 25
-    #define DEFAULT_RGB_LED_PIN_G 26
-    #define DEFAULT_RGB_LED_PIN_B 27
+// ------------------------------------
+// I2C (Contrainte Appliquée)
+// ------------------------------------
+#define DEFAULT_I2C_SDA      21    // I2C Data (SDA).
+#define DEFAULT_I2C_SCL      22    // I2C Clock (SCL).
 
-    // --- CAPTEURS ---
-    #define DEFAULT_DHT_PIN 4
-    #define DEFAULT_LIGHT_SENSOR_PIN 34 // Analog Input Only
-    #define DEFAULT_DISTANCE_TRIG_PIN 5
-    #define DEFAULT_DISTANCE_ECHO_PIN 18
-    #define DEFAULT_MOTION_SENSOR_PIN 36 // VP - Input Only
-    #define DEFAULT_BUZZER_PIN 13
-    #define DEFAULT_PWM_PIN 14
+// ------------------------------------
+// LED RGB & Boutons
+// ------------------------------------
+#define DEFAULT_RGB_LED_PIN_R 12   // RGB Rouge (Broche Strapping, mais souvent utilisable).
+#define DEFAULT_RGB_LED_PIN_G 14   // RGB Vert.
+#define DEFAULT_RGB_LED_PIN_B 15   // RGB Bleu.
 
-    // --- TFT ST7789 (Standard VSPI) ---
-    #define TFT_MOSI            23
-    #define TFT_SCLK            18
-    #define TFT_CS              15
-    #define TFT_DC              2
-    #define TFT_RST             4
-    #define TFT_BL              32 // Ou autre GPIO libre
+#define PIN_BUTTON_1         34    // Bouton 1 (Entrée Seulement).
+#define PIN_BUTTON_2         35    // Bouton 2 (Entrée Seulement).
 
-    // --- GPS ---
-    #define PIN_GPS_RXD         16 // RX2
-    #define PIN_GPS_TXD         17 // TX2
-    #define PIN_GPS_PPS         39 // VN - Input Only
+// ------------------------------------
+// Capteurs & Sorties
+// ------------------------------------
+#define DEFAULT_PWM_PIN      5     // Sortie PWM dédiée (Broche Strapping, mais fonctionnelle).
+#define DEFAULT_BUZZER_PIN   5     // Même broche que PWM.
+
+#define DEFAULT_DISTANCE_TRIG_PIN 32 // Sortie (Trigger).
+#define DEFAULT_DISTANCE_ECHO_PIN 33 // Entrée (Écho).
+
+#define DEFAULT_DHT_PIN      25     // Capteur DHT (Broche Strapping, mais OK en entrée/sortie).
+#define DEFAULT_MOTION_SENSOR_PIN 36 // Mouvement (Entrée Seulement - VP).
+#define DEFAULT_LIGHT_SENSOR_PIN 2  // Capteur de lumière (ADC - Broche sûre).
 
 #else
     #error "Aucune cible definie ! Verifiez platformio.ini (TARGET_ESP32_...)"

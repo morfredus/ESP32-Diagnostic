@@ -1,6 +1,6 @@
-# Guide d’utilisation (FR) – v3.17.0
+# Guide d’utilisation (FR) – v3.17.1
 
-**Support multi-environnements :** La version 3.15.1 inclut des optimisations mémoire critiques pour ESP32 Classic et supporte trois environnements de compilation avec des configurations spécifiques au matériel. Avant la première utilisation, assurez-vous d'avoir sélectionné et flashé le bon environnement pour votre carte (voir [BUILD_AND_DEPLOY_FR.md](BUILD_AND_DEPLOY_FR.md)).
+**Support multi-environnements :** La version 3.17.1 actualise les mappings par défaut pour ESP32-S3 et ESP32 Classic tout en conservant les trois environnements spécifiques au matériel et les optimisations mémoire pour l'ESP32 Classic. Avant la première utilisation, assurez-vous d'avoir sélectionné et flashé le bon environnement pour votre carte (voir [BUILD_AND_DEPLOY_FR.md](BUILD_AND_DEPLOY_FR.md)).
 
 ## 1. Premier démarrage
 1. Ouvrez le moniteur série à 115200 bauds juste après le flash.

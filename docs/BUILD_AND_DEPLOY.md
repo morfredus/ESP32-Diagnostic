@@ -73,10 +73,13 @@ pio run --target clean
 ## Pin Configuration Notes
 
 Each environment has dedicated pin mappings in `include/config.h`:
-- **ESP32-S3:** I2C on SDA=21/SCL=20, RGB LED on 14/13/18, TFT on GPIOs 7-15
-- **ESP32 Classic:** I2C on SDA=21/SCL=22, RGB LED on 25/26/27, TFT on GPIOs 2-32
+- **ESP32-S3:** I2C on SDA=21/SCL=20, RGB LED on 47/48/45, TFT on GPIOs 7-13, GPS on 18/17/8, sensors updated (see PIN_MAPPING.md).
+- **ESP32 Classic:** I2C on SDA=21/SCL=22, RGB LED on 12/14/15, TFT on GPIOs 13/18/19/23/26/27, GPS on 16/17/4, sensors updated (see PIN_MAPPING.md).
 
 See [PIN_MAPPING.md](PIN_MAPPING.md) for complete reference.
+
+## New in v3.17.1
+Refreshed ESP32-S3 and ESP32 Classic default pin mappings (GPS, TFT, RGB, sensors, buttons) and synchronized documentation + version bump to 3.17.1.
 
 ## New in v3.16.0
 Dynamic configuration of OLED and TFT displays through web interface, including resolution and pin mapping. Network monitoring with client IP logging. See CHANGELOG.md for details.
@@ -89,7 +92,7 @@ Dynamic configuration of OLED and TFT displays through web interface, including 
 
 ## Pre-deployment Checklist
 - [ ] Update `wifi-config.h` with production SSID/passwords and optional enterprise credentials.
-- [ ] Confirm `DIAGNOSTIC_VERSION` matches `3.16.0` in `platformio.ini` and documentation.
+- [ ] Confirm `DIAGNOSTIC_VERSION` matches `3.17.1` in `platformio.ini` and documentation.
 - [ ] Verify target environment is set correctly in `platformio.ini` (`default_envs`).
 - [ ] Review pin mappings in `config.h` for your specific hardware configuration.
 - [ ] Verify multilingual assets compile without warnings (`languages.h`).
