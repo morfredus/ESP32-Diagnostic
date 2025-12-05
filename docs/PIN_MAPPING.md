@@ -1,4 +1,4 @@
-# Pin Mapping — Quick Reference (v3.15.1)
+# Pin Mapping — Quick Reference (v3.17.1)
 
 ## Supported Environments
 
@@ -25,42 +25,41 @@ Pin mappings are defined in `include/config.h` using conditional compilation bas
 - **Button 2:** GPIO 2
 
 ### RGB LED (Separate pins)
-- **Red:** GPIO 14
-- **Green:** GPIO 13
-- **Blue:** GPIO 18
+- **Red:** GPIO 47
+- **Green:** GPIO 48
+- **Blue:** GPIO 45
 
 ### Sensors
-- **DHT (Temperature/Humidity):** GPIO 19
-- **Light Sensor (ADC):** GPIO 4
-- **HC-SR04 Distance Sensor:**
-  - **TRIG:** GPIO 16
-  - **ECHO:** GPIO 17
-- **PIR Motion Sensor:** GPIO 39
-- **Buzzer:** GPIO 3
-- **PWM Test:** GPIO 27
+- **DHT (Temperature/Humidity):** GPIO 5
+- **Light Sensor (ADC):** GPIO 19
+- **HC-SR04 Distance Sensor:** TRIG GPIO 3 / ECHO GPIO 6
+- **PIR Motion Sensor:** GPIO 4
+- **Buzzer:** GPIO 14
+- **PWM Test:** GPIO 14
 
 ### TFT ST7789 Display (240x240)
 - **MOSI:** GPIO 11
 - **SCLK:** GPIO 12
 - **CS:** GPIO 10
 - **DC:** GPIO 9
-- **RST:** GPIO 7
-- **Backlight (BL):** GPIO 15
+- **RST:** GPIO 13
+- **Backlight (BL):** GPIO 7
 
-### GPS Module (UART2)
-- **RXD:** GPIO 8 (GPS TX → ESP RX)
-- **TXD:** GPIO 5 (GPS RX → ESP TX)
-- **PPS:** GPIO 38
+### GPS Module (UART1)
+- **RXD:** GPIO 18 (GPS TX → ESP RX)
+- **TXD:** GPIO 17 (GPS RX → ESP TX)
+- **PPS:** GPIO 8
 
 ### NeoPixel / WS2812B
-- **Pin:** -1 (disabled by default, can be set to GPIO 48 if needed)
+- **Pin:** -1 (disabled by default; choose a free pin such as GPIO 38 if enabled)
 - **Count:** 8 LEDs
 - **Brightness:** 50 (0-255)
 
 ### ESP32-S3 Important Notes
-- **Reserved GPIO (OPI variants):** GPIO 35..48 are used by octal PSRAM/Flash interface. Do not use for peripherals.
-- **Strapping Pins:** GPIO 0, GPIO 45, GPIO 46 — avoid for sensors if unsure.
-- **USB:** Native USB-OTG uses internal PHY; avoid GPIO 19/20 conflicts if USB CDC enabled.
+- GPIO 35–44 are reserved by the octal PSRAM/Flash interface; keep them free.
+- GPIO 45/47/48 are available on DevKitC-1 and used by the RGB LED; avoid reassigning them.
+- Strapping pins: GPIO 0, GPIO 45, GPIO 46 — keep stable during boot.
+- USB CDC is enabled; keep I2C (GPIO 21/20) free for sensors.
 
 ---
 
@@ -73,36 +72,34 @@ Pin mappings are defined in `include/config.h` using conditional compilation bas
 - **SCL:** GPIO 22 (different from S3!)
 
 ### Buttons
-- **Button 1:** GPIO 0 (BOOT button)
+- **Button 1:** GPIO 34 (Input only)
 - **Button 2:** GPIO 35 (Input only)
 
 ### RGB LED (Separate pins)
-- **Red:** GPIO 25
-- **Green:** GPIO 26
-- **Blue:** GPIO 27
+- **Red:** GPIO 12
+- **Green:** GPIO 14
+- **Blue:** GPIO 15
 
 ### Sensors
-- **DHT (Temperature/Humidity):** GPIO 4
-- **Light Sensor (ADC):** GPIO 34 (Input only, ADC1_CH6)
-- **HC-SR04 Distance Sensor:**
-  - **TRIG:** GPIO 5
-  - **ECHO:** GPIO 18
+- **DHT (Temperature/Humidity):** GPIO 25
+- **Light Sensor (ADC):** GPIO 2
+- **HC-SR04 Distance Sensor:** TRIG GPIO 32 / ECHO GPIO 33
 - **PIR Motion Sensor:** GPIO 36 (VP, Input only)
-- **Buzzer:** GPIO 13
-- **PWM Test:** GPIO 14
+- **Buzzer:** GPIO 5
+- **PWM Test:** GPIO 5
 
 ### TFT ST7789 Display (240x240)
-- **MOSI:** GPIO 23 (VSPI)
-- **SCLK:** GPIO 18 (VSPI, shared with ECHO)
-- **CS:** GPIO 15
-- **DC:** GPIO 2
-- **RST:** GPIO 4 (shared with DHT sensor)
-- **Backlight (BL):** GPIO 32
+- **MOSI:** GPIO 23
+- **SCLK:** GPIO 18
+- **CS:** GPIO 19
+- **DC:** GPIO 27
+- **RST:** GPIO 26
+- **Backlight (BL):** GPIO 13
 
 ### GPS Module (UART2)
 - **RXD:** GPIO 16 (RX2, GPS TX → ESP RX)
 - **TXD:** GPIO 17 (TX2, GPS RX → ESP TX)
-- **PPS:** GPIO 39 (VN, Input only)
+- **PPS:** GPIO 4
 
 ### NeoPixel / WS2812B
 - **Pin:** -1 (disabled by default)
@@ -135,15 +132,17 @@ Pin mappings are defined in `include/config.h` using conditional compilation bas
 ## Pin Conflict Resolution
 
 ### ESP32-S3 Conflicts
-- Avoid GPIO 35-48 (OPI PSRAM/Flash)
-- TFT backlight (GPIO 15) vs NeoPixel (GPIO 48) — resolved in v3.11.3
-- GPS and TFT use different SPI/UART buses — no conflict
+- Keep GPIO 35–44 free (PSRAM/Flash bus).
+- RGB LED uses GPIO 45/47/48; do not reuse them for other peripherals.
+- TFT occupies GPIO 7–13; GPS uses GPIO 17–18. Avoid overlapping these ranges when attaching external modules.
+- If enabling NeoPixel, select a free pin (e.g., 38) to avoid clashing with the RGB pins.
 
 ### ESP32 Classic Conflicts
-- **TFT SCLK (GPIO 18) shares with HC-SR04 ECHO** — use one or the other
-- **TFT RST (GPIO 4) shares with DHT sensor** — sequence carefully or reassign
-- **ADC2 pins unusable with WiFi** — use ADC1 for sensors when WiFi active
-- **Input-only pins (34-39)** — cannot drive LEDs or outputs
+- Buttons on GPIO 34/35 are input only; keep pull-ups in place.
+- PWM/Buzzer uses GPIO 5 (strapping pin) — keep LOW during boot if hardware is attached.
+- TFT uses GPIO 18/19/23 plus 13/26/27; avoid sharing these with other SPI devices unless chip select is managed.
+- ADC2 pins are unusable with Wi-Fi active; prefer ADC1 for analog sensing.
+- Input-only pins (34–39) cannot drive LEDs or outputs.
 
 ---
 
@@ -209,8 +208,9 @@ pio run -e esp32devkitc --target upload
 ---
 
 ## Version History
-- **v3.15.1:** Critical memory fix for ESP32 Classic web UI
-- **v3.15.0:** Multi-environment support with dedicated pin mappings
-- **v3.12.3:** HC-SR04 default pins set to TRIG=16, ECHO=17
-- **v3.11.3:** TFT backlight corrected to GPIO 15 (was 48)
-- **v3.11.0:** TFT ST7789 display support added
+- **v3.17.1:** Refreshed ESP32-S3 and Classic pin mappings (GPS, TFT, RGB, sensors, buttons) and aligned documentation.
+- **v3.15.1:** Critical memory fix for ESP32 Classic web UI.
+- **v3.15.0:** Multi-environment support with dedicated pin mappings.
+- **v3.12.3:** HC-SR04 defaults set to TRIG=16, ECHO=17 (legacy).
+- **v3.11.3:** TFT backlight corrected to GPIO 15 (legacy change).
+- **v3.11.0:** TFT ST7789 display support added.

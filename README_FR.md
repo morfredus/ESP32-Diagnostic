@@ -1,6 +1,10 @@
-# ESP32 Diagnostic Suite (v3.17.0)
+# ESP32 Diagnostic Suite (v3.17.1)
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
+
+## Nouveautés de la version 3.17.1
+1. **Pin mapping actualisé (ESP32-S3 & Classic)** : Défauts ajustés dans `include/config.h` pour aligner GPS, TFT, LED RGB et capteurs sur le routage DevKitC-1 tout en conservant les boutons. ESP32-S3 : GPS RX=18/TX=17/PPS=8 ; TFT MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7 ; LED RGB R=47/G=48/B=45 ; BTN1=1, BTN2=2 ; PWM/Buzzer=14 ; DHT=5 ; Mouvement=4 ; Lumière=19 ; HC-SR04 TRIG=3/ECHO=6. ESP32 Classic : GPS RX=16/TX=17/PPS=4 ; TFT MOSI=23, SCLK=18, CS=19, DC=27, RST=26, BL=13 ; LED RGB R=12/G=14/B=15 ; BTN1=34, BTN2=35 ; PWM/Buzzer=5 ; DHT=25 ; Mouvement=36 ; Lumière=2 ; HC-SR04 TRIG=32/ECHO=33.
+2. **Docs + version** : Guides de mapping (EN/FR), README, matrices de fonctionnalités, guides d’usage et notes de build alignés sur les nouveaux défauts ; `PROJECT_VERSION` passe à `3.17.1`.
 
 ## Nouveautés de la version 3.17.0
 1. **Boutons matériels (optionnel)** : Actions simples liées à BTN1/BTN2 sans changer le pin mapping.
@@ -25,8 +29,8 @@ Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord
    - `esp32s3_n8r8` : ESP32-S3 avec 8Mo Flash + 8Mo PSRAM
    - `esp32devkitc` : ESP32 Classic avec 4Mo Flash (sans PSRAM)
 2. **Pin Mapping Spécifique Matériel** : Configurations de broches dédiées dans `config.h` pour chaque cible.
-3. **Configuration ESP32-S3** : I2C (SDA=21, SCL=20), LED RGB (R=14, G=13, B=18), capteurs optimisés pour la disposition GPIO S3.
-4. **Configuration ESP32 Classic** : I2C (SDA=21, SCL=22), LED RGB (R=25, G=26, B=27), capteurs adaptés pour GPIO Classic.
+3. **Configuration ESP32-S3 (ajustée en 3.17.1)** : I2C (SDA=21, SCL=20), LED RGB (R=47, G=48, B=45), boutons BTN1=1 / BTN2=2, GPS RX=18/TX=17/PPS=8, TFT MOSI=11/SCLK=12/CS=10/DC=9/RST=13/BL=7, capteurs (PWM/Buzzer=14, DHT=5, Mouvement=4, Lumière=19, HC-SR04 TRIG=3/ECHO=6).
+4. **Configuration ESP32 Classic (ajustée en 3.17.1)** : I2C (SDA=21, SCL=22), LED RGB (R=12, G=14, B=15), boutons BTN1=34 / BTN2=35, GPS RX=16/TX=17/PPS=4, TFT MOSI=23/SCLK=18/CS=19/DC=27/RST=26/BL=13, capteurs (PWM/Buzzer=5, DHT=25, Mouvement=36, Lumière=2, HC-SR04 TRIG=32/ECHO=33).
 5. **Mappings Partagés** : Affectations de broches communes entre ESP32-S3 N8R8 et ESP32 Classic là où le matériel le permet.
 
 ## Points clés de la version 3.14.0

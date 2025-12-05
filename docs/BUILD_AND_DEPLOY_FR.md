@@ -73,10 +73,13 @@ pio run --target clean
 ## Notes Configuration des Broches
 
 Chaque environnement possède des mappings de broches dédiés dans `include/config.h` :
-- **ESP32-S3 :** I2C sur SDA=21/SCL=20, LED RGB sur 14/13/18, TFT sur GPIOs 7-15
-- **ESP32 Classic :** I2C sur SDA=21/SCL=22, LED RGB sur 25/26/27, TFT sur GPIOs 2-32
+- **ESP32-S3 :** I2C sur SDA=21/SCL=20, LED RGB sur 47/48/45, TFT sur GPIOs 7-13, GPS sur 18/17/8, capteurs mis à jour (voir PIN_MAPPING_FR.md).
+- **ESP32 Classic :** I2C sur SDA=21/SCL=22, LED RGB sur 12/14/15, TFT sur GPIOs 13/18/19/23/26/27, GPS sur 16/17/4, capteurs mis à jour (voir PIN_MAPPING_FR.md).
 
 Voir [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) pour la référence complète.
+
+## Nouveautés v3.17.1
+Pin mapping par défaut actualisé pour ESP32-S3 et ESP32 Classic (GPS, TFT, LED RGB, capteurs, boutons) et documentation synchronisée ; version portée à 3.17.1.
 
 ## Nouveautés v3.16.0
 Configuration dynamique des écrans OLED et TFT via interface web, incluant résolution et pin mapping. Surveillance réseau avec journalisation des IP clients. Voir CHANGELOG_FR.md pour détails.
@@ -89,7 +92,7 @@ Configuration dynamique des écrans OLED et TFT via interface web, incluant rés
 
 ## Checklist Pré-déploiement
 - [ ] Mettre à jour `wifi-config.h` avec les identifiants production et, le cas échéant, les paramètres entreprise.
-- [ ] Vérifier que `DIAGNOSTIC_VERSION` vaut `3.16.0` dans `platformio.ini` et la documentation.
+- [ ] Vérifier que `DIAGNOSTIC_VERSION` vaut `3.17.1` dans `platformio.ini` et la documentation.
 - [ ] Vérifier que l'environnement cible est correctement défini dans `platformio.ini` (`default_envs`).
 - [ ] Réviser les mappings de broches dans `config.h` pour votre configuration matérielle spécifique.
 - [ ] Compiler les ressources multilingues sans avertissement (`languages.h`).
