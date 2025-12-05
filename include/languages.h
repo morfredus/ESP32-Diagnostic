@@ -421,6 +421,27 @@ class TextField {
   X(tft_test_running, "TFT test in progress...", "Test TFT en cours...") \
   X(tft_step_running, "TFT step executing...", "Étape TFT en cours...") \
   X(restoring_boot_screen, "Restoring boot screen...", "Restauration de l'écran de démarrage...") \
+  X(gps_sensor, "GPS Module", "Module GPS") \
+  X(gps_sensor_desc, "Global Positioning System receiver (NEO-6M/NEO-8M)", "Récepteur GPS (NEO-6M/NEO-8M)") \
+  X(gps_latitude, "Latitude", "Latitude") \
+  X(gps_longitude, "Longitude", "Longitude") \
+  X(gps_altitude, "Altitude", "Altitude") \
+  X(gps_satellites, "Satellites", "Satellites") \
+  X(gps_hdop, "HDOP", "HDOP") \
+  X(gps_fix_type, "Fix Type", "Type de Fix") \
+  X(gps_speed, "Speed", "Vitesse") \
+  X(gps_course, "Course", "Cap") \
+  X(test_gps, "Test GPS", "Tester le GPS") \
+  X(aht20_sensor, "AHT20 Sensor", "Capteur AHT20") \
+  X(aht20_sensor_desc, "Temperature and humidity sensor (I2C)", "Capteur de température et humidité (I2C)") \
+  X(bmp280_sensor, "BMP280 Sensor", "Capteur BMP280") \
+  X(bmp280_sensor_desc, "Pressure and temperature sensor (I2C)", "Capteur de pression et température (I2C)") \
+  X(environmental_sensors, "Environmental Sensors", "Capteurs environnementaux") \
+  X(environmental_sensors_desc, "AHT20 (temperature/humidity) + BMP280 (pressure)", "AHT20 (temp/humidité) + BMP280 (pression)") \
+  X(pressure, "Pressure", "Pression") \
+  X(test_environmental, "Test Sensors", "Tester les capteurs") \
+  X(knots, "knots", "nœuds") \
+  X(hpa, "hPa", "hPa") \
 
 
 namespace Texts {
