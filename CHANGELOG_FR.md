@@ -1,3 +1,95 @@
+## [Version 3.18.2] - 2025-12-06
+
+### Corrigé
+- **Clés de traduction manquantes** : Ajout de 4 clés de traduction manquantes pour l'affichage GPS et capteurs environnementaux
+  - `gps_status` : Indicateur de statut GPS dans l'interface
+  - `temperature_avg` : Label de température moyenne pour les capteurs combinés
+  - `pressure_hpa` : Label de mesure de pression avec unité
+  - `altitude_calculated` : Altitude calculée depuis la pression barométrique
+
+## [Version 3.18.1] - 2025-12-06
+
+### Corrigé
+- **Lecture des données du capteur AHT20** : Correction de l'algorithme d'extraction de bits pour les valeurs d'humidité et de température (les valeurs 20 bits n'étaient pas correctement extraites de la réponse 6 octets)
+- **API des capteurs environnementaux** : Correction de la structure JSON pour utiliser un format plat au lieu d'objets imbriqués pour une meilleure compatibilité avec l'interface web
+- **Rapport de statut des capteurs** : Amélioration des messages de statut pour indiquer clairement "OK", "Erreur de lecture" ou "Non détecté" pour chaque capteur
+
+### Ajouté
+- **Clés de traduction manquantes** : Ajout des clés de traduction FR/EN manquantes pour les éléments d'interface GPS et capteurs environnementaux
+  - `refresh_gps`, `gps_module`, `gps_module_desc`
+  - `refresh_env_sensors`, `test_env_sensors`
+
+## [Version 3.18.0] - 2025-12-05
+
+### Nouvelles fonctionnalités
+1. **Support du module GPS** : Intégration complète du récepteur GPS (NEO-6M/NEO-8M/NEO-M).
+   - Parsing de phrases NMEA (RMC, GGA, GSA, GSV)
+   - Suivi de la latitude, longitude, altitude, vitesse, cap
+   - Nombre de satellites et qualité du signal (HDOP, VDOP, PDOP)
+   - Détection du signal PPS (Pulse Per Second) prêt
+   - Mises à jour en temps réel et mode test de diagnostic
+   - Utilise UART1 avec broches configurables dans `config.h` (ESP32-S3 : RX=18/TX=17/PPS=8)
+   - Point d'API `/api/gps` pour diffusion de données en direct
+   - Point d'API `/api/gps-test` pour test de diagnostic
+
+2. **Support des capteurs environnementaux** : Intégration complète AHT20 (Temp/Humidité) + BMP280 (Pression).
+   - AHT20 : Lectures de température (±0,5°C) et d'humidité (±3% RH)
+   - BMP280 : Pression atmosphérique (±1 hPa) avec capteur de température intégré
+   - Calcul d'altitude à partir des mesures de pression
+   - Détection automatique des capteurs et moyenne double-capteur
+   - Utilise l'interface I2C avec broches configurables dans `config.h` (SDA/SCL)
+   - Support des deux adresses AHT20 (0x38) et BMP280 (0x76/0x77)
+   - Point d'API `/api/environmental-sensors` pour diffusion de données en direct
+   - Point d'API `/api/environmental-test` pour test de diagnostic
+
+3. **Mises à jour de l'interface Web** :
+   - Cartouche de données GPS dans la section sans fil avec coordonnées actuelles, altitude, satellites, qualité fix
+   - Cartouche de capteurs environnementaux sous la section capteur DHT existante
+   - Actualisation des données en temps réel avec mises à jour de statut automatiques
+   - Gestion complète des erreurs et détection de disponibilité des capteurs
+
+### Améliorations
+4. Architecture de module de capteur améliorée pour faciliter l'ajout de futurs capteurs
+5. Implémentations de pilotes I2C et UART complètes avec gestion des erreurs
+6. Ajout de 24 nouvelles clés de traduction pour les éléments d'interface GPS et capteurs environnementaux (FR/EN)
+7. Amélioration de la détection des périphériques et de la génération de rapports de capacités
+
+### Détails techniques
+8. Nouveaux fichiers d'en-tête : `gps_module.h`, `environmental_sensors.h`
+9. Nouveaux fichiers d'implémentation : `gps_module.cpp`, `environmental_sensors.cpp`
+10. Nouveaux points d'API dans `main.cpp` pour données GPS et capteurs environnementaux
+11. Dictionnaire de traduction étendu dans `languages.h` avec étiquettes GPS et capteurs environnementaux
+
+### Compatibilité
+- Totalement compatible avec ESP32-S3 DevKitC-1 N16R8 et cartes ESP32 Classic
+- Aucun changement au pin mapping ou configuration existants
+- Compatible rétroactivement avec les diagnostics et fonctionnalités existants
+
+## [Version 3.18.0] - 2025-12-06
+
+### Nouvelles fonctionnalités
+1. **Module GPS NEO-6M/NEO-8M** : Support complet pour modules GPS via UART1 avec parsing NMEA (RMC, GGA, GSA, GSV).
+   - Lecture latitude, longitude, altitude, vitesse, cap
+   - Qualité du signal (HDOP, PDOP, VDOP), nombre de satellites
+   - Support optionnel signal PPS (Pulse Per Second)
+   - Broches configurées dans `config.h` : RX=18/TX=17/PPS=8 (ESP32-S3), RX=16/TX=17/PPS=4 (ESP32 Classic)
+2. **Capteurs environnementaux AHT20 + BMP280** : Support I2C pour température, humidité et pression atmosphérique.
+   - AHT20 (adresse 0x38) : température et humidité
+   - BMP280 (adresse 0x76/0x77) : température, pression et altitude calculée
+   - Température moyenne des deux capteurs pour plus de précision
+   - API endpoints `/api/gps`, `/api/gps-test`, `/api/environmental-sensors`, `/api/environmental-test`
+3. **Interface Web améliorée** : Cartouches GPS dans la page Wireless et capteurs environnementaux dans la page Sensors.
+4. **Traductions** : Ajout de 28 nouvelles clés de traduction FR/EN pour GPS et capteurs environnementaux.
+
+### Technique
+5. Nouveaux fichiers : `gps_module.h/.cpp`, `environmental_sensors.h/.cpp` dans architecture modulaire
+6. Initialisation automatique des modules GPS et environnementaux au démarrage
+7. Parsing NMEA optimisé sans bibliothèques externes
+8. Calibration BMP280 avec compensation température et pression
+
+### Impact
+- Release mineure (3.17.1 → 3.18.0) ; nouvelles fonctionnalités majeures ajoutées tout en préservant la compatibilité.
+
 ## [Version 3.17.1] - 2025-12-05
 
 ### Changements
