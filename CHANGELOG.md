@@ -1,3 +1,26 @@
+## [Version 3.18.3] - 2025-12-06
+
+### Fixed
+- **ESP32-S3 GPIO 48 Conflict**: Resolved hardware conflict between NeoPixel LED and RGB LED
+  - NeoPixel now exclusively uses GPIO 48 (enabled, was previously disabled)
+  - RGB LED Green relocated from GPIO 48 to GPIO 47
+  - RGB LED Blue remains on GPIO 45 (no change)
+  - RGB LED Red remains on GPIO 19 (no change)
+
+### Changed
+- **ESP32-S3 Pin Mapping Refactoring**: Complete reorganization of sensor pins to resolve conflicts
+  - Motion Sensor (PIR): GPIO 6 → GPIO 46
+  - Light Sensor: GPIO 19 → GPIO 4
+  - HC-SR04 ECHO: GPIO 19 → GPIO 6
+  - NeoPixel: Enabled on GPIO 48, count changed from disabled to 1 LED
+  - Unchanged: I2C (SDA=21, SCL=20), Buttons (BTN1=1, BTN2=2), GPS (RX=18, TX=17, PPS=8), TFT display pins, PWM/Buzzer (14), DHT (5), HC-SR04 TRIG (3)
+
+### Documentation
+- Updated `README.md` and `README_FR.md` with version 3.18.3 and new pin summary
+- Updated `docs/PIN_MAPPING.md` and `docs/PIN_MAPPING_FR.md` with complete ESP32-S3 pin tables
+- Synchronized `include/config-example.h` with definitive ESP32-S3 configuration
+- Created `docs/RELEASE_NOTES_3.18.3.md` and `docs/RELEASE_NOTES_3.18.3_FR.md`
+
 ## [Version 3.18.2] - 2025-12-06
 
 ### Fixed

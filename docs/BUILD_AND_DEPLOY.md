@@ -73,7 +73,7 @@ pio run --target clean
 ## Pin Configuration Notes
 
 Each environment has dedicated pin mappings in `include/config.h`:
-- **ESP32-S3:** I2C on SDA=21/SCL=20, RGB LED on 47/48/45, TFT on GPIOs 7-13, GPS on 18/17/8, sensors updated (see PIN_MAPPING.md).
+- **ESP32-S3:** I2C on SDA=21/SCL=20, RGB LED on 19/47/45 (Red/Green/Blue), TFT on GPIOs 7-13, GPS on 18/17/8, sensors updated (see PIN_MAPPING.md).
 - **ESP32 Classic:** I2C on SDA=21/SCL=22, RGB LED on 12/14/15, TFT on GPIOs 13/18/19/23/26/27, GPS on 16/17/4, sensors updated (see PIN_MAPPING.md).
 
 See [PIN_MAPPING.md](PIN_MAPPING.md) for complete reference.

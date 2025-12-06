@@ -1,4 +1,4 @@
-# Pin Mapping — Quick Reference (v3.17.1)
+# Pin Mapping — Quick Reference (v3.18.3)
 
 ## Supported Environments
 
@@ -25,15 +25,15 @@ Pin mappings are defined in `include/config.h` using conditional compilation bas
 - **Button 2:** GPIO 2
 
 ### RGB LED (Separate pins)
-- **Red:** GPIO 47
-- **Green:** GPIO 48
+- **Red:** GPIO 19
+- **Green:** GPIO 47
 - **Blue:** GPIO 45
 
 ### Sensors
 - **DHT (Temperature/Humidity):** GPIO 5
-- **Light Sensor (ADC):** GPIO 19
+- **Light Sensor (ADC):** GPIO 4
 - **HC-SR04 Distance Sensor:** TRIG GPIO 3 / ECHO GPIO 6
-- **PIR Motion Sensor:** GPIO 4
+- **PIR Motion Sensor:** GPIO 46
 - **Buzzer:** GPIO 14
 - **PWM Test:** GPIO 14
 
@@ -51,13 +51,14 @@ Pin mappings are defined in `include/config.h` using conditional compilation bas
 - **PPS:** GPIO 8
 
 ### NeoPixel / WS2812B
-- **Pin:** -1 (disabled by default; choose a free pin such as GPIO 38 if enabled)
-- **Count:** 8 LEDs
+- **Pin:** GPIO 48 (now enabled)
+- **Count:** 1 LED
 - **Brightness:** 50 (0-255)
 
 ### ESP32-S3 Important Notes
 - GPIO 35–44 are reserved by the octal PSRAM/Flash interface; keep them free.
-- GPIO 45/47/48 are available on DevKitC-1 and used by the RGB LED; avoid reassigning them.
+- GPIO 48 is now dedicated to the NeoPixel (conflict with RGB LED resolved).
+- RGB LED uses GPIO 19/47/45 (Red/Green/Blue respectively).
 - Strapping pins: GPIO 0, GPIO 45, GPIO 46 — keep stable during boot.
 - USB CDC is enabled; keep I2C (GPIO 21/20) free for sensors.
 
@@ -133,9 +134,9 @@ Pin mappings are defined in `include/config.h` using conditional compilation bas
 
 ### ESP32-S3 Conflicts
 - Keep GPIO 35–44 free (PSRAM/Flash bus).
-- RGB LED uses GPIO 45/47/48; do not reuse them for other peripherals.
+- RGB LED uses GPIO 19/47/45; NeoPixel uses GPIO 48 (conflict resolved in v3.18.3).
+- Motion sensor uses GPIO 46; Distance ECHO uses GPIO 6; Light sensor uses GPIO 4.
 - TFT occupies GPIO 7–13; GPS uses GPIO 17–18. Avoid overlapping these ranges when attaching external modules.
-- If enabling NeoPixel, select a free pin (e.g., 38) to avoid clashing with the RGB pins.
 
 ### ESP32 Classic Conflicts
 - Buttons on GPIO 34/35 are input only; keep pull-ups in place.
@@ -208,6 +209,7 @@ pio run -e esp32devkitc --target upload
 ---
 
 ## Version History
+- **v3.18.3:** Resolved GPIO 48 conflict between NeoPixel and RGB LED on ESP32-S3; complete S3 pin mapping reorganization.
 - **v3.17.1:** Refreshed ESP32-S3 and Classic pin mappings (GPS, TFT, RGB, sensors, buttons) and aligned documentation.
 - **v3.15.1:** Critical memory fix for ESP32 Classic web UI.
 - **v3.15.0:** Multi-environment support with dedicated pin mappings.

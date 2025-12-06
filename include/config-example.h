@@ -1,5 +1,5 @@
 /**
- * ESP32 Diagnostic Suite - Configuration Template (v3.15.1)
+ * ESP32 Diagnostic Suite - Configuration Template (v3.18.3)
  *
  * MULTI-ENVIRONMENT SUPPORT:
  * This configuration supports three build environments:
@@ -41,32 +41,32 @@
     #define PIN_BUTTON_1     1
     #define PIN_BUTTON_2     2
 
-    // --- RGB LED ---
-    #define DEFAULT_RGB_LED_PIN_R 14
-    #define DEFAULT_RGB_LED_PIN_G 13
-    #define DEFAULT_RGB_LED_PIN_B 18
+    // --- RGB LED (Pin 48 now reserved for NeoPixel) ---
+    #define DEFAULT_RGB_LED_PIN_R 19
+    #define DEFAULT_RGB_LED_PIN_G 47
+    #define DEFAULT_RGB_LED_PIN_B 45
 
     // --- SENSORS ---
-    #define DEFAULT_DHT_PIN 19
+    #define DEFAULT_DHT_PIN 5
     #define DEFAULT_LIGHT_SENSOR_PIN 4
-    #define DEFAULT_DISTANCE_TRIG_PIN 16
-    #define DEFAULT_DISTANCE_ECHO_PIN 17
-    #define DEFAULT_MOTION_SENSOR_PIN 39
-    #define DEFAULT_BUZZER_PIN 3
-    #define DEFAULT_PWM_PIN 27
+    #define DEFAULT_DISTANCE_TRIG_PIN 3
+    #define DEFAULT_DISTANCE_ECHO_PIN 6
+    #define DEFAULT_MOTION_SENSOR_PIN 46
+    #define DEFAULT_BUZZER_PIN 14
+    #define DEFAULT_PWM_PIN 14
 
     // --- TFT ST7789 (S3 Specific SPI) ---
     #define TFT_MOSI            11
     #define TFT_SCLK            12
     #define TFT_CS              10
     #define TFT_DC              9
-    #define TFT_RST             7
-    #define TFT_BL              15
+    #define TFT_RST             13
+    #define TFT_BL              7
 
     // --- GPS ---
-    #define PIN_GPS_RXD         8
-    #define PIN_GPS_TXD         5
-    #define PIN_GPS_PPS         38
+    #define PIN_GPS_RXD         18
+    #define PIN_GPS_TXD         17
+    #define PIN_GPS_PPS         8
 
 // =========================================================
 //                  PIN MAPPING ESP32 CLASSIC (DevKitC)
@@ -129,8 +129,8 @@
 
 // --- LED Common ---
 #define DEFAULT_BUILTIN_LED_PIN -1
-#define DEFAULT_NEOPIXEL_PIN -1
-#define DEFAULT_NEOPIXEL_COUNT 8
+#define DEFAULT_NEOPIXEL_PIN 48 // Now enabled on ESP32-S3 pin 48
+#define DEFAULT_NEOPIXEL_COUNT 1
 #define DEFAULT_NEOPIXEL_BRIGHTNESS 50
 #define CUSTOM_LED_PIN -1
 
@@ -213,6 +213,7 @@
 #define DISABLE_IDLE_TASK_WDT true
 
 // ========== MULTI-ENVIRONMENT NOTES ==========
+// Version 3.18.3 fixes ESP32-S3 pin mapping conflicts (NeoPixel vs RGB LED on pin 48).
 // Version 3.15.1 introduces critical memory optimizations for ESP32 Classic.
 // JavaScript content is now streamed in chunks to prevent heap exhaustion.
 //
