@@ -3497,18 +3497,16 @@ void handleEnvironmentalSensors() {
   String json;
   json.reserve(400);
   json = "{";
-  json += "\"aht20\":{";
-  json += "\"available\":" + String(envData.aht20_available ? "true" : "false") + ",";
-  json += "\"temperature\":" + String(envData.temperature_aht20, 1) + ",";
+  json += "\"aht20_available\":" + String(envData.aht20_available ? "true" : "false") + ",";
+  json += "\"bmp280_available\":" + String(envData.bmp280_available ? "true" : "false") + ",";
+  json += "\"temperature_avg\":" + String(envData.temperature_avg, 1) + ",";
   json += "\"humidity\":" + String(envData.humidity, 1) + ",";
-  json += "\"status\":\"" + envData.aht20_status + "\"},";
-  json += "\"bmp280\":{";
-  json += "\"available\":" + String(envData.bmp280_available ? "true" : "false") + ",";
-  json += "\"temperature\":" + String(envData.temperature_bmp280, 1) + ",";
   json += "\"pressure\":" + String(envData.pressure, 2) + ",";
   json += "\"altitude\":" + String(envData.altitude, 1) + ",";
-  json += "\"status\":\"" + envData.bmp280_status + "\"},";
-  json += "\"temperature_avg\":" + String(envData.temperature_avg, 1) + ",";
+  json += "\"aht20_temp\":" + String(envData.temperature_aht20, 1) + ",";
+  json += "\"bmp280_temp\":" + String(envData.temperature_bmp280, 1) + ",";
+  json += "\"aht20_status\":\"" + envData.aht20_status + "\",";
+  json += "\"bmp280_status\":\"" + envData.bmp280_status + "\",";
   json += "\"combined_status\":\"" + envData.combined_status + "\"";
   json += "}";
   
@@ -4679,4 +4677,104 @@ void setup() {
   server.on("/api/neopixel-color", handleNeoPixelColor);
   
   // Écrans
-  server.on("/api/oled-test", handleOLEDTest);
+  server.on("/api/oled-test", handleOLEDTest);
+  server.on("/api/oled-step", handleOLEDStep);
+  server.on("/api/oled-message", handleOLEDMessage);
+  server.on("/api/oled-config", handleOLEDConfig);
+  server.on("/api/oled-boot", handleOLEDBoot);
+  
+  // TFT display routes
+  server.on("/api/tft-test", handleTFTTest);
+  server.on("/api/tft-step", handleTFTStep);
+  server.on("/api/tft-boot", handleTFTBoot);
+  server.on("/api/tft-config", handleTFTConfig);
+  
+  // Tests avancés
+  server.on("/api/adc-test", handleADCTest);
+  server.on("/api/pwm-test", handlePWMTest);
+  server.on("/api/spi-scan", handleSPIScan);
+  server.on("/api/partitions-list", handlePartitionsList);
+  server.on("/api/stress-test", handleStressTest);
+
+  // Routes API pour les nouveaux capteurs
+  server.on("/api/rgb-led-config", handleRGBLedConfig);
+  server.on("/api/rgb-led-test", handleRGBLedTest);
+  server.on("/api/rgb-led-color", handleRGBLedColor);
+
+  server.on("/api/buzzer-config", handleBuzzerConfig);
+  server.on("/api/buzzer-test", handleBuzzerTest);
+  server.on("/api/buzzer-tone", handleBuzzerTone);
+
+  server.on("/api/dht-config", handleDHTConfig);
+  server.on("/api/dht-test", handleDHTTest);
+
+  server.on("/api/light-sensor-config", handleLightSensorConfig);
+  server.on("/api/light-sensor-test", handleLightSensorTest);
+
+  server.on("/api/distance-sensor-config", handleDistanceSensorConfig);
+  server.on("/api/distance-sensor-test", handleDistanceSensorTest);
+
+  server.on("/api/motion-sensor-config", handleMotionSensorConfig);
+  server.on("/api/motion-sensor-test", handleMotionSensorTest);
+
+  // GPS Module
+  server.on("/api/gps", handleGPSData);
+  server.on("/api/gps-test", handleGPSTest);
+
+  // Environmental Sensors (AHT20 + BMP280)
+  server.on("/api/environmental-sensors", handleEnvironmentalSensors);
+  server.on("/api/environmental-test", handleEnvironmentalTest);
+
+  // Performance & Mémoire
+  server.on("/api/benchmark", handleBenchmark);
+  server.on("/api/memory-details", handleMemoryDetails);
+  
+  // Exports
+  server.on("/export/txt", handleExportTXT);
+  server.on("/export/json", handleExportJSON);
+  server.on("/export/csv", handleExportCSV);
+  server.on("/print", handlePrintVersion);
+
+  server.begin();
+
+  // Install debug routes for troubleshooting
+  setupDebugRoutes();
+
+  Serial.println("Serveur Web OK!");
+  Serial.println("\r\n===============================================");
+  Serial.println("            PRET - En attente");
+  Serial.println("   Langue par défaut: FRANCAIS");
+  Serial.println("   Changement dynamique via interface web");
+  Serial.println("===============================================\r\n");
+
+#if ENABLE_BUTTONS
+  initButtons();
+  Serial.printf("Boutons actifs: BTN1=%d, BTN2=%d\r\n", button1Pin, button2Pin);
+#endif
+}
+
+// ========== LOOP ==========
+void loop() {
+  server.handleClient();
+  maintainNetworkServices();
+
+#if ENABLE_BUTTONS
+  maintainButtons();
+#endif
+
+  static unsigned long lastUpdate = 0;
+  if (millis() - lastUpdate > 30000) {
+    lastUpdate = millis();
+    collectDiagnosticInfo();
+    
+    Serial.println("\r\n=== UPDATE ===");
+    Serial.printf("Heap: %.2f KB | Uptime: %.2f h\r\n", 
+                  diagnosticData.freeHeap / 1024.0, 
+                  diagnosticData.uptime / 3600000.0);
+    if (diagnosticData.temperature != -999) {
+      Serial.printf("Temp: %.1f°C\r\n", diagnosticData.temperature);
+    }
+  }
+
+  delay(10);
+}
