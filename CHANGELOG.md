@@ -1,3 +1,24 @@
+## [Version 3.18.2] - 2025-12-06
+
+### Fixed
+- **Missing Translation Keys**: Added 4 missing translation keys for GPS and environmental sensors display
+  - `gps_status`: GPS status indicator in the UI
+  - `temperature_avg`: Average temperature label for combined sensors
+  - `pressure_hpa`: Pressure measurement label with unit
+  - `altitude_calculated`: Calculated altitude from barometric pressure
+
+## [Version 3.18.1] - 2025-12-06
+
+### Fixed
+- **AHT20 Sensor Data Reading**: Corrected bit extraction algorithm for humidity and temperature values (20-bit values were not properly extracted from 6-byte response)
+- **Environmental Sensors API**: Fixed JSON structure to use flat format instead of nested objects for better web interface compatibility
+- **Sensor Status Reporting**: Improved status messages to clearly indicate "OK", "Read error", or "Not detected" for each sensor
+
+### Added
+- **Missing Translation Keys**: Added missing French/English translation keys for GPS and environmental sensors UI elements
+  - `refresh_gps`, `gps_module`, `gps_module_desc`
+  - `refresh_env_sensors`, `test_env_sensors`
+
 ## [Version 3.18.0] - 2025-12-05
 
 ### New Features

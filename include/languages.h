@@ -431,14 +431,23 @@ class TextField {
   X(gps_fix_type, "Fix Type", "Type de Fix") \
   X(gps_speed, "Speed", "Vitesse") \
   X(gps_course, "Course", "Cap") \
+  X(gps_status, "GPS Status", "Statut GPS") \
   X(test_gps, "Test GPS", "Tester le GPS") \
+  X(refresh_gps, "Refresh GPS", "Rafraîchir GPS") \
+  X(gps_module, "GPS Module", "Module GPS") \
+  X(gps_module_desc, "NEO-6M/NEO-8M GPS Module (UART)", "Module GPS NEO-6M/NEO-8M (UART)") \
   X(aht20_sensor, "AHT20 Sensor", "Capteur AHT20") \
   X(aht20_sensor_desc, "Temperature and humidity sensor (I2C)", "Capteur de température et humidité (I2C)") \
   X(bmp280_sensor, "BMP280 Sensor", "Capteur BMP280") \
   X(bmp280_sensor_desc, "Pressure and temperature sensor (I2C)", "Capteur de pression et température (I2C)") \
   X(environmental_sensors, "Environmental Sensors", "Capteurs environnementaux") \
   X(environmental_sensors_desc, "AHT20 (temperature/humidity) + BMP280 (pressure)", "AHT20 (temp/humidité) + BMP280 (pression)") \
+  X(refresh_env_sensors, "Refresh Sensors", "Rafraîchir capteurs") \
+  X(test_env_sensors, "Test Sensors", "Tester capteurs") \
   X(pressure, "Pressure", "Pression") \
+  X(pressure_hpa, "Pressure (hPa)", "Pression (hPa)") \
+  X(temperature_avg, "Average Temperature", "Température moyenne") \
+  X(altitude_calculated, "Calculated Altitude", "Altitude calculée") \
   X(test_environmental, "Test Sensors", "Tester les capteurs") \
   X(knots, "knots", "nœuds") \
   X(hpa, "hPa", "hPa") \

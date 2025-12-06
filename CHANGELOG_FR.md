@@ -1,3 +1,24 @@
+## [Version 3.18.2] - 2025-12-06
+
+### Corrigé
+- **Clés de traduction manquantes** : Ajout de 4 clés de traduction manquantes pour l'affichage GPS et capteurs environnementaux
+  - `gps_status` : Indicateur de statut GPS dans l'interface
+  - `temperature_avg` : Label de température moyenne pour les capteurs combinés
+  - `pressure_hpa` : Label de mesure de pression avec unité
+  - `altitude_calculated` : Altitude calculée depuis la pression barométrique
+
+## [Version 3.18.1] - 2025-12-06
+
+### Corrigé
+- **Lecture des données du capteur AHT20** : Correction de l'algorithme d'extraction de bits pour les valeurs d'humidité et de température (les valeurs 20 bits n'étaient pas correctement extraites de la réponse 6 octets)
+- **API des capteurs environnementaux** : Correction de la structure JSON pour utiliser un format plat au lieu d'objets imbriqués pour une meilleure compatibilité avec l'interface web
+- **Rapport de statut des capteurs** : Amélioration des messages de statut pour indiquer clairement "OK", "Erreur de lecture" ou "Non détecté" pour chaque capteur
+
+### Ajouté
+- **Clés de traduction manquantes** : Ajout des clés de traduction FR/EN manquantes pour les éléments d'interface GPS et capteurs environnementaux
+  - `refresh_gps`, `gps_module`, `gps_module_desc`
+  - `refresh_env_sensors`, `test_env_sensors`
+
 ## [Version 3.18.0] - 2025-12-05
 
 ### Nouvelles fonctionnalités
