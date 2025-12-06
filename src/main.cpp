@@ -103,6 +103,12 @@
 // TFT Display support
 #include "tft_display.h"
 
+// GPS module
+#include "gps_module.h"
+
+// Environmental sensors (AHT20 + BMP280)
+#include "environmental_sensors.h"
+
 // Set default language from config.h
 Language currentLanguage = DEFAULT_LANGUAGE;
 
@@ -3447,6 +3453,79 @@ void handleMotionSensorTest() {
   });
 }
 
+// GPS Handlers
+void handleGPSData() {
+  updateGPS();
+  String json;
+  json.reserve(400);
+  json = "{";
+  json += "\"valid\":" + String(gpsData.valid ? "true" : "false") + ",";
+  json += "\"hasFix\":" + String(gpsData.hasFix ? "true" : "false") + ",";
+  json += "\"latitude\":" + String(gpsData.latitude, 6) + ",";
+  json += "\"longitude\":" + String(gpsData.longitude, 6) + ",";
+  json += "\"altitude\":" + String(gpsData.altitude, 2) + ",";
+  json += "\"satellites\":" + String(gpsData.satellites) + ",";
+  json += "\"satellites_used\":" + String(gpsData.satellites_used) + ",";
+  json += "\"hdop\":" + String(gpsData.hdop, 2) + ",";
+  json += "\"speed\":" + String(gpsData.speed, 2) + ",";
+  json += "\"course\":" + String(gpsData.course, 2) + ",";
+  json += "\"fix_type\":\"" + gpsData.fix_type + "\",";
+  json += "\"status\":\"" + gpsData.status_str + "\",";
+  json += "\"time\":\"" + String(gpsData.hour) + ":" + String(gpsData.minute) + ":" + String(gpsData.second) + "\",";
+  json += "\"date\":\"" + String(gpsData.day) + "/" + String(gpsData.month) + "/" + String(gpsData.year) + "\"";
+  json += "}";
+  
+  server.send(200, "application/json", json);
+}
+
+void handleGPSTest() {
+  testGPS();
+  String json;
+  json.reserve(200);
+  json = "{";
+  json += "\"success\":" + String(gpsAvailable ? "true" : "false") + ",";
+  json += "\"result\":\"" + gpsTestResult + "\",";
+  json += "\"available\":" + String(gpsAvailable ? "true" : "false");
+  json += "}";
+  
+  server.send(200, "application/json", json);
+}
+
+// Environmental Sensors Handlers
+void handleEnvironmentalSensors() {
+  updateEnvironmentalSensors();
+  String json;
+  json.reserve(400);
+  json = "{";
+  json += "\"aht20_available\":" + String(envData.aht20_available ? "true" : "false") + ",";
+  json += "\"bmp280_available\":" + String(envData.bmp280_available ? "true" : "false") + ",";
+  json += "\"temperature_avg\":" + String(envData.temperature_avg, 1) + ",";
+  json += "\"humidity\":" + String(envData.humidity, 1) + ",";
+  json += "\"pressure\":" + String(envData.pressure, 2) + ",";
+  json += "\"altitude\":" + String(envData.altitude, 1) + ",";
+  json += "\"aht20_temp\":" + String(envData.temperature_aht20, 1) + ",";
+  json += "\"bmp280_temp\":" + String(envData.temperature_bmp280, 1) + ",";
+  json += "\"aht20_status\":\"" + envData.aht20_status + "\",";
+  json += "\"bmp280_status\":\"" + envData.bmp280_status + "\",";
+  json += "\"combined_status\":\"" + envData.combined_status + "\"";
+  json += "}";
+  
+  server.send(200, "application/json", json);
+}
+
+void handleEnvironmentalTest() {
+  testEnvironmentalSensors();
+  String json;
+  json.reserve(200);
+  json = "{";
+  json += "\"success\":" + String(envSensorAvailable ? "true" : "false") + ",";
+  json += "\"result\":\"" + envSensorTestResult + "\",";
+  json += "\"available\":" + String(envSensorAvailable ? "true" : "false");
+  json += "}";
+  
+  server.send(200, "application/json", json);
+}
+
 void handleBenchmark() {
   unsigned long cpuTime = benchmarkCPU();
   unsigned long memTime = benchmarkMemory();
@@ -4557,6 +4636,12 @@ void setup() {
   collectDiagnosticInfo();
   collectDetailedMemory();
 
+  // Initialize GPS module
+  initGPS();
+  
+  // Initialize environmental sensors (AHT20 + BMP280)
+  initEnvironmentalSensors();
+
   // ========== ROUTES SERVEUR ==========
   server.on("/", handleRoot);
   server.on("/js/app.js", handleJavaScriptRoute);
@@ -4631,6 +4716,14 @@ void setup() {
 
   server.on("/api/motion-sensor-config", handleMotionSensorConfig);
   server.on("/api/motion-sensor-test", handleMotionSensorTest);
+
+  // GPS Module
+  server.on("/api/gps", handleGPSData);
+  server.on("/api/gps-test", handleGPSTest);
+
+  // Environmental Sensors (AHT20 + BMP280)
+  server.on("/api/environmental-sensors", handleEnvironmentalSensors);
+  server.on("/api/environmental-test", handleEnvironmentalTest);
 
   // Performance & Mémoire
   server.on("/api/benchmark", handleBenchmark);
