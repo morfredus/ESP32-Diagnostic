@@ -1,7 +1,30 @@
+## [Version 3.18.3] - 2025-12-06
+
+### Corrigé
+- **Conflit GPIO 48 ESP32-S3** : Résolution du conflit matériel entre la LED NeoPixel et la LED RGB
+  - NeoPixel utilise maintenant exclusivement GPIO 48 (activé, était précédemment désactivé)
+  - LED RGB Vert déplacée du GPIO 48 vers GPIO 47
+  - LED RGB Bleu reste sur GPIO 45 (inchangé)
+  - LED RGB Rouge reste sur GPIO 19 (inchangé)
+
+### Modifié
+- **Refactorisation Pin Mapping ESP32-S3** : Réorganisation complète des broches capteurs pour résoudre les conflits
+  - Capteur Mouvement (PIR) : GPIO 6 → GPIO 46
+  - Capteur Lumière : GPIO 19 → GPIO 4
+  - HC-SR04 ECHO : GPIO 19 → GPIO 6
+  - NeoPixel : Activé sur GPIO 48, nombre changé de désactivé à 1 LED
+  - Inchangés : I2C (SDA=21, SCL=20), Boutons (BTN1=1, BTN2=2), GPS (RX=18, TX=17, PPS=8), broches écran TFT, PWM/Buzzer (14), DHT (5), HC-SR04 TRIG (3)
+
+### Documentation
+- Mise à jour de `README.md` et `README_FR.md` avec version 3.18.3 et nouveau résumé des pins
+- Mise à jour de `docs/PIN_MAPPING.md` et `docs/PIN_MAPPING_FR.md` avec tableaux complets ESP32-S3
+- Synchronisation de `include/config-example.h` avec configuration ESP32-S3 définitive
+- Création de `docs/RELEASE_NOTES_3.18.3.md` et `docs/RELEASE_NOTES_3.18.3_FR.md`
+
 ## [Version 3.18.2] - 2025-12-06
 
 ### Corrigé
-- **Clés de traduction manquantes** : Ajout de 4 clés de traduction manquantes pour l'affichage GPS et capteurs environnementaux
+- **Clés de traduction manquantes** : Ajout de 4 clés de traduction manquantes pour l’affichage GPS et capteurs environnementaux
   - `gps_status` : Indicateur de statut GPS dans l'interface
   - `temperature_avg` : Label de température moyenne pour les capteurs combinés
   - `pressure_hpa` : Label de mesure de pression avec unité

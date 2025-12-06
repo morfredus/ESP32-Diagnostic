@@ -9,14 +9,13 @@
 #define DIAGNOSTIC_PREFER_SECURE 0
 
 // =========================================================
-//      Configuration Pinout ESP32-S3 DevKitC-1 N16R8
+//        Configuration Pinout ESP32-S3 DevKitC-1 N16R8
 // =========================================================
 #if defined(TARGET_ESP32_S3)
 
-// BROCHES RÉSERVÉES POUR FUTUR UART2
-// Ces broches sont laissées libres pour toute communication série additionnelle.
-//#define UART2_TX_PIN         15    // GPIO15: LIBRE - Futur UART2 Transmission.
-//#define UART2_RX_PIN         16    // GPIO16: LIBRE - Futur UART2 Réception.
+// BROCHES RÉSERVÉES
+// ?? GPIO15, 16 : LIBRES pour UART2. 
+// ?? GPIO48 : LIBRE pour la Neopixel intégrée.
 
 // ------------------------------------
 // GPS (UART1)
@@ -42,10 +41,10 @@
 #define DEFAULT_I2C_SCL      20    // I2C Clock (SCL).
 
 // ------------------------------------
-// LED RGB & Boutons (Côté Droit)
+// LED RGB (Exclut 48) & Boutons
 // ------------------------------------
-#define DEFAULT_RGB_LED_PIN_R 47   // Côté Droit
-#define DEFAULT_RGB_LED_PIN_G 48   // Côté Droit
+#define DEFAULT_RGB_LED_PIN_R 19   // Côté Droit
+#define DEFAULT_RGB_LED_PIN_G 47   // Côté Droit
 #define DEFAULT_RGB_LED_PIN_B 45   // Côté Droit
 
 #define PIN_BUTTON_1         1     // Côté Droit
@@ -54,18 +53,18 @@
 // ------------------------------------
 // Capteurs & Sorties
 // ------------------------------------
-#define DEFAULT_PWM_PIN      14    // Sortie PWM/Buzzer (broche libre idéale Côté Gauche).
-#define DEFAULT_BUZZER_PIN   14    // Peut être la même broche que le PWM.
+#define DEFAULT_PWM_PIN      14    // Sortie PWM/Buzzer (Côté Gauche).
+#define DEFAULT_BUZZER_PIN   14    // Même broche que PWM.
 
 #define DEFAULT_DHT_PIN      5     // Capteur DHT (Temp/Hum).
-#define DEFAULT_MOTION_SENSOR_PIN 4  // Capteur de mouvement (PIR)
-#define DEFAULT_LIGHT_SENSOR_PIN 19  // Capteur de lumière (ADC - Côté Droit).
+#define DEFAULT_MOTION_SENSOR_PIN 46  // Capteur de mouvement (PIR)
+#define DEFAULT_LIGHT_SENSOR_PIN 4  // Capteur de lumière (ADC).
 
 // ------------------------------------
-// Capteurs de Distance (utilisation de broches voisines)
+// Capteurs de Distance
 // ------------------------------------
 #define DEFAULT_DISTANCE_TRIG_PIN 3  // Sortie (Trigger).
-#define DEFAULT_DISTANCE_ECHO_PIN 6  // Entrée (Écho).
+#define DEFAULT_DISTANCE_ECHO_PIN 6 // Entrée (Écho).
 
 // =========================================================
 //                  MAPPING ESP32 CLASSIQUE (DevKitC)
@@ -77,7 +76,7 @@
 // ------------------------------------
 #define PIN_GPS_RXD          16    // UART2 RX (vers TX du GPS).
 #define PIN_GPS_TXD          17    // UART2 TX (vers RX du GPS).
-#define PIN_GPS_PPS          4    // Signal Pulse Per Second.
+#define PIN_GPS_PPS          4     // Signal Pulse Per Second.
 
 // ------------------------------------
 // TFT ST7789 (Interface SPI - Broches groupées)
@@ -87,7 +86,7 @@
 #define TFT_CS               19    // Chip Select.
 #define TFT_DC               27    // Data/Command.
 #define TFT_RST              26    // Reset de l'écran.
-#define TFT_BL               13    // Backlight (Utilisation de GPIO13, broche sûre).
+#define TFT_BL               13    // Backlight.
 
 // ------------------------------------
 // I2C (Contrainte Appliquée)
@@ -98,7 +97,7 @@
 // ------------------------------------
 // LED RGB & Boutons
 // ------------------------------------
-#define DEFAULT_RGB_LED_PIN_R 12   // RGB Rouge (Broche Strapping, mais souvent utilisable).
+#define DEFAULT_RGB_LED_PIN_R 12   // RGB Rouge.
 #define DEFAULT_RGB_LED_PIN_G 14   // RGB Vert.
 #define DEFAULT_RGB_LED_PIN_B 15   // RGB Bleu.
 
@@ -108,15 +107,15 @@
 // ------------------------------------
 // Capteurs & Sorties
 // ------------------------------------
-#define DEFAULT_PWM_PIN      5     // Sortie PWM dédiée (Broche Strapping, mais fonctionnelle).
+#define DEFAULT_PWM_PIN      5     // Sortie PWM dédiée.
 #define DEFAULT_BUZZER_PIN   5     // Même broche que PWM.
 
 #define DEFAULT_DISTANCE_TRIG_PIN 32 // Sortie (Trigger).
 #define DEFAULT_DISTANCE_ECHO_PIN 33 // Entrée (Écho).
 
-#define DEFAULT_DHT_PIN      25     // Capteur DHT (Broche Strapping, mais OK en entrée/sortie).
+#define DEFAULT_DHT_PIN      25    // Capteur DHT (Plus sûr que GPIO2).
 #define DEFAULT_MOTION_SENSOR_PIN 36 // Mouvement (Entrée Seulement - VP).
-#define DEFAULT_LIGHT_SENSOR_PIN 2  // Capteur de lumière (ADC - Broche sûre).
+#define DEFAULT_LIGHT_SENSOR_PIN 2  // Capteur de lumière (ADC - Broche Strapping).
 
 #else
     #error "Aucune cible definie ! Verifiez platformio.ini (TARGET_ESP32_...)"
@@ -138,8 +137,8 @@
 
 // --- LED Common ---
 #define DEFAULT_BUILTIN_LED_PIN -1
-#define DEFAULT_NEOPIXEL_PIN -1
-#define DEFAULT_NEOPIXEL_COUNT 8
+#define DEFAULT_NEOPIXEL_PIN 48 // Le 48 est maintenant l'adresse Neopixel
+#define DEFAULT_NEOPIXEL_COUNT 1
 #define DEFAULT_NEOPIXEL_BRIGHTNESS 50
 #define CUSTOM_LED_PIN -1
 
