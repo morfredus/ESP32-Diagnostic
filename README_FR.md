@@ -1,6 +1,29 @@
-# ESP32 Diagnostic Suite (v3.17.1)
+# ESP32 Diagnostic Suite (v3.18.2)
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
+
+## Nouveautés de la version 3.18.2
+1. **Clés de traduction** : Ajout des clés de traduction manquantes pour le support complet de l'interface GPS et capteurs environnementaux.
+   - `gps_status` : Indicateur de statut GPS
+   - `temperature_avg` : Label de température moyenne pour affichage multi-capteurs
+   - `pressure_hpa` : Pression barométrique avec affichage d'unité
+   - `altitude_calculated` : Altitude calculée depuis la pression
+
+## Nouveautés de la version 3.18.1
+1. **Correction capteur AHT20** : Correction de l'algorithme d'extraction de bits pour les valeurs d'humidité et température (extraction correcte de 20 bits depuis la réponse 6 octets).
+2. **API capteurs environnementaux** : Correction de la structure JSON pour compatibilité interface web.
+
+## Nouveautés de la version 3.18.0
+1. **Support module GPS** : Intégration complète du récepteur GPS NEO-6M/NEO-8M/NEO-M.
+   - Parsing de phrases NMEA (RMC, GGA, GSA, GSV)
+   - Suivi latitude, longitude, altitude, vitesse, cap
+   - Nombre de satellites et qualité du signal (HDOP, VDOP, PDOP)
+   - Intégration interface web avec affichage statut GPS
+2. **Capteurs environnementaux** : AHT20 (température/humidité) + BMP280 (pression/altitude) sur I2C.
+   - Streaming en temps réel vers interface web
+   - Calcul d'altitude depuis pression barométrique
+   - Indicateurs d'état capteur (OK/Erreur/Non détecté)
+3. **Améliorations interface web** : Section module GPS page Sans fil, capteurs environnementaux page Capteurs.
 
 ## Nouveautés de la version 3.17.1
 1. **Pin mapping actualisé (ESP32-S3 & Classic)** : Défauts ajustés dans `include/config.h` pour aligner GPS, TFT, LED RGB et capteurs sur le routage DevKitC-1 tout en conservant les boutons. ESP32-S3 : GPS RX=18/TX=17/PPS=8 ; TFT MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7 ; LED RGB R=47/G=48/B=45 ; BTN1=1, BTN2=2 ; PWM/Buzzer=14 ; DHT=5 ; Mouvement=4 ; Lumière=19 ; HC-SR04 TRIG=3/ECHO=6. ESP32 Classic : GPS RX=16/TX=17/PPS=4 ; TFT MOSI=23, SCLK=18, CS=19, DC=27, RST=26, BL=13 ; LED RGB R=12/G=14/B=15 ; BTN1=34, BTN2=35 ; PWM/Buzzer=5 ; DHT=25 ; Mouvement=36 ; Lumière=2 ; HC-SR04 TRIG=32/ECHO=33.
