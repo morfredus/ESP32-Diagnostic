@@ -1,6 +1,29 @@
-# ESP32 Diagnostic Suite (v3.17.1)
+# ESP32 Diagnostic Suite (v3.18.2)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
+
+## New in version 3.18.2
+1. **Translation Keys**: Added missing translation keys for complete GPS and environmental sensors UI support.
+   - `gps_status`: GPS connection status indicator
+   - `temperature_avg`: Average temperature label for multi-sensor displays
+   - `pressure_hpa`: Barometric pressure with unit display
+   - `altitude_calculated`: Calculated altitude from pressure
+
+## New in version 3.18.1
+1. **AHT20 Sensor Fix**: Corrected bit extraction algorithm for AHT20 humidity and temperature values (proper 20-bit value extraction from 6-byte response).
+2. **Environmental Sensors API**: Fixed JSON structure for web interface compatibility.
+
+## New in version 3.18.0
+1. **GPS Module Support**: Full NEO-6M/NEO-8M/NEO-M GPS receiver integration.
+   - NMEA sentence parsing (RMC, GGA, GSA, GSV)
+   - Latitude, longitude, altitude, speed, course tracking
+   - Satellite count and signal quality (HDOP, VDOP, PDOP)
+   - Web interface integration with GPS status display
+2. **Environmental Sensors**: AHT20 (temperature/humidity) + BMP280 (pressure/altitude) on I2C.
+   - Real-time sensor data streaming to web interface
+   - Altitude calculation from barometric pressure
+   - Sensor status indicators (OK/Error/Not detected)
+3. **Web UI Enhancements**: GPS module section in Wireless page, environmental sensors in Sensors page.
 
 ## New in version 3.17.1
 1. **Refreshed pin mapping (ESP32-S3 & Classic):** Updated defaults in `include/config.h` to align GPS, TFT, RGB, and sensor pins with DevKitC-1 layout and to keep buttons intact. ESP32-S3 defaults now use GPS RX=18/TX=17/PPS=8; TFT MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7; RGB R=47/G=48/B=45; BTN1=1, BTN2=2; PWM/Buzzer=14; DHT=5; Motion=4; Light=19; HC-SR04 TRIG=3/ECHO=6. ESP32 Classic defaults now use GPS RX=16/TX=17/PPS=4; TFT MOSI=23, SCLK=18, CS=19, DC=27, RST=26, BL=13; RGB R=12/G=14/B=15; BTN1=34, BTN2=35; PWM/Buzzer=5; DHT=25; Motion=36; Light=2; HC-SR04 TRIG=32/ECHO=33.
