@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.17.1)
+# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.19.0)
 
 Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.17.1 et ses trois environnements de build.
 Elle aide à planifier les campagnes de validation et à vérifier si des périphériques optionnels nécessitent un câblage supplémentaire.

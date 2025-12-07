@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Build & Deploy (v3.16.0)
+# ESP32 Diagnostic Suite – Build & Deploy (v3.19.0)
 
 This document describes the supported toolchains and the recommended release checklist for firmware version 3.16.0.
 
