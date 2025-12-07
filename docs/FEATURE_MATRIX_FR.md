@@ -1,11 +1,11 @@
-# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.20.1)
+# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.20.2)
 
-Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.20.1 et ses trois environnements de build.
+Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.20.2 et ses trois environnements de build.
 Elle aide à planifier les campagnes de validation et à vérifier si des périphériques optionnels nécessitent un câblage supplémentaire.
 
-> **Important :** La version 3.20.1 (PlatformIO) n'active toujours pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
+> **Important :** La version 3.20.2 (PlatformIO) n'active toujours pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
 
-**Mis à jour en v3.20.1 :** Déplacement de l'I2C ESP32-S3 vers SDA=15 / SCL=16 et LED RGB Rouge vers GPIO21 pour libérer l'USB D-/D+ et stabiliser l’OTG ; documentation alignée. Sélectionnez votre carte cible dans `platformio.ini` pour appliquer automatiquement les bonnes broches.
+**Mis à jour en v3.20.2 :** L'interface web affiche maintenant les pins GPIO corrects en fonction de la cible compilée. Toutes les références de pins dans l'interface web sont désormais dynamiquement sourcées depuis `board_config.h`. Actualisez fortement le navigateur (Ctrl+Shift+R) après la mise à jour pour voir les pins corrects de votre carte cible.
 
 ## Légende
 - ✅ – Pris en charge nativement par le firmware.

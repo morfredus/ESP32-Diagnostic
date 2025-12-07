@@ -7,7 +7,7 @@ Suivez ces étapes pour déployer ESP32 Diagnostic Suite sur votre carte.
 ## 1. Prérequis
 
 ### Matériel
-- **Cartes supportées (v3.20.1) :**
+- **Cartes supportées (v3.20.2) :**
   - **ESP32-S3-DevKitC-1 N16R8** (16Mo Flash, 8Mo PSRAM) — Cible principale, environnement : `esp32s3_n16r8`
   - **ESP32-S3-DevKitC-1 N8R8** (8Mo Flash, 8Mo PSRAM) — Environnement : `esp32s3_n8r8`
   - **ESP32-DevKitC Classic** (4Mo Flash, sans PSRAM) — Environnement : `esp32devkitc`

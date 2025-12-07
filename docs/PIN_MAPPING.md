@@ -1,4 +1,4 @@
-# Pin Mapping — Quick Reference (v3.20.1)
+# Pin Mapping — Quick Reference (v3.20.2)
 
 ## Supported Environments
 
@@ -209,6 +209,7 @@ pio run -e esp32devkitc --target upload
 ---
 
 ## Version History
+- **v3.20.2:** Web UI pin references now dynamically sourced from `board_config.h`; web interface always displays correct compiled target pins.
 - **v3.20.1:** ESP32-S3 I2C moved to 15/16 and RGB Red to 21 to free USB D-/D+ (19/20) and stabilize OTG; docs aligned.
 - **v3.20.1:** Pin mapping moved to `board_config.h`; ESP32-S3 buttons set to GPIO 38/39 to avoid upload/reset conflicts; docs aligned.
 - **v3.18.3:** Resolved GPIO 48 conflict between NeoPixel and RGB LED on ESP32-S3; complete S3 pin mapping reorganization.

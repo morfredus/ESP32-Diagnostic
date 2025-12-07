@@ -1,4 +1,4 @@
-# Configuration (FR) — v3.20.1
+# Configuration (FR) — v3.20.2
 
 ## Sélection de l'Environnement de Build
 

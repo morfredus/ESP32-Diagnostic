@@ -1,4 +1,4 @@
-# Configuration (EN) — v3.20.1
+# Configuration (EN) — v3.20.2
 
 ## Build Environment Selection
 
