@@ -1,3 +1,22 @@
+## [Version 3.20.3] - 2025-12-08
+
+### Changed
+- **Code Optimization:** Applied 9 systematic optimizations ([OPT-001] through [OPT-009]) for memory efficiency
+- Eliminated 90+ string allocations through unified buffer-based approaches
+- Version string formatting: snprintf-based (1 vs 11 allocations)
+- Uptime formatting: buffer approach (1 vs 4-6 allocations)
+- GPIO list building: optimized to O(1) allocations
+- Chip features: eliminated substring operations
+- Created reusable constants: DEFAULT_TEST_RESULT_STR, OK_STR, FAIL_STR
+- Converted 13 debug/status messages to snprintf buffer formatting
+- Optimized TextField usage in formatUptime (3 direct .str().c_str() calls)
+- All test result assignments use pre-allocated constants (30+ locations)
+
+### Technical
+- No functionality changes - pins, tests, and features remain identical
+- Successfully compiled on ESP32-S3 (esp32s3_n16r8) and ESP32 CLASSIC (esp32devkitc)
+- Improved runtime memory efficiency through reduced heap allocations
+
 ## [Version 3.20.2] - 2025-12-07
 
 ### Changed

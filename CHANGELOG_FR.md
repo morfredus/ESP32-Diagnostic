@@ -1,3 +1,22 @@
+## [Version 3.20.3] - 2025-12-08
+
+### Modifié
+- **Optimisation du Code :** Application de 9 optimisations systématiques ([OPT-001] à [OPT-009]) pour l'efficacité mémoire
+- Élimination de 90+ allocations de chaînes via des approches unifiées basées sur des buffers
+- Formatage de chaîne de version : basé sur snprintf (1 vs 11 allocations)
+- Formatage du temps de fonctionnement : approche buffer (1 vs 4-6 allocations)
+- Construction de liste GPIO : optimisée à O(1) allocations
+- Fonctionnalités du chip : opérations de sous-chaînes éliminées
+- Création de constantes réutilisables : DEFAULT_TEST_RESULT_STR, OK_STR, FAIL_STR
+- Conversion de 13 messages de debug/statut en formatage buffer snprintf
+- Optimisation de l'utilisation de TextField dans formatUptime (3 appels directs .str().c_str())
+- Toutes les affectations de résultats de tests utilisent des constantes pré-allouées (30+ emplacements)
+
+### Technique
+- Aucun changement de fonctionnalité - pins, tests et fonctionnalités restent identiques
+- Compilé avec succès sur ESP32-S3 (esp32s3_n16r8) et ESP32 CLASSIC (esp32devkitc)
+- Efficacité mémoire améliorée à l'exécution grâce à la réduction des allocations heap
+
 ## [Version 3.20.2] - 2025-12-07
 
 ### Modifié

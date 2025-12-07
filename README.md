@@ -1,8 +1,18 @@
-# ESP32 Diagnostic Suite (v3.20.2)
+# ESP32 Diagnostic Suite (v3.20.3)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## New in version 3.20.2
+## New in version 3.20.3
+
+**Code Optimization Release** - Systematic memory efficiency improvements:
+- Applied 9 optimizations ([OPT-001] through [OPT-009]) eliminating 90+ string allocations
+- Buffer-based formatting for version strings, uptime, GPIO lists, and test results
+- Created reusable constants (DEFAULT_TEST_RESULT_STR, OK_STR, FAIL_STR) used in 30+ locations
+- Converted 13 debug/status messages to snprintf approach (2-9 allocations → 1)
+- **No functionality changes** - all pins, tests, and features remain identical
+- Successfully compiled and validated on ESP32-S3 and ESP32 CLASSIC targets
+
+## Previous: version 3.20.2
 1. **Dynamic Web UI Pin References**: Web interface now displays correct GPIO pins based on compiled target
    - All hardcoded pin values replaced with dynamic references from `board_config.h`
    - RGB LED, DHT sensor, light sensor, distance sensor, motion sensor, and PWM pins now read from configuration
