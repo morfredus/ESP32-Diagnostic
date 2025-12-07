@@ -433,10 +433,8 @@ String generateJavaScript() {
   js += DIAGNOSTIC_VERSION_STR;
   js += F(" - Initialisation');const UPDATE_INTERVAL=5000;let currentLang='");
   js += (currentLanguage == LANG_FR) ? "fr" : "en";
-  js += F("';let updateTimer=null;let isConnected=true;const DEFAULT_TRANSLATIONS=");
-  js += buildTranslationsJSON();
-  js += F(";let translationsCache=DEFAULT_TRANSLATIONS;");
-  // Pin configuration variables from board_config.h (injected server-side)
+  js += F("';let updateTimer=null;let isConnected=true;");
+  // Pin configuration variables from board_config.h (injected server-side BEFORE static code)
   js += F("const RGB_LED_PIN_R=");
   js += String(RGB_LED_PIN_R);
   js += F(";const RGB_LED_PIN_G=");
@@ -455,7 +453,9 @@ String generateJavaScript() {
   js += String(MOTION_SENSOR_PIN);
   js += F(";const PWM_PIN=");
   js += String(BUZZER_PIN);
-  js += F(";");
+  js += F(";const DEFAULT_TRANSLATIONS=");
+  js += buildTranslationsJSON();
+  js += F(";let translationsCache=DEFAULT_TRANSLATIONS;");
   // JavaScript static chunk streamed from PROGMEM (note: in production, we use chunked route)
 #if defined(TARGET_ESP32_CLASSIC)
   js += FPSTR(DIAGNOSTIC_JS_STATIC_LITE);
