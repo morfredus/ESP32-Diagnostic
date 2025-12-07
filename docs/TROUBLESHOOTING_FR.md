@@ -1,4 +1,4 @@
-# Dépannage (FR) – v3.20.1
+# Dépannage (FR) – v3.20.2
 
 **Support multi-environnements :** Cette version supporte trois environnements de compilation (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) avec des mappages de broches spécifiques au matériel. Assurez-vous d'avoir sélectionné et flashé le bon environnement pour votre carte avant de dépanner.
 

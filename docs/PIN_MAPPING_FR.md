@@ -1,4 +1,4 @@
-# Mapping des pins — Référence rapide (v3.20.1)
+# Mapping des pins — Référence rapide (v3.20.2)
 
 - **Cartes supportées :**
   - ESP32-S3-DevKitC-1 N16R8 (16Mo Flash, 8Mo PSRAM) — `esp32s3_n16r8`
@@ -35,7 +35,8 @@
 - Dynamique : via l'interface web (capteurs) ou la console série ; persiste jusqu'au redémarrage.
 
 ## Historique des versions
-- v3.20.1 : I2C ESP32-S3 déplacé vers 15/16 et LED RGB Rouge vers 21 pour libérer l’USB D-/D+ (19/20) et stabiliser l’OTG ; documentation alignée.
+- v3.20.2 : Les références des pins dans l'interface web sont désormais dynamiquement sourcées depuis `board_config.h` ; l'interface web affiche toujours les pins de la cible compilée correcte.
+- v3.20.1 : I2C ESP32-S3 déplacé vers 15/16 et LED RGB Rouge vers 21 pour libérer l'USB D-/D+ (19/20) et stabiliser l'OTG ; documentation alignée.
 - v3.20.1 : Pin mapping déplacé dans `board_config.h` ; boutons ESP32-S3 sur GPIO 38/39 pour éviter les conflits d'upload/reset ; documentation alignée.
 - v3.18.3 : Résolution du conflit pin 48 entre NeoPixel et LED RGB sur ESP32-S3 ; réorganisation complète du pin mapping S3.
 - v3.17.1 : Pin mapping ESP32-S3 et Classic actualisé (GPS, TFT, LED RGB, capteurs, boutons) + documentation alignée.

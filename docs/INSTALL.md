@@ -7,7 +7,7 @@ Follow the steps below to deploy the ESP32 Diagnostic Suite on your board.
 ## 1. Prerequisites
 
 ### Hardware
-- **Supported boards (v3.20.1):**
+- **Supported boards (v3.20.2):**
   - **ESP32-S3-DevKitC-1 N16R8** (16MB Flash, 8MB PSRAM) — Primary target, environment: `esp32s3_n16r8`
   - **ESP32-S3-DevKitC-1 N8R8** (8MB Flash, 8MB PSRAM) — Environment: `esp32s3_n8r8`
   - **ESP32-DevKitC Classic** (4MB Flash, no PSRAM) — Environment: `esp32devkitc`

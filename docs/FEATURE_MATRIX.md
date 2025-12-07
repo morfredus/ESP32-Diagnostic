@@ -1,11 +1,11 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.20.1)
+# ESP32 Diagnostic Suite – Feature Matrix (v3.20.2)
 
-This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.20.1 with three distinct build environments.
+This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.20.2 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.
 
-> **Important:** Current release 3.20.1 (PlatformIO) still ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+> **Important:** Current release 3.20.2 (PlatformIO) still ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
 
-**Updated in v3.20.1:** ESP32-S3 defaults move I2C to SDA=15 / SCL=16 and RGB Rouge to GPIO21 to libère USB D-/D+, stabilisant l’OTG ; documentation alignée. Select your target board in `platformio.ini` to automatically apply the correct pins.
+**Updated in v3.20.2:** Web UI now displays correct GPIO pins based on compiled target. All pin references in the web interface are now dynamically sourced from `board_config.h`. Hard refresh the browser (Ctrl+Shift+R) after upgrading to see the correct pins for your target board.
 
 ## Legend
 - ✅ – Supported out of the box by the firmware.

@@ -4583,6 +4583,9 @@ void handleJavaScriptRoute() {
   pinVars += ";";
 
   Serial.printf("Sending pin variables: %d bytes\n", pinVars.length());
+  Serial.printf("  RGB_R=%d, RGB_G=%d, RGB_B=%d\n", RGB_LED_PIN_R, RGB_LED_PIN_G, RGB_LED_PIN_B);
+  Serial.printf("  DHT=%d, LIGHT=%d, MOTION=%d, PWM=%d\n", DHT_PIN, LIGHT_SENSOR_PIN, MOTION_SENSOR_PIN, BUZZER_PIN);
+  Serial.printf("  DIST_TRIG=%d, DIST_ECHO=%d\n", DISTANCE_TRIG_PIN, DISTANCE_ECHO_PIN);
   server.sendContent(pinVars);
 
   // Send translations
@@ -4670,6 +4673,14 @@ void setup() {
   Serial.println("     DIAGNOSTIC ESP32 MULTILINGUE");
   Serial.printf("     Version %s - FR/EN\r\n", DIAGNOSTIC_VERSION_STR);
   Serial.printf("     Arduino Core %s\r\n", getArduinoCoreVersionString().c_str());
+#if defined(TARGET_ESP32_S3)
+  Serial.println("     TARGET: ESP32-S3 (N16R8/N8R8)");
+#elif defined(TARGET_ESP32_CLASSIC)
+  Serial.println("     TARGET: ESP32 CLASSIC (DevKitC)");
+#else
+  Serial.println("     TARGET: UNKNOWN - CHECK platformio.ini!");
+#endif
+  Serial.printf("     RGB LED Pins: R=%d G=%d B=%d\r\n", RGB_LED_PIN_R, RGB_LED_PIN_G, RGB_LED_PIN_B);
   Serial.println("===============================================\r\n");
 
   printPSRAMDiagnostic();

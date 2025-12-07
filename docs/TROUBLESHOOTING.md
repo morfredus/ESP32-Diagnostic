@@ -1,4 +1,4 @@
-# Troubleshooting (EN) – v3.20.1
+# Troubleshooting (EN) – v3.20.2
 
 **Multi-environment support:** This release supports three build environments (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) with hardware-specific pin mappings. Ensure you've selected and flashed the correct environment for your board before troubleshooting.
 
