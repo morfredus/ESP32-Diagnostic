@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Compilation & Déploiement (v3.16.0)
+# ESP32 Diagnostic Suite – Compilation & Déploiement (v3.19.0)
 
 Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.16.0.
 

@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.17.1)
+# ESP32 Diagnostic Suite – Feature Matrix (v3.19.0)
 
 This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.17.1 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.

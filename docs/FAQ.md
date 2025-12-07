@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – FAQ (v3.15.0)
+# ESP32 Diagnostic Suite – FAQ (v3.19.0)
 
 ## General
 **Q: Which boards are officially supported?**

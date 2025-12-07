@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Modules de diagnostic (v3.15.0)
+# ESP32 Diagnostic Suite – Modules de diagnostic (v3.19.0)
 
 Ce guide détaille chaque module de diagnostic automatisé livré avec la version 3.15.0. Il décrit l'ordre d'exécution, les métriques
 collectées et les clés d'exportation à surveiller lors de l'analyse des rapports.
