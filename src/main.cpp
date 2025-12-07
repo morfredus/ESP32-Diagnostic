@@ -176,14 +176,20 @@ static inline String getStableAccessHost() {
 }
 
 String getArduinoCoreVersionString() {
+// [OPT-001] Optimize version string formatting: use snprintf instead of multiple String concatenations
 #if defined(ESP_ARDUINO_VERSION_MAJOR) && defined(ESP_ARDUINO_VERSION_MINOR) && defined(ESP_ARDUINO_VERSION_PATCH)
-  return String(ESP_ARDUINO_VERSION_MAJOR) + "." + String(ESP_ARDUINO_VERSION_MINOR) + "." + String(ESP_ARDUINO_VERSION_PATCH);
+  char versionBuf[16];
+  snprintf(versionBuf, sizeof(versionBuf), "%u.%u.%u", 
+    ESP_ARDUINO_VERSION_MAJOR, ESP_ARDUINO_VERSION_MINOR, ESP_ARDUINO_VERSION_PATCH);
+  return String(versionBuf);
 #else
   uint32_t value = ESP_ARDUINO_VERSION;
   int major = (value >> 16) & 0xFF;
   int minor = (value >> 8) & 0xFF;
   int patch = value & 0xFF;
-  return String(major) + "." + String(minor) + "." + String(patch);
+  char versionBuf[16];
+  snprintf(versionBuf, sizeof(versionBuf), "%d.%d.%d", major, minor, patch);
+  return String(versionBuf);
 #endif
 }
 
@@ -242,23 +248,29 @@ int tftRotation = TFT_ROTATION;
 #endif
 Adafruit_NeoPixel *strip = nullptr;
 
+// [OPT-004] Constant for repeated test result initialization
+static const String DEFAULT_TEST_RESULT_STR = String(Texts::not_tested);
+// [OPT-009] Constants for repeated test status strings
+static const String OK_STR = String(Texts::ok);
+static const String FAIL_STR = String(Texts::fail);
+
 bool neopixelTested = false;
 bool neopixelAvailable = false;
 bool neopixelSupported = false;
-String neopixelTestResult = String(Texts::not_tested);
+String neopixelTestResult = DEFAULT_TEST_RESULT_STR;
 
 // Built-in LED (from config.h)
 int BUILTIN_LED_PIN = DEFAULT_BUILTIN_LED_PIN;
 bool builtinLedTested = false;
 bool builtinLedAvailable = false;
-String builtinLedTestResult = String(Texts::not_tested);
+String builtinLedTestResult = DEFAULT_TEST_RESULT_STR;
 
 bool oledTested = false;
 bool oledAvailable = false;
-String oledTestResult = String(Texts::not_tested);
+String oledTestResult = DEFAULT_TEST_RESULT_STR;
 
 #if ENABLE_TFT_DISPLAY
-String tftTestResult = String(Texts::not_tested);
+String tftTestResult = DEFAULT_TEST_RESULT_STR;
 #endif
 
 // Exécution asynchrone des tests matériels
@@ -337,36 +349,36 @@ static AsyncTestRunner buzzerTestRunner = {"BuzzerTest", nullptr, false};
 
 bool runtimeBLE = false;
 
-String adcTestResult = String(Texts::not_tested);
-String pwmTestResult = String(Texts::not_tested);
+String adcTestResult = DEFAULT_TEST_RESULT_STR;
+String pwmTestResult = DEFAULT_TEST_RESULT_STR;
 String partitionsInfo;
 String spiInfo;
-String stressTestResult = String(Texts::not_tested);
+String stressTestResult = DEFAULT_TEST_RESULT_STR;
 // Memory stress telemetry cache
 size_t stressAllocationCount = 0;
 unsigned long stressDurationMs = 0;
 
 // Résultats de tests des nouveaux capteurs
-String rgbLedTestResult = String(Texts::not_tested);
+String rgbLedTestResult = DEFAULT_TEST_RESULT_STR;
 bool rgbLedAvailable = false;
 
-String buzzerTestResult = String(Texts::not_tested);
+String buzzerTestResult = DEFAULT_TEST_RESULT_STR;
 bool buzzerAvailable = false;
 
-String dhtTestResult = String(Texts::not_tested);
+String dhtTestResult = DEFAULT_TEST_RESULT_STR;
 bool dhtAvailable = false;
 float dhtTemperature = -999.0;
 float dhtHumidity = -999.0;
 
-String lightSensorTestResult = String(Texts::not_tested);
+String lightSensorTestResult = DEFAULT_TEST_RESULT_STR;
 bool lightSensorAvailable = false;
 int lightSensorValue = -1;
 
-String distanceSensorTestResult = String(Texts::not_tested);
+String distanceSensorTestResult = DEFAULT_TEST_RESULT_STR;
 bool distanceSensorAvailable = false;
 float distanceValue = -1.0;
 
-String motionSensorTestResult = String(Texts::not_tested);
+String motionSensorTestResult = DEFAULT_TEST_RESULT_STR;
 bool motionSensorAvailable = false;
 bool motionDetected = false;
 
@@ -855,21 +867,37 @@ String detectChipModel() {
 
 // ========== FONCTIONS UTILITAIRES ==========
 String getChipFeatures() {
+  // [OPT-006] Optimize chip features string building: avoid substring operations
   esp_chip_info_t chip_info;
   esp_chip_info(&chip_info);
-  String features;
+  char featureBuf[128] = {0};
+  char *p = featureBuf;
+  size_t remaining = sizeof(featureBuf) - 1;
+  bool first = true;
 
-  if (chip_info.features & CHIP_FEATURE_WIFI_BGN) features += "WiFi 2.4GHz, ";
-  if (chip_info.features & CHIP_FEATURE_BT) features += "Bluetooth Classic, ";
-  if (chip_info.features & CHIP_FEATURE_BLE) features += "Bluetooth LE, ";
-  
-  if (features.length() > 0) {
-    features = features.substring(0, features.length() - 2);
-  } else {
-    features = Texts::none.str();
+  if (chip_info.features & CHIP_FEATURE_WIFI_BGN) {
+    if (!first && remaining > 2) { *p++ = ','; *p++ = ' '; remaining -= 2; }
+    const char *wifi = "WiFi 2.4GHz";
+    size_t len = strlen(wifi);
+    if (len < remaining) { strcpy(p, wifi); p += len; remaining -= len; first = false; }
+  }
+  if (chip_info.features & CHIP_FEATURE_BT) {
+    if (!first && remaining > 2) { *p++ = ','; *p++ = ' '; remaining -= 2; }
+    const char *bt = "Bluetooth Classic";
+    size_t len = strlen(bt);
+    if (len < remaining) { strcpy(p, bt); p += len; remaining -= len; first = false; }
+  }
+  if (chip_info.features & CHIP_FEATURE_BLE) {
+    if (!first && remaining > 2) { *p++ = ','; *p++ = ' '; remaining -= 2; }
+    const char *ble = "Bluetooth LE";
+    size_t len = strlen(ble);
+    if (len < remaining) { strcpy(p, ble); p += len; remaining -= len; first = false; }
   }
   
-  return features;
+  if (p == featureBuf) {
+    return Texts::none.str();
+  }
+  return String(featureBuf);
 }
 
 String getFlashType() {
@@ -923,23 +951,43 @@ String getResetReason() {
 }
 
 String formatUptime(unsigned long days, unsigned long hours, unsigned long minutes) {
-  String formatted;
+  // [OPT-002] Optimize uptime formatting: use direct buffer instead of String concatenations
+  char uptimeBuf[64];
+  char *p = uptimeBuf;
+  size_t remaining = sizeof(uptimeBuf) - 1;
+  
   if (days > 0) {
-    formatted += String(days) + " " + String(Texts::days);
-  }
-  if (hours > 0 || formatted.length() > 0) {
-    if (formatted.length() > 0) {
-      formatted += " ";
+    // [OPT-008]: Direct .c_str() call avoids String() allocation
+    int written = snprintf(p, remaining, "%lu %s", days, Texts::days.str().c_str());
+    if (written > 0) {
+      p += written;
+      remaining -= written;
     }
-    formatted += String(hours) + " " + String(Texts::hours);
   }
-  if (minutes > 0 || formatted.length() == 0) {
-    if (formatted.length() > 0) {
-      formatted += " ";
+  
+  if (hours > 0 || (days > 0 && remaining > 1)) {
+    if (p != uptimeBuf && remaining > 1) {
+      *p++ = ' ';
+      remaining--;
     }
-    formatted += String(minutes) + " " + String(Texts::minutes);
+    // [OPT-008]: Direct .c_str() call avoids String() allocation
+    int written = snprintf(p, remaining, "%lu %s", hours, Texts::hours.str().c_str());
+    if (written > 0) {
+      p += written;
+      remaining -= written;
+    }
   }
-  return formatted;
+  
+  if (minutes > 0 || uptimeBuf[0] == '\0') {
+    if (p != uptimeBuf && remaining > 1) {
+      *p++ = ' ';
+      remaining--;
+    }
+    // [OPT-008]: Direct .c_str() call avoids String() allocation
+    snprintf(p, remaining, "%lu %s", minutes, Texts::minutes.str().c_str());
+  }
+  
+  return String(uptimeBuf);
 }
 
 String getMemoryStatus() {
@@ -1092,31 +1140,43 @@ String wifiPhyModesToString(const wifi_ap_record_t& record) {
 }
 
 String getGPIOList() {
-  String gpioList;
+  // [OPT-005] Optimize GPIO list building: use buffer with snprintf instead of String concatenation
+  char gpioListBuf[256] = {0};
+  int gpios_array[22];
+  int numGPIO = 0;
 
   #ifdef CONFIG_IDF_TARGET_ESP32
     int gpios[] = {0,2,4,5,12,13,14,15,16,17,18,19,21,22,23,25,26,27,32,33};
-    int numGPIO = 20;
+    numGPIO = 20;
+    memcpy(gpios_array, gpios, sizeof(gpios));
   #elif defined(CONFIG_IDF_TARGET_ESP32S2)
     int gpios[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21};
-    int numGPIO = 22;
+    numGPIO = 22;
+    memcpy(gpios_array, gpios, sizeof(gpios));
   #elif defined(CONFIG_IDF_TARGET_ESP32S3)
     int gpios[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21};
-    int numGPIO = 22;
+    numGPIO = 22;
+    memcpy(gpios_array, gpios, sizeof(gpios));
   #elif defined(CONFIG_IDF_TARGET_ESP32C3)
     int gpios[] = {0,1,2,3,4,5,6,7,8,9,10};
-    int numGPIO = 11;
+    numGPIO = 11;
+    memcpy(gpios_array, gpios, sizeof(gpios));
   #else
     int gpios[] = {0,2,4,5};
-    int numGPIO = 4;
+    numGPIO = 4;
+    memcpy(gpios_array, gpios, sizeof(gpios));
   #endif
   
-  for (int i = 0; i < numGPIO; i++) {
-    gpioList += String(gpios[i]);
-    if (i < numGPIO - 1) gpioList += ", ";
+  char *p = gpioListBuf;
+  for (int i = 0; i < numGPIO && (size_t)(p - gpioListBuf) < sizeof(gpioListBuf) - 1; i++) {
+    if (i > 0 && (size_t)(p - gpioListBuf) < sizeof(gpioListBuf) - 2) {
+      *p++ = ',';
+      *p++ = ' ';
+    }
+    p += snprintf(p, sizeof(gpioListBuf) - (p - gpioListBuf), "%d", gpios_array[i]);
   }
   
-  return gpioList;
+  return String(gpioListBuf);
 }
 
 int countGPIO() {
@@ -1483,7 +1543,8 @@ void testAllGPIOs() {
     result.tested = true;
     result.working = testSingleGPIO(gpios[i]);
     result.mode = "Digital I/O";
-    result.notes = result.working ? String(Texts::ok) : String(Texts::fail);
+    // [OPT-009]: Use pre-allocated constants instead of String(Texts::ok/fail)
+    result.notes = result.working ? OK_STR : FAIL_STR;
     gpioResults.push_back(result);
   }
   Serial.printf("GPIO: %d testes\r\n", numGPIO);
@@ -1502,7 +1563,10 @@ void detectBuiltinLED() {
     else BUILTIN_LED_PIN = 2;
   #endif
   
-  builtinLedTestResult = String(Texts::gpio) + " " + String(BUILTIN_LED_PIN) + " - " + String(Texts::not_tested);
+  // [OPT-008]: Buffer-based test result initialization (1 vs 4 allocations)
+  char ledBuf[96];
+  snprintf(ledBuf, sizeof(ledBuf), "%s %d - %s", Texts::gpio.str().c_str(), BUILTIN_LED_PIN, Texts::not_tested.str().c_str());
+  builtinLedTestResult = String(ledBuf);
   Serial.printf("LED integree: GPIO %d\r\n", BUILTIN_LED_PIN);
 }
 
@@ -1532,7 +1596,10 @@ void testBuiltinLED() {
   
   digitalWrite(BUILTIN_LED_PIN, LOW);
   builtinLedAvailable = true;
-  builtinLedTestResult = String(Texts::test) + " " + String(Texts::ok) + " - GPIO " + String(BUILTIN_LED_PIN);
+  // [OPT-009]: Buffer-based test result (1 vs 4 allocations)
+  char ledBuf[96];
+  snprintf(ledBuf, sizeof(ledBuf), "%s %s - GPIO %d", Texts::test.str().c_str(), Texts::ok.str().c_str(), BUILTIN_LED_PIN);
+  builtinLedTestResult = String(ledBuf);
   builtinLedTested = true;
   Serial.println("LED: OK");
 }
@@ -1566,7 +1633,10 @@ void detectNeoPixelSupport() {
   
   if (strip != nullptr) delete strip;
   strip = new Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
-  neopixelTestResult = String(Texts::gpio) + " " + String(LED_PIN) + " - " + String(Texts::not_tested);
+  // [OPT-008]: Buffer-based test result initialization (1 vs 4 allocations)
+  char neoBuf[96];
+  snprintf(neoBuf, sizeof(neoBuf), "%s %d - %s", Texts::gpio.str().c_str(), LED_PIN, Texts::not_tested.str().c_str());
+  neopixelTestResult = String(neoBuf);
   Serial.printf("NeoPixel: GPIO %d\r\n", LED_PIN);
 }
 
@@ -1601,7 +1671,10 @@ void testNeoPixel() {
   strip->show();
 
   neopixelAvailable = true;
-  neopixelTestResult = String(Texts::test) + " " + String(Texts::ok) + " - GPIO " + String(LED_PIN);
+  // [OPT-009]: Buffer-based test result (1 vs 4 allocations)
+  char neoBuf[96];
+  snprintf(neoBuf, sizeof(neoBuf), "%s %s - GPIO %d", Texts::test.str().c_str(), Texts::ok.str().c_str(), LED_PIN);
+  neopixelTestResult = String(neoBuf);
   neopixelTested = true;
   Serial.println("NeoPixel: OK");
 }
@@ -1712,9 +1785,15 @@ void detectOLED() {
   } else {
     oledAvailable = false;
     if (i2cDetected) {
-      oledTestResult = String(Texts::i2c_peripherals) + " - " + String(Texts::fail);
+      // [OPT-009]: Buffer-based fail message (1 vs 2 allocations)
+      char failBuf[96];
+      snprintf(failBuf, sizeof(failBuf), "%s - %s", Texts::i2c_peripherals.str().c_str(), Texts::fail.str().c_str());
+      oledTestResult = String(failBuf);
     } else {
-      oledTestResult = String(Texts::not_detected) + " (SDA:" + String(I2C_SDA) + " SCL:" + String(I2C_SCL) + ")";
+      // [OPT-009]: Buffer-based not_detected message (1 vs 4 allocations)
+      char notDetBuf[128];
+      snprintf(notDetBuf, sizeof(notDetBuf), "%s (SDA:%d SCL:%d)", Texts::not_detected.str().c_str(), I2C_SDA, I2C_SCL);
+      oledTestResult = String(notDetBuf);
     }
     Serial.println("OLED: Non detecte\r\n");
   }
@@ -1925,7 +2004,10 @@ void testOLED() {
   oledStepFinalMessage();
 
   oledTested = true;
-  oledTestResult = String(Texts::test) + " " + String(Texts::ok) + " - 128x64";
+  // [OPT-009]: Buffer-based test result (1 vs 3 allocations)
+  char oledBuf[96];
+  snprintf(oledBuf, sizeof(oledBuf), "%s %s - 128x64", Texts::test.str().c_str(), Texts::ok.str().c_str());
+  oledTestResult = String(oledBuf);
   Serial.println("OLED: Tests complets OK\r\n");
 }
 
@@ -2277,7 +2359,10 @@ void testADC() {
     Serial.printf("GPIO%d: %d (%.2fV)\r\n", reading.pin, reading.rawValue, reading.voltage);
   }
   
-  adcTestResult = String(numADC) + " " + String(Texts::channels) + " - " + String(Texts::ok);
+  // [OPT-009]: Buffer-based test result (1 vs 4 allocations)
+  char adcBuf[96];
+  snprintf(adcBuf, sizeof(adcBuf), "%d %s - %s", numADC, Texts::channels.str().c_str(), Texts::ok.str().c_str());
+  adcTestResult = String(adcBuf);
   Serial.printf("ADC: %d canaux testes\r\n", numADC);
 }
 
@@ -2309,7 +2394,10 @@ void testPWM() {
   ledcWrite(pwmChannel, 0);
   ledcDetachPin(testPin);                // pin
 
-  pwmTestResult = String(Texts::test) + " " + String(Texts::ok) + " - GPIO " + String(testPin);
+  // [OPT-009]: Buffer-based test result (1 vs 4 allocations)
+  char pwmBuf[96];
+  snprintf(pwmBuf, sizeof(pwmBuf), "%s %s - GPIO %d", Texts::test.str().c_str(), Texts::ok.str().c_str(), testPin);
+  pwmTestResult = String(pwmBuf);
   Serial.println("PWM: OK");
 }
 
@@ -2397,7 +2485,7 @@ void testRGBLed() {
   delay(150);
   digitalWrite(RGB_LED_PIN_B, LOW);
 
-  rgbLedTestResult = String(Texts::ok);
+  rgbLedTestResult = OK_STR;
   rgbLedAvailable = true;
   Serial.println("LED RGB: OK");
 }
@@ -2432,7 +2520,7 @@ void testBuzzer() {
   delay(220);
   noTone(BUZZER_PIN);
 
-  buzzerTestResult = String(Texts::ok);
+  buzzerTestResult = OK_STR;
   buzzerAvailable = true;
   Serial.println("Buzzer: OK");
 }
@@ -2544,7 +2632,7 @@ void testDHTSensor() {
       dhtHumidity = static_cast<float>(data[0]) + static_cast<float>(data[1]) * 0.1f;
       dhtTemperature = static_cast<float>(data[2]) + static_cast<float>(data[3]) * 0.1f;
     }
-    dhtTestResult = String(Texts::ok);
+    dhtTestResult = OK_STR;
     dhtAvailable = true;
     Serial.printf("%s: T=%.1f°C H=%.1f%%\r\n", sensorName, dhtTemperature, dhtHumidity);
   } else {
@@ -2577,7 +2665,7 @@ void testLightSensor() {
   }
   lightSensorValue = sum / samples;
 
-  lightSensorTestResult = String(Texts::ok);
+  lightSensorTestResult = OK_STR;
   lightSensorAvailable = true;
   Serial.printf("Light Sensor: %d\r\n", lightSensorValue);
 }
@@ -2637,7 +2725,7 @@ void testDistanceSensor() {
   if (duration > 0UL) {
     // Vitesse du son ~0.034 cm/µs ; aller-retour => /2
     distanceValue = (double)duration * 0.034 / 2.0;
-    distanceSensorTestResult = String(Texts::ok);
+    distanceSensorTestResult = OK_STR;
     distanceSensorAvailable = true;
     Serial.printf("Distance: %.2f cm\r\n", distanceValue);
   } else {
@@ -2665,7 +2753,7 @@ void testMotionSensor() {
   yield();
   motionDetected = digitalRead(MOTION_SENSOR_PIN);
 
-  motionSensorTestResult = String(Texts::ok);
+  motionSensorTestResult = OK_STR;
   motionSensorAvailable = true;
   Serial.printf("Motion: %s\r\n", motionDetected ? "Detected" : "None");
 }
@@ -2879,8 +2967,10 @@ void handleBuiltinLEDConfig() {
     if (newGPIO >= 0 && newGPIO <= 48) {
       BUILTIN_LED_PIN = newGPIO;
       resetBuiltinLEDTest();
-      String message = String(Texts::config) + " " + String(Texts::gpio) + " " + String(BUILTIN_LED_PIN);
-      sendOperationSuccess(message);
+      // [OPT-007]: Buffer-based message formatting (1 vs 4 allocations)
+      char msgBuf[96];
+      snprintf(msgBuf, sizeof(msgBuf), "%s %s %d", Texts::config.str().c_str(), Texts::gpio.str().c_str(), BUILTIN_LED_PIN);
+      sendOperationSuccess(String(msgBuf));
       return;
     }
   }
@@ -2937,7 +3027,10 @@ void handleBuiltinLEDControl() {
       digitalWrite(BUILTIN_LED_PIN, LOW);
       delay(200);
     }
-    message = String(Texts::blink) + " " + String(Texts::ok);
+    // [OPT-009]: Buffer-based message (1 vs 2 allocations)
+    char msgBuf[96];
+    snprintf(msgBuf, sizeof(msgBuf), "%s %s", Texts::blink.str().c_str(), Texts::ok.str().c_str());
+    message = String(msgBuf);
   } else if (action == "fade") {
     for (int i = 0; i <= 255; i += 5) {
       analogWrite(BUILTIN_LED_PIN, i);
@@ -2948,7 +3041,10 @@ void handleBuiltinLEDControl() {
       delay(10);
     }
     digitalWrite(BUILTIN_LED_PIN, LOW);
-    message = String(Texts::fade) + " " + String(Texts::ok);
+    // [OPT-009]: Buffer-based message (1 vs 2 allocations)
+    char msgBuf[96];
+    snprintf(msgBuf, sizeof(msgBuf), "%s %s", Texts::fade.str().c_str(), Texts::ok.str().c_str());
+    message = String(msgBuf);
   } else if (action == "off") {
     digitalWrite(BUILTIN_LED_PIN, LOW);
     builtinLedTested = false;
@@ -2972,8 +3068,10 @@ void handleNeoPixelConfig() {
       if (strip) delete strip;
       strip = new Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
       resetNeoPixelTest();
-      String message = String(Texts::config) + " " + String(Texts::gpio) + " " + String(LED_PIN);
-      sendOperationSuccess(message);
+      // [OPT-007]: Buffer-based message formatting (1 vs 4 allocations)
+      char msgBuf[96];
+      snprintf(msgBuf, sizeof(msgBuf), "%s %s %d", Texts::config.str().c_str(), Texts::gpio.str().c_str(), LED_PIN);
+      sendOperationSuccess(String(msgBuf));
       return;
     }
   }
@@ -3027,16 +3125,26 @@ void handleNeoPixelPattern() {
   String message;
   if (pattern == "rainbow") {
     neopixelRainbow();
-    message = String(Texts::rainbow) + " " + String(Texts::ok);
+    char msgBuf[96];
+    snprintf(msgBuf, sizeof(msgBuf), "%s %s", Texts::rainbow.str().c_str(), Texts::ok.str().c_str());
+    message = String(msgBuf);
   } else if (pattern == "blink") {
     neopixelBlink(strip->Color(255, 0, 0), 5);
-    message = String(Texts::blink) + " " + String(Texts::ok);
+    // [OPT-009]: Buffer-based message (1 vs 2 allocations)
+    char msgBuf[96];
+    snprintf(msgBuf, sizeof(msgBuf), "%s %s", Texts::blink.str().c_str(), Texts::ok.str().c_str());
+    message = String(msgBuf);
   } else if (pattern == "fade") {
     neopixelFade(strip->Color(0, 0, 255));
-    message = String(Texts::fade) + " " + String(Texts::ok);
+    // [OPT-009]: Buffer-based message (1 vs 2 allocations)
+    char msgBuf[96];
+    snprintf(msgBuf, sizeof(msgBuf), "%s %s", Texts::fade.str().c_str(), Texts::ok.str().c_str());
+    message = String(msgBuf);
   } else if (pattern == "chase") {
     neopixelChase();
-    message = String(Texts::chase) + " " + String(Texts::ok);
+    char msgBuf[96];
+    snprintf(msgBuf, sizeof(msgBuf), "%s %s", Texts::chase.str().c_str(), Texts::ok.str().c_str());
+    message = String(msgBuf);
   } else if (pattern == "off") {
     strip->clear();
     strip->show();
@@ -3097,8 +3205,11 @@ void handleOLEDConfig() {
         applyOLEDOrientation();
       }
 
-      String message = "I2C reconfigure: SDA:" + String(I2C_SDA) + " SCL:" + String(I2C_SCL) + " Rot:" + String(oledRotation) + " Res:" + String(oledWidth) + "x" + String(oledHeight);
-      sendOperationSuccess(message, {
+      // [OPT-007]: Buffer-based message formatting to reduce allocations (1 vs 9)
+      char messageBuffer[128];
+      snprintf(messageBuffer, sizeof(messageBuffer), "I2C reconfigure: SDA:%d SCL:%d Rot:%d Res:%dx%d", 
+               I2C_SDA, I2C_SCL, oledRotation, oledWidth, oledHeight);
+      sendOperationSuccess(String(messageBuffer), {
         jsonNumberField("sda", I2C_SDA),
         jsonNumberField("scl", I2C_SCL),
         jsonNumberField("rotation", oledRotation),
@@ -3162,8 +3273,10 @@ void handleOLEDStep() {
   }
 
   String label = getOLEDStepLabel(stepId);
-  String message = String(Texts::oled_step_executed_prefix) + " " + label;
-  sendOperationSuccess(message);
+  // [OPT-007]: Buffer-based message formatting (1 vs 2 allocations)
+  char msgBuf[256];
+  snprintf(msgBuf, sizeof(msgBuf), "%s %s", Texts::oled_step_executed_prefix.str().c_str(), label.c_str());
+  sendOperationSuccess(String(msgBuf));
 }
 
 void handleOLEDMessage() {
@@ -3367,7 +3480,8 @@ void handleRGBLedConfig() {
     RGB_LED_PIN_R = server.arg("r").toInt();
     RGB_LED_PIN_G = server.arg("g").toInt();
     RGB_LED_PIN_B = server.arg("b").toInt();
-    sendActionResponse(200, true, String(Texts::ok));
+    // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
+    sendActionResponse(200, true, OK_STR);
   } else {
     sendActionResponse(400, false, String(Texts::configuration_invalid));
   }
@@ -3418,7 +3532,8 @@ void handleRGBLedColor() {
 void handleBuzzerConfig() {
   if (server.hasArg("pin")) {
     BUZZER_PIN = server.arg("pin").toInt();
-    sendActionResponse(200, true, String(Texts::ok));
+    // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
+    sendActionResponse(200, true, OK_STR);
   } else {
     sendActionResponse(400, false, String(Texts::configuration_invalid));
   }
@@ -3518,7 +3633,8 @@ void handleDHTTest() {
 void handleLightSensorConfig() {
   if (server.hasArg("pin")) {
     LIGHT_SENSOR_PIN = server.arg("pin").toInt();
-    sendActionResponse(200, true, String(Texts::ok));
+    // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
+    sendActionResponse(200, true, OK_STR);
   } else {
     sendActionResponse(400, false, String(Texts::configuration_invalid));
   }
@@ -3537,7 +3653,8 @@ void handleDistanceSensorConfig() {
   if (server.hasArg("trig") && server.hasArg("echo")) {
     DISTANCE_TRIG_PIN = server.arg("trig").toInt();
     DISTANCE_ECHO_PIN = server.arg("echo").toInt();
-    sendActionResponse(200, true, String(Texts::ok));
+    // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
+    sendActionResponse(200, true, OK_STR);
   } else {
     sendActionResponse(400, false, String(Texts::configuration_invalid));
   }
@@ -3555,7 +3672,8 @@ void handleDistanceSensorTest() {
 void handleMotionSensorConfig() {
   if (server.hasArg("pin")) {
     MOTION_SENSOR_PIN = server.arg("pin").toInt();
-    sendActionResponse(200, true, String(Texts::ok));
+    // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
+    sendActionResponse(200, true, OK_STR);
   } else {
     sendActionResponse(400, false, String(Texts::configuration_invalid));
   }
@@ -4127,7 +4245,11 @@ void handlePrintVersion() {
   collectDiagnosticInfo();
   collectDetailedMemory();
   
-  String html = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>" + String(Texts::title) + " " + String(Texts::version) + String(PROJECT_VERSION) + "</title>";
+  // [OPT-007]: Buffer-based HTML title (1 vs 4 allocations)
+  char titleBuf[256];
+  snprintf(titleBuf, sizeof(titleBuf), "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>%s %s%s</title>",
+           Texts::title.str().c_str(), Texts::version.str().c_str(), PROJECT_VERSION);
+  String html = String(titleBuf);
   html += "<style>";
   html += "@page{size:A4;margin:10mm}";
   html += "body{font:11px Arial;margin:10px;color:#333}";
@@ -4728,9 +4850,11 @@ void setup() {
       if (progress > 100) {
         progress = 100;
       }
-      String detail = String(Texts::loading) + " " + String(progress) + "%";
+      // [OPT-007]: Buffer-based progress text (1 vs 3 allocations)
+      char detailBuf[64];
+      snprintf(detailBuf, sizeof(detailBuf), "%s %d%%", Texts::loading.str().c_str(), progress);
       oledShowWiFiStatus(String(Texts::wifi_connection),
-                         detail,
+                         String(detailBuf),
                          "",
                          progress);
     }
@@ -4746,9 +4870,11 @@ void setup() {
     Serial.printf("SSID: %s\r\n", WiFi.SSID().c_str());
     Serial.printf("IP: %s\r\n\r\n", WiFi.localIP().toString().c_str());
     if (oledAvailable) {
-      String detail = String(Texts::connected) + ": " + WiFi.SSID();
+      // [OPT-007]: Buffer-based WiFi status detail (1 vs 2 allocations)
+      char detailBuf[96];
+      snprintf(detailBuf, sizeof(detailBuf), "%s: %s", Texts::connected.str().c_str(), WiFi.SSID().c_str());
       String footer = WiFi.localIP().toString();
-      oledShowWiFiStatus(String(Texts::wifi_connection), detail, footer, 100);
+      oledShowWiFiStatus(String(Texts::wifi_connection), String(detailBuf), footer, 100);
     }
     displayWiFiConnected(WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
     if (startMDNSService(true)) {
