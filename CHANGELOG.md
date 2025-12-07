@@ -1,3 +1,21 @@
+## [Version 3.20.0] - 2025-12-07
+
+### Added
+- **Advanced Button Management:** Interactive button controls with visual feedback
+  - BOOT Button (GPIO 0): Long press (2s) triggers system reboot with TFT progress bar; release before 2s clears screen
+  - Button 1 (GPIO 38): Short press cycles RGB LED colors (Off → Red → Green → Blue → White)
+  - Button 2 (GPIO 39): Short press triggers confirmation beep
+  - Real-time progress visualization during long-press operations on TFT
+  - Enhanced debouncing and long-press detection for reliable button interaction
+
+### Changed
+- **Version bump:** `PROJECT_VERSION` set to `3.20.0` in `platformio.ini`
+- Button handling refactored with separate functions for long-press and short-press actions
+- Improved visual feedback system using TFT display for user interactions
+
+### Documentation
+- Updated README/README_FR with button functionality descriptions and usage examples
+
 ## [Version 3.19.0] - 2025-12-07
 
 ### Changed

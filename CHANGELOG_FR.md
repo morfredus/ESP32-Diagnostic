@@ -1,3 +1,21 @@
+## [Version 3.20.0] - 2025-12-07
+
+### Ajouté
+- **Gestion Avancée des Boutons :** Contrôles de boutons interactifs avec retour visuel
+  - Bouton BOOT (GPIO 0) : Appui long (2s) déclenche un redémarrage système avec barre de progression TFT ; relâcher avant 2s efface l'écran
+  - Bouton 1 (GPIO 38) : Appui court cycle les couleurs LED RGB (Éteint → Rouge → Vert → Bleu → Blanc)
+  - Bouton 2 (GPIO 39) : Appui court déclenche un bip de confirmation
+  - Visualisation de progression en temps réel durant les opérations d'appui long sur TFT
+  - Antirebond amélioré et détection d'appui long pour une interaction bouton fiable
+
+### Modifié
+- **Version augmentée :** `PROJECT_VERSION` positionné à `3.20.0` dans `platformio.ini`
+- Gestion des boutons refactorisée avec fonctions séparées pour actions appui long et appui court
+- Système de retour visuel amélioré utilisant l'écran TFT pour les interactions utilisateur
+
+### Documentation
+- README/README_FR mis à jour avec descriptions des fonctionnalités boutons et exemples d'utilisation
+
 ## [Version 3.19.0] - 2025-12-07
 
 ### Modifié

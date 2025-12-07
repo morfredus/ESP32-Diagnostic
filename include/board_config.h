@@ -39,6 +39,7 @@
 #define DEFAULT_RGB_LED_PIN_G 47   // Côté Droit
 #define DEFAULT_RGB_LED_PIN_B 45   // Côté Droit
 
+#define PIN_BUTTON_BOOT      0     // Bouton BOOT intégré
 #define PIN_BUTTON_1         38    // Côté Droit
 #define PIN_BUTTON_2         39    // Côté Droit
 
@@ -93,6 +94,7 @@
 #define DEFAULT_RGB_LED_PIN_G 14   // RGB Vert.
 #define DEFAULT_RGB_LED_PIN_B 15   // RGB Bleu.
 
+#define PIN_BUTTON_BOOT      0     // Bouton BOOT intégré
 #define PIN_BUTTON_1         34    // Bouton 1 (Entrée Seulement).
 #define PIN_BUTTON_2         35    // Bouton 2 (Entrée Seulement).
 
