@@ -1,3 +1,19 @@
+## [Version 3.20.2] - 2025-12-07
+
+### Modifié
+- **Références des Pins dans l'Interface Web :** Les valeurs GPIO codées en dur dans l'interface web sont remplacées par des références dynamiques depuis `board_config.h`
+   - Les pins LED RGB (R/G/B) référencent désormais `RGB_LED_PIN_R`, `RGB_LED_PIN_G`, `RGB_LED_PIN_B` au lieu des valeurs codées en dur
+   - Le pin du capteur DHT référence désormais `DHT_PIN` au lieu d'une valeur codée en dur
+   - Le pin du capteur de lumière référence désormais `LIGHT_SENSOR_PIN` au lieu d'une valeur codée en dur
+   - Les pins de détente/écho du capteur de distance référencent désormais `DISTANCE_TRIG_PIN` / `DISTANCE_ECHO_PIN` au lieu de valeurs codées en dur
+   - Le pin du capteur de mouvement référence désormais `MOTION_SENSOR_PIN` au lieu d'une valeur codée en dur
+   - Le pin du buzzer/PWM référence désormais `PWM_PIN` au lieu d'une valeur codée en dur
+- Les valeurs de pin sont injectées comme constantes JavaScript au chargement de la page, garantissant que l'interface affiche toujours les pins compilés corrects pour la cible
+- **Version augmentée :** `PROJECT_VERSION` positionné à `3.20.2` dans `platformio.ini`
+
+### Corrigé
+- L'interface web affiche désormais correctement les pins GPIO réels en fonction de la cible compilée (ESP32-S3 vs ESP32 CLASSIC)
+
 ## [Version 3.20.1] - 2025-12-07
 
 ### Corrigé
