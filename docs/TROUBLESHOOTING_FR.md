@@ -35,7 +35,7 @@
 - Consultez le moniteur série pour les messages d'initialisation TFT : "[TFT] Initializing ST7789 display..."
 
 ## La connexion Wi-Fi échoue
-- Revérifiez les couples SSID/mot de passe dans `wifi-config.h`.
+- Revérifiez les couples SSID/mot de passe dans `secrets.h`.
 - Surveillez le moniteur série pour les codes `WL_NO_SSID_AVAIL` ou `WL_CONNECT_FAILED`.
 - Rapprochez la carte du point d'accès ou testez un SSID 2,4 GHz.
 

@@ -92,10 +92,10 @@
 // Copy include/config-example.h to include/config.h and customize your settings
 #include "config.h"
 
-// WiFi configuration file - customize your network credentials
-// For reference, see include/wifi-config-example.h
-// wifi-config.h is excluded from version control via .gitignore
-#include "wifi-config.h"
+// Secrets file - customize your network credentials
+// For reference, see include/secrets-example.h
+// secrets.h is excluded from version control via .gitignore
+#include "secrets.h"
 
 // Dual-language UI strings
 #include "languages.h"

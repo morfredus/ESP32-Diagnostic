@@ -39,8 +39,8 @@ Les bibliothèques suivantes sont fournies avec la plateforme ESP32 : `WiFi`, `W
 **Note :** La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant archivée.
 
 ## 4. Préparer les identifiants Wi-Fi
-1. Dupliquez `wifi-config-example.h` puis renommez la copie en `wifi-config.h`.
-2. Ouvrez `wifi-config.h` et remplacez les paires SSID/MOT_DE_PASSE par vos réseaux.
+1. Dupliquez `secrets-example.h` puis renommez la copie en `secrets.h`.
+2. Ouvrez `secrets.h` et remplacez les paires SSID/MOT_DE_PASSE par vos réseaux.
 3. Vous pouvez déclarer plusieurs réseaux ; le firmware les testera dans l'ordre.
 
 Les précisions de configuration sont détaillées dans [CONFIG_FR.md](CONFIG_FR.md).

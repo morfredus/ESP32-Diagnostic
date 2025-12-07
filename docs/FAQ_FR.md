@@ -17,7 +17,7 @@ R : Pas en natif. Vous pouvez intégrer le binaire à votre chargeur OTA. Consu
 
 ## Installation & configuration
 **Q : Où stocker les identifiants Wi-Fi ?**
-R : Copier `wifi-config-example.h` en `wifi-config.h`, renseigner vos SSID/mots de passe et exclure le fichier du dépôt.
+R : Copier `secrets-example.h` en `secrets.h`, renseigner vos SSID/mots de passe et exclure le fichier du dépôt.
 
 **Q : Comment activer/désactiver les modules optionnels ?**
 R : Ajuster les flags dans `config.h` ou utiliser l'endpoint REST `POST /api/modules/<id>/toggle`. Voir [DIAGNOSTIC_MODULES_FR.md](DIAGNOSTIC_MODULES_FR.md).

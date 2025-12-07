@@ -18,7 +18,7 @@ packaging steps.
 
 ## Setup & configuration
 **Q: Where do I store Wi-Fi credentials?**
-A: Copy `wifi-config-example.h` to `wifi-config.h`, populate your SSIDs/passwords, and keep the file out of version control.
+A: Copy `secrets-example.h` to `secrets.h`, populate your SSIDs/passwords, and keep the file out of version control.
 
 **Q: How do I enable or disable optional modules?**
 A: Update the flags in `config.h` or use the REST endpoint `POST /api/modules/<id>/toggle`. Refer to

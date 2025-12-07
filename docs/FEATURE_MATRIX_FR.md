@@ -24,7 +24,7 @@ Elle aide à planifier les campagnes de validation et à vérifier si des périp
 |--------------------|--------------------|-------------------|-------|
 | I2C principal | **ESP32-S3:** SDA=21, SCL=20 · **ESP32 Classic:** SDA=21, SCL=22 | Toutes les cartes supportées | Utilisé pour l'OLED, les packs capteurs, l'EEPROM. |
 | LED RGB | **ESP32-S3:** R=47, G=48, B=45 · **ESP32 Classic:** R=12, G=14, B=15 | Toutes les cartes supportées | Broches PWM pour LED RGB commune anode/cathode. |
-| Boutons | **ESP32-S3:** BTN1=1, BTN2=2 · **ESP32 Classic:** BTN1=34, BTN2=35 | Toutes les cartes supportées | Pull-ups internes si disponibles (les GPIO 34–39 du Classic n'ont pas de pull‑up interne). |
+| Boutons | **ESP32-S3:** BTN1=38, BTN2=39 · **ESP32 Classic:** BTN1=34, BTN2=35 | Toutes les cartes supportées | Pull-ups internes si disponibles (les GPIO 34–39 du Classic n'ont pas de pull‑up interne). |
 | TFT ST7789 | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7 · **ESP32 Classic:** MOSI=23, SCLK=18, CS=19, DC=27, RST=26, BL=13 | Toutes les cartes supportées | SPI dédié pour affichage TFT. Voir PIN_MAPPING_FR.md pour conflits potentiels. |
 | Boucle UART | TX0/RX0 & UART1 optionnel | Toutes | Nécessite un cavalier TX↔RX sur l'UART choisi. |
 | Température OneWire | Variable par cible | ESP32, ESP32-S3 | Détection DS18B20 lorsque `ENABLE_ONEWIRE` est actif. Voir PIN_MAPPING_FR.md. |

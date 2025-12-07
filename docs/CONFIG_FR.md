@@ -1,4 +1,4 @@
-# Configuration (FR) — v3.15.0
+# Configuration (FR) — v3.19.0
 
 ## Sélection de l'Environnement de Build
 
@@ -21,7 +21,7 @@ pio run -e esp32devkitc --target upload
 
 ## Mappings de Broches Spécifiques au Matériel
 
-Les configurations de broches sont définies dans `include/config.h` via compilation conditionnelle :
+Les configurations de broches sont définies dans `include/board_config.h` (inclus automatiquement via `config.h`) via compilation conditionnelle :
 
 - **Cibles ESP32-S3** (`esp32s3_n16r8`, `esp32s3_n8r8`) : Utilisent le define `TARGET_ESP32_S3`
 - **ESP32 Classic** (`esp32devkitc`) : Utilise le define `TARGET_ESP32_CLASSIC`
@@ -29,25 +29,20 @@ Les configurations de broches sont définies dans `include/config.h` via compila
 Voir [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) pour la référence complète des broches par environnement.
 
 ## Identifiants Wi-Fi
-Le firmware lit les identifiants dans `include/wifi-config.h`.
+Le firmware lit les identifiants dans `include/secrets.h` (copiez `include/secrets-example.h`). Le fichier est ignoré du dépôt via `.gitignore`.
 
 ```cpp
-// wifi-config.h (exemple)
-#pragma once
-#include <vector>
-#include <WiFiMulti.h>
+// secrets.h (exemple)
+const char* WIFI_SSID_1 = "MonSSID";
+const char* WIFI_PASS_1 = "MonMotDePasse";
 
-static WiFiMulti wifiMulti;
-
-static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
-    {"MonSSID", "MonMotDePasse"},
-    {"SecoursSSID", "SecoursMotDePasse"}
-};
+// Réseau de secours optionnel
+const char* WIFI_SSID_2 = "SecoursSSID";
+const char* WIFI_PASS_2 = "SecoursMotDePasse";
 ```
 
 - Déclarez au moins un couple SSID/mot de passe.
-- Le firmware parcourt la liste jusqu'à réussir la connexion.
-- Évitez de versionner des identifiants sensibles.
+- Ne versionnez pas les identifiants sensibles.
 
 ## Paramètres de langue
 - Le français est la langue par défaut.
@@ -68,7 +63,7 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 **ESP32-S3 (esp32s3_n16r8 / esp32s3_n8r8) :**
   - MOSI : GPIO 11, SCLK : GPIO 12
   - CS : GPIO 10, DC : GPIO 9
-  - RST : GPIO 7, BL : GPIO 15
+  - RST : GPIO 13, BL : GPIO 7
 
 **ESP32 Classic (esp32devkitc) :**
   - MOSI : GPIO 23, SCLK : GPIO 18
@@ -85,10 +80,11 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 
 ## Boutons matériels (v3.17.1+)
 - Fonctionnalité optionnelle activable via `ENABLE_BUTTONS` dans `include/config.h`.
-- Utilise les broches `PIN_BUTTON_1` et `PIN_BUTTON_2` déjà définies par cible dans `config.h` (aucun changement de mapping).
+- Utilise les broches `PIN_BUTTON_1` et `PIN_BUTTON_2` définies par cible dans `board_config.h`.
 - Actions par défaut :
   - BTN1 : appui court → bip bref du buzzer (feedback utilisateur).
   - BTN2 : appui court → cycle des couleurs de la LED RGB (rouge → vert → bleu → blanc).
+- ESP32-S3 : BTN1=38, BTN2=39 pour éviter les conflits d'upload/reset.
 - Note ESP32 Classic : les GPIO 34–39 sont en entrée seule et sans pull‑up interne. Prévoir des résistances de tirage externes si nécessaire lorsque BTN2 est câblé sur GPIO 35.
 
 
@@ -97,8 +93,8 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 - TRIG est une broche de sortie ; ECHO est une broche d'entrée.
 - Alimentez le capteur en 5V et protégez la ligne ECHO avec un pont diviseur (5V vers 3,3V) avant l'entrée ESP32.
 - ESP32‑S3 avec mémoire Octal PSRAM/Flash (ex. DevKitC‑1 N16R8) : évitez d'utiliser les GPIO 35..48 pour TRIG/ECHO car ces broches sont réservées par l'interface OPI. Le firmware signalera cette configuration comme invalide.
-- Défauts depuis v3.12.3 : TRIG = GPIO 16, ECHO = GPIO 17.
-- Cartographie alternative sur ESP32‑S3 si le bus I2C secondaire est inactif : TRIG = GPIO 26 (sortie), ECHO = GPIO 25 (entrée).
+- Défauts : TRIG = GPIO 3, ECHO = GPIO 6.
+- Cartographie alternative sur ESP32-S3 si le bus I2C secondaire est inactif : TRIG = GPIO 26 (sortie), ECHO = GPIO 25 (entrée).
 
 ## Règles de nommage Bluetooth®
 - Les noms doivent comporter 3 à 31 caractères ASCII alphanumériques (+ tiret ou underscore).

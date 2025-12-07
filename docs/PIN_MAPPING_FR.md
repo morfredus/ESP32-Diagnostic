@@ -1,4 +1,4 @@
-# Mapping des pins — Référence rapide (v3.18.3)
+# Mapping des pins — Référence rapide (v3.19.0)
 
 - **Cartes supportées :**
   - ESP32-S3-DevKitC-1 N16R8 (16Mo Flash, 8Mo PSRAM) — `esp32s3_n16r8`
@@ -8,7 +8,7 @@
 
 ## ESP32-S3 (N16R8 / N8R8)
 - I2C : SDA=21, SCL=20
-- Boutons : BTN1=1, BTN2=2
+- Boutons : BTN1=38, BTN2=39
 - LED RGB : R=19, G=47, B=45
 - Capteurs : DHT=5, Lumière=4, HC-SR04 TRIG=3/ECHO=6, Mouvement=46, PWM/Buzzer=14
 - TFT ST7789 : MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7
@@ -31,10 +31,11 @@
 - Classic : boutons en entrée seulement ; PWM/Buzzer sur GPIO 5 est une broche de boot ; éviter de partager les GPIO 18/19/23/13/26/27 du TFT sans gestion stricte des chip select ; privilégier ADC1 pour les mesures analogiques.
 
 ## Comment changer les pins
-- Statique : éditez `include/config.h`, reconstruisez avec `pio run -e <environment>`.
+- Statique : éditez `include/board_config.h`, reconstruisez avec `pio run -e <environment>`.
 - Dynamique : via l'interface web (capteurs) ou la console série ; persiste jusqu'au redémarrage.
 
 ## Historique des versions
+- v3.19.0 : Pin mapping déplacé dans `board_config.h` ; boutons ESP32-S3 sur GPIO 38/39 pour éviter les conflits d'upload/reset ; documentation alignée.
 - v3.18.3 : Résolution du conflit pin 48 entre NeoPixel et LED RGB sur ESP32-S3 ; réorganisation complète du pin mapping S3.
 - v3.17.1 : Pin mapping ESP32-S3 et Classic actualisé (GPS, TFT, LED RGB, capteurs, boutons) + documentation alignée.
 - v3.15.1 : Correctif mémoire critique pour l’interface web sur ESP32 Classic.

@@ -1,4 +1,4 @@
-# Pin Mapping — Quick Reference (v3.18.3)
+# Pin Mapping — Quick Reference (v3.19.0)
 
 ## Supported Environments
 
@@ -21,8 +21,8 @@ Pin mappings are defined in `include/config.h` using conditional compilation bas
 - **SCL:** GPIO 20
 
 ### Buttons
-- **Button 1:** GPIO 1
-- **Button 2:** GPIO 2
+- **Button 1:** GPIO 38
+- **Button 2:** GPIO 39
 
 ### RGB LED (Separate pins)
 - **Red:** GPIO 19
@@ -150,7 +150,7 @@ Pin mappings are defined in `include/config.h` using conditional compilation bas
 ## How to Change Pins
 
 ### Static Configuration (Compile-time)
-1. Edit `include/config.h`
+1. Edit `include/board_config.h`
 2. Modify pin definitions in the appropriate `#if defined(TARGET_ESP32_S3)` or `#elif defined(TARGET_ESP32_CLASSIC)` block
 3. Rebuild firmware: `pio run -e <environment>`
 
@@ -209,6 +209,7 @@ pio run -e esp32devkitc --target upload
 ---
 
 ## Version History
+- **v3.19.0:** Pin mapping moved to `board_config.h`; ESP32-S3 buttons set to GPIO 38/39 to avoid upload/reset conflicts; docs aligned.
 - **v3.18.3:** Resolved GPIO 48 conflict between NeoPixel and RGB LED on ESP32-S3; complete S3 pin mapping reorganization.
 - **v3.17.1:** Refreshed ESP32-S3 and Classic pin mappings (GPS, TFT, RGB, sensors, buttons) and aligned documentation.
 - **v3.15.1:** Critical memory fix for ESP32 Classic web UI.

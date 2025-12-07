@@ -5,7 +5,7 @@
 ## 1. First boot
 1. Open the Serial Monitor at 115200 baud immediately after flashing.
 2. Wait for the firmware to connect to Wi-Fi. Successful connection prints the assigned IP and the URL `http://ESP32-Diagnostic.local`, and any attached OLED mirrors the association/DHCP/progress states.
-3. If Wi-Fi fails, the console displays error hints (wrong password, AP not found, etc.). Update `wifi-config.h` accordingly.
+3. If Wi-Fi fails, the console displays error hints (wrong password, AP not found, etc.). Update `secrets.h` accordingly.
 
 ## 2. Accessing the dashboard
 - Navigate to the printed IP address or to `http://ESP32-Diagnostic.local` (mDNS) from a device on the same network.

@@ -60,8 +60,8 @@ Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord
    - `esp32s3_n16r8` (par défaut) : ESP32-S3 avec 16Mo Flash + 8Mo PSRAM
    - `esp32s3_n8r8` : ESP32-S3 avec 8Mo Flash + 8Mo PSRAM
    - `esp32devkitc` : ESP32 Classic avec 4Mo Flash (sans PSRAM)
-2. **Pin Mapping Spécifique Matériel** : Configurations de broches dédiées dans `config.h` pour chaque cible.
-3. **Configuration ESP32-S3 (ajustée en 3.18.3)** : I2C (SDA=21, SCL=20), LED RGB (R=47, G=46, B=19), NeoPixel=48, boutons BTN1=1 / BTN2=2, GPS RX=18/TX=17/PPS=8, TFT MOSI=11/SCLK=12/CS=10/DC=9/RST=13/BL=7, capteurs (PWM/Buzzer=14, DHT=5, Mouvement=6, Lumière=4, HC-SR04 TRIG=3/ECHO=19).
+2. **Pin Mapping Spécifique Matériel** : Configurations de broches dédiées dans `board_config.h` (automatiquement inclus par `config.h`) pour chaque cible.
+3. **Configuration ESP32-S3 (ajustée en 3.19.0)** : I2C (SDA=21, SCL=20), LED RGB (R=19, G=47, B=45), NeoPixel=48, boutons BTN1=38 / BTN2=39, GPS RX=18/TX=17/PPS=8, TFT MOSI=11/SCLK=12/CS=10/DC=9/RST=13/BL=7, capteurs (PWM/Buzzer=14, DHT=5, Mouvement=46, Lumière=4, HC-SR04 TRIG=3/ECHO=6).
 4. **Configuration ESP32 Classic (ajustée en 3.17.1)** : I2C (SDA=21, SCL=22), LED RGB (R=12, G=14, B=15), boutons BTN1=34 / BTN2=35, GPS RX=16/TX=17/PPS=4, TFT MOSI=23/SCLK=18/CS=19/DC=27/RST=26/BL=13, capteurs (PWM/Buzzer=5, DHT=25, Mouvement=36, Lumière=2, HC-SR04 TRIG=32/ECHO=33).
 5. **Mappings Partagés** : Affectations de broches communes entre ESP32-S3 N8R8 et ESP32 Classic là où le matériel le permet.
 
@@ -76,7 +76,8 @@ Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord
 - `src/main.cpp` – point d'entrée du firmware, boucle principale, ordonnanceur et gestionnaires HTTP.
 - `include/languages.h` – catalogue de traductions et sélecteur de langue à chaud.
 - `include/web_interface.h` – modèles HTML/CSS/JS fournis par le firmware.
-- `include/wifi-config-example.h` – modèle pour stocker les identifiants Wi-Fi.
+- `include/board_config.h` – mapping de broches spécifique à la carte (sélection via TARGET_ESP32_*).
+- `include/secrets-example.h` – modèle pour stocker les identifiants Wi-Fi (copier vers `include/secrets.h`).
 - `platformio.ini` – configuration PlatformIO pour toutes les cibles ESP32 supportées.
 - `docs/` – wiki complet regroupant installation, utilisation, API et guides de déploiement (FR/EN).
 

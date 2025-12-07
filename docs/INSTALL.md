@@ -39,8 +39,8 @@ The following libraries are bundled with the ESP32 platform: `WiFi`, `WebServer`
 **Note:** The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) is now archived.
 
 ## 4. Prepare Wi-Fi credentials
-1. Duplicate `wifi-config-example.h` and rename the copy to `wifi-config.h`.
-2. Open `wifi-config.h` and replace the placeholder SSID/PASS pairs with your own networks.
+1. Duplicate `secrets-example.h` and rename the copy to `secrets.h`.
+2. Open `secrets.h` and replace the placeholder SSID/PASS pairs with your own networks.
 3. Multiple networks can be declared; the firmware will try them in order.
 
 Detailed configuration notes are available in [CONFIG.md](CONFIG.md).
