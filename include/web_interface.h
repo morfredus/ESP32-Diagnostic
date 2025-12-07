@@ -10,7 +10,8 @@
 
 #include "languages.h"
 
-// Déclarations externes (définies dans le fichier principal)
+// [OPT-003] Extern declarations with clear organization
+// Core infrastructure
 extern const char* DIAGNOSTIC_VERSION_STR;
 extern const char* MDNS_HOSTNAME_STR;
 extern WebServer server;
@@ -18,16 +19,16 @@ extern DiagnosticInfo diagnosticData;
 extern const char* const DIAGNOSTIC_SECURE_SCHEME;
 extern const char* const DIAGNOSTIC_LEGACY_SCHEME;
 
-// Pin configuration variables from board_config.h
-extern int RGB_LED_PIN_R;
-extern int RGB_LED_PIN_G;
-extern int RGB_LED_PIN_B;
-extern int DHT_PIN;
-extern int LIGHT_SENSOR_PIN;
-extern int DISTANCE_TRIG_PIN;
-extern int DISTANCE_ECHO_PIN;
-extern int MOTION_SENSOR_PIN;
-extern int PWM_PIN;
+// Pin configuration variables from board_config.h (dynamic references)
+extern int RGB_LED_PIN_R;      // RGB LED Red channel
+extern int RGB_LED_PIN_G;      // RGB LED Green channel
+extern int RGB_LED_PIN_B;      // RGB LED Blue channel
+extern int DHT_PIN;            // DHT temperature/humidity sensor
+extern int LIGHT_SENSOR_PIN;   // Light sensor (LDR)
+extern int DISTANCE_TRIG_PIN;  // Distance sensor trigger (HC-SR04)
+extern int DISTANCE_ECHO_PIN;  // Distance sensor echo (HC-SR04)
+extern int MOTION_SENSOR_PIN;  // Motion sensor (PIR)
+extern int PWM_PIN;            // PWM/Buzzer output
 
 // Déclarations forward des fonctions
 String htmlEscape(const String& raw);
