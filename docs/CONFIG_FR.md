@@ -1,4 +1,4 @@
-# Configuration (FR) — v3.19.0
+# Configuration (FR) — v3.20.1
 
 ## Sélection de l'Environnement de Build
 
@@ -53,7 +53,7 @@ const char* WIFI_PASS_2 = "SecoursMotDePasse";
 ## Configuration des affichages
 
 ### Configuration OLED
-- Broches par défaut : SDA=21, SCL=20 (défaut ESP32-S3 dans ce projet).
+- Broches par défaut : SDA=15, SCL=16 (défaut ESP32-S3 dans ce projet ; garder GPIO19/20 libres pour l’USB D-/D+).
 - Modifiez le câblage à chaud via `/api/oled-config?sda=<pin>&scl=<pin>`.
 - Après modification, l'écran est réinitialisé automatiquement et la cartographie reste en RAM.
 

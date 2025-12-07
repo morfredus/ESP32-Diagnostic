@@ -7,7 +7,6 @@
 #if defined(TARGET_ESP32_S3)
 
 // BROCHES RÉSERVÉES
-// ?? GPIO15, 16 : LIBRES pour UART2. 
 // ?? GPIO48 : LIBRE pour la Neopixel intégrée.
 
 // ------------------------------------
@@ -30,15 +29,16 @@
 // ------------------------------------
 // I2C (Côté Droit)
 // ------------------------------------
-#define DEFAULT_I2C_SDA      21    // I2C Data (SDA).
-#define DEFAULT_I2C_SCL      20    // I2C Clock (SCL).
+#define DEFAULT_I2C_SDA      15    // I2C Data (SDA).
+#define DEFAULT_I2C_SCL      16    // I2C Clock (SCL).
 
 // ------------------------------------
 // LED RGB (Exclut 48) & Boutons
-#define DEFAULT_RGB_LED_PIN_R 19   // Côté Droit
-#define DEFAULT_RGB_LED_PIN_G 47   // Côté Droit
-#define DEFAULT_RGB_LED_PIN_B 45   // Côté Droit
+#define DEFAULT_RGB_LED_PIN_R 21   // Côté Droit
+#define DEFAULT_RGB_LED_PIN_G 45   // Côté Droit
+#define DEFAULT_RGB_LED_PIN_B 47   // Côté Droit
 
+#define PIN_BUTTON_BOOT      0     // Bouton BOOT intégré
 #define PIN_BUTTON_1         38    // Côté Droit
 #define PIN_BUTTON_2         39    // Côté Droit
 
@@ -93,6 +93,7 @@
 #define DEFAULT_RGB_LED_PIN_G 14   // RGB Vert.
 #define DEFAULT_RGB_LED_PIN_B 15   // RGB Bleu.
 
+#define PIN_BUTTON_BOOT      0     // Bouton BOOT intégré
 #define PIN_BUTTON_1         34    // Bouton 1 (Entrée Seulement).
 #define PIN_BUTTON_2         35    // Bouton 2 (Entrée Seulement).
 

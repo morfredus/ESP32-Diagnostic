@@ -373,15 +373,26 @@ bool motionDetected = false;
 // ========== BOUTONS ==========
 // Gestion simple avec anti-rebond et actions utiles par défaut
 #if ENABLE_BUTTONS
+static int buttonBootPin = PIN_BUTTON_BOOT;
 static int button1Pin = PIN_BUTTON_1;
 static int button2Pin = PIN_BUTTON_2;
+static int buttonBootLast = HIGH;
 static int button1Last = HIGH;
 static int button2Last = HIGH;
+static unsigned long buttonBootPressStart = 0;
 static unsigned long button1LastChange = 0;
 static unsigned long button2LastChange = 0;
 static const unsigned long debounceMs = 30;
+static const unsigned long longPressMs = 2000;
+static bool buttonBootLongPressTriggered = false;
 
 static void initButtons() {
+  // Bouton BOOT (GPIO 0)
+  if (buttonBootPin >= 0 && buttonBootPin <= 48) {
+    pinMode(buttonBootPin, INPUT_PULLUP);
+  }
+  
+  // Bouton 1 (GPIO 38 ESP32-S3 / GPIO 34 ESP32 Classic)
   if (button1Pin >= 0 && button1Pin <= 48) {
 #if defined(CONFIG_IDF_TARGET_ESP32)
     if (button1Pin >= 34 && button1Pin <= 39) {
@@ -393,6 +404,8 @@ static void initButtons() {
     pinMode(button1Pin, INPUT_PULLUP);
 #endif
   }
+  
+  // Bouton 2 (GPIO 39 ESP32-S3 / GPIO 35 ESP32 Classic)
   if (button2Pin >= 0 && button2Pin <= 48) {
 #if defined(CONFIG_IDF_TARGET_ESP32)
     if (button2Pin >= 34 && button2Pin <= 39) {
@@ -406,33 +419,135 @@ static void initButtons() {
   }
 }
 
-static void onButton1Pressed() {
-  // Action par défaut: bip bref sur le buzzer pour feedback
-  if (BUZZER_PIN >= 0) {
-    tone(BUZZER_PIN, 1000, 200);
+// Bouton BOOT: Appui long (2s) → reboot avec barre de progression TFT
+static void onButtonBootLongPress() {
+#if ENABLE_TFT_DISPLAY
+  if (tftAvailable) {
+    tft.fillScreen(TFT_BLACK);
+    tft.setTextSize(2);
+    tft.setTextColor(TFT_WHITE);
+    tft.setCursor(10, 80);
+    tft.println("Redemarrage...");
+    
+    // Barre de progression
+    int barX = 20;
+    int barY = 120;
+    int barW = tftWidth - 40;
+    int barH = 20;
+    tft.drawRect(barX, barY, barW, barH, TFT_WHITE);
+    
+    for (int i = 0; i <= 100; i += 10) {
+      int fillW = (barW - 4) * i / 100;
+      tft.fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_GREEN);
+      delay(50);
+    }
+    delay(300);
   }
+#endif
+  ESP.restart();
 }
 
-static void onButton2Pressed() {
-  // Action par défaut: cycle couleur RGB si disponible
-  static int step = 0;
+// Bouton 1: Cycle de couleurs RGB avec position éteinte
+static void onButton1Pressed() {
+  static int rgbStep = 0;
   int r = 0, g = 0, b = 0;
-  switch (step % 4) {
-    case 0: r = 255; g = 0; b = 0; break; // Rouge
-    case 1: r = 0; g = 255; b = 0; break; // Vert
-    case 2: r = 0; g = 0; b = 255; break; // Bleu
-    default: r = 255; g = 255; b = 255; break; // Blanc
+  
+  switch (rgbStep % 5) {
+    case 0: r = 0; g = 0; b = 0; break;       // Éteint
+    case 1: r = 255; g = 0; b = 0; break;     // Rouge
+    case 2: r = 0; g = 255; b = 0; break;     // Vert
+    case 3: r = 0; g = 0; b = 255; break;     // Bleu
+    case 4: r = 255; g = 255; b = 255; break; // Blanc
   }
+  
   if (RGB_LED_PIN_R >= 0 && RGB_LED_PIN_G >= 0 && RGB_LED_PIN_B >= 0) {
     analogWrite(RGB_LED_PIN_R, r);
     analogWrite(RGB_LED_PIN_G, g);
     analogWrite(RGB_LED_PIN_B, b);
   }
-  step++;
+  
+  rgbStep++;
+}
+
+// Bouton 2: Bip à l'appui
+static void onButton2Pressed() {
+  if (BUZZER_PIN >= 0) {
+    tone(BUZZER_PIN, 1000, 200);
+  }
 }
 
 static void maintainButtons() {
   unsigned long now = millis();
+  
+  // Bouton BOOT: Gestion appui long avec barre de progression pour reboot
+  if (buttonBootPin >= 0) {
+    int s = digitalRead(buttonBootPin);
+    
+    if (s == LOW && buttonBootLast == HIGH) {
+      // Début d'appui
+      buttonBootPressStart = now;
+      buttonBootLongPressTriggered = false;
+    }
+    else if (s == LOW && buttonBootLast == LOW) {
+      // Appui maintenu
+      unsigned long pressDuration = now - buttonBootPressStart;
+      
+      if (pressDuration >= longPressMs && !buttonBootLongPressTriggered) {
+        buttonBootLongPressTriggered = true;
+        onButtonBootLongPress();
+      }
+      else if (pressDuration > debounceMs && pressDuration < longPressMs) {
+        // Afficher la barre de progression pendant l'appui
+#if ENABLE_TFT_DISPLAY
+        if (tftAvailable && !buttonBootLongPressTriggered) {
+          static unsigned long lastProgressUpdate = 0;
+          if (now - lastProgressUpdate > 50) {
+            lastProgressUpdate = now;
+            
+            tft.fillScreen(TFT_BLACK);
+            tft.setTextSize(2);
+            tft.setTextColor(TFT_YELLOW);
+            tft.setCursor(10, 60);
+            tft.println("Maintenir pour");
+            tft.setCursor(10, 85);
+            tft.println("redemarrer...");
+            
+            // Barre de progression
+            int barX = 20;
+            int barY = 130;
+            int barW = tftWidth - 40;
+            int barH = 20;
+            tft.drawRect(barX, barY, barW, barH, TFT_WHITE);
+            
+            int progress = (pressDuration * 100) / longPressMs;
+            if (progress > 100) progress = 100;
+            int fillW = (barW - 4) * progress / 100;
+            tft.fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_CYAN);
+          }
+        }
+#endif
+      }
+    }
+    else if (s == HIGH && buttonBootLast == LOW) {
+      // Relâchement
+      if (!buttonBootLongPressTriggered) {
+        // Appui court ou relâché avant 2s → nettoyer l'écran
+#if ENABLE_TFT_DISPLAY
+        if (tftAvailable) {
+          tft.fillScreen(TFT_BLACK);
+          tft.setTextSize(1);
+          tft.setTextColor(TFT_GREEN);
+          tft.setCursor(10, 10);
+          tft.println("ESP32 Diagnostic");
+        }
+#endif
+      }
+    }
+    
+    buttonBootLast = s;
+  }
+  
+  // Bouton 1: Gestion appui simple pour cycle RGB
   if (button1Pin >= 0) {
     int s = digitalRead(button1Pin);
     if (s != button1Last) {
@@ -445,6 +560,8 @@ static void maintainButtons() {
       }
     }
   }
+  
+  // Bouton 2: Gestion appui simple pour bip
   if (button2Pin >= 0) {
     int s = digitalRead(button2Pin);
     if (s != button2Last) {
