@@ -4561,6 +4561,30 @@ void handleJavaScriptRoute() {
   Serial.printf("Sending preamble: %d bytes\n", preamble.length());
   server.sendContent(preamble);
 
+  // Send pin constants from board_config.h (BEFORE translations and static code)
+  String pinVars = "const RGB_LED_PIN_R=";
+  pinVars += String(RGB_LED_PIN_R);
+  pinVars += ";const RGB_LED_PIN_G=";
+  pinVars += String(RGB_LED_PIN_G);
+  pinVars += ";const RGB_LED_PIN_B=";
+  pinVars += String(RGB_LED_PIN_B);
+  pinVars += ";const DHT_PIN=";
+  pinVars += String(DHT_PIN);
+  pinVars += ";const LIGHT_SENSOR_PIN=";
+  pinVars += String(LIGHT_SENSOR_PIN);
+  pinVars += ";const DISTANCE_TRIG_PIN=";
+  pinVars += String(DISTANCE_TRIG_PIN);
+  pinVars += ";const DISTANCE_ECHO_PIN=";
+  pinVars += String(DISTANCE_ECHO_PIN);
+  pinVars += ";const MOTION_SENSOR_PIN=";
+  pinVars += String(MOTION_SENSOR_PIN);
+  pinVars += ";const PWM_PIN=";
+  pinVars += String(BUZZER_PIN);
+  pinVars += ";";
+
+  Serial.printf("Sending pin variables: %d bytes\n", pinVars.length());
+  server.sendContent(pinVars);
+
   // Send translations
   String translations = "const DEFAULT_TRANSLATIONS=";
   translations += buildTranslationsJSON();
