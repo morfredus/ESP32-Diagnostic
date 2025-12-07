@@ -35,7 +35,7 @@
 - Check Serial Monitor for TFT initialization messages: "[TFT] Initializing ST7789 display..."
 
 ## Wi-Fi connection fails
-- Double-check SSID/password pairs in `wifi-config.h`.
+- Double-check SSID/password pairs in `secrets.h`.
 - Watch the Serial Monitor for `WL_NO_SSID_AVAIL` or `WL_CONNECT_FAILED` codes.
 - Move closer to the access point or try a 2.4 GHz-only SSID.
 

@@ -2,6 +2,8 @@
 # 1. FICHIERS DE CONFIGURATION SENSIBLES ET SPECIFIQUES AU PROJET
 # -----------------------------------------------------------------------------
 # Fichier de configuration WiFi (sensible - NE PAS VERSIONNER)
+include/secrets.h
+# Ancien nom conservé pour éviter tout commit accidentel
 include/wifi-config.h
 
 # Fichiers divers (a ignorer si leur contenu n'est pas a partager)

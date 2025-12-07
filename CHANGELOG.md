@@ -1,3 +1,13 @@
+## [Version 3.19.0] - 2025-12-07
+
+### Changed
+- **Pin mapping isolated:** Board GPIO definitions moved to `include/board_config.h`; `config.h` now keeps common/runtime options only. ESP32-S3 buttons remain on GPIO 38/39 to avoid USB upload/reset conflicts (no other pin value changes).
+- **Secrets rename:** Wi-Fi credentials file renamed to `secrets.h` (with `secrets-example.h`); legacy `wifi-config` headers now emit compile-time errors.
+- **Version bump:** `PROJECT_VERSION` set to `3.19.0` in `platformio.ini`; `.gitignore` explicitly protects `include/secrets.h`.
+
+### Documentation
+- Updated README/README_FR, CONFIG guides, pin mapping references, install/build checklists, FAQ, troubleshooting, security, architecture map, and usage docs to reflect `board_config.h`, new button pins, and `secrets.h`.
+
 ## [Version 3.18.3] - 2025-12-06
 
 ### Fixed

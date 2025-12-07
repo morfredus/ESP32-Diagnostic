@@ -11,8 +11,9 @@ ESP32-Diagnostic/
 ├── include/
 │   ├── languages.h           // tables de traductions et helpers
 │   ├── web_interface.h       // ressources HTML/CSS/JS stockées en PROGMEM
-│   ├── wifi-config-example.h // modèle pour les identifiants Wi-Fi
+│   ├── board_config.h        // mapping GPIO spécifique à la carte
 │   ├── config.h              // drapeaux de configuration et constantes
+│   ├── secrets-example.h     // modèle pour les identifiants Wi-Fi (copie vers secrets.h)
 │   └── json_helpers.h        // utilitaires de formatage JSON
 ├── lib/                      // bibliothèques personnalisées (le cas échéant)
 ├── test/                     // fichiers de test

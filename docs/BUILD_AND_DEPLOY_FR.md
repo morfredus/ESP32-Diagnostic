@@ -91,7 +91,7 @@ Configuration dynamique des écrans OLED et TFT via interface web, incluant rés
 4. **Documentation :** Références pin mapping et instructions de build mises à jour pour les trois cibles.
 
 ## Checklist Pré-déploiement
-- [ ] Mettre à jour `wifi-config.h` avec les identifiants production et, le cas échéant, les paramètres entreprise.
+- [ ] Mettre à jour `secrets.h` avec les identifiants production et, le cas échéant, les paramètres entreprise.
 - [ ] Vérifier que `DIAGNOSTIC_VERSION` vaut `3.17.1` dans `platformio.ini` et la documentation.
 - [ ] Vérifier que l'environnement cible est correctement défini dans `platformio.ini` (`default_envs`).
 - [ ] Réviser les mappings de broches dans `config.h` pour votre configuration matérielle spécifique.

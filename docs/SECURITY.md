@@ -5,12 +5,12 @@ exposure when testing pre-production hardware across all supported build environ
 
 ## Network hardening
 - Prefer a dedicated QA Wi-Fi network with WPA2-PSK or WPA2-Enterprise credentials.
-- Change default hotspot SSID/password in `wifi-config.h` before field trials.
+- Change default hotspot SSID/password in `secrets.h` before field trials.
 - Disable hotspot fallback entirely by setting `ENABLE_AP_FALLBACK` to `0` when not required.
 - Restrict access to the REST API via firewall rules or reverse proxy authentication when deployed on shared networks.
 
 ## Credential management
-- Store Wi-Fi credentials in `wifi-config.h` and exclude the file from version control (see `.gitignore`).
+- Store Wi-Fi credentials in `secrets.h` and exclude the file from version control (see `.gitignore`).
 - Rotate passwords regularly and update all flashed units before decommissioning old credentials.
 - For enterprise WPA2/EAP, use device-specific certificates and revoke them if a unit is lost.
 

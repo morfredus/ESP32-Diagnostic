@@ -5,7 +5,7 @@
 ## 1. Premier démarrage
 1. Ouvrez le moniteur série à 115200 bauds juste après le flash.
 2. Patientez pendant la connexion Wi-Fi. En cas de succès, l'IP attribuée et l'URL `http://ESP32-Diagnostic.local` sont affichées, et tout écran OLED raccordé reflète les étapes association/DHCP/progression.
-3. En cas d'échec, la console fournit des indices (mot de passe erroné, réseau introuvable, etc.). Mettez `wifi-config.h` à jour.
+3. En cas d'échec, la console fournit des indices (mot de passe erroné, réseau introuvable, etc.). Mettez `secrets.h` à jour.
 
 ## 2. Accéder au tableau de bord
 - Rendez-vous sur l'adresse IP affichée ou sur `http://ESP32-Diagnostic.local` (mDNS) depuis un appareil du même réseau.

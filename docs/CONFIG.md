@@ -1,4 +1,4 @@
-# Configuration (EN) — v3.15.0
+# Configuration (EN) — v3.19.0
 
 ## Build Environment Selection
 
@@ -21,7 +21,7 @@ pio run -e esp32devkitc --target upload
 
 ## Hardware-Specific Pin Mappings
 
-Pin configurations are defined in `include/config.h` using conditional compilation:
+Pin configurations are defined in `include/board_config.h` (automatically included via `config.h`) using conditional compilation:
 
 - **ESP32-S3 targets** (`esp32s3_n16r8`, `esp32s3_n8r8`): Use `TARGET_ESP32_S3` define
 - **ESP32 Classic** (`esp32devkitc`): Use `TARGET_ESP32_CLASSIC` define
@@ -29,24 +29,19 @@ Pin configurations are defined in `include/config.h` using conditional compilati
 See [PIN_MAPPING.md](PIN_MAPPING.md) for complete pin reference for each environment.
 
 ## Wi-Fi credentials
-The firmware reads credentials from `include/wifi-config.h`.
+The firmware reads credentials from `include/secrets.h` (copy `include/secrets-example.h`). The file is excluded from version control via `.gitignore`.
 
 ```cpp
-// wifi-config.h (example)
-#pragma once
-#include <vector>
-#include <WiFiMulti.h>
+// secrets.h (example)
+const char* WIFI_SSID_1 = "MySSID";
+const char* WIFI_PASS_1 = "MyPassword";
 
-static WiFiMulti wifiMulti;
-
-static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
-    {"MySSID", "MyPassword"},
-    {"BackupSSID", "BackupPassword"}
-};
+// Optional backup network
+const char* WIFI_SSID_2 = "BackupSSID";
+const char* WIFI_PASS_2 = "BackupPassword";
 ```
 
 - Declare at least one SSID/password pair.
-- The firmware iterates over the list until a connection succeeds.
 - Avoid storing production credentials in version control.
 
 ## Language settings
@@ -68,7 +63,7 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 **ESP32-S3 (esp32s3_n16r8 / esp32s3_n8r8):**
   - MOSI: GPIO 11, SCLK: GPIO 12
   - CS: GPIO 10, DC: GPIO 9
-  - RST: GPIO 7, BL: GPIO 15
+  - RST: GPIO 13, BL: GPIO 7
 
 **ESP32 Classic (esp32devkitc):**
   - MOSI: GPIO 23, SCLK: GPIO 18
@@ -85,10 +80,11 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 
 ## Hardware buttons (v3.17.1+)
 - Optional feature enabled by `ENABLE_BUTTONS` in `include/config.h`.
-- Uses existing `PIN_BUTTON_1` and `PIN_BUTTON_2` defined per target in `config.h` (no pin mapping changes).
+- Uses existing `PIN_BUTTON_1` and `PIN_BUTTON_2` defined per target in `board_config.h`.
 - Default actions:
   - BTN1: short press plays a brief buzzer tone for user feedback.
   - BTN2: short press cycles RGB LED colors (red → green → blue → white).
+- ESP32-S3 default pins: BTN1=38, BTN2=39 to avoid boot/reset conflicts.
 - Note for ESP32 Classic: GPIO 34–39 are input-only and have no internal pull-ups. Use external pull-ups if required when mapping BTN2 to GPIO 35.
 
 
@@ -97,7 +93,7 @@ static const std::vector<std::pair<const char*, const char*>> WIFI_NETWORKS = {
 - TRIG is an output pin; ECHO is an input pin.
 - Power the sensor at 5V and protect the ECHO line with a resistor divider (5V to 3.3V) before the ESP32 input.
 - ESP32-S3 with Octal PSRAM/Flash (e.g., DevKitC-1 N16R8): avoid using GPIO 35..48 for TRIG/ECHO because these pins are reserved by the OPI memory interface. The firmware will flag this configuration as invalid.
-- Defaults since v3.12.3: TRIG = GPIO 16, ECHO = GPIO 17.
+- Defaults: TRIG = GPIO 3, ECHO = GPIO 6.
 - Suggested alternative on ESP32-S3 if the secondary I2C bus is disabled: TRIG = GPIO 26 (output), ECHO = GPIO 25 (input).
 
 ## Bluetooth® naming rules

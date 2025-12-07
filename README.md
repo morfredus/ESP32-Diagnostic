@@ -60,8 +60,8 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an intera
    - `esp32s3_n16r8` (default): ESP32-S3 with 16MB Flash + 8MB PSRAM
    - `esp32s3_n8r8`: ESP32-S3 with 8MB Flash + 8MB PSRAM
    - `esp32devkitc`: ESP32 Classic with 4MB Flash (no PSRAM)
-2. **Hardware-Specific Pin Mapping**: Dedicated pin configurations in `config.h` for each target.
-3. **ESP32-S3 Configuration (updated in 3.18.3)**: I2C (SDA=21, SCL=20), RGB LED (R=47, G=46, B=19), NeoPixel=48, buttons BTN1=1 / BTN2=2, GPS RX=18/TX=17/PPS=8, TFT MOSI=11/SCLK=12/CS=10/DC=9/RST=13/BL=7, sensors (PWM/Buzzer=14, DHT=5, Motion=6, Light=4, HC-SR04 TRIG=3/ECHO=19).
+2. **Hardware-Specific Pin Mapping**: Dedicated pin configurations in `board_config.h` (automatically included by `config.h`) for each target.
+3. **ESP32-S3 Configuration (updated in 3.19.0)**: I2C (SDA=21, SCL=20), RGB LED (R=19, G=47, B=45), NeoPixel=48, buttons BTN1=38 / BTN2=39, GPS RX=18/TX=17/PPS=8, TFT MOSI=11/SCLK=12/CS=10/DC=9/RST=13/BL=7, sensors (PWM/Buzzer=14, DHT=5, Motion=46, Light=4, HC-SR04 TRIG=3/ECHO=6).
 4. **ESP32 Classic Configuration (updated in 3.17.1)**: I2C (SDA=21, SCL=22), RGB LED (R=12, G=14, B=15), buttons BTN1=34 / BTN2=35, GPS RX=16/TX=17/PPS=4, TFT MOSI=23/SCLK=18/CS=19/DC=27/RST=26/BL=13, sensors (PWM/Buzzer=5, DHT=25, Motion=36, Light=2, HC-SR04 TRIG=32/ECHO=33).
 5. **Shared Mappings**: Common pin assignments between ESP32-S3 N8R8 and ESP32 Classic where hardware permits.
 
@@ -76,7 +76,8 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an intera
 - `src/main.cpp` – firmware entry point, main loop, task scheduler, and HTTP handlers.
 - `include/languages.h` – translation catalog and runtime language switcher.
 - `include/web_interface.h` – HTML/CSS/JS templates served by the firmware.
-- `include/wifi-config-example.h` – template for Wi-Fi credential storage.
+- `include/board_config.h` – board-specific pin mapping (selected via TARGET_ESP32_*).
+- `include/secrets-example.h` – template for Wi-Fi credential storage (copy to `include/secrets.h`).
 - `platformio.ini` – PlatformIO configuration for all supported ESP32 targets.
 - `docs/` – comprehensive wiki including installation, usage, API reference, and deployment guides (EN/FR).
 

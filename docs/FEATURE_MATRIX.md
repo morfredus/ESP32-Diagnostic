@@ -28,7 +28,7 @@ Use it to plan validation campaigns and to verify whether optional peripherals r
 | UART loopback | TX0/RX0 & optional UART1/UART2 | All | Requires jumper wire TX↔RX on chosen UART. |
 | TFT ST7789 display | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7<br>**ESP32 Classic:** MOSI=23, SCLK=18, CS=19, DC=27, RST=26, BL=13 | All supported boards | 240x240 display. Pins hardware-specific. |
 | RGB LED (separate) | **ESP32-S3:** R=47, G=48, B=45<br>**ESP32 Classic:** R=12, G=14, B=15 | All | Individual RGB control pins. |
-| Buttons | **ESP32-S3:** BTN1=1, BTN2=2<br>**ESP32 Classic:** BTN1=34, BTN2=35 | All supported boards | GPIO 34–39 are input-only (use external pull-up if needed). |
+| Buttons | **ESP32-S3:** BTN1=38, BTN2=39<br>**ESP32 Classic:** BTN1=34, BTN2=35 | All supported boards | GPIO 34–39 are input-only (use external pull-up if needed). |
 
 ## Optional module checklist
 | Module | Firmware flag | Default state | Description |

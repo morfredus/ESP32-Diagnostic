@@ -5,12 +5,12 @@ matériel pré-production pour tous les environnements supportés (ESP32-S3 N16R
 
 ## Renforcement réseau
 - Préférer un réseau Wi-Fi QA dédié avec chiffrement WPA2-PSK ou WPA2-Enterprise.
-- Modifier le SSID/mot de passe hotspot par défaut dans `wifi-config.h` avant les essais terrain.
+- Modifier le SSID/mot de passe hotspot par défaut dans `secrets.h` avant les essais terrain.
 - Désactiver complètement le fallback hotspot via `ENABLE_AP_FALLBACK = 0` lorsque non requis.
 - Restreindre l'accès à la REST API via pare-feu ou authentification proxy sur les réseaux partagés.
 
 ## Gestion des identifiants
-- Stocker les identifiants Wi-Fi dans `wifi-config.h` et exclure le fichier du contrôle de source (`.gitignore`).
+- Stocker les identifiants Wi-Fi dans `secrets.h` et exclure le fichier du contrôle de source (`.gitignore`).
 - Faire tourner les mots de passe régulièrement et mettre à jour toutes les unités flashées avant de révoquer les anciens accès.
 - En WPA2/EAP entreprise, utiliser des certificats spécifiques à chaque appareil et les révoquer si l'unité est perdue.
 

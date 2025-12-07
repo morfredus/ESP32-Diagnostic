@@ -91,7 +91,7 @@ Dynamic configuration of OLED and TFT displays through web interface, including 
 4. **Documentation:** Updated pin mapping reference and build instructions for all three targets.
 
 ## Pre-deployment Checklist
-- [ ] Update `wifi-config.h` with production SSID/passwords and optional enterprise credentials.
+- [ ] Update `secrets.h` with production SSID/passwords and optional enterprise credentials.
 - [ ] Confirm `DIAGNOSTIC_VERSION` matches `3.17.1` in `platformio.ini` and documentation.
 - [ ] Verify target environment is set correctly in `platformio.ini` (`default_envs`).
 - [ ] Review pin mappings in `config.h` for your specific hardware configuration.
