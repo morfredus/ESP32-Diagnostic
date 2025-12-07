@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Compilation & Déploiement (v3.19.0)
+# ESP32 Diagnostic Suite – Compilation & Déploiement (v3.20.1)
 
 Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.16.0.
 
@@ -73,7 +73,7 @@ pio run --target clean
 ## Notes Configuration des Broches
 
 Chaque environnement possède des mappings de broches dédiés dans `include/config.h` :
-- **ESP32-S3 :** I2C sur SDA=21/SCL=20, LED RGB sur 19/47/45 (Rouge/Vert/Bleu), TFT sur GPIOs 7-13, GPS sur 18/17/8, capteurs mis à jour (voir PIN_MAPPING_FR.md).
+- **ESP32-S3 :** I2C sur SDA=15/SCL=16, LED RGB sur 21/45/47 (Rouge/Vert/Bleu), TFT sur GPIOs 7-13, GPS sur 18/17/8, capteurs mis à jour (voir PIN_MAPPING_FR.md). Laisser GPIO19/20 libres pour l’USB D-/D+ afin de garder l’OTG stable.
 - **ESP32 Classic :** I2C sur SDA=21/SCL=22, LED RGB sur 12/14/15, TFT sur GPIOs 13/18/19/23/26/27, GPS sur 16/17/4, capteurs mis à jour (voir PIN_MAPPING_FR.md).
 
 Voir [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) pour la référence complète.

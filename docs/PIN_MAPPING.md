@@ -1,4 +1,4 @@
-# Pin Mapping — Quick Reference (v3.19.0)
+# Pin Mapping — Quick Reference (v3.20.1)
 
 ## Supported Environments
 
@@ -8,7 +8,7 @@ The firmware supports three distinct build environments, each with optimized pin
 2. **`esp32s3_n8r8`** — ESP32-S3 DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
 3. **`esp32devkitc`** — ESP32 Classic DevKitC (4MB Flash, no PSRAM)
 
-Pin mappings are defined in `include/config.h` using conditional compilation based on `TARGET_ESP32_S3` or `TARGET_ESP32_CLASSIC`.
+Pin mappings are defined in `include/board_config.h` using conditional compilation based on `TARGET_ESP32_S3` or `TARGET_ESP32_CLASSIC`.
 
 ---
 
@@ -17,17 +17,17 @@ Pin mappings are defined in `include/config.h` using conditional compilation bas
 **Applies to:** `esp32s3_n16r8`, `esp32s3_n8r8`
 
 ### I2C Interface
-- **SDA:** GPIO 21
-- **SCL:** GPIO 20
+- **SDA:** GPIO 15
+- **SCL:** GPIO 16
 
 ### Buttons
 - **Button 1:** GPIO 38
 - **Button 2:** GPIO 39
 
 ### RGB LED (Separate pins)
-- **Red:** GPIO 19
-- **Green:** GPIO 47
-- **Blue:** GPIO 45
+- **Red:** GPIO 21
+- **Green:** GPIO 45
+- **Blue:** GPIO 47
 
 ### Sensors
 - **DHT (Temperature/Humidity):** GPIO 5
@@ -57,10 +57,10 @@ Pin mappings are defined in `include/config.h` using conditional compilation bas
 
 ### ESP32-S3 Important Notes
 - GPIO 35–44 are reserved by the octal PSRAM/Flash interface; keep them free.
-- GPIO 48 is now dedicated to the NeoPixel (conflict with RGB LED resolved).
-- RGB LED uses GPIO 19/47/45 (Red/Green/Blue respectively).
+- GPIO 48 is dedicated to the NeoPixel.
+- RGB LED uses GPIO 21/45/47 (Red/Green/Blue respectively); GPIO45 is a strapping pin, keep LED off at boot.
 - Strapping pins: GPIO 0, GPIO 45, GPIO 46 — keep stable during boot.
-- USB CDC is enabled; keep I2C (GPIO 21/20) free for sensors.
+- USB CDC is enabled; keep GPIO 19/20 free for USB D-/D+ (I2C moved to 15/16).
 
 ---
 
@@ -209,7 +209,8 @@ pio run -e esp32devkitc --target upload
 ---
 
 ## Version History
-- **v3.19.0:** Pin mapping moved to `board_config.h`; ESP32-S3 buttons set to GPIO 38/39 to avoid upload/reset conflicts; docs aligned.
+- **v3.20.1:** ESP32-S3 I2C moved to 15/16 and RGB Red to 21 to free USB D-/D+ (19/20) and stabilize OTG; docs aligned.
+- **v3.20.1:** Pin mapping moved to `board_config.h`; ESP32-S3 buttons set to GPIO 38/39 to avoid upload/reset conflicts; docs aligned.
 - **v3.18.3:** Resolved GPIO 48 conflict between NeoPixel and RGB LED on ESP32-S3; complete S3 pin mapping reorganization.
 - **v3.17.1:** Refreshed ESP32-S3 and Classic pin mappings (GPS, TFT, RGB, sensors, buttons) and aligned documentation.
 - **v3.15.1:** Critical memory fix for ESP32 Classic web UI.

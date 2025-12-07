@@ -1,4 +1,4 @@
-# Firmware Architecture (EN) – v3.19.0
+# Firmware Architecture (EN) – v3.20.1
 
 ## High-level overview
 The firmware is a PlatformIO project with the main code in `src/main.cpp` that orchestrates diagnostics, serves a web interface, and exposes REST endpoints. Supporting headers in `include/` encapsulate translations, HTML templates, and configuration helpers.

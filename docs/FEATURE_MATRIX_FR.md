@@ -1,11 +1,11 @@
-# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.19.0)
+# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.20.1)
 
-Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.17.1 et ses trois environnements de build.
+Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.20.1 et ses trois environnements de build.
 Elle aide à planifier les campagnes de validation et à vérifier si des périphériques optionnels nécessitent un câblage supplémentaire.
 
-> **Important :** La version 3.17.1 (PlatformIO) **n'active pas** le Bluetooth/BLE. Pour les diagnostics BLE, utiliser la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
+> **Important :** La version 3.20.1 (PlatformIO) n'active toujours pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
 
-**Nouveau en v3.17.1 :** Pin mapping ESP32-S3 et ESP32 Classic actualisé (GPS, TFT, LED RGB, capteurs, boutons) avec documentation alignée et sélection automatique via `platformio.ini`.
+**Mis à jour en v3.20.1 :** Déplacement de l'I2C ESP32-S3 vers SDA=15 / SCL=16 et LED RGB Rouge vers GPIO21 pour libérer l'USB D-/D+ et stabiliser l’OTG ; documentation alignée. Sélectionnez votre carte cible dans `platformio.ini` pour appliquer automatiquement les bonnes broches.
 
 ## Légende
 - ✅ – Pris en charge nativement par le firmware.
@@ -22,7 +22,7 @@ Elle aide à planifier les campagnes de validation et à vérifier si des périp
 ## Couverture des bus et périphériques
 | Bus / Périphérique | Broches par cible | Cartes supportées | Notes |
 |--------------------|--------------------|-------------------|-------|
-| I2C principal | **ESP32-S3:** SDA=21, SCL=20 · **ESP32 Classic:** SDA=21, SCL=22 | Toutes les cartes supportées | Utilisé pour l'OLED, les packs capteurs, l'EEPROM. |
+| I2C principal | **ESP32-S3:** SDA=15, SCL=16 · **ESP32 Classic:** SDA=21, SCL=22 | Toutes les cartes supportées | Utilisé pour l'OLED, les packs capteurs, l'EEPROM (laisser GPIO19/20 libres pour l'USB). |
 | LED RGB | **ESP32-S3:** R=47, G=48, B=45 · **ESP32 Classic:** R=12, G=14, B=15 | Toutes les cartes supportées | Broches PWM pour LED RGB commune anode/cathode. |
 | Boutons | **ESP32-S3:** BTN1=38, BTN2=39 · **ESP32 Classic:** BTN1=34, BTN2=35 | Toutes les cartes supportées | Pull-ups internes si disponibles (les GPIO 34–39 du Classic n'ont pas de pull‑up interne). |
 | TFT ST7789 | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7 · **ESP32 Classic:** MOSI=23, SCLK=18, CS=19, DC=27, RST=26, BL=13 | Toutes les cartes supportées | SPI dédié pour affichage TFT. Voir PIN_MAPPING_FR.md pour conflits potentiels. |

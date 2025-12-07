@@ -1,3 +1,36 @@
+## [Version 3.20.1] - 2025-12-07
+
+### Fixed
+- **Stabilité USB/OTG (ESP32-S3)** : libération des lignes D-/D+ (GPIO 19/20) en déplaçant l'I2C par défaut sur SDA=15 / SCL=16 et la LED RGB Rouge sur GPIO 21; élimine les perturbations du bus USB provoquées par les anciens branchements I2C/RGB sur 19/20.
+
+### Changed
+- **Pin mapping ESP32-S3** :
+   - I2C: SDA=15, SCL=16 (au lieu de 21/20)
+   - RGB: Rouge=21, Vert=45, Bleu=47 (Rouge quitte 19 pour libérer l'USB)
+   - Notes de strapping rappelées sur GPIO45
+- **Version bump** : `PROJECT_VERSION` mis à `3.20.1` dans `platformio.ini`.
+
+### Documentation
+- Guides Pin Mapping (EN/FR), README (EN/FR), et nouvelles release notes alignés sur la nouvelle attribution de broches et l'explication de la résolution OTG.
+
+## [Version 3.20.0] - 2025-12-07
+
+### Added
+- **Advanced Button Management:** Interactive button controls with visual feedback
+  - BOOT Button (GPIO 0): Long press (2s) triggers system reboot with TFT progress bar; release before 2s clears screen
+  - Button 1 (GPIO 38): Short press cycles RGB LED colors (Off → Red → Green → Blue → White)
+  - Button 2 (GPIO 39): Short press triggers confirmation beep
+  - Real-time progress visualization during long-press operations on TFT
+  - Enhanced debouncing and long-press detection for reliable button interaction
+
+### Changed
+- **Version bump:** `PROJECT_VERSION` set to `3.20.0` in `platformio.ini`
+- Button handling refactored with separate functions for long-press and short-press actions
+- Improved visual feedback system using TFT display for user interactions
+
+### Documentation
+- Updated README/README_FR with button functionality descriptions and usage examples
+
 ## [Version 3.19.0] - 2025-12-07
 
 ### Changed

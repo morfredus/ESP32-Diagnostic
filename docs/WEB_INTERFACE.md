@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Web Interface Guide (v3.19.0)
+# ESP32 Diagnostic Suite – Web Interface Guide (v3.20.1)
 
 The built-in web dashboard is the primary control surface for technicians. This guide covers the layout, interaction patterns, and
 customisation hooks available in version 3.16.0. This release introduces real-time WiFi connection monitoring, dynamic display configuration, and enhanced network diagnostics capabilities.
