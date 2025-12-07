@@ -1,4 +1,4 @@
-# Contributing (EN)
+# Contributing (EN) – v3.19.0
 
 We welcome improvements that strengthen the diagnostic experience while keeping the firmware reliable.
 
