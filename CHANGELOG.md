@@ -1,3 +1,18 @@
+## [Version 3.20.1] - 2025-12-07
+
+### Fixed
+- **Stabilité USB/OTG (ESP32-S3)** : libération des lignes D-/D+ (GPIO 19/20) en déplaçant l'I2C par défaut sur SDA=15 / SCL=16 et la LED RGB Rouge sur GPIO 21; élimine les perturbations du bus USB provoquées par les anciens branchements I2C/RGB sur 19/20.
+
+### Changed
+- **Pin mapping ESP32-S3** :
+   - I2C: SDA=15, SCL=16 (au lieu de 21/20)
+   - RGB: Rouge=21, Vert=45, Bleu=47 (Rouge quitte 19 pour libérer l'USB)
+   - Notes de strapping rappelées sur GPIO45
+- **Version bump** : `PROJECT_VERSION` mis à `3.20.1` dans `platformio.ini`.
+
+### Documentation
+- Guides Pin Mapping (EN/FR), README (EN/FR), et nouvelles release notes alignés sur la nouvelle attribution de broches et l'explication de la résolution OTG.
+
 ## [Version 3.20.0] - 2025-12-07
 
 ### Added

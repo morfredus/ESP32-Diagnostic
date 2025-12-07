@@ -1,4 +1,4 @@
-# Configuration (EN) — v3.19.0
+# Configuration (EN) — v3.20.1
 
 ## Build Environment Selection
 
@@ -53,7 +53,7 @@ const char* WIFI_PASS_2 = "BackupPassword";
 ## Display configuration
 
 ### OLED configuration
-- Default pins: SDA=21, SCL=20 (ESP32-S3 default in this project).
+- Default pins: SDA=15, SCL=16 (ESP32-S3 default in this project; keep GPIO19/20 free for USB D-/D+).
 - Change wiring on the fly with `/api/oled-config?sda=<pin>&scl=<pin>`.
 - After updating pins, the firmware automatically reinitialises the display and stores the mapping in RAM.
 

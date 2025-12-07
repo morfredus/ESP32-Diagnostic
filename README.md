@@ -1,6 +1,12 @@
-# ESP32 Diagnostic Suite (v3.20.0)
+# ESP32 Diagnostic Suite (v3.20.1)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
+
+## New in version 3.20.1
+1. **USB/OTG stability (ESP32-S3)**: Freed USB D-/D+ by moving defaults off GPIO19/20.
+   - I2C defaults: SDA=15, SCL=16
+   - RGB LED: Red=21, Green=45, Blue=47 (Red leaves GPIO19)
+   - Keeps OTG stable; note GPIO45 is a strapping pin—LED remains off at boot.
 
 ## New in version 3.20.0
 1. **Advanced Button Management**: Enhanced button functionality with visual feedback and interactive controls

@@ -1,4 +1,4 @@
-# Guide d'utilisation (FR) – v3.19.0
+# Guide d'utilisation (FR) – v3.20.1
 
 **Support multi-environnements :** La version 3.17.1 actualise les mappings par défaut pour ESP32-S3 et ESP32 Classic tout en conservant les trois environnements spécifiques au matériel et les optimisations mémoire pour l'ESP32 Classic. Avant la première utilisation, assurez-vous d'avoir sélectionné et flashé le bon environnement pour votre carte (voir [BUILD_AND_DEPLOY_FR.md](BUILD_AND_DEPLOY_FR.md)).
 
