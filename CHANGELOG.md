@@ -1,3 +1,19 @@
+## [Version 3.20.2] - 2025-12-07
+
+### Changed
+- **Web UI Pin References:** Hardcoded GPIO pin values in web interface replaced with dynamic variable references from `board_config.h`
+   - RGB LED pins (R/G/B) now reference `RGB_LED_PIN_R`, `RGB_LED_PIN_G`, `RGB_LED_PIN_B` instead of hardcoded values
+   - DHT sensor pin now references `DHT_PIN` instead of hardcoded value
+   - Light sensor pin now references `LIGHT_SENSOR_PIN` instead of hardcoded value  
+   - Distance sensor trigger/echo pins now reference `DISTANCE_TRIG_PIN` / `DISTANCE_ECHO_PIN` instead of hardcoded values
+   - Motion sensor pin now references `MOTION_SENSOR_PIN` instead of hardcoded value
+   - Buzzer/PWM pin now references `PWM_PIN` instead of hardcoded value
+- Pin values are now injected as JavaScript constants at page load, ensuring UI always displays the correct compiled target pins
+- **Version bump:** `PROJECT_VERSION` set to `3.20.2` in `platformio.ini`
+
+### Fixed
+- Web UI now correctly displays the actual GPIO pins based on compiled target (ESP32-S3 vs ESP32 CLASSIC)
+
 ## [Version 3.20.1] - 2025-12-07
 
 ### Fixed
