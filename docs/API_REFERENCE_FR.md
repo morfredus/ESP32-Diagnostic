@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Référence REST API (v3.19.0)
+# ESP32 Diagnostic Suite – Référence REST API (v3.20.1)
 
 La REST API reflète les commandes du tableau de bord et expose les données de diagnostic pour l'automatisation. Tous les endpoints
 sont servis en HTTP sur le même port que l'interface web. L'authentification est stateless ; sécurisez l'accès au niveau réseau

@@ -1,11 +1,11 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.19.0)
+# ESP32 Diagnostic Suite – Feature Matrix (v3.20.1)
 
-This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.17.1 with three distinct build environments.
+This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.20.1 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.
 
-> **Important:** Version 3.17.1 (PlatformIO) **does not enable Bluetooth/BLE** functionality. For BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+> **Important:** Current release 3.20.1 (PlatformIO) still ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
 
-**New in v3.17.1:** Refreshed default pin mapping for ESP32-S3 and ESP32 Classic (GPS, TFT, RGB, sensors, buttons) and aligned documentation. Select your target board in `platformio.ini` to automatically apply the correct pins.
+**Updated in v3.20.1:** ESP32-S3 defaults move I2C to SDA=15 / SCL=16 and RGB Rouge to GPIO21 to libère USB D-/D+, stabilisant l’OTG ; documentation alignée. Select your target board in `platformio.ini` to automatically apply the correct pins.
 
 ## Legend
 - ✅ – Supported out of the box by the firmware.

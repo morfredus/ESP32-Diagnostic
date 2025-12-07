@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Vue d'ensemble (v3.19.0)
+# ESP32 Diagnostic Suite – Vue d'ensemble (v3.20.1)
 
 La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version 3.15.1 inclut des **optimisations mémoire critiques pour ESP32 Classic** et le support multi-environnements avec trois configurations de build distinctes optimisées pour différentes variantes matérielles ESP32.
 
