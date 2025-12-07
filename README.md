@@ -1,15 +1,18 @@
-# ESP32 Diagnostic Suite (v3.18.3)
+# ESP32 Diagnostic Suite (v3.19.0)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## New in version 3.18.3
-1. **ESP32-S3 Pin Mapping Refactoring**: Resolved GPIO 48 conflict between NeoPixel LED and RGB LED.
-   - **NeoPixel**: Now enabled on GPIO 48 (was disabled)
-   - **RGB LED**: Relocated from R=47/G=48/B=45 to R=47/G=46/B=19
-   - **Sensors reorganized**: Light sensor 19→4, Motion sensor 4→6, HC-SR04 ECHO 6→19
-   - **Note**: GPIO 19 is now shared between RGB Blue and HC-SR04 ECHO (exclusive use)
-2. **Documentation Updates**: All pin mapping documentation synchronized with new layout.
-3. **config-example.h**: Updated to reflect the definitive ESP32-S3 pin configuration.
+## New in version 3.19.0
+1. **Pin Mapping Isolation**: Board GPIO definitions extracted to `include/board_config.h`; `config.h` now contains only common configuration settings.
+   - All pin definitions for ESP32-S3 (N16R8 / N8R8) and ESP32 Classic consolidated in one place
+   - Buttons remain on GPIO 38/39 (ESP32-S3) to avoid USB upload/reset conflicts
+   - No other pin values changed
+2. **Secrets Management**: Wi-Fi configuration file renamed from `wifi-config.h` to `secrets.h`
+   - Legacy `wifi-config.h` headers now emit compile-time error to force migration
+   - `secrets.h` is protected in `.gitignore` to prevent credential leaks
+   - Use `include/secrets-example.h` as template
+3. **Documentation Complete**: All user-facing docs updated to reflect architecture changes and v3.19.0 features
+4. **Version Consistency**: `PROJECT_VERSION` updated to 3.19.0 in `platformio.ini`
 
 ## New in version 3.18.2
 1. **Translation Keys**: Added missing translation keys for complete GPS and environmental sensors UI support.

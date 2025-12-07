@@ -1,15 +1,18 @@
-# ESP32 Diagnostic Suite (v3.18.3)
+# ESP32 Diagnostic Suite (v3.19.0)
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## Nouveautés de la version 3.18.3
-1. **Refactorisation Pin Mapping ESP32-S3** : Résolution du conflit GPIO 48 entre LED NeoPixel et LED RGB.
-   - **NeoPixel** : Maintenant activé sur GPIO 48 (était désactivé)
-   - **LED RGB** : Déplacée de R=47/G=48/B=45 vers R=47/G=46/B=19
-   - **Capteurs réorganisés** : Capteur lumière 19→4, Mouvement 4→6, HC-SR04 ECHO 6→19
-   - **Note** : GPIO 19 est maintenant partagé entre RGB Bleu et HC-SR04 ECHO (usage exclusif)
-2. **Mises à jour documentation** : Toute la documentation du pin mapping synchronisée avec la nouvelle disposition.
-3. **config-example.h** : Mis à jour pour refléter la configuration ESP32-S3 définitive.
+## Nouveautés de la version 3.19.0
+1. **Isolement Pin Mapping** : Définitions GPIO des cartes extraites vers `include/board_config.h` ; `config.h` contient maintenant uniquement les paramètres de configuration communes.
+   - Toutes les définitions de broches pour ESP32-S3 (N16R8 / N8R8) et ESP32 Classic consolidées en un seul endroit
+   - Les boutons restent sur GPIO 38/39 (ESP32-S3) pour éviter les conflits de chargement/réinitialisation USB
+   - Aucune autre valeur de broche n'a changé
+2. **Gestion des secrets** : Fichier de configuration Wi-Fi renommé de `wifi-config.h` en `secrets.h`
+   - Les anciens en-têtes `wifi-config.h` émettent maintenant une erreur de compilation pour forcer la migration
+   - `secrets.h` est protégé dans `.gitignore` pour éviter les fuites d'identifiants
+   - Utilisez `include/secrets-example.h` comme modèle
+3. **Documentation complète** : Tous les documents pour utilisateurs mis à jour pour refléter les changements d'architecture et les fonctionnalités v3.19.0
+4. **Cohérence des versions** : `PROJECT_VERSION` mise à jour vers 3.19.0 dans `platformio.ini`
 
 ## Nouveautés de la version 3.18.2
 1. **Clés de traduction** : Ajout des clés de traduction manquantes pour le support complet de l'interface GPS et capteurs environnementaux.
