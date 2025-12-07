@@ -1,6 +1,14 @@
-# ESP32 Diagnostic Suite (v3.19.0)
+# ESP32 Diagnostic Suite (v3.20.0)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
+
+## New in version 3.20.0
+1. **Advanced Button Management**: Enhanced button functionality with visual feedback and interactive controls
+   - **BOOT Button (GPIO 0)**: Long press (2 seconds) triggers system reboot with progress bar on TFT display; release before 2s clears the screen
+   - **Button 1 (GPIO 38)**: Short press cycles through RGB LED colors (Off → Red → Green → Blue → White)
+   - **Button 2 (GPIO 39)**: Short press triggers confirmation beep
+   - Real-time visual feedback during long-press operations on TFT
+   - Debouncing and long-press detection for reliable operation
 
 ## New in version 3.19.0
 1. **Pin Mapping Isolation**: Board GPIO definitions extracted to `include/board_config.h`; `config.h` now contains only common configuration settings.
