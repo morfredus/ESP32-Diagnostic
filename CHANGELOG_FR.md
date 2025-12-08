@@ -1,3 +1,17 @@
+## [Version 3.20.4] - 2025-12-08
+
+### Modifié
+- **Refactorisation du nom de projet :** Élimination des chaînes de nom de projet codées en dur dans tout le code
+- Toutes les occurrences de "ESP32 Diagnostic" remplacées par la macro `PROJECT_NAME` de platformio.ini
+- Fichiers affectés : `main.cpp` (5 emplacements : affichage TFT, enregistrement service mDNS, affichage OLED, pied de page HTML, préambule JavaScript), `languages.h` (titre), `web_interface.h` (log console JavaScript)
+- Le nom du projet est maintenant défini de manière centralisée dans la configuration de build pour une meilleure maintenabilité
+- Permet une personnalisation facile du projet via une seule modification de flag de build
+
+### Technique
+- Aucun changement de fonctionnalité - toutes les fonctionnalités et comportements restent identiques
+- Amélioration de la maintenabilité du code grâce à la configuration centralisée
+- Réduction de la dette technique due aux littéraux de chaînes dispersés dans plusieurs fichiers
+
 ## [Version 3.20.3] - 2025-12-08
 
 ### Modifié

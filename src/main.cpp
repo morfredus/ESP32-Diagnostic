@@ -550,7 +550,7 @@ static void maintainButtons() {
           tft.setTextSize(1);
           tft.setTextColor(TFT_GREEN);
           tft.setCursor(10, 10);
-          tft.println("ESP32 Diagnostic");
+          tft.println(PROJECT_NAME);
         }
 #endif
       }
@@ -807,8 +807,8 @@ bool startMDNSService(bool verbose) {
     return false;
   }
 
-  mdns_instance_name_set("ESP32 Diagnostic");
-  esp_err_t serviceStatus = mdns_service_add("ESP32 Diagnostic", "_http", "_tcp", 80, nullptr, 0);
+  mdns_instance_name_set(PROJECT_NAME);
+  esp_err_t serviceStatus = mdns_service_add(PROJECT_NAME, "_http", "_tcp", 80, nullptr, 0);
   if (serviceStatus != ESP_OK) {
     if (verbose || !mdnsLastAttemptFailed) {
       Serial.printf("[mDNS] Publication du service échouée: 0x%02X\r\n", serviceStatus);
@@ -3297,7 +3297,7 @@ void handleOLEDBoot() {
     return;
   }
 
-  oledShowWiFiStatus("ESP32 Diagnostic", "System Ready", WiFi.localIP().toString(), 100);
+  oledShowWiFiStatus(PROJECT_NAME, "System Ready", WiFi.localIP().toString(), 100);
   sendOperationSuccess("Boot screen displayed");
 }
 
@@ -4385,7 +4385,7 @@ void handlePrintVersion() {
   
   // Footer
   html += "<div class='footer'>";
-  html += "ESP32 Diagnostic v"+ String(PROJECT_VERSION) + " | " + diagnosticData.chipModel + " | MAC: " + diagnosticData.macAddress;
+  html += String(PROJECT_NAME) + " v"+ String(PROJECT_VERSION) + " | " + diagnosticData.chipModel + " | MAC: " + diagnosticData.macAddress;
   html += "</div>";
   
   html += "</body></html>";
@@ -4674,7 +4674,8 @@ void handleJavaScriptRoute() {
   Serial.printf("Free heap at start: %d bytes\n", ESP.getFreeHeap());
 
   // Send preamble
-  String preamble = "console.log('ESP32 Diagnostic v";
+  String preamble = "console.log('";
+  preamble += String(PROJECT_NAME) + " v";
   preamble += DIAGNOSTIC_VERSION_STR;
   preamble += " - Initialisation');const UPDATE_INTERVAL=5000;let currentLang='";
   preamble += (currentLanguage == LANG_FR) ? "fr" : "en";

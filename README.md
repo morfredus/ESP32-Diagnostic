@@ -1,8 +1,16 @@
-# ESP32 Diagnostic Suite (v3.20.3)
+# ESP32 Diagnostic Suite (v3.20.4)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers featuring an interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## New in version 3.20.3
+## New in version 3.20.4
+
+**Project Name Refactoring** - Eliminated hardcoded project name strings:
+- All occurrences of "ESP32 Diagnostic" replaced with `PROJECT_NAME` macro from platformio.ini
+- Affected files: `main.cpp` (5 locations), `languages.h`, `web_interface.h`
+- Project name now centrally defined in build configuration
+- Improves maintainability and customization flexibility
+
+## Previous: version 3.20.3
 
 **Code Optimization Release** - Systematic memory efficiency improvements:
 - Applied 9 optimizations ([OPT-001] through [OPT-009]) eliminating 90+ string allocations
