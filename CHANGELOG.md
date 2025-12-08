@@ -1,3 +1,17 @@
+## [Version 3.20.4] - 2025-12-08
+
+### Changed
+- **Project Name Refactoring:** Eliminated hardcoded project name strings throughout codebase
+- All occurrences of "ESP32 Diagnostic" replaced with `PROJECT_NAME` macro from platformio.ini
+- Affected files: `main.cpp` (5 locations: TFT display, mDNS service registration, OLED display, HTML footer, JavaScript preamble), `languages.h` (title), `web_interface.h` (JavaScript console log)
+- Project name now centrally defined in build configuration for improved maintainability
+- Enables easy project customization through single build flag modification
+
+### Technical
+- No functionality changes - all features and behavior remain identical
+- Improved code maintainability through centralized configuration
+- Reduced technical debt from string literals scattered across multiple files
+
 ## [Version 3.20.3] - 2025-12-08
 
 ### Changed

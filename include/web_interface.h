@@ -430,7 +430,8 @@ String generateHTML() {
 String generateJavaScript() {
   String js;
   js.reserve(65000);  // Reserve memory to avoid reallocations (increased from 45000 to 65000)
-  js = F("console.log('ESP32 Diagnostic v");
+  js = F("console.log('");
+  js += String(PROJECT_NAME) + F(" v");
   js += DIAGNOSTIC_VERSION_STR;
   js += F(" - Initialisation');const UPDATE_INTERVAL=5000;let currentLang='");
   js += (currentLanguage == LANG_FR) ? "fr" : "en";

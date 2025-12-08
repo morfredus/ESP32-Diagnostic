@@ -39,7 +39,7 @@ class TextField {
 };
 
 #define TEXT_RESOURCE_MAP(X)\
-  X(title, "ESP32 Complete Diagnostic", "ESP32 Diagnostic Exhaustif") \
+  X(title, PROJECT_NAME, PROJECT_NAME) \
   X(version, "v", "v") \
   X(access, "Access", "Accès") \
   X(or_text, "or", "ou") \
