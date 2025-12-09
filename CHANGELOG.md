@@ -1,3 +1,40 @@
+## [Version 3.21.0] - 2025-12-09
+
+### ⚠️ BREAKING CHANGE - Hardware Migration Required for ESP32 Classic
+- **Complete ESP32 Classic Pin Mapping Revision**: 11 changes to resolve boot issues and USB communication problems
+  - **Boot Issues Resolved**: Eliminated LEDs and peripherals on strapping pins GPIO 4, 12, 15
+  - **USB-UART Stability**: Protected GPIO 1 (TX0) and GPIO 3 (RX0) from interference during flashing
+  - **Improved Buttons**: Migrated to GPIO 32/33 with internal pull-up (instead of 34/35 input-only without pull-up)
+
+### Details of 11 Changes (ESP32 Classic Only)
+1. **GPS PPS**: GPIO 4 → GPIO 36 (GPIO4 = SDIO boot strapping)
+2. **TFT CS**: GPIO 19 → GPIO 27 (avoid USB-UART interference)
+3. **TFT DC**: GPIO 27 → GPIO 14 (wiring reorganization)
+4. **TFT RST**: GPIO 26 → GPIO 25 (better physical grouping)
+5. **TFT BL**: GPIO 13 → GPIO 32 (avoid internal LED conflict)
+6. **RGB LED Red**: GPIO 12 → GPIO 13 (GPIO12 = flash voltage strapping)
+7. **RGB LED Blue**: GPIO 15 → GPIO 25 (GPIO15 = JTAG debug strapping)
+8. **Button 1**: GPIO 34 → GPIO 32 (GPIO34 = input-only, no pull-up)
+9. **Distance TRIG**: GPIO 32 → GPIO 27 (GPIO32 reassignment)
+10. **DHT**: GPIO 25 → GPIO 32 (GPIO25 reassignment)
+11. **Motion Sensor**: GPIO 36 removed (reassigned to GPS PPS)
+
+### Added
+- **Safety Section** in `board_config.h`: Detailed reminders on voltages (3.3V), strapping pins, input-only GPIOs (34/35/36/39), UART0 protection, current limits (≤12 mA), I2C pull-up recommendations (4.7 kΩ)
+- **Complete Documentation**: New file `docs/PIN_MAPPING_CHANGES_FR.md` detailing each change with numbering, technical rationale, and summary table
+
+### Changed
+- **All ESP32 Classic Pins** updated in `board_config.h`, `PIN_MAPPING_FR.md`, `PIN_MAPPING.md`
+- **User Documentation**: CONFIG, FEATURE_MATRIX, README updated with new pins
+- **Version History**: v3.21.0 entry added to all reference documents
+
+### User Impact
+- **ESP32-S3**: No changes, mapping unchanged
+- **ESP32 Classic**: Hardware rewiring required according to new mapping (see table in `docs/PIN_MAPPING_CHANGES_FR.md`)
+- **Dynamic Configuration**: Web interface still allows modifying certain sensor pins without recompiling
+
+---
+
 ## [Version 3.20.4] - 2025-12-08
 
 ### Changed

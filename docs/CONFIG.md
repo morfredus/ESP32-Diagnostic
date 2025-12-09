@@ -1,4 +1,4 @@
-# Configuration (EN) — v3.20.2
+# Configuration (EN) — v3.21.0
 
 ## Build Environment Selection
 
@@ -67,8 +67,8 @@ const char* WIFI_PASS_2 = "BackupPassword";
 
 **ESP32 Classic (esp32devkitc):**
   - MOSI: GPIO 23, SCLK: GPIO 18
-  - CS: GPIO 15, DC: GPIO 2
-  - RST: GPIO 4, BL: GPIO 32
+  - CS: GPIO 27, DC: GPIO 14
+  - RST: GPIO 25, BL: GPIO 32
 
 - TFT resolution: 240x240 pixels
 - Displays boot splash screen and real-time WiFi/IP status
@@ -85,7 +85,7 @@ const char* WIFI_PASS_2 = "BackupPassword";
   - BTN1: short press plays a brief buzzer tone for user feedback.
   - BTN2: short press cycles RGB LED colors (red → green → blue → white).
 - ESP32-S3 default pins: BTN1=38, BTN2=39 to avoid boot/reset conflicts.
-- Note for ESP32 Classic: GPIO 34–39 are input-only and have no internal pull-ups. Use external pull-ups if required when mapping BTN2 to GPIO 35.
+- ESP32 Classic (v3.21.0+): BTN1=32, BTN2=33 with internal pull-up (no external resistor needed). Previously GPIO 34/35 (input-only without pull-up).
 
 
 ### Distance Sensor (HC-SR04)

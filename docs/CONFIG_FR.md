@@ -1,4 +1,4 @@
-# Configuration (FR) — v3.20.2
+# Configuration (FR) — v3.21.0
 
 ## Sélection de l'Environnement de Build
 
@@ -67,8 +67,8 @@ const char* WIFI_PASS_2 = "SecoursMotDePasse";
 
 **ESP32 Classic (esp32devkitc) :**
   - MOSI : GPIO 23, SCLK : GPIO 18
-  - CS : GPIO 15, DC : GPIO 2
-  - RST : GPIO 4, BL : GPIO 32
+  - CS : GPIO 27, DC : GPIO 14
+  - RST : GPIO 25, BL : GPIO 32
 
 - Résolution TFT : 240x240 pixels
 - Affiche l'écran de démarrage et l'état WiFi/IP en temps réel
@@ -84,8 +84,8 @@ const char* WIFI_PASS_2 = "SecoursMotDePasse";
 - Actions par défaut :
   - BTN1 : appui court → bip bref du buzzer (feedback utilisateur).
   - BTN2 : appui court → cycle des couleurs de la LED RGB (rouge → vert → bleu → blanc).
-- ESP32-S3 : BTN1=38, BTN2=39 pour éviter les conflits d'upload/reset.
-- Note ESP32 Classic : les GPIO 34–39 sont en entrée seule et sans pull‑up interne. Prévoir des résistances de tirage externes si nécessaire lorsque BTN2 est câblé sur GPIO 35.
+- ESP32-S3 : BTN1=38, BTN2=39 pour éviter les conflits d’upload/reset.
+- ESP32 Classic (v3.21.0+) : BTN1=32, BTN2=33 avec pull-up interne (pas de résistance externe nécessaire). Anciennement GPIO 34/35 (input-only sans pull-up).
 
 
 ### Capteur de distance (HC-SR04)

@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Security Guidelines (v3.20.2)
+# ESP32 Diagnostic Suite – Security Guidelines (v3.21.0)
 
 Although the ESP32 Diagnostic Suite is typically used in controlled lab environments, following these security guidelines reduces
 exposure when testing pre-production hardware across all supported build environments (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic).
