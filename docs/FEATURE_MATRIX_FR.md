@@ -1,11 +1,11 @@
-# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.20.2)
+# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.21.0)
 
-Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.20.2 et ses trois environnements de build.
+Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.21.0 et ses trois environnements de build.
 Elle aide à planifier les campagnes de validation et à vérifier si des périphériques optionnels nécessitent un câblage supplémentaire.
 
-> **Important :** La version 3.20.2 (PlatformIO) n'active toujours pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
+> **Important :** La version 3.21.0 (PlatformIO) n’active toujours pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
 
-**Mis à jour en v3.20.2 :** L'interface web affiche maintenant les pins GPIO corrects en fonction de la cible compilée. Toutes les références de pins dans l'interface web sont désormais dynamiquement sourcées depuis `board_config.h`. Actualisez fortement le navigateur (Ctrl+Shift+R) après la mise à jour pour voir les pins corrects de votre carte cible.
+**⚠️ Mis à jour en v3.21.0 :** Révision complète du pin mapping ESP32 Classic — 11 modifications pour résoudre les problèmes de boot et de communication USB. **Migration matérielle requise pour ESP32 Classic.** Voir `PIN_MAPPING_CHANGES_FR.md` pour détails. ESP32-S3 inchangé.
 
 ## Légende
 - ✅ – Pris en charge nativement par le firmware.
@@ -23,9 +23,9 @@ Elle aide à planifier les campagnes de validation et à vérifier si des périp
 | Bus / Périphérique | Broches par cible | Cartes supportées | Notes |
 |--------------------|--------------------|-------------------|-------|
 | I2C principal | **ESP32-S3:** SDA=15, SCL=16 · **ESP32 Classic:** SDA=21, SCL=22 | Toutes les cartes supportées | Utilisé pour l'OLED, les packs capteurs, l'EEPROM (laisser GPIO19/20 libres pour l'USB). |
-| LED RGB | **ESP32-S3:** R=47, G=48, B=45 · **ESP32 Classic:** R=12, G=14, B=15 | Toutes les cartes supportées | Broches PWM pour LED RGB commune anode/cathode. |
-| Boutons | **ESP32-S3:** BTN1=38, BTN2=39 · **ESP32 Classic:** BTN1=34, BTN2=35 | Toutes les cartes supportées | Pull-ups internes si disponibles (les GPIO 34–39 du Classic n'ont pas de pull‑up interne). |
-| TFT ST7789 | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7 · **ESP32 Classic:** MOSI=23, SCLK=18, CS=19, DC=27, RST=26, BL=13 | Toutes les cartes supportées | SPI dédié pour affichage TFT. Voir PIN_MAPPING_FR.md pour conflits potentiels. |
+| LED RGB | **ESP32-S3:** R=21, G=45, B=47 · **ESP32 Classic (v3.21.0+):** R=13, G=14, B=25 | Toutes les cartes supportées | Broches PWM pour LED RGB. Classic : éloigné des broches de strapping (12/15). |
+| Boutons | **ESP32-S3:** BTN1=38, BTN2=39 · **ESP32 Classic (v3.21.0+):** BTN1=32, BTN2=33 | Toutes les cartes supportées | Classic : GPIO 32/33 avec pull-up interne (anciennement 34/35 input-only). |
+| TFT ST7789 | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7 · **ESP32 Classic (v3.21.0+):** MOSI=23, SCLK=18, CS=27, DC=14, RST=25, BL=32 | Toutes les cartes supportées | SPI dédié pour affichage TFT. Voir PIN_MAPPING_FR.md pour conflits potentiels. |
 | Boucle UART | TX0/RX0 & UART1 optionnel | Toutes | Nécessite un cavalier TX↔RX sur l'UART choisi. |
 | Température OneWire | Variable par cible | ESP32, ESP32-S3 | Détection DS18B20 lorsque `ENABLE_ONEWIRE` est actif. Voir PIN_MAPPING_FR.md. |
 

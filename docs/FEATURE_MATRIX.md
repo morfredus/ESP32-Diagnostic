@@ -1,11 +1,11 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.20.2)
+# ESP32 Diagnostic Suite – Feature Matrix (v3.21.0)
 
-This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.20.2 with three distinct build environments.
+This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.21.0 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.
 
-> **Important:** Current release 3.20.2 (PlatformIO) still ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+> **Important:** Current release 3.21.0 (PlatformIO) still ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
 
-**Updated in v3.20.2:** Web UI now displays correct GPIO pins based on compiled target. All pin references in the web interface are now dynamically sourced from `board_config.h`. Hard refresh the browser (Ctrl+Shift+R) after upgrading to see the correct pins for your target board.
+**⚠️ Updated in v3.21.0:** Complete ESP32 Classic pin mapping revision — 11 changes to resolve boot and USB communication issues. **Hardware migration required for ESP32 Classic.** See `PIN_MAPPING_CHANGES_FR.md` for details. ESP32-S3 unchanged.
 
 ## Legend
 - ✅ – Supported out of the box by the firmware.
@@ -26,9 +26,9 @@ Use it to plan validation campaigns and to verify whether optional peripherals r
 | I2C secondary bus | Disabled by default | ESP32, ESP32-S3 | Enable via `ENABLE_SECONDARY_I2C` flag in `config.h`. |
 | SPI test bus | **Varies by target** (see PIN_MAPPING.md) | ESP32, ESP32-S3 | Validates external flash/SD adaptors. |
 | UART loopback | TX0/RX0 & optional UART1/UART2 | All | Requires jumper wire TX↔RX on chosen UART. |
-| TFT ST7789 display | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7<br>**ESP32 Classic:** MOSI=23, SCLK=18, CS=19, DC=27, RST=26, BL=13 | All supported boards | 240x240 display. Pins hardware-specific. |
-| RGB LED (separate) | **ESP32-S3:** R=47, G=48, B=45<br>**ESP32 Classic:** R=12, G=14, B=15 | All | Individual RGB control pins. |
-| Buttons | **ESP32-S3:** BTN1=38, BTN2=39<br>**ESP32 Classic:** BTN1=34, BTN2=35 | All supported boards | GPIO 34–39 are input-only (use external pull-up if needed). |
+| TFT ST7789 display | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7<br>**ESP32 Classic (v3.21.0+):** MOSI=23, SCLK=18, CS=27, DC=14, RST=25, BL=32 | All supported boards | 240x240 display. Pins hardware-specific. |
+| RGB LED (separate) | **ESP32-S3:** R=21, G=45, B=47<br>**ESP32 Classic (v3.21.0+):** R=13, G=14, B=25 | All | Individual RGB control pins. Classic: moved away from strapping pins (12/15). |
+| Buttons | **ESP32-S3:** BTN1=38, BTN2=39<br>**ESP32 Classic (v3.21.0+):** BTN1=32, BTN2=33 | All supported boards | Classic: GPIO 32/33 with internal pull-up (previously 34/35 input-only). |
 
 ## Optional module checklist
 | Module | Firmware flag | Default state | Description |
