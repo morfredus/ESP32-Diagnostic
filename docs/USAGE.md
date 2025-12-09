@@ -1,4 +1,4 @@
-# Usage Guide (EN) – v3.20.2
+# Usage Guide (EN) – v3.21.0
 
 **Multi-environment support:** Version 3.17.1 refreshes default pin mappings for ESP32-S3 and ESP32 Classic while keeping the three hardware-specific build environments and the ESP32 Classic memory optimizations. Before first use, ensure you've selected and flashed the correct environment for your board (see [BUILD_AND_DEPLOY.md](BUILD_AND_DEPLOY.md)).
 
