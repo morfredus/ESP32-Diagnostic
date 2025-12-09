@@ -1,3 +1,40 @@
+## [Version 3.21.0] - 2025-12-09
+
+### ⚠️ BREAKING CHANGE - Migration matérielle requise pour ESP32 Classic
+- **Révision complète du pin mapping ESP32 Classic** : 11 modifications pour résoudre les problèmes de boot et de communication USB
+  - **Problèmes de boot résolus** : Élimination des LED et périphériques sur les broches de strapping GPIO 4, 12, 15
+  - **Stabilité USB-UART** : Protection des GPIO 1 (TX0) et GPIO 3 (RX0) contre les interférences lors du flashing
+  - **Boutons améliorés** : Migration vers GPIO 32/33 avec pull-up interne (au lieu de 34/35 input-only sans pull-up)
+
+### Détails des 11 modifications (ESP32 Classic uniquement)
+1. **GPS PPS** : GPIO 4 → GPIO 36 (GPIO4 = strapping SDIO boot)
+2. **TFT CS** : GPIO 19 → GPIO 27 (éviter interférences USB-UART)
+3. **TFT DC** : GPIO 27 → GPIO 14 (réorganisation câblage)
+4. **TFT RST** : GPIO 26 → GPIO 25 (meilleur groupement physique)
+5. **TFT BL** : GPIO 13 → GPIO 32 (éviter conflit LED interne)
+6. **LED RGB Rouge** : GPIO 12 → GPIO 13 (GPIO12 = strapping tension flash)
+7. **LED RGB Bleue** : GPIO 15 → GPIO 25 (GPIO15 = strapping JTAG debug)
+8. **Bouton 1** : GPIO 34 → GPIO 32 (GPIO34 = input-only, pas de pull-up)
+9. **Distance TRIG** : GPIO 32 → GPIO 27 (réaffectation GPIO32)
+10. **DHT** : GPIO 25 → GPIO 32 (réaffectation GPIO25)
+11. **Capteur Mouvement** : GPIO 36 supprimé (réaffecté au GPS PPS)
+
+### Ajouté
+- **Section de sécurité** dans `board_config.h` : Rappels détaillés sur les tensions (3.3V), broches de strapping, GPIO input-only (34/35/36/39), protection UART0, limites de courant (≤12 mA), recommandations pull-up I2C (4.7 kΩ)
+- **Documentation complète** : Nouveau fichier `docs/PIN_MAPPING_CHANGES_FR.md` détaillant chaque modification avec numérotation, raisons techniques et tableau récapitulatif
+
+### Modifié
+- **Tous les pins ESP32 Classic** mis à jour dans `board_config.h`, `PIN_MAPPING_FR.md`, `PIN_MAPPING.md`
+- **Documentation utilisateurs** : CONFIG, FEATURE_MATRIX, README actualisés avec les nouveaux pins
+- **Historique des versions** : Entrée v3.21.0 ajoutée à tous les documents de référence
+
+### Impact utilisateurs
+- **ESP32-S3** : Aucun changement, mapping inchangé
+- **ESP32 Classic** : Recâblage matériel obligatoire selon le nouveau mapping (voir tableau dans `docs/PIN_MAPPING_CHANGES_FR.md`)
+- **Configuration dynamique** : L'interface web permet toujours de modifier certains pins de capteurs sans recompiler
+
+---
+
 ## [Version 3.20.4] - 2025-12-08
 
 ### Modifié

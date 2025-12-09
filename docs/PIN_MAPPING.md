@@ -1,4 +1,4 @@
-# Pin Mapping — Quick Reference (v3.20.2)
+# Pin Mapping — Quick Reference (v3.21.0)
 
 ## Supported Environments
 
@@ -73,34 +73,33 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **SCL:** GPIO 22 (different from S3!)
 
 ### Buttons
-- **Button 1:** GPIO 34 (Input only)
-- **Button 2:** GPIO 35 (Input only)
+- **Button 1:** GPIO 32 (with internal pull-up)
+- **Button 2:** GPIO 33 (with internal pull-up)
 
 ### RGB LED (Separate pins)
-- **Red:** GPIO 12
+- **Red:** GPIO 13
 - **Green:** GPIO 14
-- **Blue:** GPIO 15
+- **Blue:** GPIO 25
 
 ### Sensors
-- **DHT (Temperature/Humidity):** GPIO 25
-- **Light Sensor (ADC):** GPIO 2
-- **HC-SR04 Distance Sensor:** TRIG GPIO 32 / ECHO GPIO 33
-- **PIR Motion Sensor:** GPIO 36 (VP, Input only)
+- **DHT (Temperature/Humidity):** GPIO 32
+- **Light Sensor (ADC):** GPIO 39
+- **HC-SR04 Distance Sensor:** TRIG GPIO 27 / ECHO GPIO 33
 - **Buzzer:** GPIO 5
 - **PWM Test:** GPIO 5
 
 ### TFT ST7789 Display (240x240)
 - **MOSI:** GPIO 23
 - **SCLK:** GPIO 18
-- **CS:** GPIO 19
-- **DC:** GPIO 27
-- **RST:** GPIO 26
-- **Backlight (BL):** GPIO 13
+- **CS:** GPIO 27
+- **DC:** GPIO 14
+- **RST:** GPIO 25
+- **Backlight (BL):** GPIO 32
 
 ### GPS Module (UART2)
 - **RXD:** GPIO 16 (RX2, GPS TX → ESP RX)
 - **TXD:** GPIO 17 (TX2, GPS RX → ESP TX)
-- **PPS:** GPIO 4
+- **PPS:** GPIO 36
 
 ### NeoPixel / WS2812B
 - **Pin:** -1 (disabled by default)
@@ -109,9 +108,12 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 
 ### ESP32 Classic Important Notes
 - **Input-Only Pins:** GPIO 34, 35, 36, 39 (VP/VN) — can only read, cannot output.
-- **Strapping Pins:** GPIO 0, GPIO 2, GPIO 5, GPIO 12, GPIO 15 — check state during boot.
+- **Strapping Pins:** GPIO 0, GPIO 2, GPIO 4, GPIO 5, GPIO 12, GPIO 15 — avoid LEDs/peripherals on these pins to prevent boot issues.
+- **UART0 (USB-UART):** GPIO 1 (TX0) and GPIO 3 (RX0) are reserved for flashing/debugging — do not connect external devices.
 - **Flash Pins:** GPIO 6-11 are connected to SPI Flash — do not use.
 - **ADC2 Limitation:** ADC2 (GPIO 0, 2, 4, 12-15, 25-27) cannot be used when WiFi is active.
+- **Current Limit:** Max 12 mA per GPIO; use transistor/driver for higher loads.
+- **Hardware Migration Required:** v3.21.0 introduces 11 pin changes to resolve boot and USB communication issues. See `docs/PIN_MAPPING_CHANGES_FR.md` for detailed rationale.
 
 ---
 
@@ -139,11 +141,13 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - TFT occupies GPIO 7–13; GPS uses GPIO 17–18. Avoid overlapping these ranges when attaching external modules.
 
 ### ESP32 Classic Conflicts
-- Buttons on GPIO 34/35 are input only; keep pull-ups in place.
-- PWM/Buzzer uses GPIO 5 (strapping pin) — keep LOW during boot if hardware is attached.
-- TFT uses GPIO 18/19/23 plus 13/26/27; avoid sharing these with other SPI devices unless chip select is managed.
-- ADC2 pins are unusable with Wi-Fi active; prefer ADC1 for analog sensing.
-- Input-only pins (34–39) cannot drive LEDs or outputs.
+- Avoid LEDs/peripherals on strapping pins (GPIO 0/2/4/5/12/15) to prevent boot failures.
+- Buttons now use GPIO 32/33 with internal pull-up (no external resistor needed).
+- PWM/Buzzer uses GPIO 5 (strapping pin) — acceptable if LOW during boot.
+- Protect UART0: GPIO 1 (TX0) and GPIO 3 (RX0) reserved for USB-UART bridge.
+- TFT uses GPIO 18/23/27/14/25/32; avoid sharing these with other SPI devices unless chip select is managed.
+- ADC2 pins are unusable with Wi-Fi active; prefer ADC1 (GPIO 32-39) for analog sensing.
+- Input-only pins (34–39) cannot drive LEDs or outputs; GPIO 36/39 used for GPS PPS and light sensor.
 
 ---
 
@@ -209,6 +213,7 @@ pio run -e esp32devkitc --target upload
 ---
 
 ## Version History
+- **v3.21.0:** Complete ESP32 Classic pin mapping revision — 11 changes to resolve boot issues (strapping pins GPIO 4/12/15), USB-UART communication (protect GPIO 1/3), and buttons (GPIO 32/33 with internal pull-up instead of 34/35 input-only). Added detailed safety reminders in `board_config.h`. Hardware migration required for ESP32 Classic users. See `docs/PIN_MAPPING_CHANGES_FR.md` for complete numbered changelog.
 - **v3.20.2:** Web UI pin references now dynamically sourced from `board_config.h`; web interface always displays correct compiled target pins.
 - **v3.20.1:** ESP32-S3 I2C moved to 15/16 and RGB Red to 21 to free USB D-/D+ (19/20) and stabilize OTG; docs aligned.
 - **v3.20.1:** Pin mapping moved to `board_config.h`; ESP32-S3 buttons set to GPIO 38/39 to avoid upload/reset conflicts; docs aligned.

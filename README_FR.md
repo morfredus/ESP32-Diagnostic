@@ -1,8 +1,19 @@
-# ESP32 Diagnostic Suite (v3.20.4)
+# ESP32 Diagnostic Suite (v3.21.0)
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## Nouveautés de la version 3.20.4
+## ⚠️ Nouveautés de la version 3.21.0 - BREAKING CHANGE
+
+**Révision complète du pin mapping ESP32 Classic** - Migration matérielle requise :
+- **11 modifications de pins** pour résoudre les problèmes de boot (broches de strapping GPIO 4/12/15) et de communication USB-UART (protection GPIO 1/3)
+- **Boutons améliorés** : GPIO 32/33 avec pull-up interne (au lieu de 34/35 input-only)
+- **LED RGB sécurisées** : Éloignées des broches de strapping (12→13, 15→25)
+- **Stabilité GPS** : PPS déplacé de GPIO 4 (strapping) vers GPIO 36 (input-only dédié)
+- **Documentation détaillée** : Voir `docs/PIN_MAPPING_CHANGES_FR.md` pour la liste numérotée des changements avec explications techniques
+- **Impact** : ESP32-S3 inchangé, ESP32 Classic nécessite recâblage matériel
+- **Sécurité** : Ajout de rappels détaillés dans `board_config.h` (tensions 3.3V, strapping, limites courant)
+
+## Précédent : version 3.20.4
 
 **Refactorisation du nom de projet** - Élimination des chaînes de nom de projet codées en dur :
 - Toutes les occurrences de "ESP32 Diagnostic" remplacées par la macro `PROJECT_NAME` de platformio.ini

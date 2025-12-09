@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite – Guide de l'interface web (v3.20.2)
+# ESP32 Diagnostic Suite – Guide de l'interface web (v3.21.0)
 
 Le tableau de bord web embarqué constitue la surface de contrôle principale pour les techniciens. Ce guide couvre la disposition,
 les interactions et les points d'extension disponibles en version 3.16.0. Cette version introduit la surveillance en temps réel de la connexion WiFi, la configuration dynamique des écrans, et des capacités améliorées de diagnostic réseau.
