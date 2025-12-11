@@ -2,12 +2,12 @@
 
 > **AVERTISSEMENT** : v3.22.0 remappe les GPIO pour ESP32-S3 et ESP32 Classic. Un recâblage matériel est nécessaire. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
-Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.21.1 et ses trois environnements de build.
+Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.22.0 et ses trois environnements de build.
 Elle aide à planifier les campagnes de validation et à vérifier si des périphériques optionnels nécessitent un câblage supplémentaire.
 
-> **Important :** La version 3.21.1 (PlatformIO) n'active toujours pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
+> **Important :** La version 3.22.0 (PlatformIO) n'active toujours pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
 
-**✨ Nouveau en v3.21.1 :** Indicateur d'état Wi-Fi NeoPixel avec battement en temps réel (vert quand connecté, rouge quand déconnecté, jaune lors des tentatives de connexion) et flash violet de confirmation de redémarrage. **Aucun changement matériel requis par rapport à v3.21.0.**
+**✨ Nouveau en v3.22.0 :** MQTT Publisher pour publication en temps réel des métriques système (mémoire, WiFi, capteurs) vers Home Assistant, NodeRED, InfluxDB et autres brokers MQTT. Non-bloquant avec auto-reconnexion. **Désactivé par défaut.**
 
 **⚠️ Mis à jour en v3.21.0 :** Révision complète du pin mapping ESP32 Classic — 11 modifications pour résoudre les problèmes de boot et de communication USB. **Migration matérielle requise pour ESP32 Classic.** Voir `PIN_MAPPING_CHANGES_FR.md` pour détails. ESP32-S3 inchangé.
 
