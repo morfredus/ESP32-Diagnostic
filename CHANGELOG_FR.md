@@ -1,3 +1,45 @@
+## [Version 3.21.1] - 2025-12-11
+
+### Ajouté
+- **Indicateur d'état Wi-Fi NeoPixel** : Rétroaction visuelle en temps réel sur LED RGB NeoPixel/WS2812
+  - **Initialisation automatique** lors de la séquence de démarrage
+  - **Jaune (50, 50, 0)** : Tentative de connexion en cours lors du démarrage
+  - **Battement vert** (0, 50, 0) / (0, 10, 0) : Connecté avec succès au Wi-Fi
+  - **Battement rouge** (50, 0, 0) / (10, 0, 0) : Wi-Fi déconnecté
+  - **Fréquence de battement** : 1 Hz (alterne tous les 1 seconde)
+  - **Fonctionnement non bloquant** : Géré dans la boucle principale, aucun impact sur la réactivité
+
+- **Confirmation de redémarrage du bouton BOOT** : Flash LED violet lors de l'appui long
+  - **Flash violet (255, 0, 255)** s'affiche immédiatement lors du maintien du BOOT pendant 2+ secondes
+  - Fournit une confirmation visuelle claire de la demande de redémarrage
+  - Synchronisé avec la barre de progression TFT
+
+- **Isolation des tests** : Le statut Wi-Fi NeoPixel se met en pause lors des tests matériels
+  - Le battement se met automatiquement en pause lors de l'exécution de `/api/neopixel-test`
+  - Le battement se met automatiquement en pause lors de l'exécution de `/api/neopixel-pattern`
+  - Le battement se met automatiquement en pause lors des changements de couleur via `/api/neopixel-color`
+  - L'état se restaure automatiquement à la fin du test/motif
+
+### Modifié
+- **main.cpp** : Ajout des fonctions de gestion d'état Wi-Fi NeoPixel
+  - Nouvelles fonctions : `updateNeoPixelWifiStatus()`, `neopixelSetWifiState()`, `neopixelShowConnecting()`, `neopixelPauseStatus()`, `neopixelResumeStatus()`, `neopixelRestoreWifiStatus()`, `neopixelShowRebootFlash()`
+  - Modifié `setup()` : Initialiser NeoPixel avant la connexion Wi-Fi
+  - Modifié `loop()` : Ajouter l'appel de mise à jour du battement
+  - Modifié `onButtonBootLongPress()` : Ajouter la confirmation du flash de redémarrage
+  - Modifié les gestionnaires de test NeoPixel : Ajouter pause/reprendre autour des tests
+
+### Technique
+- **GPIO** : Aucun changement - utilise la configuration GPIO NeoPixel existante (GPIO 48 ESP32-S3, GPIO 2 ESP32 Classic)
+- **Timing** : Intervalle de mise à jour du battement de 1 Hz, implémentation non bloquante
+- **Mémoire** : Surcharge minimale - 7 variables d'état global, aucune allocation dynamique dans le chemin du battement
+
+### Compatibilité rétroactive
+- **✅ Entièrement compatible** avec v3.21.0 - aucune modification matérielle requise
+- **✅ Pas de changements cassants** - fonctionnalité purement additive
+- **✅ Pas de changements de configuration** - GPIO NeoPixel inchangé depuis v3.21.0
+
+---
+
 ## [Version 3.21.0] - 2025-12-09
 
 ### ⚠️ BREAKING CHANGE - Migration matérielle requise pour ESP32 Classic

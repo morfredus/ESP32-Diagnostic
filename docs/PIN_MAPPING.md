@@ -1,4 +1,4 @@
-# Pin Mapping — Quick Reference (v3.21.0)
+# Pin Mapping — Quick Reference (v3.21.1)
 
 ## Supported Environments
 

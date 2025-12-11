@@ -1,3 +1,45 @@
+## [Version 3.21.1] - 2025-12-11
+
+### Added
+- **NeoPixel Wi-Fi Status Indicator**: Real-time visual feedback on NeoPixel/WS2812 RGB LED
+  - **Automatic initialization** during startup sequence
+  - **Yellow (50, 50, 0)**: Connection attempt in progress during boot
+  - **Green heartbeat** (0, 50, 0) / (0, 10, 0): Successfully connected to Wi-Fi
+  - **Red heartbeat** (50, 0, 0) / (10, 0, 0): Wi-Fi disconnected
+  - **Heartbeat frequency**: 1 Hz (alternates every 1 second)
+  - **Non-blocking operation**: Managed in main loop, no impact on responsiveness
+
+- **BOOT Button Reboot Confirmation**: Violet LED flash on long press
+  - **Violet flash (255, 0, 255)** displays immediately when holding BOOT for 2+ seconds
+  - Provides clear visual confirmation of reboot request
+  - Synchronized with TFT progress bar
+
+- **Test Isolation**: NeoPixel Wi-Fi status pauses during hardware tests
+  - Heartbeat automatically pauses when running `/api/neopixel-test`
+  - Heartbeat automatically pauses when running `/api/neopixel-pattern`
+  - Heartbeat automatically pauses during `/api/neopixel-color` changes
+  - Status automatically resumes upon test/pattern completion
+
+### Changed
+- **main.cpp**: Added NeoPixel Wi-Fi state management functions
+  - New functions: `updateNeoPixelWifiStatus()`, `neopixelSetWifiState()`, `neopixelShowConnecting()`, `neopixelPauseStatus()`, `neopixelResumeStatus()`, `neopixelRestoreWifiStatus()`, `neopixelShowRebootFlash()`
+  - Modified `setup()`: Initialize NeoPixel before Wi-Fi connection
+  - Modified `loop()`: Add heartbeat update call
+  - Modified `onButtonBootLongPress()`: Add reboot flash confirmation
+  - Modified NeoPixel test handlers: Add pause/resume around tests
+
+### Technical
+- **GPIO**: No changes - uses existing NeoPixel GPIO configuration (GPIO 48 ESP32-S3, GPIO 2 ESP32 Classic)
+- **Timing**: Heartbeat 1 Hz update interval, non-blocking implementation
+- **Memory**: Minimal overhead - 7 global state variables, no dynamic allocations in heartbeat path
+
+### Backward Compatibility
+- **✅ Fully compatible** with v3.21.0 - no hardware changes required
+- **✅ No breaking changes** - purely additive feature
+- **✅ No configuration changes** - NeoPixel GPIO unchanged from v3.21.0
+
+---
+
 ## [Version 3.21.0] - 2025-12-09
 
 ### ⚠️ BREAKING CHANGE - Hardware Migration Required for ESP32 Classic

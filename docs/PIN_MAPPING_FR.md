@@ -1,4 +1,4 @@
-# Mapping des pins — Référence rapide (v3.21.0)
+# Mapping des pins — Référence rapide (v3.21.1)
 
 - **Cartes supportées :**
   - ESP32-S3-DevKitC-1 N16R8 (16Mo Flash, 8Mo PSRAM) — `esp32s3_n16r8`
