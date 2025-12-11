@@ -1,4 +1,5 @@
-# ESP32 Diagnostic Suite – Build & Deploy (v3.21.1)
+# ESP32 Diagnostic Suite � Build & Deploy (v3.22.0)
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 This document describes the supported toolchains and the recommended release checklist for firmware version 3.16.0.
 
@@ -66,9 +67,9 @@ pio run --target clean
 **Note:** Arduino IDE and Arduino CLI are **no longer supported** for this version. Use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository for Arduino IDE compatibility.
 
 ## Build Status (2025-11-27)
-1. `esp32s3_n16r8`: ✓ Build OK, ✓ Upload OK, ✓ Tested
-2. `esp32s3_n8r8`: ✓ Build OK, ✓ Compilation validated
-3. `esp32devkitc`: ✓ Build OK, ⚠ Hardware testing pending
+1. `esp32s3_n16r8`: ? Build OK, ? Upload OK, ? Tested
+2. `esp32s3_n8r8`: ? Build OK, ? Compilation validated
+3. `esp32devkitc`: ? Build OK, ? Hardware testing pending
 
 ## Pin Configuration Notes
 
@@ -102,7 +103,7 @@ Dynamic configuration of OLED and TFT displays through web interface, including 
 ## Acceptance tests
 | Test | Procedure | Expected result |
 |------|-----------|-----------------|
-| Connectivity smoke test | Connect to lab Wi-Fi, run quick diagnostics. | PASS with RSSI above -70 dBm, ping < 40 ms. |
+| Connectivity smoke test | Connect to lab Wi-Fi, run quick diagnostics. | PASS with RSSI above -70�dBm, ping < 40�ms. |
 | Memory soak | Run full diagnostics 5 times consecutively. | No heap exhaustion, PSRAM stable. |
 | Peripheral validation | Attach OLED + NeoPixel chain, enable modules. | PASS with consistent frame rate and LED animation. |
 | REST API sanity | Trigger `/api/run` then `/api/status`. | Receives queued status and JSON payload. |
@@ -126,3 +127,14 @@ Dynamic configuration of OLED and TFT displays through web interface, including 
 - [Installation guide](INSTALL.md)
 - [Configuration guide](CONFIG.md)
 - [Release notes](../CHANGELOG.md)
+
+
+
+
+
+
+
+
+
+
+

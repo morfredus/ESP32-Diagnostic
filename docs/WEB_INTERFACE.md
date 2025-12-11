@@ -1,19 +1,20 @@
-# ESP32 Diagnostic Suite – Web Interface Guide (v3.21.1)
+# ESP32 Diagnostic Suite � Web Interface Guide (v3.22.0)
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 The built-in web dashboard is the primary control surface for technicians. This guide covers the layout, interaction patterns, and
 customisation hooks available in version 3.16.0. This release introduces real-time WiFi connection monitoring, dynamic display configuration, and enhanced network diagnostics capabilities.
 
 ## Layout overview
 ```
-┌──────────────────────────────────────────┐
-│ Header bar: board identity & network     │
-├──────────────────────────────────────────┤
-│ Status tiles (Wi-Fi, BLE, version, etc.) │
-├──────────────────────────────────────────┤
-│ Diagnostic controls & live log           │
-├──────────────────────────────────────────┤
-│ Results table & export actions           │
-└──────────────────────────────────────────┘
++------------------------------------------+
+� Header bar: board identity & network     �
++------------------------------------------�
+� Status tiles (Wi-Fi, BLE, version, etc.) �
++------------------------------------------�
+� Diagnostic controls & live log           �
++------------------------------------------�
+� Results table & export actions           �
++------------------------------------------+
 ```
 
 ### Header bar
@@ -22,26 +23,26 @@ customisation hooks available in version 3.16.0. This release introduces real-ti
 - Provides quick access buttons for restarting diagnostics and toggling language.
 
 ### Status tiles
-- **Wi-Fi tile** – connection strength, channel, last latency sample, mirrored on the OLED splash during boot.
-- **BLE tile** – enabled on boards with BLE hardware; shows advertisement count.
-- **Version tile** – echoes `DIAGNOSTIC_VERSION` and build timestamp.
-- **Storage tile** – indicates free heap and PSRAM when detected.
+- **Wi-Fi tile** � connection strength, channel, last latency sample, mirrored on the OLED splash during boot.
+- **BLE tile** � enabled on boards with BLE hardware; shows advertisement count.
+- **Version tile** � echoes `DIAGNOSTIC_VERSION` and build timestamp.
+- **Storage tile** � indicates free heap and PSRAM when detected.
 
 ### Wireless Network Monitor (New in v3.16.0)
 The **Wireless** tab now includes a real-time network connection status display showing:
-- **Connection Status** – Visual indicator (green/red) showing whether the ESP32 is connected to WiFi
-- **Current SSID** – Name of the connected network
-- **IP Address** – Current IP address assigned to the ESP32
-- **Gateway** – Network gateway address
-- **DNS Server** – DNS server address in use
-- **Signal Strength** – RSSI value in dBm showing WiFi signal quality
+- **Connection Status** � Visual indicator (green/red) showing whether the ESP32 is connected to WiFi
+- **Current SSID** � Name of the connected network
+- **IP Address** � Current IP address assigned to the ESP32
+- **Gateway** � Network gateway address
+- **DNS Server** � DNS server address in use
+- **Signal Strength** � RSSI value in dBm showing WiFi signal quality
 
 This information grid appears automatically when opening the Wireless tab, before the WiFi scanner section. Data is fetched from the `/api/wifi-info` endpoint and updates dynamically.
 
 ### Diagnostic controls
-- `Run full diagnostics` – executes the complete module pipeline.
-- `Run quick check` – executes connectivity, memory, and reporting modules only.
-- `Stop` – aborts current run; results are preserved for later review.
+- `Run full diagnostics` � executes the complete module pipeline.
+- `Run quick check` � executes connectivity, memory, and reporting modules only.
+- `Stop` � aborts current run; results are preserved for later review.
 - Live log streams module status messages with timestamp and severity badges.
 
 ### Results table
@@ -73,6 +74,17 @@ To customise the dashboard appearance:
 - When running in hotspot mode, the interface falls back to `http://192.168.4.1/` with the same features.
 
 ## Related resources
-- [Usage guide](USAGE.md) – operational workflows and export automation recipes.
-- [REST API reference](API_REFERENCE.md) – programmatic triggers that mirror UI actions.
-- [Security guidelines](SECURITY.md) – recommendations for protecting the web dashboard in shared environments.
+- [Usage guide](USAGE.md) � operational workflows and export automation recipes.
+- [REST API reference](API_REFERENCE.md) � programmatic triggers that mirror UI actions.
+- [Security guidelines](SECURITY.md) � recommendations for protecting the web dashboard in shared environments.
+
+
+
+
+
+
+
+
+
+
+

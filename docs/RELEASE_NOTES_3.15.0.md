@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite — Release Notes v3.15.0
+# ESP32 Diagnostic Suite � Release Notes v3.15.0
 
 **Release Date:** November 27, 2025  
 **Repository:** https://github.com/morfredus/ESP32-Diagnostic  
@@ -114,9 +114,9 @@ pio run -e esp32devkitc --target upload
 ### Build Status
 
 All three environments compile successfully:
-- ✓ **esp32s3_n16r8:** Build OK, Upload OK, Hardware Tested
-- ✓ **esp32s3_n8r8:** Build OK, Compilation Validated
-- ✓ **esp32devkitc:** Build OK, Hardware Testing Pending
+- ? **esp32s3_n16r8:** Build OK, Upload OK, Hardware Tested
+- ? **esp32s3_n8r8:** Build OK, Compilation Validated
+- ? **esp32devkitc:** Build OK, Hardware Testing Pending
 
 ---
 
@@ -146,7 +146,7 @@ Runtime pin changes via web interface remain supported for sensors.
 ## Known Issues
 
 1. **esp32devkitc:** Hardware testing pending due to unavailable reference board
-2. **TFT/HC-SR04 conflict (ESP32 Classic):** SCLK (GPIO 18) shares with ECHO pin—use one or the other
+2. **TFT/HC-SR04 conflict (ESP32 Classic):** SCLK (GPIO 18) shares with ECHO pin�use one or the other
 3. **ADC2 limitation (ESP32 Classic):** ADC2 pins (GPIO 0, 2, 4, 12-15, 25-27) unusable when WiFi active
 
 ---
@@ -192,3 +192,11 @@ Runtime pin changes via web interface remain supported for sensors.
 ---
 
 **Full Changelog:** [CHANGELOG.md](../CHANGELOG.md) | [CHANGELOG_FR.md](../CHANGELOG_FR.md)
+
+
+
+
+
+
+
+

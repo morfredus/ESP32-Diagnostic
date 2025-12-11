@@ -1,4 +1,6 @@
-# ESP32 Diagnostic Suite – Directives de sécurité (v3.21.1)
+﻿# ESP32 Diagnostic Suite – Directives de sécurité (v3.22.0)
+
+> **AVERTISSEMENT** : v3.22.0 remappe les GPIO pour ESP32-S3 et ESP32 Classic. Un recâblage matériel est nécessaire. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
 Même si la suite est majoritairement utilisée en laboratoire, ces recommandations limitent l'exposition lors des tests de
 matériel pré-production pour tous les environnements supportés (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic).

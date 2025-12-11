@@ -20,13 +20,13 @@ Added 4 missing translation keys for better internationalization:
 1. **`gps_status`** (EN: "GPS Status" / FR: "Statut GPS")
    - Used to display GPS connection status in the wireless interface
    
-2. **`temperature_avg`** (EN: "Average Temperature" / FR: "Température moyenne")
+2. **`temperature_avg`** (EN: "Average Temperature" / FR: "Temp�rature moyenne")
    - Label for average temperature when multiple temperature sensors are present
    
 3. **`pressure_hpa`** (EN: "Pressure (hPa)" / FR: "Pression (hPa)")
    - Explicit label for barometric pressure with unit display
    
-4. **`altitude_calculated`** (EN: "Calculated Altitude" / FR: "Altitude calculée")
+4. **`altitude_calculated`** (EN: "Calculated Altitude" / FR: "Altitude calcul�e")
    - Label for altitude calculated from barometric pressure (BMP280 sensor)
 
 ---
@@ -38,9 +38,9 @@ All translation keys are defined in `include/languages.h` using the `TEXT_RESOUR
 
 ```cpp
 X(gps_status, "GPS Status", "Statut GPS") \
-X(temperature_avg, "Average Temperature", "Température moyenne") \
+X(temperature_avg, "Average Temperature", "Temp�rature moyenne") \
 X(pressure_hpa, "Pressure (hPa)", "Pression (hPa)") \
-X(altitude_calculated, "Calculated Altitude", "Altitude calculée") \
+X(altitude_calculated, "Calculated Altitude", "Altitude calcul�e") \
 ```
 
 These keys are accessible via the `Texts::` namespace in C++ code and rendered dynamically in the JavaScript web interface based on the selected language.
@@ -56,9 +56,9 @@ These keys are accessible via the `Texts::` namespace in C++ code and rendered d
 - Simply rebuild and upload the new firmware
 
 ### Compatibility
-- ✅ Fully backward compatible with 3.18.1 and 3.18.0
-- ✅ All existing features and configurations work without changes
-- ✅ No hardware modifications required
+- ? Fully backward compatible with 3.18.1 and 3.18.0
+- ? All existing features and configurations work without changes
+- ? No hardware modifications required
 
 ---
 
@@ -99,9 +99,17 @@ None identified in this release. All issues from previous versions remain as doc
 
 After upgrading to 3.18.2:
 1. Verify GPS and environmental sensors display correctly in the web UI
-2. Test language switching (EN ↔ FR) to confirm all labels are translated
+2. Test language switching (EN ? FR) to confirm all labels are translated
 3. Report any remaining untranslated strings for inclusion in future patches
 
 For detailed information about GPS and environmental sensors features, see:
 - `RELEASE_NOTES_3.18.0.md` - Initial GPS and environmental sensors implementation
 - `RELEASE_NOTES_3.18.1.md` - AHT20 sensor bug fixes
+
+
+
+
+
+
+
+

@@ -1,8 +1,9 @@
-# ESP32 Diagnostic Suite (v3.21.1)
+# ESP32 Diagnostic Suite (v3.22.0)
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## 🟢 Version 3.21.1 Highlights - NeoPixel Wi-Fi Status Indicator
+## ?? Version 3.21.1 Highlights - NeoPixel Wi-Fi Status Indicator
 
 **Real-time Wi-Fi connectivity feedback via NeoPixel/WS2812 RGB LED:**
 - **Yellow (connection in progress)** during Wi-Fi connection attempt at startup
@@ -17,7 +18,7 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive we
 **Complete ESP32 Classic Pin Mapping Revision** - Hardware migration required:
 - **11 pin changes** to resolve boot issues (strapping pins GPIO 4/12/15) and USB-UART communication (protect GPIO 1/3)
 - **Improved buttons**: GPIO 32/33 with internal pull-up (instead of 34/35 input-only)
-- **Safe RGB LEDs**: Moved away from strapping pins (12→13, 15→25)
+- **Safe RGB LEDs**: Moved away from strapping pins (12?13, 15?25)
 - **GPS stability**: PPS moved from GPIO 4 (strapping) to GPIO 36 (dedicated input-only)
 - **Detailed documentation**: See `docs/PIN_MAPPING_CHANGES_FR.md` for numbered list of changes with technical explanations
 - **Impact**: ESP32-S3 unchanged, ESP32 Classic requires hardware rewiring
@@ -37,7 +38,7 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive we
 - Applied 9 optimizations ([OPT-001] through [OPT-009]) eliminating 90+ string allocations
 - Buffer-based formatting for version strings, uptime, GPIO lists, and test results
 - Created reusable constants (DEFAULT_TEST_RESULT_STR, OK_STR, FAIL_STR) used in 30+ locations
-- Converted 13 debug/status messages to snprintf approach (2-9 allocations → 1)
+- Converted 13 debug/status messages to snprintf approach (2-9 allocations ? 1)
 - **No functionality changes** - all pins, tests, and features remain identical
 - Successfully compiled and validated on ESP32-S3 and ESP32 CLASSIC targets
 
@@ -57,7 +58,7 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive we
 ## Version 3.20.0 Features
 1. **Advanced Button Handling**: Enhanced button features with visual feedback and interactive controls
    - **BOOT Button (GPIO 0)**: Long press (2 seconds) triggers system restart with progress bar on TFT screen; release before 2s clears screen
-   - **Button 1 (GPIO 38)**: Short press cycles through RGB LED colors (Off → Red → Green → Blue → White)
+   - **Button 1 (GPIO 38)**: Short press cycles through RGB LED colors (Off ? Red ? Green ? Blue ? White)
    - **Button 2 (GPIO 39)**: Short press triggers confirmation beep
    - Real-time visual feedback during long-press operations on TFT
    - Debouncing and long-press detection for reliable operation
@@ -103,14 +104,14 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive we
 
 ## Version 3.17.0 Features
 1. **Hardware Buttons (Optional)**: Simple actions tied to BTN1/BTN2 without changing pin mapping.
-   - BTN1: short press → brief buzzer beep (user feedback).
-   - BTN2: short press → cycle RGB LED colors (red → green → blue → white).
+   - BTN1: short press ? brief buzzer beep (user feedback).
+   - BTN2: short press ? cycle RGB LED colors (red ? green ? blue ? white).
    - Enable via `ENABLE_BUTTONS` in `include/config.h`.
 
 ## Version 3.16.0 Features
 1. **Network Monitoring**: Automatic logging of connected client IP addresses in serial monitor for improved diagnostics.
 2. **WiFi Status Display**: Real-time network connection status in WiFi tab showing current IP address, SSID, gateway, DNS, and signal strength.
-3. **OLED Resolution Configuration**: Dynamic OLED screen resolution (width × height) configuration via web interface.
+3. **OLED Resolution Configuration**: Dynamic OLED screen resolution (width � height) configuration via web interface.
 4. **TFT Configuration Interface**: Complete TFT screen configuration including pin mapping (MOSI, SCLK, CS, DC, RST, BL), resolution, and rotation parameters.
 5. **New API Endpoint**: `/api/tft-config` for complete TFT configuration with real-time validation.
 6. **Enhanced Screen Info**: Updated `/api/screens-info` to include full resolution and pin details for both OLED and TFT.
@@ -136,13 +137,13 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive we
 5. **OLED REST API**: `/api/oled-boot` to restore OLED boot screen.
 
 ## Project Structure
-- `src/main.cpp` – firmware entry point, main loop, scheduler, and HTTP handlers.
-- `include/languages.h` – translation catalog and hot language selector.
-- `include/web_interface.h` – HTML/CSS/JS templates served by firmware.
-- `include/board_config.h` – board-specific pin mapping (selected via TARGET_ESP32_*).
-- `include/secrets-example.h` – template for storing Wi-Fi credentials (copy to `include/secrets.h`).
-- `platformio.ini` – PlatformIO configuration for all supported ESP32 targets.
-- `docs/` – complete wiki gathering installation, usage, API, and deployment guides (FR/EN).
+- `src/main.cpp` � firmware entry point, main loop, scheduler, and HTTP handlers.
+- `include/languages.h` � translation catalog and hot language selector.
+- `include/web_interface.h` � HTML/CSS/JS templates served by firmware.
+- `include/board_config.h` � board-specific pin mapping (selected via TARGET_ESP32_*).
+- `include/secrets-example.h` � template for storing Wi-Fi credentials (copy to `include/secrets.h`).
+- `platformio.ini` � PlatformIO configuration for all supported ESP32 targets.
+- `docs/` � complete wiki gathering installation, usage, API, and deployment guides (FR/EN).
 
 ## Documentation
 | Topic | English | French |
@@ -176,7 +177,7 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive we
 
 ## Compatibility & Requirements
 - **Boards:**
-  - ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM OPI/QSPI) — Primary target
+  - ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM OPI/QSPI) � Primary target
   - ESP32-S3-DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
   - ESP32-DevKitC Classic (4MB Flash, no PSRAM)
 - **Platform:** PlatformIO with ESP32 Arduino Core 3.3.3+
@@ -191,3 +192,14 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive we
 - License: [MIT](LICENSE)
 - Support & Issues: [open a GitHub issue](https://github.com/morfredus/ESP32-Diagnostic/issues/new/choose) with reproduction steps and board details.
 - Contribution: [fork the repository](https://github.com/morfredus/ESP32-Diagnostic/fork) then see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+
+
+
+
+
+
+
+
+
+

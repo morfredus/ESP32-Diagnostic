@@ -1,9 +1,10 @@
-# ESP32 Diagnostic Suite â€“ FAQ (v3.21.1)
+# ESP32 Diagnostic Suite – FAQ (v3.22.0)
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 ## General
 **Q: Which boards are officially supported?**
 A: Three boards are officially supported in this version:
-- ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM) â€” Primary target
+- ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM) — Primary target
 - ESP32-S3-DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
 - ESP32-DevKitC (4MB Flash, no PSRAM)
 
@@ -64,3 +65,14 @@ A: Use the [GitHub issue tracker](https://github.com/morfredus/ESP32-Diagnostic/
 
 **Q: Is commercial support available?**
 A: Not officially. Community contributions are welcome via GitHub discussions and pull requests.
+
+
+
+
+
+
+
+
+
+
+

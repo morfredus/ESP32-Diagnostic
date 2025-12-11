@@ -1,4 +1,6 @@
-# Dépannage (FR) – v3.21.1
+﻿# Dépannage (FR) – v3.22.0
+
+> **AVERTISSEMENT** : v3.22.0 remappe les GPIO pour ESP32-S3 et ESP32 Classic. Un recâblage matériel est nécessaire. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
 **Support multi-environnements :** Cette version supporte trois environnements de compilation (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) avec des mappages de broches spécifiques au matériel. Assurez-vous d'avoir sélectionné et flashé le bon environnement pour votre carte avant de dépanner.
 

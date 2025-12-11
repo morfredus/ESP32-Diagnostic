@@ -1,8 +1,19 @@
-# ESP32 Diagnostic Suite (v3.21.1)
+# ESP32 Diagnostic Suite (v3.22.0)
+
+> **AVERTISSEMENT** : v3.22.0 remappe les GPIO pour ESP32-S3 et ESP32 Classic. Un recâblage matériel est nécessaire. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## 🟢 Nouveautés de la version 3.21.1 - Indicateur d'état Wi-Fi NeoPixel
+## 🟢 Nouveautés de la version 3.22.0 - Remapping GPIO
+
+**Révision complète du pin mapping pour ESP32-S3 et ESP32 Classic** - Migration matérielle requise :
+- **Corrections ESP32-S3** : LED RGB repositionnées pour libérer GPIO 45/47 (broches de strapping) vers GPIO 41/42 (broches dédiées)
+- **ESP32 Classic inchangé** : Configuration maintenue après optimisation v3.21.0
+- **Documentation détaillée** : Voir [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) pour les tables complètes et [docs/PIN_MAPPING_CHANGES_FR.md](docs/PIN_MAPPING_CHANGES_FR.md) pour l'historique des modifications
+- **Impact** : ESP32-S3 nécessite recâblage matériel, ESP32 Classic inchangé
+- **Sécurité** : Configuration optimisée pour éviter les conflits avec les broches de strapping et USB
+
+## Précédent : version 3.21.1 - Indicateur d'état Wi-Fi NeoPixel
 
 **Rétroaction d'état de connectivité Wi-Fi en temps réel via LED RGB NeoPixel/WS2812 :**
 - **Jaune (connexion en cours)** pendant la tentative de connexion Wi-Fi au démarrage

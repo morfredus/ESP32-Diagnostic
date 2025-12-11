@@ -1,4 +1,4 @@
-# ESP32 Diagnostic Suite â€“ Release Notes v3.16.0
+# ESP32 Diagnostic Suite – Release Notes v3.16.0
 
 **Release Date:** November 28, 2025  
 **Previous Version:** 3.15.1  
@@ -32,7 +32,7 @@ Version 3.16.0 introduces comprehensive display configuration capabilities throu
 - **Live Updates**: Connection status is refreshed dynamically
 
 ### 3. OLED Configuration via Web Interface
-- **Resolution Configuration**: Dynamic adjustment of OLED screen resolution (width Ã— height)
+- **Resolution Configuration**: Dynamic adjustment of OLED screen resolution (width × height)
 - **Pin Configuration**: Existing SDA/SCL pin configuration enhanced with resolution support
 - **Rotation Settings**: Combined with existing rotation controls for complete display configuration
 - **API**: Enhanced `/api/oled-config` endpoint with new `width` and `height` parameters
@@ -45,7 +45,7 @@ Version 3.16.0 introduces comprehensive display configuration capabilities throu
   - DC (Data/Command)
   - RST (Reset)
   - BL (Backlight)
-- **Resolution Configuration**: Adjust TFT resolution (width Ã— height)
+- **Resolution Configuration**: Adjust TFT resolution (width × height)
 - **Rotation Settings**: Set display rotation (0-3)
 - **New API Endpoint**: `/api/tft-config` for comprehensive configuration with validation
 
@@ -208,7 +208,7 @@ curl -X GET "http://esp32-diagnostic.local/api/screens-info"
 
 1. **TFT Reinitialization**: While configuration is saved, complete TFT reinitialization requires device reboot for hardware changes.
 2. **Pin Conflicts**: No automatic validation of pin conflicts between different peripherals. Users must ensure selected pins don't conflict with other devices.
-3. **OLED Types**: Resolution configuration assumes compatible I2C OLED display. Common sizes: 128Ã—64, 128Ã—32, 64Ã—48.
+3. **OLED Types**: Resolution configuration assumes compatible I2C OLED display. Common sizes: 128×64, 128×32, 64×48.
 
 ---
 
@@ -226,9 +226,9 @@ Planned features for upcoming releases:
 ## Documentation Updates
 
 - **CHANGELOG.md**: Complete change history
-- **CHANGELOG_FR.md**: Version franÃ§aise des modifications
+- **CHANGELOG_FR.md**: Version française des modifications
 - **README.md**: Updated feature list
-- **README_FR.md**: Liste des fonctionnalitÃ©s mise Ã  jour
+- **README_FR.md**: Liste des fonctionnalités mise à jour
 - **API_REFERENCE.md**: Updated with new endpoints (pending)
 - **BUILD_AND_DEPLOY.md**: Version references updated
 
@@ -251,3 +251,11 @@ Planned features for upcoming releases:
 ---
 
 **Thank you for using ESP32 Diagnostic Suite!**
+
+
+
+
+
+
+
+

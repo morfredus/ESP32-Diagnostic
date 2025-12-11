@@ -30,10 +30,10 @@ Version 3.18.1 is a critical patch release that fixes sensor data reading issues
 
 ### Translation Keys
 Added missing French/English translation keys for UI elements:
-- `refresh_gps` - "Refresh GPS" / "RafraÃ®chir GPS"
+- `refresh_gps` - "Refresh GPS" / "Rafraîchir GPS"
 - `gps_module` - "GPS Module" / "Module GPS"  
 - `gps_module_desc` - GPS module description
-- `refresh_env_sensors` - "Refresh Sensors" / "RafraÃ®chir capteurs"
+- `refresh_env_sensors` - "Refresh Sensors" / "Rafraîchir capteurs"
 - `test_env_sensors` - "Test Sensors" / "Tester capteurs"
 
 ## Upgrade Notes
@@ -86,3 +86,11 @@ After upgrading:
 **Version**: 3.18.1  
 **Build**: December 6, 2025  
 **Semantic Versioning**: MAJOR.MINOR.PATCH (3.18.1)
+
+
+
+
+
+
+
+

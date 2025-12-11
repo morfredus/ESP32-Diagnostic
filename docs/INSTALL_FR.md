@@ -1,4 +1,6 @@
-# Guide d'installation (FR)
+﻿# Guide d'installation (FR)
+
+> **AVERTISSEMENT** : v3.22.0 remappe les GPIO pour ESP32-S3 et ESP32 Classic. Un recâblage matériel est nécessaire. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
 Suivez ces étapes pour déployer ESP32 Diagnostic Suite sur votre carte.
 
