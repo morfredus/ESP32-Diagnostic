@@ -155,3 +155,11 @@ This version consolidates the project's modular architecture and demonstrates th
 - esp32s3_n16r8: [calculate after upload]
 - esp32s3_n8r8: [calculate after upload]
 - esp32devkitc: [calculate after upload]
+
+
+
+
+
+
+
+

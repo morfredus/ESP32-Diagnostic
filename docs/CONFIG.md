@@ -1,4 +1,5 @@
-# Configuration (EN) — v3.21.1
+# Configuration (EN) � v3.22.0
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 ## Build Environment Selection
 
@@ -83,7 +84,7 @@ const char* WIFI_PASS_2 = "BackupPassword";
 - Uses existing `PIN_BUTTON_1` and `PIN_BUTTON_2` defined per target in `board_config.h`.
 - Default actions:
   - BTN1: short press plays a brief buzzer tone for user feedback.
-  - BTN2: short press cycles RGB LED colors (red → green → blue → white).
+  - BTN2: short press cycles RGB LED colors (red ? green ? blue ? white).
 - ESP32-S3 default pins: BTN1=38, BTN2=39 to avoid boot/reset conflicts.
 - ESP32 Classic (v3.21.0+): BTN1=32, BTN2=33 with internal pull-up (no external resistor needed). Previously GPIO 34/35 (input-only without pull-up).
 
@@ -96,8 +97,8 @@ const char* WIFI_PASS_2 = "BackupPassword";
 - Defaults: TRIG = GPIO 3, ECHO = GPIO 6.
 - Suggested alternative on ESP32-S3 if the secondary I2C bus is disabled: TRIG = GPIO 26 (output), ECHO = GPIO 25 (input).
 
-## Bluetooth® naming rules
-- Names must be 3–31 characters, ASCII alphanumeric plus hyphen or underscore.
+## Bluetooth� naming rules
+- Names must be 3�31 characters, ASCII alphanumeric plus hyphen or underscore.
 - Invalid input returns HTTP 400 without restarting advertising.
 - Successful renaming persists until reboot.
 
@@ -106,3 +107,14 @@ const char* WIFI_PASS_2 = "BackupPassword";
 - **BLE support:** Not available in this PlatformIO version. BLE functionality has been removed.
 - **Debugging:** Open the Serial Monitor to observe Wi-Fi connection retries (mirrored on OLED if present), diagnostic progress, and sensor readings. Poll `/api/memory-details` for precise fragmentation metrics.
 - **Multi-board support:** Select the appropriate environment in PlatformIO (`esp32s3_n16r8`, `esp32s3_n8r8`, or `esp32devkitc`) before building.
+
+
+
+
+
+
+
+
+
+
+

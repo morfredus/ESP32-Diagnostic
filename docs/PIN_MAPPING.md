@@ -1,12 +1,13 @@
-# Pin Mapping â€” Quick Reference (v3.21.1)
+# Pin Mapping — Quick Reference (v3.22.0)
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 ## Supported Environments
 
 The firmware supports three distinct build environments, each with optimized pin configurations:
 
-1. **`esp32s3_n16r8`** (default) â€” ESP32-S3 DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM OPI/QSPI)
-2. **`esp32s3_n8r8`** â€” ESP32-S3 DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
-3. **`esp32devkitc`** â€” ESP32 Classic DevKitC (4MB Flash, no PSRAM)
+1. **`esp32s3_n16r8`** (default) — ESP32-S3 DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM OPI/QSPI)
+2. **`esp32s3_n8r8`** — ESP32-S3 DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
+3. **`esp32devkitc`** — ESP32 Classic DevKitC (4MB Flash, no PSRAM)
 
 Pin mappings are defined in `include/board_config.h` using conditional compilation based on `TARGET_ESP32_S3` or `TARGET_ESP32_CLASSIC`.
 
@@ -46,8 +47,8 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **Backlight (BL):** GPIO 7
 
 ### GPS Module (UART1)
-- **RXD:** GPIO 18 (GPS TX â†’ ESP RX)
-- **TXD:** GPIO 17 (GPS RX â†’ ESP TX)
+- **RXD:** GPIO 18 (GPS TX ? ESP RX)
+- **TXD:** GPIO 17 (GPS RX ? ESP TX)
 - **PPS:** GPIO 8
 
 ### NeoPixel / WS2812B
@@ -56,10 +57,10 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **Brightness:** 50 (0-255)
 
 ### ESP32-S3 Important Notes
-- GPIO 35â€“44 are reserved by the octal PSRAM/Flash interface; keep them free.
+- GPIO 35–44 are reserved by the octal PSRAM/Flash interface; keep them free.
 - GPIO 48 is dedicated to the NeoPixel.
 - RGB LED uses GPIO 21/45/47 (Red/Green/Blue respectively); GPIO45 is a strapping pin, keep LED off at boot.
-- Strapping pins: GPIO 0, GPIO 45, GPIO 46 â€” keep stable during boot.
+- Strapping pins: GPIO 0, GPIO 45, GPIO 46 — keep stable during boot.
 - USB CDC is enabled; keep GPIO 19/20 free for USB D-/D+ (I2C moved to 15/16).
 
 ---
@@ -97,8 +98,8 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **Backlight (BL):** GPIO 32
 
 ### GPS Module (UART2)
-- **RXD:** GPIO 16 (RX2, GPS TX â†’ ESP RX)
-- **TXD:** GPIO 17 (TX2, GPS RX â†’ ESP TX)
+- **RXD:** GPIO 16 (RX2, GPS TX ? ESP RX)
+- **TXD:** GPIO 17 (TX2, GPS RX ? ESP TX)
 - **PPS:** GPIO 36
 
 ### NeoPixel / WS2812B
@@ -107,10 +108,10 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **Brightness:** 50 (0-255)
 
 ### ESP32 Classic Important Notes
-- **Input-Only Pins:** GPIO 34, 35, 36, 39 (VP/VN) â€” can only read, cannot output.
-- **Strapping Pins:** GPIO 0, GPIO 2, GPIO 4, GPIO 5, GPIO 12, GPIO 15 â€” avoid LEDs/peripherals on these pins to prevent boot issues.
-- **UART0 (USB-UART):** GPIO 1 (TX0) and GPIO 3 (RX0) are reserved for flashing/debugging â€” do not connect external devices.
-- **Flash Pins:** GPIO 6-11 are connected to SPI Flash â€” do not use.
+- **Input-Only Pins:** GPIO 34, 35, 36, 39 (VP/VN) — can only read, cannot output.
+- **Strapping Pins:** GPIO 0, GPIO 2, GPIO 4, GPIO 5, GPIO 12, GPIO 15 — avoid LEDs/peripherals on these pins to prevent boot issues.
+- **UART0 (USB-UART):** GPIO 1 (TX0) and GPIO 3 (RX0) are reserved for flashing/debugging — do not connect external devices.
+- **Flash Pins:** GPIO 6-11 are connected to SPI Flash — do not use.
 - **ADC2 Limitation:** ADC2 (GPIO 0, 2, 4, 12-15, 25-27) cannot be used when WiFi is active.
 - **Current Limit:** Max 12 mA per GPIO; use transistor/driver for higher loads.
 - **Hardware Migration Required:** v3.21.0 introduces 11 pin changes to resolve boot and USB communication issues. See `docs/PIN_MAPPING_CHANGES_FR.md` for detailed rationale.
@@ -135,19 +136,19 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 ## Pin Conflict Resolution
 
 ### ESP32-S3 Conflicts
-- Keep GPIO 35â€“44 free (PSRAM/Flash bus).
+- Keep GPIO 35–44 free (PSRAM/Flash bus).
 - RGB LED uses GPIO 19/47/45; NeoPixel uses GPIO 48 (conflict resolved in v3.18.3).
 - Motion sensor uses GPIO 46; Distance ECHO uses GPIO 6; Light sensor uses GPIO 4.
-- TFT occupies GPIO 7â€“13; GPS uses GPIO 17â€“18. Avoid overlapping these ranges when attaching external modules.
+- TFT occupies GPIO 7–13; GPS uses GPIO 17–18. Avoid overlapping these ranges when attaching external modules.
 
 ### ESP32 Classic Conflicts
 - Avoid LEDs/peripherals on strapping pins (GPIO 0/2/4/5/12/15) to prevent boot failures.
 - Buttons now use GPIO 32/33 with internal pull-up (no external resistor needed).
-- PWM/Buzzer uses GPIO 5 (strapping pin) â€” acceptable if LOW during boot.
+- PWM/Buzzer uses GPIO 5 (strapping pin) — acceptable if LOW during boot.
 - Protect UART0: GPIO 1 (TX0) and GPIO 3 (RX0) reserved for USB-UART bridge.
 - TFT uses GPIO 18/23/27/14/25/32; avoid sharing these with other SPI devices unless chip select is managed.
 - ADC2 pins are unusable with Wi-Fi active; prefer ADC1 (GPIO 32-39) for analog sensing.
-- Input-only pins (34â€“39) cannot drive LEDs or outputs; GPIO 36/39 used for GPS PPS and light sensor.
+- Input-only pins (34–39) cannot drive LEDs or outputs; GPIO 36/39 used for GPS PPS and light sensor.
 
 ---
 
@@ -192,17 +193,17 @@ pio run -e esp32devkitc --target upload
 ### HC-SR04 Ultrasonic Sensor
 - **Power:** 5V, GND
 - **TRIG:** Direct connection (ESP32 output 3.3V is sufficient)
-- **ECHO:** Use voltage divider (5V â†’ 3.3V) or level shifter
-  - Resistor divider: 1kÎ© (ECHO to ESP) + 2kÎ© (ESP to GND)
+- **ECHO:** Use voltage divider (5V ? 3.3V) or level shifter
+  - Resistor divider: 1kO (ECHO to ESP) + 2kO (ESP to GND)
 
 ### TFT ST7789 Display
 - **Power:** 3.3V (check display module specifications)
-- **Backlight:** Connect BL pin through 100Î© resistor
+- **Backlight:** Connect BL pin through 100O resistor
 - **SPI Speed:** 40-80 MHz typical
 
 ### DHT Sensor (DHT11/DHT22)
 - **Power:** 3.3V or 5V
-- **Pull-up:** 4.7k-10kÎ© resistor from DATA to VCC
+- **Pull-up:** 4.7k-10kO resistor from DATA to VCC
 - **Capacitor:** 100nF decoupling capacitor recommended
 
 ### NeoPixel / WS2812B LEDs
@@ -213,7 +214,7 @@ pio run -e esp32devkitc --target upload
 ---
 
 ## Version History
-- **v3.21.0:** Complete ESP32 Classic pin mapping revision â€” 11 changes to resolve boot issues (strapping pins GPIO 4/12/15), USB-UART communication (protect GPIO 1/3), and buttons (GPIO 32/33 with internal pull-up instead of 34/35 input-only). Added detailed safety reminders in `board_config.h`. Hardware migration required for ESP32 Classic users. See `docs/PIN_MAPPING_CHANGES_FR.md` for complete numbered changelog.
+- **v3.21.0:** Complete ESP32 Classic pin mapping revision — 11 changes to resolve boot issues (strapping pins GPIO 4/12/15), USB-UART communication (protect GPIO 1/3), and buttons (GPIO 32/33 with internal pull-up instead of 34/35 input-only). Added detailed safety reminders in `board_config.h`. Hardware migration required for ESP32 Classic users. See `docs/PIN_MAPPING_CHANGES_FR.md` for complete numbered changelog.
 - **v3.20.2:** Web UI pin references now dynamically sourced from `board_config.h`; web interface always displays correct compiled target pins.
 - **v3.20.1:** ESP32-S3 I2C moved to 15/16 and RGB Red to 21 to free USB D-/D+ (19/20) and stabilize OTG; docs aligned.
 - **v3.20.1:** Pin mapping moved to `board_config.h`; ESP32-S3 buttons set to GPIO 38/39 to avoid upload/reset conflicts; docs aligned.
@@ -224,3 +225,14 @@ pio run -e esp32devkitc --target upload
 - **v3.12.3:** HC-SR04 defaults set to TRIG=16, ECHO=17 (legacy).
 - **v3.11.3:** TFT backlight corrected to GPIO 15 (legacy change).
 - **v3.11.0:** TFT ST7789 display support added.
+
+
+
+
+
+
+
+
+
+
+

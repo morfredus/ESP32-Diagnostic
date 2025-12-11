@@ -1,14 +1,15 @@
-# Contributing (EN) â€“ v3.21.1
+# Contributing (EN) – v3.22.0
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 We welcome improvements that strengthen the diagnostic experience while keeping the firmware reliable.
 
 ## Code contributions
-1. **Fork** â€“ start from your GitHub fork: [morfredus/ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic/fork).
-2. **Scope first** â€“ focus on bug fixes, diagnostics accuracy, and UI/UX refinements.
-3. **Branching** â€“ create feature branches from `dev/v3` when contributing new code paths.
-4. **Style** â€“ follow the existing formatting conventions in `the main source files` and related headers. Do not wrap imports in `try/catch` blocks.
-5. **Translations** â€“ always update both FR and EN strings in `languages.h` when introducing user-facing text.
-6. **Testing** â€“ provide serial logs, screenshots, or other evidence that the change works on hardware.
+1. **Fork** – start from your GitHub fork: [morfredus/ESP32-Diagnostic](https://github.com/morfredus/ESP32-Diagnostic/fork).
+2. **Scope first** – focus on bug fixes, diagnostics accuracy, and UI/UX refinements.
+3. **Branching** – create feature branches from `dev/v3` when contributing new code paths.
+4. **Style** – follow the existing formatting conventions in `the main source files` and related headers. Do not wrap imports in `try/catch` blocks.
+5. **Translations** – always update both FR and EN strings in `languages.h` when introducing user-facing text.
+6. **Testing** – provide serial logs, screenshots, or other evidence that the change works on hardware.
 
 ## Documentation updates
 - Keep English and French documentation in sync.
@@ -29,3 +30,14 @@ File bug reports via [GitHub Issues](https://github.com/morfredus/ESP32-Diagnost
 - Explain any UI modifications and provide screenshots for visual changes.
 
 Thank you for helping the ESP32 community!
+
+
+
+
+
+
+
+
+
+
+

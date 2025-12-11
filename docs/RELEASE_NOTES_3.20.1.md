@@ -1,4 +1,4 @@
-# Release Notes â€” 3.20.1 (2025-12-07)
+# Release Notes — 3.20.1 (2025-12-07)
 
 ## Fixed
 - **USB/OTG stability (ESP32-S3):** Freed USB D-/D+ (GPIO19/20) by moving defaults to safe pins.
@@ -13,3 +13,11 @@
 ## Upgrade
 - Rebuild and flash with the updated defaults (`pio run -e esp32s3_n16r8 --target upload`).
 - If you had custom pin overrides, align them with the new mapping to keep USB stable.
+
+
+
+
+
+
+
+

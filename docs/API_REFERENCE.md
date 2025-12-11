@@ -1,4 +1,5 @@
-# ESP32 Diagnostic Suite â€“ REST API Reference (v3.21.1)
+# ESP32 Diagnostic Suite – REST API Reference (v3.22.0)
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 The REST API mirrors the web dashboard controls and exposes diagnostics data for automation. All endpoints are served over HTTP on
 the same port as the dashboard. Authentication is sessionless; secure deployments should restrict access at the network level.
@@ -103,6 +104,17 @@ Attaches operator notes to the latest report.
 - Store operator notes via `/api/notes` after each run to keep audit trails within the device exports.
 
 ## Related resources
-- [Usage guide](USAGE.md) â€“ explains the same workflows through the web interface.
-- [Diagnostic modules](DIAGNOSTIC_MODULES.md) â€“ lists module IDs referenced by the API.
-- [Security guidelines](SECURITY.md) â€“ recommendations for securing the HTTP endpoints.
+- [Usage guide](USAGE.md) – explains the same workflows through the web interface.
+- [Diagnostic modules](DIAGNOSTIC_MODULES.md) – lists module IDs referenced by the API.
+- [Security guidelines](SECURITY.md) – recommendations for securing the HTTP endpoints.
+
+
+
+
+
+
+
+
+
+
+

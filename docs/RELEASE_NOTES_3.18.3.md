@@ -1,4 +1,4 @@
-# Release Notes â€” Version 3.18.3
+# Release Notes — Version 3.18.3
 
 **Release Date:** December 6, 2025  
 **Type:** Patch Release (Pin Mapping Fix)
@@ -19,7 +19,7 @@ Version 3.18.3 resolves a critical hardware conflict on ESP32-S3 boards where GP
   - RGB LED pins reallocated: Green to GPIO 47, Blue to GPIO 45
   - RGB Red remains on GPIO 19
 
-### Changed â€” ESP32-S3 Pin Mapping Refactoring
+### Changed — ESP32-S3 Pin Mapping Refactoring
 
 #### RGB LED Pins (ESP32-S3)
 | Component | Old Pin | New Pin | Notes |
@@ -129,7 +129,7 @@ Version 3.18.3 resolves a critical hardware conflict on ESP32-S3 boards where GP
 
 ## Semantic Versioning Rationale
 
-This is a **patch release** (3.18.2 â†’ 3.18.3) because:
+This is a **patch release** (3.18.2 ? 3.18.3) because:
 - It fixes a hardware conflict bug (GPIO 48 assignment)
 - No new features added
 - No breaking changes to API or software interfaces
@@ -149,7 +149,15 @@ This is a **patch release** (3.18.2 â†’ 3.18.3) because:
 
 For detailed pin mapping documentation, see:
 - [PIN_MAPPING.md](PIN_MAPPING.md) (English)
-- [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) (FranÃ§ais)
+- [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) (Français)
 
 For questions or issues, please open a GitHub issue at:  
 **https://github.com/morfredus/ESP32-Diagnostic/issues**
+
+
+
+
+
+
+
+

@@ -1,4 +1,5 @@
-# ESP32 Diagnostic Suite â€“ Security Guidelines (v3.21.1)
+# ESP32 Diagnostic Suite – Security Guidelines (v3.22.0)
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 Although the ESP32 Diagnostic Suite is typically used in controlled lab environments, following these security guidelines reduces
 exposure when testing pre-production hardware across all supported build environments (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic).
@@ -40,3 +41,14 @@ exposure when testing pre-production hardware across all supported build environ
 - [Configuration guide](CONFIG.md)
 - [REST API reference](API_REFERENCE.md)
 - [Build & deploy](BUILD_AND_DEPLOY.md)
+
+
+
+
+
+
+
+
+
+
+

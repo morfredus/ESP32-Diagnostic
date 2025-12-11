@@ -1,4 +1,4 @@
-# Release Notes â€” 3.20.2 (2025-12-07)
+# Release Notes — 3.20.2 (2025-12-07)
 
 ## Changed
 - **Web UI Pin References:** Hardcoded GPIO pin values in web interface replaced with dynamic variable references from `board_config.h`
@@ -29,4 +29,12 @@
 - Rebuild and flash with the latest code (`pio run -e esp32devkitc --target upload` for CLASSIC or `pio run -e esp32s3_n16r8 --target upload` for ESP32-S3).
 - Hard refresh the web interface (Ctrl+Shift+R in browsers) to clear any cached JavaScript.
 - Check Serial Monitor (115200 baud) at startup to see the TARGET banner with actual pin values.
+
+
+
+
+
+
+
+
 

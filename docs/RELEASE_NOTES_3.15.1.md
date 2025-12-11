@@ -27,9 +27,9 @@ Version 3.15.1 addresses a critical memory issue that prevented the web interfac
 - Eliminated single large String allocation (previously ~50KB+)
 
 **Impact:**
-- ✅ ESP32 Classic (`esp32devkitc`): Web UI now loads reliably
-- ✅ ESP32-S3 N16R8: Improved memory efficiency, no regressions
-- ✅ ESP32-S3 N8R8: Improved memory efficiency, no regressions
+- ? ESP32 Classic (`esp32devkitc`): Web UI now loads reliably
+- ? ESP32-S3 N16R8: Improved memory efficiency, no regressions
+- ? ESP32-S3 N8R8: Improved memory efficiency, no regressions
 
 ---
 
@@ -75,9 +75,9 @@ while (sent < staticJsLen) {
 ### Tested Environments
 | Environment | Board | Flash | PSRAM | Status |
 |-------------|-------|-------|-------|--------|
-| `esp32s3_n16r8` | ESP32-S3 DevKitC-1 N16R8 | 16MB | 8MB OPI | ✅ Validated |
-| `esp32s3_n8r8` | ESP32-S3 DevKitC-1 N8R8 | 8MB | 8MB | ✅ Validated |
-| `esp32devkitc` | ESP32 Classic DevKitC | 4MB | None | ✅ **Fixed** |
+| `esp32s3_n16r8` | ESP32-S3 DevKitC-1 N16R8 | 16MB | 8MB OPI | ? Validated |
+| `esp32s3_n8r8` | ESP32-S3 DevKitC-1 N8R8 | 8MB | 8MB | ? Validated |
+| `esp32devkitc` | ESP32 Classic DevKitC | 4MB | None | ? **Fixed** |
 
 ### Validation Checklist
 - [x] Web interface loads on ESP32 Classic
@@ -167,3 +167,11 @@ If you encounter issues after upgrading:
 **Version:** 3.15.1  
 **Git Tag:** `v3.15.1`  
 **Commit:** (to be tagged after merge to main)
+
+
+
+
+
+
+
+

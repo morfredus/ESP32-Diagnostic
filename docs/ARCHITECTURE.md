@@ -1,37 +1,38 @@
-# Firmware Architecture (EN) – v3.21.1
+# Firmware Architecture (EN) � v3.22.0
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 ## High-level overview
 The firmware is a PlatformIO project with the main code in `src/main.cpp` that orchestrates diagnostics, serves a web interface, and exposes REST endpoints. Supporting headers in `include/` encapsulate translations, HTML templates, and configuration helpers.
 
 ```
 ESP32-Diagnostic/
-├── platformio.ini            // PlatformIO configuration for all ESP32 targets
-├── src/
-│   └── main.cpp              // main loop, task scheduler, HTTP handlers
-├── include/
-│   ├── languages.h           // translation tables and helpers
-│   ├── web_interface.h       // HTML/CSS/JS assets stored as PROGMEM strings
-│   ├── board_config.h        // board-specific pin mappings (per target)
-│   ├── config.h              // configuration flags and constants
-│   ├── secrets-example.h     // Wi-Fi credential template (copy to secrets.h)
-│   └── json_helpers.h        // JSON formatting utilities
-├── lib/                      // custom libraries (if any)
-├── test/                     // test files
-└── docs/                     // documentation (EN/FR)
++-- platformio.ini            // PlatformIO configuration for all ESP32 targets
++-- src/
+�   +-- main.cpp              // main loop, task scheduler, HTTP handlers
++-- include/
+�   +-- languages.h           // translation tables and helpers
+�   +-- web_interface.h       // HTML/CSS/JS assets stored as PROGMEM strings
+�   +-- board_config.h        // board-specific pin mappings (per target)
+�   +-- config.h              // configuration flags and constants
+�   +-- secrets-example.h     // Wi-Fi credential template (copy to secrets.h)
+�   +-- json_helpers.h        // JSON formatting utilities
++-- lib/                      // custom libraries (if any)
++-- test/                     // test files
++-- docs/                     // documentation (EN/FR)
 ```
 
 ## Runtime flow
-1. **Boot** – initialise Serial, load Wi-Fi credentials, start WiFiMulti connection.
-2. **Services** – mount mDNS, start the HTTP server, and enable BLE advertising/service when supported.
-3. **Diagnostics** – expose REST actions that trigger tests (GPIO sweep, Wi-Fi scan, OLED routines, benchmarks, exports).
-4. **Web UI** – serve static HTML/JS from `include/web_interface.h`; dynamic data is injected via REST calls returning JSON.
-5. **Translations** – `include/languages.h` stores both FR and EN strings. The client fetches translations via `/api/get-translations` and swaps text dynamically.
+1. **Boot** � initialise Serial, load Wi-Fi credentials, start WiFiMulti connection.
+2. **Services** � mount mDNS, start the HTTP server, and enable BLE advertising/service when supported.
+3. **Diagnostics** � expose REST actions that trigger tests (GPIO sweep, Wi-Fi scan, OLED routines, benchmarks, exports).
+4. **Web UI** � serve static HTML/JS from `include/web_interface.h`; dynamic data is injected via REST calls returning JSON.
+5. **Translations** � `include/languages.h` stores both FR and EN strings. The client fetches translations via `/api/get-translations` and swaps text dynamically.
 
 ## Key modules
-- **Wi-Fi stack** – uses `WiFiMulti` to iterate over the configured networks until one connects.
-- **BLE manager** – detects chip capabilities, configures the GATT service, and exposes status updates to the web UI.
-- **Diagnostics engine** – performs hardware tests (GPIO, ADC, touch, OLED, benchmarks) and formats results for the dashboard and exports.
-- **Export subsystem** – assembles TXT/JSON/CSV payloads for download and prints.
+- **Wi-Fi stack** � uses `WiFiMulti` to iterate over the configured networks until one connects.
+- **BLE manager** � detects chip capabilities, configures the GATT service, and exposes status updates to the web UI.
+- **Diagnostics engine** � performs hardware tests (GPIO, ADC, touch, OLED, benchmarks) and formats results for the dashboard and exports.
+- **Export subsystem** � assembles TXT/JSON/CSV payloads for download and prints.
 - Release 3.8.0 introduces the Wi-Fi splash layer and shared BLE scan helpers, keeping the scheduler identical whether the board uses Bluedroid or NimBLE.
 
 ## Front-end structure
@@ -48,3 +49,14 @@ ESP32-Diagnostic/
 - Add new diagnostics by extending the scheduler in `src/main.cpp` and exposing minimal REST endpoints.
 - Keep translation keys consistent between FR and EN entries in `include/languages.h`.
 - Avoid blocking calls in the main loop; prefer asynchronous scheduling to maintain web responsiveness.
+
+
+
+
+
+
+
+
+
+
+

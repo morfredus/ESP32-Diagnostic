@@ -34,35 +34,35 @@
 - **Memory**: Minimal overhead - 7 global state variables, no dynamic allocations in heartbeat path
 
 ### Backward Compatibility
-- **‚úÖ Fully compatible** with v3.21.0 - no hardware changes required
-- **‚úÖ No breaking changes** - purely additive feature
-- **‚úÖ No configuration changes** - NeoPixel GPIO unchanged from v3.21.0
+- **? Fully compatible** with v3.21.0 - no hardware changes required
+- **? No breaking changes** - purely additive feature
+- **? No configuration changes** - NeoPixel GPIO unchanged from v3.21.0
 
 ---
 
 ## [Version 3.21.0] - 2025-12-09
 
-### ‚ö†Ô∏è BREAKING CHANGE - Hardware Migration Required for ESP32 Classic
+### ?? BREAKING CHANGE - Hardware Migration Required for ESP32 Classic
 - **Complete ESP32 Classic Pin Mapping Revision**: 11 changes to resolve boot issues and USB communication problems
   - **Boot Issues Resolved**: Eliminated LEDs and peripherals on strapping pins GPIO 4, 12, 15
   - **USB-UART Stability**: Protected GPIO 1 (TX0) and GPIO 3 (RX0) from interference during flashing
   - **Improved Buttons**: Migrated to GPIO 32/33 with internal pull-up (instead of 34/35 input-only without pull-up)
 
 ### Details of 11 Changes (ESP32 Classic Only)
-1. **GPS PPS**: GPIO 4 ‚Üí GPIO 36 (GPIO4 = SDIO boot strapping)
-2. **TFT CS**: GPIO 19 ‚Üí GPIO 27 (avoid USB-UART interference)
-3. **TFT DC**: GPIO 27 ‚Üí GPIO 14 (wiring reorganization)
-4. **TFT RST**: GPIO 26 ‚Üí GPIO 25 (better physical grouping)
-5. **TFT BL**: GPIO 13 ‚Üí GPIO 32 (avoid internal LED conflict)
-6. **RGB LED Red**: GPIO 12 ‚Üí GPIO 13 (GPIO12 = flash voltage strapping)
-7. **RGB LED Blue**: GPIO 15 ‚Üí GPIO 25 (GPIO15 = JTAG debug strapping)
-8. **Button 1**: GPIO 34 ‚Üí GPIO 32 (GPIO34 = input-only, no pull-up)
-9. **Distance TRIG**: GPIO 32 ‚Üí GPIO 27 (GPIO32 reassignment)
-10. **DHT**: GPIO 25 ‚Üí GPIO 32 (GPIO25 reassignment)
+1. **GPS PPS**: GPIO 4 ? GPIO 36 (GPIO4 = SDIO boot strapping)
+2. **TFT CS**: GPIO 19 ? GPIO 27 (avoid USB-UART interference)
+3. **TFT DC**: GPIO 27 ? GPIO 14 (wiring reorganization)
+4. **TFT RST**: GPIO 26 ? GPIO 25 (better physical grouping)
+5. **TFT BL**: GPIO 13 ? GPIO 32 (avoid internal LED conflict)
+6. **RGB LED Red**: GPIO 12 ? GPIO 13 (GPIO12 = flash voltage strapping)
+7. **RGB LED Blue**: GPIO 15 ? GPIO 25 (GPIO15 = JTAG debug strapping)
+8. **Button 1**: GPIO 34 ? GPIO 32 (GPIO34 = input-only, no pull-up)
+9. **Distance TRIG**: GPIO 32 ? GPIO 27 (GPIO32 reassignment)
+10. **DHT**: GPIO 25 ? GPIO 32 (GPIO25 reassignment)
 11. **Motion Sensor**: GPIO 36 removed (reassigned to GPS PPS)
 
 ### Added
-- **Safety Section** in `board_config.h`: Detailed reminders on voltages (3.3V), strapping pins, input-only GPIOs (34/35/36/39), UART0 protection, current limits (‚â§12 mA), I2C pull-up recommendations (4.7 kŒ©)
+- **Safety Section** in `board_config.h`: Detailed reminders on voltages (3.3V), strapping pins, input-only GPIOs (34/35/36/39), UART0 protection, current limits (=12 mA), I2C pull-up recommendations (4.7 kO)
 - **Complete Documentation**: New file `docs/PIN_MAPPING_CHANGES_FR.md` detailing each change with numbering, technical rationale, and summary table
 
 ### Changed
@@ -129,24 +129,24 @@
 ## [Version 3.20.1] - 2025-12-07
 
 ### Fixed
-- **Stabilit√© USB/OTG (ESP32-S3)** : lib√©ration des lignes D-/D+ (GPIO 19/20) en d√©pla√ßant l'I2C par d√©faut sur SDA=15 / SCL=16 et la LED RGB Rouge sur GPIO 21; √©limine les perturbations du bus USB provoqu√©es par les anciens branchements I2C/RGB sur 19/20.
+- **StabilitÈ USB/OTG (ESP32-S3)** : libÈration des lignes D-/D+ (GPIO 19/20) en dÈplaÁant l'I2C par dÈfaut sur SDA=15 / SCL=16 et la LED RGB Rouge sur GPIO 21; Èlimine les perturbations du bus USB provoquÈes par les anciens branchements I2C/RGB sur 19/20.
 
 ### Changed
 - **Pin mapping ESP32-S3** :
    - I2C: SDA=15, SCL=16 (au lieu de 21/20)
-   - RGB: Rouge=21, Vert=45, Bleu=47 (Rouge quitte 19 pour lib√©rer l'USB)
-   - Notes de strapping rappel√©es sur GPIO45
-- **Version bump** : `PROJECT_VERSION` mis √† `3.20.1` dans `platformio.ini`.
+   - RGB: Rouge=21, Vert=45, Bleu=47 (Rouge quitte 19 pour libÈrer l'USB)
+   - Notes de strapping rappelÈes sur GPIO45
+- **Version bump** : `PROJECT_VERSION` mis ‡ `3.20.1` dans `platformio.ini`.
 
 ### Documentation
-- Guides Pin Mapping (EN/FR), README (EN/FR), et nouvelles release notes align√©s sur la nouvelle attribution de broches et l'explication de la r√©solution OTG.
+- Guides Pin Mapping (EN/FR), README (EN/FR), et nouvelles release notes alignÈs sur la nouvelle attribution de broches et l'explication de la rÈsolution OTG.
 
 ## [Version 3.20.0] - 2025-12-07
 
 ### Added
 - **Advanced Button Management:** Interactive button controls with visual feedback
   - BOOT Button (GPIO 0): Long press (2s) triggers system reboot with TFT progress bar; release before 2s clears screen
-  - Button 1 (GPIO 38): Short press cycles RGB LED colors (Off ‚Üí Red ‚Üí Green ‚Üí Blue ‚Üí White)
+  - Button 1 (GPIO 38): Short press cycles RGB LED colors (Off ? Red ? Green ? Blue ? White)
   - Button 2 (GPIO 39): Short press triggers confirmation beep
   - Real-time progress visualization during long-press operations on TFT
   - Enhanced debouncing and long-press detection for reliable button interaction
@@ -180,9 +180,9 @@
 
 ### Changed
 - **ESP32-S3 Pin Mapping Refactoring**: Complete reorganization of sensor pins to resolve conflicts
-  - Motion Sensor (PIR): GPIO 6 ‚Üí GPIO 46
-  - Light Sensor: GPIO 19 ‚Üí GPIO 4
-  - HC-SR04 ECHO: GPIO 19 ‚Üí GPIO 6
+  - Motion Sensor (PIR): GPIO 6 ? GPIO 46
+  - Light Sensor: GPIO 19 ? GPIO 4
+  - HC-SR04 ECHO: GPIO 19 ? GPIO 6
   - NeoPixel: Enabled on GPIO 48, count changed from disabled to 1 LED
   - Unchanged: I2C (SDA=21, SCL=20), Buttons (BTN1=1, BTN2=2), GPS (RX=18, TX=17, PPS=8), TFT display pins, PWM/Buzzer (14), DHT (5), HC-SR04 TRIG (3)
 
@@ -227,8 +227,8 @@
    - Web API endpoint `/api/gps-test` for diagnostic testing
 
 2. **Environmental Sensors Support**: Added AHT20 (Temperature/Humidity) + BMP280 (Pressure) sensor integration.
-   - AHT20: Temperature (¬±0.5¬∞C) and Humidity (¬±3% RH) readings
-   - BMP280: Atmospheric pressure (¬±1 hPa) with integrated temperature sensor
+   - AHT20: Temperature (±0.5∞C) and Humidity (±3% RH) readings
+   - BMP280: Atmospheric pressure (±1 hPa) with integrated temperature sensor
    - Altitude calculation from pressure measurements
    - Automatic sensor detection and dual-sensor averaging
    - Uses I2C interface with configurable pins in `config.h` (SDA/SCL pins)
@@ -282,7 +282,7 @@
 8. BMP280 calibration with temperature and pressure compensation
 
 ### Impact
-- Minor release (3.17.1 ‚Üí 3.18.0); major new features added while maintaining backward compatibility.
+- Minor release (3.17.1 ? 3.18.0); major new features added while maintaining backward compatibility.
 
 ## [Version 3.17.1] - 2025-12-05
 
@@ -292,16 +292,16 @@
 3. **Docs & build:** Updated README/README_FR, pin mapping guides, feature matrix, usage, build guides; bumped `PROJECT_VERSION` to `3.17.1` in `platformio.ini`.
 
 ### Impact
-- Patch release (3.17.0 ‚Üí 3.17.1); functionality unchanged aside from new default pin assignments and documentation alignment.
+- Patch release (3.17.0 ? 3.17.1); functionality unchanged aside from new default pin assignments and documentation alignment.
 
 ## [Version 3.16.0] - 2025-11-28
 
 ### New Features
 1. **Connected Client IP Logging**: Added automatic logging of connected client IP addresses in the Serial Monitor for better network monitoring and diagnostics.
-2. **OLED Resolution Configuration**: Added ability to configure OLED screen resolution (width √ó height) dynamically through the web interface.
+2. **OLED Resolution Configuration**: Added ability to configure OLED screen resolution (width ◊ height) dynamically through the web interface.
 3. **TFT Configuration UI**: Added comprehensive TFT display configuration through web interface including:
    - Pin mapping configuration (MOSI, SCLK, CS, DC, RST, BL)
-   - Display resolution configuration (width √ó height)
+   - Display resolution configuration (width ◊ height)
    - Rotation settings
 4. **API Endpoint `/api/tft-config`**: New endpoint for TFT configuration with validation and real-time updates.
 5. **Enhanced Screen Info API**: Updated `/api/screens-info` to include resolution and pin details for both OLED and TFT displays.
@@ -329,12 +329,12 @@
 ### Technical Details
 4. Modified `handleJavaScriptRoute()` in `src/main.cpp` to stream `DIAGNOSTIC_JS_STATIC` content using `memcpy_P()` and `sendContent()` in small chunks.
 5. Replaced single large `String(FPSTR(DIAGNOSTIC_JS_STATIC))` allocation with iterative chunked transfer.
-6. No changes to UI functionality or user experience ‚Äì purely internal optimization.
+6. No changes to UI functionality or user experience ñ purely internal optimization.
 
 ### Impact
 7. **ESP32 Classic (esp32devkitc)**: Web UI now loads reliably on 4MB Flash / no PSRAM configurations.
 8. **ESP32-S3 variants**: Improved memory efficiency with no regressions.
-9. Version: Patch release following semantic versioning (3.15.0 ‚Üí 3.15.1).
+9. Version: Patch release following semantic versioning (3.15.0 ? 3.15.1).
 
 ## [Version 3.15.0] - 2025-11-27
 
@@ -411,7 +411,7 @@
 ## Version 3.17.0 - 2025-12-01
 - Feature: Basic hardware button support (BTN1/BTN2) enabled via `ENABLE_BUTTONS` without changing pin mapping.
    - BTN1: short press plays a short buzzer tone for feedback.
-   - BTN2: short press cycles RGB LED colors (red ‚Üí green ‚Üí blue ‚Üí white).
+   - BTN2: short press cycles RGB LED colors (red ? green ? blue ? white).
 - Docs: Updated version references and described button behavior in FR/EN docs.
 - Build: Bump `PROJECT_VERSION` to `3.17.0` in `platformio.ini`.
 - No pin mapping changes; existing `PIN_BUTTON_1`/`PIN_BUTTON_2` respected per target.
@@ -420,7 +420,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 
 ## [Version 3.12.3] - 2025-11-26
 ### Changed
-- Default HC‚ÄëSR04 pins set to `TRIG=16`, `ECHO=17` in `config.h` and aligned defaults in the web interface.
+- Default HC-SR04 pins set to `TRIG=16`, `ECHO=17` in `config.h` and aligned defaults in the web interface.
 
 ### Added
 - New quick reference documents: `docs/PIN_MAPPING.md` and `docs/PIN_MAPPING_FR.md`.
@@ -472,7 +472,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - Removed obsolete development version history from source code headers.
 - Removed unused `handleJavaScript()` function (dead code elimination).
 - Simplified and standardized comment style throughout codebase.
-- Fixed French typo: "defaut" ‚Üí "d√©faut" in setup messages.
+- Fixed French typo: "defaut" ? "dÈfaut" in setup messages.
 
 ### Technical Changes
 - Cleaned obsolete version comments (v3.8.x-dev through v3.10.3).
@@ -580,8 +580,8 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - Removed unused `DIAGNOSTIC_VERSION_HISTORY` array to reduce code clutter.
 
 ### Improved
-- Cleaned up redundant `String` initializations (`String foo = ""` ‚Üí `String foo`) across 7 instances.
-- Standardized `for` loop spacing (`for(` ‚Üí `for `) across 23 instances for better readability.
+- Cleaned up redundant `String` initializations (`String foo = ""` ? `String foo`) across 7 instances.
+- Standardized `for` loop spacing (`for(` ? `for `) across 23 instances for better readability.
 - Removed superfluous inline comments to improve code clarity.
 - Updated version references to 3.8.14.
 
@@ -639,7 +639,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - None.
 
 ### Fixed
-- Removed redundant ‚ÄúNEW FEATURE‚Äù banner comments to avoid confusing maintenance efforts.
+- Removed redundant ìNEW FEATUREî banner comments to avoid confusing maintenance efforts.
 
 ### Improved
 - Consolidated the legacy "Version de dev" notes into a firmware constant so internal history remains accessible without banner duplication.
@@ -650,7 +650,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 ## [Version 3.2.0] - 2025-10-29
 ### Added
 - Documented how to query the `/api/memory-details` endpoint and interpret fragmentation warnings from the latest diagnostics run.
-- Captured the Bluetooth¬Æ and Wi-Fi debugging checklist from the post-release validation pass directly inside the usage and troubleshooting guides.
+- Captured the BluetoothÆ and Wi-Fi debugging checklist from the post-release validation pass directly inside the usage and troubleshooting guides.
 
 ### Fixed
 - Replaced remaining 3.1.19 references across READMEs and setup guides so the banner, guides, and bilingual changelog remain synchronized at 3.2.0.
@@ -692,28 +692,28 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 
 ## [Version 3.1.18] - 2025-10-27
 ### Ajouts
-- N√©ant.
+- NÈant.
 
 ### Corrections
-- Validation de `/api/set-language` pour renvoyer imm√©diatement HTTP 200 sur `fr`/`en` et HTTP 400 sur les codes non pris en charge, supprimant les r√©ponses ambigu√´s.
-- Synchronisation des journaux s√©rie et exports avec les nouvelles r√©ponses JSON du changement de langue.
+- Validation de `/api/set-language` pour renvoyer immÈdiatement HTTP 200 sur `fr`/`en` et HTTP 400 sur les codes non pris en charge, supprimant les rÈponses ambiguÎs.
+- Synchronisation des journaux sÈrie et exports avec les nouvelles rÈponses JSON du changement de langue.
 
-### Am√©liorations
-- R√©servation anticip√©e du tampon de `jsonEscape` afin de r√©duire les allocations pendant la g√©n√©ration d'exports.
-- Inclusion explicite de `<cstring>` pour assurer la compatibilit√© des fonctions de cha√Æne C sur les toolchains Arduino r√©centes.
-- Documentation FR/EN align√©e sur la maintenance 3.1.18 (README, guides d'installation, configuration, utilisation, architecture, contribution et d√©pannage).
+### AmÈliorations
+- RÈservation anticipÈe du tampon de `jsonEscape` afin de rÈduire les allocations pendant la gÈnÈration d'exports.
+- Inclusion explicite de `<cstring>` pour assurer la compatibilitÈ des fonctions de chaÓne C sur les toolchains Arduino rÈcentes.
+- Documentation FR/EN alignÈe sur la maintenance 3.1.18 (README, guides d'installation, configuration, utilisation, architecture, contribution et dÈpannage).
 
 ---
 
 ## [Version 3.1.16] - 2025-10-27
 ### Added
 - Unified sticky banner showing version, Wi-Fi/Bluetooth status, and a quick-access link from the web dashboard.
-- Bluetooth¬Æ commands (enable, rename, reset) exposed both in the interface and through dedicated REST endpoints.
+- BluetoothÆ commands (enable, rename, reset) exposed both in the interface and through dedicated REST endpoints.
 
 ### Fixed
 - Repositioned tab navigation event delegation to restore the selection after dynamic reloads.
 - Refreshed translations on tabs and dynamic elements after a language switch to remove inconsistent labels.
-- Restored the ‚ÄúNot tested‚Äù label for additional diagnostics across the interface, API, and exports.
+- Restored the ìNot testedî label for additional diagnostics across the interface, API, and exports.
 
 ### Improved
 - Enriched Wi-Fi scan responses (BSSID, band, channel width, PHY mode) to simplify RF analysis.
@@ -727,7 +727,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - None.
 
 ### Fixed
-- Standardized the ‚ÄúNot tested‚Äù label for additional diagnostics (ADC, touch, PWM, stress) in the interface, exports, and API.
+- Standardized the ìNot testedî label for additional diagnostics (ADC, touch, PWM, stress) in the interface, exports, and API.
 - Synchronized the header comment and `DIAGNOSTIC_VERSION` at 3.1.15-maint so logs and exported files show the correct number.
 
 ### Improved
@@ -741,7 +741,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - None.
 
 ### Fixed
-- Restored ‚ÄúNot tested‚Äù status labels for the additional diagnostics to keep the French interface consistent.
+- Restored ìNot testedî status labels for the additional diagnostics to keep the French interface consistent.
 - Aligned the version banner comment and `DIAGNOSTIC_VERSION` with revision 3.1.14-maint to reflect the active maintenance.
 
 ### Improved
@@ -760,7 +760,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 
 ## [3.1.0] - 2025-10-24
 ### Highlights
-- Automatic enablement of the Bluetooth¬Æ Low Energy service with native advertising on compatible targets (ESP32, S3, C3, C6, H2).
+- Automatic enablement of the BluetoothÆ Low Energy service with native advertising on compatible targets (ESP32, S3, C3, C6, H2).
 - Web dashboard enriched with a BLE card showing status, device name, and recent pairing logs.
 - Fully rewritten FR/EN document sets covering installation, configuration, usage, architecture, troubleshooting, and contribution.
 
@@ -791,7 +791,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - Ability to start and stop display sequences directly from the serial console.
 
 ### Improved
-- Simplified the OLED I¬≤C reconfiguration flow: select SDA/SCL pins and speed directly from the interface.
+- Simplified the OLED I≤C reconfiguration flow: select SDA/SCL pins and speed directly from the interface.
 - Refreshed the translation pack (FR/EN) for all new OLED labels and runtime states.
 
 ### Fixed
@@ -838,7 +838,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 
 ## [2.3.0] - 2025-10-06
 ### Features
-- Suite of 10 OLED 0.96" I¬≤C tests (contrast toggles, inversion, scroll, custom frames) with explanatory messages.
+- Suite of 10 OLED 0.96" I≤C tests (contrast toggles, inversion, scroll, custom frames) with explanatory messages.
 - Dynamic SDA/SCL pin reconfiguration through the web interface and API to simplify rewiring.
 
 ### Improved
@@ -846,3 +846,11 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - Added a contrast calibration module to optimise OLEDs based on supply voltage.
 
 ---
+
+
+
+
+
+
+
+

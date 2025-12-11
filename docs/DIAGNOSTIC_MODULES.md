@@ -1,4 +1,5 @@
-# ESP32 Diagnostic Suite â€“ Diagnostic Modules (v3.21.1)
+# ESP32 Diagnostic Suite – Diagnostic Modules (v3.22.0)
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 This guide dives into each automated diagnostic module shipped with version 3.15.0. Use it to understand the execution order,
 metrics collected, and interpretation guidelines when reviewing reports.
@@ -9,14 +10,14 @@ metrics collected, and interpretation guidelines when reviewing reports.
 The scheduler processes modules in the order shown below. Each module publishes status events consumed by the web dashboard,
 REST API, and serial logger.
 
-1. **Environment preflight** â€“ verifies firmware version, build flags, and free heap.
-2. **Connectivity** â€“ runs Wi-Fi scans and mDNS advertisement checks (BLE removed in PlatformIO version).
-3. **Network throughput** â€“ executes ping and HTTP fetch benchmarks when Wi-Fi credentials are available.
-4. **Memory & storage** â€“ measures PSRAM, heap fragmentation, and flash read/write integrity.
-5. **GPIO sweep** â€“ toggles digital pins, analog inputs, and PWM outputs (legacy touchpad routine remains removed).
-6. **Peripheral buses** â€“ validates I2C (primary/secondary), SPI loopback, UART loopback, and OneWire sensors.
-7. **Display & LEDs** â€“ runs OLED sequences, NeoPixel animations, and ensures proper refresh timings.
-8. **Reporting** â€“ packages results, updates the activity log, and exposes data for export or API retrieval.
+1. **Environment preflight** – verifies firmware version, build flags, and free heap.
+2. **Connectivity** – runs Wi-Fi scans and mDNS advertisement checks (BLE removed in PlatformIO version).
+3. **Network throughput** – executes ping and HTTP fetch benchmarks when Wi-Fi credentials are available.
+4. **Memory & storage** – measures PSRAM, heap fragmentation, and flash read/write integrity.
+5. **GPIO sweep** – toggles digital pins, analog inputs, and PWM outputs (legacy touchpad routine remains removed).
+6. **Peripheral buses** – validates I2C (primary/secondary), SPI loopback, UART loopback, and OneWire sensors.
+7. **Display & LEDs** – runs OLED sequences, NeoPixel animations, and ensures proper refresh timings.
+8. **Reporting** – packages results, updates the activity log, and exposes data for export or API retrieval.
 
 ## Module reference
 | Module | Description | Key metrics | Export keys |
@@ -31,9 +32,9 @@ REST API, and serial logger.
 | Reporting | Serialises results to JSON, CSV, TXT, and handles REST payload caching. | Export size per format, timestamp, operator notes. | `report.generated_at`, `report.formats`, `report.operator`. |
 
 ## Status levels
-- **PASS** â€“ module executed without warnings and all metrics are within expected thresholds.
-- **WARN** â€“ module executed but found inconsistent values (e.g., high latency). Review metrics before accepting hardware.
-- **FAIL** â€“ module aborted or produced critical errors. Hardware should be quarantined for further investigation.
+- **PASS** – module executed without warnings and all metrics are within expected thresholds.
+- **WARN** – module executed but found inconsistent values (e.g., high latency). Review metrics before accepting hardware.
+- **FAIL** – module aborted or produced critical errors. Hardware should be quarantined for further investigation.
 
 ## Custom modules
 Custom diagnostics can be added by registering callbacks in `registerCustomDiagnostics()` within `the main source file`. Each
@@ -52,6 +53,17 @@ Ensure custom modules follow the PASS/WARN/FAIL contract and publish unique expo
 - For reproducible issues, export the JSON report and attach it to the GitHub issue template.
 
 ## Related resources
-- [Feature matrix](FEATURE_MATRIX.md) â€“ board compatibility and optional hardware notes.
-- [REST API reference](API_REFERENCE.md) â€“ payload schemas when automating module execution.
-- [Troubleshooting](TROUBLESHOOTING.md) â€“ recovery steps when a module is stuck or unavailable.
+- [Feature matrix](FEATURE_MATRIX.md) – board compatibility and optional hardware notes.
+- [REST API reference](API_REFERENCE.md) – payload schemas when automating module execution.
+- [Troubleshooting](TROUBLESHOOTING.md) – recovery steps when a module is stuck or unavailable.
+
+
+
+
+
+
+
+
+
+
+

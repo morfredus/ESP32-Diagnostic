@@ -44,7 +44,7 @@ Version 3.20.3 is a code optimization release focusing exclusively on memory eff
    - Location: `getChipFeatures()`
 
 7. **[OPT-007] Message Formatting**
-   - Converted 13 debug/status messages to snprintf (2-9 allocations → 1 each)
+   - Converted 13 debug/status messages to snprintf (2-9 allocations ? 1 each)
    - Locations: config messages, WiFi status, HTML title, OLED steps
 
 8. **[OPT-008] TextField Usage in formatUptime**
@@ -64,9 +64,9 @@ Version 3.20.3 is a code optimization release focusing exclusively on memory eff
 - **Runtime efficiency**: Reduced heap allocations improve memory stability
 
 ### Testing
-- ✅ Successfully compiled on **ESP32-S3** (esp32s3_n16r8) - Build time: 52s
-- ✅ Successfully compiled on **ESP32 CLASSIC** (esp32devkitc) - Build time: 25s
-- ✅ All optimizations marked with inline `[OPT-###]` comments for traceability
+- ? Successfully compiled on **ESP32-S3** (esp32s3_n16r8) - Build time: 52s
+- ? Successfully compiled on **ESP32 CLASSIC** (esp32devkitc) - Build time: 25s
+- ? All optimizations marked with inline `[OPT-###]` comments for traceability
 
 ### Files Modified
 - `src/main.cpp` - 224 insertions, 97 deletions (primary optimization target)
@@ -109,3 +109,11 @@ Version 3.20.3 completes the memory optimization initiative. Future releases wil
 **Full Changelog**: [CHANGELOG.md](../CHANGELOG.md)  
 **Documentation**: [docs/](../docs/)  
 **GitHub**: https://github.com/morfredus/ESP32-Diagnostic
+
+
+
+
+
+
+
+

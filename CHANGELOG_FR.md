@@ -1,3 +1,17 @@
+## [Version 3.22.0] - 2025-12-11
+
+### Changé - Pin Mapping ESP32-S3
+- **LED RGB repositionnées** : LED verte déplacée de GPIO 45 vers GPIO 41, LED bleue déplacée de GPIO 47 vers GPIO 42
+- **Justification** : Libération des broches de strapping GPIO 45/47 pour éviter les conflits au démarrage
+- **LED rouge inchangée** : GPIO 21 maintenu (broche sécurisée)
+- **Impact ESP32-S3** : Recâblage matériel requis pour LED verte et bleue
+- **ESP32 Classic** : Aucun changement (configuration optimisée en v3.21.0)
+
+### Ajouté - Documentation
+- Avertissement de remapping ajouté à tous les documents utilisateur
+- Tables de pin mapping mises à jour dans PIN_MAPPING_FR.md et PIN_MAPPING.md
+- Notes de version v3.22.0 créées (EN/FR)
+
 ## [Version 3.21.1] - 2025-12-11
 
 ### Ajouté
