@@ -1,5 +1,6 @@
-# ESP32 Diagnostic Suite – Overview (v3.22.0)
-> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+# ESP32 Diagnostic Suite - Overview (v3.22.0)
+
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 The ESP32 Diagnostic Suite delivers a production-ready toolkit for validating ESP32-based boards before deployment. Version 3.15.1 includes **critical memory optimizations for ESP32 Classic** and multi-environment support with three distinct build configurations optimized for different ESP32 hardware variants.
 
@@ -37,31 +38,31 @@ The ESP32 Diagnostic Suite delivers a production-ready toolkit for validating ES
 ## Wiki map
 Use this map to jump directly to the right knowledge category:
 
-- [Home](home.md) – entry point, release highlights, and high-level goals.
-- [Installation](INSTALL.md) – environment preparation, toolchain requirements, USB drivers, and flashing options.
-- [Configuration](CONFIG.md) – Wi-Fi credentials, localisation defaults, diagnostic scheduling, and logging preferences.
-- [Usage](USAGE.md) – day-to-day operator workflows, export formats, and interpreting the dashboard.
-- [Architecture](ARCHITECTURE.md) – firmware layers, task scheduling, storage layout, and interface templating.
-- [Troubleshooting](TROUBLESHOOTING.md) – recovery procedures, error code matrix, and safe reset scenarios.
-- [Contributing](CONTRIBUTING.md) – coding standards, review process, and test expectations.
-- [Feature matrix](FEATURE_MATRIX.md) – hardware coverage per board family and optional peripherals.
-- [Diagnostic modules](DIAGNOSTIC_MODULES.md) – deep dive into each automated test and the metrics it emits.
-- [Web interface guide](WEB_INTERFACE.md) – UI anatomy, component states, and accessibility guidelines.
-- [REST API reference](API_REFERENCE.md) – endpoints, payloads, rate limits, and automation scenarios.
-- [Build & deploy](BUILD_AND_DEPLOY.md) – firmware compilation, QA gating, and release checklist.
-- [Security guidelines](SECURITY.md) – Wi-Fi hardening, credential rotation, and OTA update safety.
-- [FAQ](FAQ.md) – quick answers to the most common integration, support, and deployment questions.
+- [Home](home.md) ï¿½ entry point, release highlights, and high-level goals.
+- [Installation](INSTALL.md) ï¿½ environment preparation, toolchain requirements, USB drivers, and flashing options.
+- [Configuration](CONFIG.md) ï¿½ Wi-Fi credentials, localisation defaults, diagnostic scheduling, and logging preferences.
+- [Usage](USAGE.md) ï¿½ day-to-day operator workflows, export formats, and interpreting the dashboard.
+- [Architecture](ARCHITECTURE.md) ï¿½ firmware layers, task scheduling, storage layout, and interface templating.
+- [Troubleshooting](TROUBLESHOOTING.md) ï¿½ recovery procedures, error code matrix, and safe reset scenarios.
+- [Contributing](CONTRIBUTING.md) ï¿½ coding standards, review process, and test expectations.
+- [Feature matrix](FEATURE_MATRIX.md) ï¿½ hardware coverage per board family and optional peripherals.
+- [Diagnostic modules](DIAGNOSTIC_MODULES.md) ï¿½ deep dive into each automated test and the metrics it emits.
+- [Web interface guide](WEB_INTERFACE.md) ï¿½ UI anatomy, component states, and accessibility guidelines.
+- [REST API reference](API_REFERENCE.md) ï¿½ endpoints, payloads, rate limits, and automation scenarios.
+- [Build & deploy](BUILD_AND_DEPLOY.md) ï¿½ firmware compilation, QA gating, and release checklist.
+- [Security guidelines](SECURITY.md) ï¿½ Wi-Fi hardening, credential rotation, and OTA update safety.
+- [FAQ](FAQ.md) ï¿½ quick answers to the most common integration, support, and deployment questions.
 
 ## Terminology
-- **Diagnostic cycle** – the ordered execution of all enabled modules with aggregated results stored in RAM until export.
-- **Snapshot report** – a frozen copy of the latest diagnostic cycle exported via web UI, REST API, or serial command.
-- **Controller profile** – pre-defined configuration bundle (board type, interface options) loaded at boot.
-- **Maintenance release** – a version delivering documentation and stability improvements without altering the feature surface.
+- **Diagnostic cycle** ï¿½ the ordered execution of all enabled modules with aggregated results stored in RAM until export.
+- **Snapshot report** ï¿½ a frozen copy of the latest diagnostic cycle exported via web UI, REST API, or serial command.
+- **Controller profile** ï¿½ pre-defined configuration bundle (board type, interface options) loaded at boot.
+- **Maintenance release** ï¿½ a version delivering documentation and stability improvements without altering the feature surface.
 
 ## Related resources
-- [CHANGELOG.md](../CHANGELOG.md) – chronological list of fixes and enhancements.
+- [CHANGELOG.md](../CHANGELOG.md) ï¿½ chronological list of fixes and enhancements.
 - [ESP-IDF compatibility table](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/) for comparing platform expectations.
-- [GitHub issues](https://github.com/morfredus/ESP32-Diagnostic/issues) – track bugs or request enhancements.
+- [GitHub issues](https://github.com/morfredus/ESP32-Diagnostic/issues) ï¿½ track bugs or request enhancements.
 - **Note:** The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) is archived.
 
 

@@ -1,5 +1,6 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.22.0)
-> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+# ESP32 Diagnostic Suite - Feature Matrix (v3.22.0)
+
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.21.1 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.
@@ -8,12 +9,12 @@ Use it to plan validation campaigns and to verify whether optional peripherals r
 
 **? New in v3.21.1:** NeoPixel Wi-Fi status indicator with real-time heartbeat (green when connected, red when disconnected, yellow during connection attempts) and violet reboot confirmation flash. **No hardware changes required from v3.21.0.**
 
-**?? Updated in v3.21.0:** Complete ESP32 Classic pin mapping revision — 11 changes to resolve boot and USB communication issues. **Hardware migration required for ESP32 Classic.** See `PIN_MAPPING_CHANGES_FR.md` for details. ESP32-S3 unchanged.
+**?? Updated in v3.21.0:** Complete ESP32 Classic pin mapping revision ï¿½ 11 changes to resolve boot and USB communication issues. **Hardware migration required for ESP32 Classic.** See `PIN_MAPPING_CHANGES_FR.md` for details. ESP32-S3 unchanged.
 
 ## Legend
-- ? – Supported out of the box by the firmware.
-- ?? – Supported with optional configuration or hardware tweaks (see notes column).
-- ? – Not available for the target board or requires custom firmware extensions.
+- ? ï¿½ Supported out of the box by the firmware.
+- ?? ï¿½ Supported with optional configuration or hardware tweaks (see notes column).
+- ? ï¿½ Not available for the target board or requires custom firmware extensions.
 
 ## Core board capabilities
 | Board | Environment | Wi-Fi scan | BLE scan | PSRAM probe | Flash integrity | NeoPixel test | OLED test | TFT test | Notes |
@@ -46,13 +47,13 @@ Use it to plan validation campaigns and to verify whether optional peripherals r
 
 ## Environmental assumptions
 - ESP32 Arduino Core **3.3.3** (PlatformIO `espressif32@6.6.x` or Arduino Boards Manager 3.1.x+).
-- USB power supply delivering at least 500 mA during OLED/NeoPixel stress tests.
-- Stable Wi-Fi network (2.4 GHz) for throughput benchmarks; captive portals are not supported.
+- USB power supply delivering at least 500ï¿½mA during OLED/NeoPixel stress tests.
+- Stable Wi-Fi network (2.4ï¿½GHz) for throughput benchmarks; captive portals are not supported.
 
 ## Related documents
-- [Configuration guide](CONFIG.md) – enabling or disabling optional modules.
-- [Diagnostic modules deep dive](DIAGNOSTIC_MODULES.md) – execution order and metrics captured for each check.
-- [Troubleshooting](TROUBLESHOOTING.md) – steps to follow when a module is reported as unavailable.
+- [Configuration guide](CONFIG.md) ï¿½ enabling or disabling optional modules.
+- [Diagnostic modules deep dive](DIAGNOSTIC_MODULES.md) ï¿½ execution order and metrics captured for each check.
+- [Troubleshooting](TROUBLESHOOTING.md) ï¿½ steps to follow when a module is reported as unavailable.
 
 
 

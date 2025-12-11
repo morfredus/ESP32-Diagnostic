@@ -1,5 +1,6 @@
-# Troubleshooting (EN) – v3.22.0
-> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+# Troubleshooting (EN) - v3.22.0
+
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 **Multi-environment support:** This release supports three build environments (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) with hardware-specific pin mappings. Ensure you've selected and flashed the correct environment for your board before troubleshooting.
 
@@ -19,7 +20,7 @@
 - Confirm `/api/get-translations` returns HTTP 200 using the browser console or a REST client.
 
 ## Additional diagnostics show "Non teste" without accent
-- Flash firmware 3.8.0 (or any later 3.x maintenance build) so the French catalogue keeps the "Non testé" placeholder and benefits from the instant translation refresh across diagnostics tabs.
+- Flash firmware 3.8.0 (or any later 3.x maintenance build) so the French catalogue keeps the "Non testï¿½" placeholder and benefits from the instant translation refresh across diagnostics tabs.
 - Refresh the dashboard (Ctrl+F5) to reload cached translations after updating.
 
 ## OLED screen stays blank

@@ -1,5 +1,6 @@
-# ESP32 Diagnostic Suite – Build & Deploy (v3.22.0)
-> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+# ESP32 Diagnostic Suite - Build & Deploy (v3.22.0)
+
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 This document describes the supported toolchains and the recommended release checklist for firmware version 3.16.0.
 
@@ -103,7 +104,7 @@ Dynamic configuration of OLED and TFT displays through web interface, including 
 ## Acceptance tests
 | Test | Procedure | Expected result |
 |------|-----------|-----------------|
-| Connectivity smoke test | Connect to lab Wi-Fi, run quick diagnostics. | PASS with RSSI above -70 dBm, ping < 40 ms. |
+| Connectivity smoke test | Connect to lab Wi-Fi, run quick diagnostics. | PASS with RSSI above -70ï¿½dBm, ping < 40ï¿½ms. |
 | Memory soak | Run full diagnostics 5 times consecutively. | No heap exhaustion, PSRAM stable. |
 | Peripheral validation | Attach OLED + NeoPixel chain, enable modules. | PASS with consistent frame rate and LED animation. |
 | REST API sanity | Trigger `/api/run` then `/api/status`. | Receives queued status and JSON payload. |
