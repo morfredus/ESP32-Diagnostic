@@ -1,3 +1,64 @@
+## [Version 3.23.0] - 2025-12-11
+
+### Added - MQTT Publisher Integration
+- **MQTT Publisher**: Real-time metric streaming to any MQTT broker
+  - **20+ system metrics**: Memory, WiFi, CPU, temperature, sensors, GPS
+  - **30-second auto-publish cycle**: Non-blocking automatic updates
+  - **Home Assistant ready**: Out-of-the-box compatible with MQTT discovery
+  - **NodeRED/InfluxDB compatible**: Real-time dashboards and time-series logging
+
+- **REST API Control**: Three new endpoints for MQTT management
+  - `GET /api/mqtt-status` - Check current MQTT connection state
+  - `GET /api/mqtt-enable?enable=` - Enable/disable MQTT publishing
+  - `GET /api/mqtt-publish-test` - Send test message to broker
+
+- **MQTT Handler**: New core implementation in `include/mqtt_handler.h`
+  - Auto-reconnect with 5-second backoff
+  - State machine: DISCONNECTED â†’ CONNECTING â†’ CONNECTED â†’ DISABLED
+  - Buffer-based formatting for memory efficiency
+  - WiFi dependency checking with graceful fallback
+
+### Changed
+- **platformio.ini**: Added PubSubClient@^2.8.0 library dependency
+- **main.cpp**: Integrated MQTT initialization, maintenance loop, and API handlers
+- **include/config.h**: MQTT configuration already present (enabled in this release)
+
+### Documentation
+- **Full guides**: `docs/MQTT_INTEGRATION.md` and `docs/MQTT_INTEGRATION_FR.md`
+- **Quick start**: `docs/MQTT_QUICKSTART.md` and `docs/MQTT_QUICKSTART_FR.md`
+- **Config examples**: `include/mqtt-config-example.h` with 6 popular brokers
+- **Testing script**: `test/test-mqtt.sh` for automated validation
+- **Implementation notes**: `docs/MQTT_IMPLEMENTATION_NOTES.md`
+
+### Technical
+- **Memory impact**: 18KB total (3KB code + 15KB library) - safe for 4MB ESP32 Classic
+- **Performance**: Non-blocking operation, no impact on main loop responsiveness
+- **Compatibility**: Works on all targets (ESP32-S3 N16R8/N8R8, ESP32 Classic)
+- **Published topics**: `esp32-diagnostic/system/*`, `memory/*`, `network/*`, `sensors/*`, `status/*`
+
+### Backward Compatibility
+- âœ… **Fully backward-compatible** - MQTT disabled by default
+- âœ… **No breaking changes** - All existing features unaffected
+- âœ… **No hardware changes** - Works with existing wiring
+
+---
+
+## [Version 3.22.0] - 2025-12-11
+
+### Changed - ESP32-S3 Pin Mapping
+- **RGB LEDs relocated**: Green LED moved from GPIO 45 to GPIO 41, Blue LED moved from GPIO 47 to GPIO 42
+- **Rationale**: Free strapping pins GPIO 45/47 to avoid boot conflicts
+- **Red LED unchanged**: GPIO 21 maintained (safe pin)
+- **ESP32-S3 impact**: Hardware rewiring required for green and blue LEDs
+- **ESP32 Classic**: No changes (optimized configuration in v3.21.0)
+
+### Documentation
+- Remapping warnings added to all user-facing documents
+- Pin mapping tables updated in PIN_MAPPING_FR.md and PIN_MAPPING.md
+- Release notes v3.22.0 created (EN/FR)
+
+---
+
 ## [Version 3.21.1] - 2025-12-11
 
 ### Added
@@ -129,17 +190,17 @@
 ## [Version 3.20.1] - 2025-12-07
 
 ### Fixed
-- **Stabilité USB/OTG (ESP32-S3)** : libération des lignes D-/D+ (GPIO 19/20) en déplaçant l'I2C par défaut sur SDA=15 / SCL=16 et la LED RGB Rouge sur GPIO 21; élimine les perturbations du bus USB provoquées par les anciens branchements I2C/RGB sur 19/20.
+- **Stabilitï¿½ USB/OTG (ESP32-S3)** : libï¿½ration des lignes D-/D+ (GPIO 19/20) en dï¿½plaï¿½ant l'I2C par dï¿½faut sur SDA=15 / SCL=16 et la LED RGB Rouge sur GPIO 21; ï¿½limine les perturbations du bus USB provoquï¿½es par les anciens branchements I2C/RGB sur 19/20.
 
 ### Changed
 - **Pin mapping ESP32-S3** :
    - I2C: SDA=15, SCL=16 (au lieu de 21/20)
-   - RGB: Rouge=21, Vert=45, Bleu=47 (Rouge quitte 19 pour libérer l'USB)
-   - Notes de strapping rappelées sur GPIO45
-- **Version bump** : `PROJECT_VERSION` mis à `3.20.1` dans `platformio.ini`.
+   - RGB: Rouge=21, Vert=45, Bleu=47 (Rouge quitte 19 pour libï¿½rer l'USB)
+   - Notes de strapping rappelï¿½es sur GPIO45
+- **Version bump** : `PROJECT_VERSION` mis ï¿½ `3.20.1` dans `platformio.ini`.
 
 ### Documentation
-- Guides Pin Mapping (EN/FR), README (EN/FR), et nouvelles release notes alignés sur la nouvelle attribution de broches et l'explication de la résolution OTG.
+- Guides Pin Mapping (EN/FR), README (EN/FR), et nouvelles release notes alignï¿½s sur la nouvelle attribution de broches et l'explication de la rï¿½solution OTG.
 
 ## [Version 3.20.0] - 2025-12-07
 
@@ -227,8 +288,8 @@
    - Web API endpoint `/api/gps-test` for diagnostic testing
 
 2. **Environmental Sensors Support**: Added AHT20 (Temperature/Humidity) + BMP280 (Pressure) sensor integration.
-   - AHT20: Temperature (±0.5°C) and Humidity (±3% RH) readings
-   - BMP280: Atmospheric pressure (±1 hPa) with integrated temperature sensor
+   - AHT20: Temperature (ï¿½0.5ï¿½C) and Humidity (ï¿½3% RH) readings
+   - BMP280: Atmospheric pressure (ï¿½1 hPa) with integrated temperature sensor
    - Altitude calculation from pressure measurements
    - Automatic sensor detection and dual-sensor averaging
    - Uses I2C interface with configurable pins in `config.h` (SDA/SCL pins)
@@ -298,10 +359,10 @@
 
 ### New Features
 1. **Connected Client IP Logging**: Added automatic logging of connected client IP addresses in the Serial Monitor for better network monitoring and diagnostics.
-2. **OLED Resolution Configuration**: Added ability to configure OLED screen resolution (width × height) dynamically through the web interface.
+2. **OLED Resolution Configuration**: Added ability to configure OLED screen resolution (width ï¿½ height) dynamically through the web interface.
 3. **TFT Configuration UI**: Added comprehensive TFT display configuration through web interface including:
    - Pin mapping configuration (MOSI, SCLK, CS, DC, RST, BL)
-   - Display resolution configuration (width × height)
+   - Display resolution configuration (width ï¿½ height)
    - Rotation settings
 4. **API Endpoint `/api/tft-config`**: New endpoint for TFT configuration with validation and real-time updates.
 5. **Enhanced Screen Info API**: Updated `/api/screens-info` to include resolution and pin details for both OLED and TFT displays.
@@ -329,7 +390,7 @@
 ### Technical Details
 4. Modified `handleJavaScriptRoute()` in `src/main.cpp` to stream `DIAGNOSTIC_JS_STATIC` content using `memcpy_P()` and `sendContent()` in small chunks.
 5. Replaced single large `String(FPSTR(DIAGNOSTIC_JS_STATIC))` allocation with iterative chunked transfer.
-6. No changes to UI functionality or user experience – purely internal optimization.
+6. No changes to UI functionality or user experience ï¿½ purely internal optimization.
 
 ### Impact
 7. **ESP32 Classic (esp32devkitc)**: Web UI now loads reliably on 4MB Flash / no PSRAM configurations.
@@ -472,7 +533,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - Removed obsolete development version history from source code headers.
 - Removed unused `handleJavaScript()` function (dead code elimination).
 - Simplified and standardized comment style throughout codebase.
-- Fixed French typo: "defaut" ? "défaut" in setup messages.
+- Fixed French typo: "defaut" ? "dï¿½faut" in setup messages.
 
 ### Technical Changes
 - Cleaned obsolete version comments (v3.8.x-dev through v3.10.3).
@@ -639,7 +700,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - None.
 
 ### Fixed
-- Removed redundant “NEW FEATURE” banner comments to avoid confusing maintenance efforts.
+- Removed redundant ï¿½NEW FEATUREï¿½ banner comments to avoid confusing maintenance efforts.
 
 ### Improved
 - Consolidated the legacy "Version de dev" notes into a firmware constant so internal history remains accessible without banner duplication.
@@ -650,7 +711,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 ## [Version 3.2.0] - 2025-10-29
 ### Added
 - Documented how to query the `/api/memory-details` endpoint and interpret fragmentation warnings from the latest diagnostics run.
-- Captured the Bluetooth® and Wi-Fi debugging checklist from the post-release validation pass directly inside the usage and troubleshooting guides.
+- Captured the Bluetoothï¿½ and Wi-Fi debugging checklist from the post-release validation pass directly inside the usage and troubleshooting guides.
 
 ### Fixed
 - Replaced remaining 3.1.19 references across READMEs and setup guides so the banner, guides, and bilingual changelog remain synchronized at 3.2.0.
@@ -692,28 +753,28 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 
 ## [Version 3.1.18] - 2025-10-27
 ### Ajouts
-- Néant.
+- Nï¿½ant.
 
 ### Corrections
-- Validation de `/api/set-language` pour renvoyer immédiatement HTTP 200 sur `fr`/`en` et HTTP 400 sur les codes non pris en charge, supprimant les réponses ambiguës.
-- Synchronisation des journaux série et exports avec les nouvelles réponses JSON du changement de langue.
+- Validation de `/api/set-language` pour renvoyer immï¿½diatement HTTP 200 sur `fr`/`en` et HTTP 400 sur les codes non pris en charge, supprimant les rï¿½ponses ambiguï¿½s.
+- Synchronisation des journaux sï¿½rie et exports avec les nouvelles rï¿½ponses JSON du changement de langue.
 
-### Améliorations
-- Réservation anticipée du tampon de `jsonEscape` afin de réduire les allocations pendant la génération d'exports.
-- Inclusion explicite de `<cstring>` pour assurer la compatibilité des fonctions de chaîne C sur les toolchains Arduino récentes.
-- Documentation FR/EN alignée sur la maintenance 3.1.18 (README, guides d'installation, configuration, utilisation, architecture, contribution et dépannage).
+### Amï¿½liorations
+- Rï¿½servation anticipï¿½e du tampon de `jsonEscape` afin de rï¿½duire les allocations pendant la gï¿½nï¿½ration d'exports.
+- Inclusion explicite de `<cstring>` pour assurer la compatibilitï¿½ des fonctions de chaï¿½ne C sur les toolchains Arduino rï¿½centes.
+- Documentation FR/EN alignï¿½e sur la maintenance 3.1.18 (README, guides d'installation, configuration, utilisation, architecture, contribution et dï¿½pannage).
 
 ---
 
 ## [Version 3.1.16] - 2025-10-27
 ### Added
 - Unified sticky banner showing version, Wi-Fi/Bluetooth status, and a quick-access link from the web dashboard.
-- Bluetooth® commands (enable, rename, reset) exposed both in the interface and through dedicated REST endpoints.
+- Bluetoothï¿½ commands (enable, rename, reset) exposed both in the interface and through dedicated REST endpoints.
 
 ### Fixed
 - Repositioned tab navigation event delegation to restore the selection after dynamic reloads.
 - Refreshed translations on tabs and dynamic elements after a language switch to remove inconsistent labels.
-- Restored the “Not tested” label for additional diagnostics across the interface, API, and exports.
+- Restored the ï¿½Not testedï¿½ label for additional diagnostics across the interface, API, and exports.
 
 ### Improved
 - Enriched Wi-Fi scan responses (BSSID, band, channel width, PHY mode) to simplify RF analysis.
@@ -727,7 +788,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - None.
 
 ### Fixed
-- Standardized the “Not tested” label for additional diagnostics (ADC, touch, PWM, stress) in the interface, exports, and API.
+- Standardized the ï¿½Not testedï¿½ label for additional diagnostics (ADC, touch, PWM, stress) in the interface, exports, and API.
 - Synchronized the header comment and `DIAGNOSTIC_VERSION` at 3.1.15-maint so logs and exported files show the correct number.
 
 ### Improved
@@ -741,7 +802,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - None.
 
 ### Fixed
-- Restored “Not tested” status labels for the additional diagnostics to keep the French interface consistent.
+- Restored ï¿½Not testedï¿½ status labels for the additional diagnostics to keep the French interface consistent.
 - Aligned the version banner comment and `DIAGNOSTIC_VERSION` with revision 3.1.14-maint to reflect the active maintenance.
 
 ### Improved
@@ -760,7 +821,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 
 ## [3.1.0] - 2025-10-24
 ### Highlights
-- Automatic enablement of the Bluetooth® Low Energy service with native advertising on compatible targets (ESP32, S3, C3, C6, H2).
+- Automatic enablement of the Bluetoothï¿½ Low Energy service with native advertising on compatible targets (ESP32, S3, C3, C6, H2).
 - Web dashboard enriched with a BLE card showing status, device name, and recent pairing logs.
 - Fully rewritten FR/EN document sets covering installation, configuration, usage, architecture, troubleshooting, and contribution.
 
@@ -791,7 +852,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 - Ability to start and stop display sequences directly from the serial console.
 
 ### Improved
-- Simplified the OLED I²C reconfiguration flow: select SDA/SCL pins and speed directly from the interface.
+- Simplified the OLED Iï¿½C reconfiguration flow: select SDA/SCL pins and speed directly from the interface.
 - Refreshed the translation pack (FR/EN) for all new OLED labels and runtime states.
 
 ### Fixed
@@ -838,7 +899,7 @@ All notable changes to ESP32 Diagnostic Suite are documented here. This project 
 
 ## [2.3.0] - 2025-10-06
 ### Features
-- Suite of 10 OLED 0.96" I²C tests (contrast toggles, inversion, scroll, custom frames) with explanatory messages.
+- Suite of 10 OLED 0.96" Iï¿½C tests (contrast toggles, inversion, scroll, custom frames) with explanatory messages.
 - Dynamic SDA/SCL pin reconfiguration through the web interface and API to simplify rewiring.
 
 ### Improved

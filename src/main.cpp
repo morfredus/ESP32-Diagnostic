@@ -109,6 +109,9 @@
 // Environmental sensors (AHT20 + BMP280)
 #include "environmental_sensors.h"
 
+// MQTT Publisher
+#include "mqtt_handler.h"
+
 // Set default language from config.h
 Language currentLanguage = DEFAULT_LANGUAGE;
 
@@ -364,6 +367,11 @@ static AsyncTestRunner neopixelTestRunner = {"NeoPixelTest", nullptr, false};
 static AsyncTestRunner oledTestRunner = {"OLEDTest", nullptr, false};
 static AsyncTestRunner rgbLedTestRunner = {"RgbLedTest", nullptr, false};
 static AsyncTestRunner buzzerTestRunner = {"BuzzerTest", nullptr, false};
+
+// ========== MQTT Handler ==========
+MQTTHandler mqttHandler;
+unsigned long lastMQTTCheck = 0;
+const unsigned long mqttCheckInterval = 5000; // Check MQTT every 5s
 
 bool runtimeBLE = false;
 
@@ -3868,6 +3876,69 @@ void handleEnvironmentalTest() {
   server.send(200, "application/json", json);
 }
 
+// ========== MQTT HANDLERS ==========
+void handleMQTTStatus() {
+  String state = "disabled";
+#if ENABLE_MQTT_BRIDGE
+  switch (mqttHandler.getState()) {
+    case MQTTState::CONNECTED: state = "connected"; break;
+    case MQTTState::CONNECTING: state = "connecting"; break;
+    case MQTTState::DISCONNECTED: state = "disconnected"; break;
+    case MQTTState::OFF: state = "disabled"; break;
+  }
+#endif
+  
+  sendJsonResponse(200, {
+    jsonStringField("state", state.c_str()),
+    jsonStringField("broker", MQTT_BROKER),
+    jsonNumberField("port", MQTT_PORT),
+    jsonStringField("topic_prefix", MQTT_TOPIC_PREFIX),
+    jsonBoolField("enabled", ENABLE_MQTT_BRIDGE)
+  });
+}
+
+void handleMQTTEnable() {
+#if ENABLE_MQTT_BRIDGE
+  if (server.hasArg("enable")) {
+    String enableStr = server.arg("enable");
+    bool enable = (enableStr == "true" || enableStr == "1");
+    
+    if (enable && WiFi.isConnected()) {
+      mqttHandler.enable(true);
+      mqttHandler.connect();
+      sendOperationSuccess("MQTT enabled");
+    } else if (!enable) {
+      mqttHandler.enable(false);
+      sendOperationSuccess("MQTT disabled");
+    } else {
+      sendOperationError(400, "WiFi not connected");
+    }
+  } else {
+    sendOperationError(400, "Missing 'enable' parameter");
+  }
+#else
+  sendOperationError(400, "MQTT not enabled in config");
+#endif
+}
+
+void handleMQTTPublishTest() {
+#if ENABLE_MQTT_BRIDGE
+  if (mqttHandler.getState() != MQTTState::CONNECTED) {
+    sendOperationError(503, "MQTT not connected");
+    return;
+  }
+  
+  // Publish a test message
+  char msg[64];
+  snprintf(msg, sizeof(msg), "Test message from %s at %lu", DIAGNOSTIC_HOSTNAME, millis());
+  mqttHandler.publish("test", msg, false);
+  
+  sendOperationSuccess("Test message published");
+#else
+  sendOperationError(400, "MQTT not enabled");
+#endif
+}
+
 void handleBenchmark() {
   unsigned long cpuTime = benchmarkCPU();
   unsigned long memTime = benchmarkMemory();
@@ -5033,6 +5104,15 @@ void setup() {
   // Initialize environmental sensors (AHT20 + BMP280)
   initEnvironmentalSensors();
 
+  // ========== MQTT SETUP ==========
+#if ENABLE_MQTT_BRIDGE
+  if (wifiConnected) {
+    mqttHandler.configure(MQTT_BROKER, MQTT_PORT, MQTT_USER, MQTT_PASSWORD, MQTT_TOPIC_PREFIX);
+    mqttHandler.enable(true);
+    Serial.println("[MQTT] Enabled and configured");
+  }
+#endif
+
   // ========== ROUTES SERVEUR ==========
   server.on("/", handleRoot);
   server.on("/js/app.js", handleJavaScriptRoute);
@@ -5116,6 +5196,11 @@ void setup() {
   server.on("/api/environmental-sensors", handleEnvironmentalSensors);
   server.on("/api/environmental-test", handleEnvironmentalTest);
 
+  // MQTT Integration
+  server.on("/api/mqtt-status", handleMQTTStatus);
+  server.on("/api/mqtt-enable", handleMQTTEnable);
+  server.on("/api/mqtt-publish-test", handleMQTTPublishTest);
+
   // Performance & Mémoire
   server.on("/api/benchmark", handleBenchmark);
   server.on("/api/memory-details", handleMemoryDetails);
@@ -5149,6 +5234,15 @@ void loop() {
   server.handleClient();
   maintainNetworkServices();
   updateNeoPixelWifiStatus();
+
+  // ========== MQTT Maintenance ==========
+  unsigned long now = millis();
+  if (now - lastMQTTCheck >= mqttCheckInterval) {
+    lastMQTTCheck = now;
+#if ENABLE_MQTT_BRIDGE
+    mqttHandler.maintain();
+#endif
+  }
 
 #if ENABLE_BUTTONS
   maintainButtons();

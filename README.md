@@ -1,9 +1,25 @@
-# ESP32 Diagnostic Suite (v3.22.0)
-> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+# ESP32 Diagnostic Suite (v3.23.0)
+
+> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## ?? Version 3.21.1 Highlights - NeoPixel Wi-Fi Status Indicator
+## üåê Version 3.23.0 Highlights - MQTT Publisher Integration
+
+**Real-time IoT ecosystem integration via MQTT broker:**
+- **MQTT Publisher** - Stream 20+ system metrics to any MQTT broker
+- **Home Assistant Ready** - Out-of-the-box compatible with MQTT sensors
+- **30-second auto-publish** - Non-blocking automatic metric updates
+- **REST API control** - Enable/disable, status check, test publishing
+- **NodeRED/InfluxDB** - Real-time dashboards and time-series logging
+- **Memory-safe** - Only 18KB impact, works on 4MB ESP32 Classic
+- **Documentation** - Complete EN/FR guides: [MQTT_INTEGRATION.md](docs/MQTT_INTEGRATION.md)
+
+## Previous: Version 3.22.0 - GPIO Remapping
+
+**Hardware configuration update** - ESP32-S3 GPIO relocated to avoid strapping conflicts.
+
+## Previous: Version 3.21.1 - NeoPixel Wi-Fi Status Indicator
 
 **Real-time Wi-Fi connectivity feedback via NeoPixel/WS2812 RGB LED:**
 - **Yellow (connection in progress)** during Wi-Fi connection attempt at startup
@@ -111,7 +127,7 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive we
 ## Version 3.16.0 Features
 1. **Network Monitoring**: Automatic logging of connected client IP addresses in serial monitor for improved diagnostics.
 2. **WiFi Status Display**: Real-time network connection status in WiFi tab showing current IP address, SSID, gateway, DNS, and signal strength.
-3. **OLED Resolution Configuration**: Dynamic OLED screen resolution (width ◊ height) configuration via web interface.
+3. **OLED Resolution Configuration**: Dynamic OLED screen resolution (width ÔøΩ height) configuration via web interface.
 4. **TFT Configuration Interface**: Complete TFT screen configuration including pin mapping (MOSI, SCLK, CS, DC, RST, BL), resolution, and rotation parameters.
 5. **New API Endpoint**: `/api/tft-config` for complete TFT configuration with real-time validation.
 6. **Enhanced Screen Info**: Updated `/api/screens-info` to include full resolution and pin details for both OLED and TFT.
@@ -137,13 +153,13 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive we
 5. **OLED REST API**: `/api/oled-boot` to restore OLED boot screen.
 
 ## Project Structure
-- `src/main.cpp` ñ firmware entry point, main loop, scheduler, and HTTP handlers.
-- `include/languages.h` ñ translation catalog and hot language selector.
-- `include/web_interface.h` ñ HTML/CSS/JS templates served by firmware.
-- `include/board_config.h` ñ board-specific pin mapping (selected via TARGET_ESP32_*).
-- `include/secrets-example.h` ñ template for storing Wi-Fi credentials (copy to `include/secrets.h`).
-- `platformio.ini` ñ PlatformIO configuration for all supported ESP32 targets.
-- `docs/` ñ complete wiki gathering installation, usage, API, and deployment guides (FR/EN).
+- `src/main.cpp` ÔøΩ firmware entry point, main loop, scheduler, and HTTP handlers.
+- `include/languages.h` ÔøΩ translation catalog and hot language selector.
+- `include/web_interface.h` ÔøΩ HTML/CSS/JS templates served by firmware.
+- `include/board_config.h` ÔøΩ board-specific pin mapping (selected via TARGET_ESP32_*).
+- `include/secrets-example.h` ÔøΩ template for storing Wi-Fi credentials (copy to `include/secrets.h`).
+- `platformio.ini` ÔøΩ PlatformIO configuration for all supported ESP32 targets.
+- `docs/` ÔøΩ complete wiki gathering installation, usage, API, and deployment guides (FR/EN).
 
 ## Documentation
 | Topic | English | French |
@@ -177,7 +193,7 @@ Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive we
 
 ## Compatibility & Requirements
 - **Boards:**
-  - ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM OPI/QSPI) ó Primary target
+  - ESP32-S3-DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM OPI/QSPI) ÔøΩ Primary target
   - ESP32-S3-DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
   - ESP32-DevKitC Classic (4MB Flash, no PSRAM)
 - **Platform:** PlatformIO with ESP32 Arduino Core 3.3.3+

@@ -1,13 +1,15 @@
-﻿# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.22.0)
+﻿# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.23.0)
 
 > **AVERTISSEMENT** : v3.22.0 remappe les GPIO pour ESP32-S3 et ESP32 Classic. Un recâblage matériel est nécessaire. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
-Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.21.1 et ses trois environnements de build.
+Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.23.0 et ses trois environnements de build.
 Elle aide à planifier les campagnes de validation et à vérifier si des périphériques optionnels nécessitent un câblage supplémentaire.
 
-> **Important :** La version 3.21.1 (PlatformIO) n'active toujours pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
+> **Important :** La version 3.23.0 (PlatformIO) n'active toujours pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
 
-**✨ Nouveau en v3.21.1 :** Indicateur d'état Wi-Fi NeoPixel avec battement en temps réel (vert quand connecté, rouge quand déconnecté, jaune lors des tentatives de connexion) et flash violet de confirmation de redémarrage. **Aucun changement matériel requis par rapport à v3.21.0.**
+**🌐 Nouveau en v3.23.0 :** Intégration MQTT Publisher – Diffusion en temps réel de métriques vers Home Assistant, NodeRED, InfluxDB et tout broker MQTT. Voir [MQTT_INTEGRATION_FR.md](MQTT_INTEGRATION_FR.md) pour les détails. **Aucun changement matériel requis.**
+
+**✅ Nouveau en v3.21.1 :** Indicateur d'état Wi-Fi NeoPixel avec battement en temps réel (vert quand connecté, rouge quand déconnecté, jaune lors des tentatives de connexion) et flash violet de confirmation de redémarrage. **Aucun changement matériel requis par rapport à v3.21.0.**
 
 **⚠️ Mis à jour en v3.21.0 :** Révision complète du pin mapping ESP32 Classic — 11 modifications pour résoudre les problèmes de boot et de communication USB. **Migration matérielle requise pour ESP32 Classic.** Voir `PIN_MAPPING_CHANGES_FR.md` pour détails. ESP32-S3 inchangé.
 

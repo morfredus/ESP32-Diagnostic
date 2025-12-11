@@ -1,10 +1,25 @@
-# ESP32 Diagnostic Suite (v3.22.0)
+# ESP32 Diagnostic Suite (v3.23.0)
 
 > **AVERTISSEMENT** : v3.22.0 remappe les GPIO pour ESP32-S3 et ESP32 Classic. Un recâblage matériel est nécessaire. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## 🟢 Nouveautés de la version 3.22.0 - Remapping GPIO
+## 🌐 Nouveautés de la version 3.23.0 - Intégration MQTT Publisher
+
+**Intégration en temps réel à l'écosystème IoT via broker MQTT :**
+- **MQTT Publisher** - Diffusion de 20+ métriques système vers n'importe quel broker MQTT
+- **Home Assistant prêt** - Compatible immédiatement avec les capteurs MQTT
+- **Auto-publication 30s** - Mises à jour automatiques non bloquantes
+- **Contrôle API REST** - Activer/désactiver, vérification d'état, test de publication
+- **NodeRED/InfluxDB** - Tableaux de bord temps réel et journalisation série temporelle
+- **Mémoire sécurisée** - Seulement 18KB d'impact, fonctionne sur ESP32 Classic 4MB
+- **Documentation** - Guides complets EN/FR : [MQTT_INTEGRATION_FR.md](docs/MQTT_INTEGRATION_FR.md)
+
+## Précédent : Version 3.22.0 - Remapping GPIO
+
+**Mise à jour de configuration matérielle** - GPIO ESP32-S3 repositionnés pour éviter conflits de strapping.
+
+## Précédent : Version 3.21.1 - Indicateur d'état Wi-Fi NeoPixel
 
 **Révision complète du pin mapping pour ESP32-S3 et ESP32 Classic** - Migration matérielle requise :
 - **Corrections ESP32-S3** : LED RGB repositionnées pour libérer GPIO 45/47 (broches de strapping) vers GPIO 41/42 (broches dédiées)

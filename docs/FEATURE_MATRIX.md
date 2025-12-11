@@ -1,13 +1,15 @@
-# ESP32 Diagnostic Suite - Feature Matrix (v3.22.0)
+# ESP32 Diagnostic Suite - Feature Matrix (v3.23.0)
 
 > WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
-This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.21.1 with three distinct build environments.
+This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.23.0 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.
 
-> **Important:** Current release 3.21.1 (PlatformIO) still ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+> **Important:** Current release 3.23.0 (PlatformIO) still ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
 
-**? New in v3.21.1:** NeoPixel Wi-Fi status indicator with real-time heartbeat (green when connected, red when disconnected, yellow during connection attempts) and violet reboot confirmation flash. **No hardware changes required from v3.21.0.**
+**🌐 New in v3.23.0:** MQTT Publisher integration – Real-time metric streaming to Home Assistant, NodeRED, InfluxDB, and any MQTT broker. See [MQTT_INTEGRATION.md](MQTT_INTEGRATION.md) for details. **No hardware changes required.**
+
+**✅ New in v3.21.1:** NeoPixel Wi-Fi status indicator with real-time heartbeat (green when connected, red when disconnected, yellow during connection attempts) and violet reboot confirmation flash. **No hardware changes required from v3.21.0.**
 
 **?? Updated in v3.21.0:** Complete ESP32 Classic pin mapping revision � 11 changes to resolve boot and USB communication issues. **Hardware migration required for ESP32 Classic.** See `PIN_MAPPING_CHANGES_FR.md` for details. ESP32-S3 unchanged.
 

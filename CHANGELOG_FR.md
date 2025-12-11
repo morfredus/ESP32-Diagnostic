@@ -1,3 +1,48 @@
+## [Version 3.23.0] - 2025-12-11
+
+### Ajouté - Intégration MQTT Publisher
+- **MQTT Publisher** : Diffusion en temps réel de métriques vers n'importe quel broker MQTT
+  - **20+ métriques système** : Mémoire, WiFi, CPU, température, capteurs, GPS
+  - **Cycle auto-publication 30s** : Mises à jour automatiques non bloquantes
+  - **Home Assistant prêt** : Compatible immédiatement avec MQTT discovery
+  - **NodeRED/InfluxDB compatible** : Tableaux de bord temps réel et journalisation série temporelle
+
+- **Contrôle API REST** : Trois nouveaux endpoints pour la gestion MQTT
+  - `GET /api/mqtt-status` - Vérifier l'état actuel de connexion MQTT
+  - `GET /api/mqtt-enable?enable=` - Activer/désactiver la publication MQTT
+  - `GET /api/mqtt-publish-test` - Envoyer un message de test au broker
+
+- **MQTT Handler** : Nouvelle implémentation principale dans `include/mqtt_handler.h`
+  - Auto-reconnexion avec backoff de 5 secondes
+  - Machine à états : DISCONNECTED → CONNECTING → CONNECTED → DISABLED
+  - Formatage basé sur buffer pour efficacité mémoire
+  - Vérification de dépendance WiFi avec repli gracieux
+
+### Modifié
+- **platformio.ini** : Ajout de la dépendance bibliothèque PubSubClient@^2.8.0
+- **main.cpp** : Intégration de l'initialisation MQTT, boucle de maintenance et handlers API
+- **include/config.h** : Configuration MQTT déjà présente (activée dans cette version)
+
+### Documentation
+- **Guides complets** : `docs/MQTT_INTEGRATION.md` et `docs/MQTT_INTEGRATION_FR.md`
+- **Démarrage rapide** : `docs/MQTT_QUICKSTART.md` et `docs/MQTT_QUICKSTART_FR.md`
+- **Exemples config** : `include/mqtt-config-example.h` avec 6 brokers populaires
+- **Script de test** : `test/test-mqtt.sh` pour validation automatisée
+- **Notes d'implémentation** : `docs/MQTT_IMPLEMENTATION_NOTES.md`
+
+### Technique
+- **Impact mémoire** : 18KB total (3KB code + 15KB bibliothèque) - sûr pour ESP32 Classic 4MB
+- **Performance** : Opération non bloquante, aucun impact sur la réactivité de la boucle principale
+- **Compatibilité** : Fonctionne sur toutes les cibles (ESP32-S3 N16R8/N8R8, ESP32 Classic)
+- **Topics publiés** : `esp32-diagnostic/system/*`, `memory/*`, `network/*`, `sensors/*`, `status/*`
+
+### Compatibilité rétroactive
+- ✅ **Entièrement rétrocompatible** - MQTT désactivé par défaut
+- ✅ **Aucun changement incompatible** - Toutes les fonctionnalités existantes intactes
+- ✅ **Aucun changement matériel** - Fonctionne avec le câblage existant
+
+---
+
 ## [Version 3.22.0] - 2025-12-11
 
 ### Changé - Pin Mapping ESP32-S3
