@@ -248,6 +248,15 @@ int tftRotation = TFT_ROTATION;
 #endif
 Adafruit_NeoPixel *strip = nullptr;
 
+// NeoPixel heartbeat state
+volatile bool neopixelStatusPaused = false;
+unsigned long neopixelHeartbeatPreviousMillis = 0;
+const unsigned long NEOPIXEL_HEARTBEAT_INTERVAL_MS = 1000;
+bool neopixelHeartbeatState = false;
+bool neopixelStatusKnown = false;
+bool neopixelLastWifiConnected = false;
+bool neopixelConnecting = false;
+
 // [OPT-004] Constant for repeated test result initialization
 static const String DEFAULT_TEST_RESULT_STR = String(Texts::not_tested);
 // [OPT-009] Constants for repeated test status strings
@@ -258,6 +267,15 @@ bool neopixelTested = false;
 bool neopixelAvailable = false;
 bool neopixelSupported = false;
 String neopixelTestResult = DEFAULT_TEST_RESULT_STR;
+
+// Forward declarations for NeoPixel functions
+void neopixelShowRebootFlash();
+void neopixelSetWifiState(bool connected);
+void neopixelShowConnecting();
+void neopixelPauseStatus();
+void neopixelResumeStatus();
+void neopixelRestoreWifiStatus();
+void updateNeoPixelWifiStatus();
 
 // Built-in LED (from config.h)
 int BUILTIN_LED_PIN = DEFAULT_BUILTIN_LED_PIN;
@@ -431,8 +449,20 @@ static void initButtons() {
   }
 }
 
+// Inline helper for NeoPixel reboot flash
+inline void neopixelShowRebootFlash_Impl() {
+  if (strip != nullptr) {
+    strip->setBrightness(60);
+    strip->setPixelColor(0, strip->Color(255, 0, 255)); // Violet
+    strip->show();
+  }
+}
+
 // Bouton BOOT: Appui long (2s) → reboot avec barre de progression TFT
 static void onButtonBootLongPress() {
+  // NeoPixel flash violet pour confirmer le reboot
+  neopixelShowRebootFlash_Impl();
+  
 #if ENABLE_TFT_DISPLAY
   if (tftAvailable) {
     tft.fillScreen(TFT_BLACK);
@@ -1688,6 +1718,76 @@ void resetNeoPixelTest() {
   }
 }
 
+static inline bool neopixelReady() {
+  return strip != nullptr;
+}
+
+void neopixelPauseStatus() {
+  neopixelStatusPaused = true;
+}
+
+void neopixelResumeStatus() {
+  neopixelStatusPaused = false;
+  neopixelStatusKnown = false;
+  neopixelConnecting = false;
+}
+
+void neopixelShowConnecting() {
+  if (!neopixelReady() || neopixelStatusPaused) return;
+  neopixelConnecting = true;
+  strip->setBrightness(60);
+  strip->setPixelColor(0, strip->Color(50, 50, 0)); // Jaune fixe pendant la connexion
+  strip->show();
+}
+
+void neopixelSetWifiState(bool connected) {
+  if (!neopixelReady() || neopixelStatusPaused) return;
+  neopixelConnecting = false;
+  neopixelLastWifiConnected = connected;
+  neopixelStatusKnown = true;
+  neopixelHeartbeatPreviousMillis = millis();
+  neopixelHeartbeatState = false;
+  strip->setBrightness(60);
+  strip->setPixelColor(0, connected ? strip->Color(0, 50, 0) : strip->Color(50, 0, 0));
+  strip->show();
+}
+
+void updateNeoPixelWifiStatus() {
+  if (!neopixelReady() || neopixelStatusPaused) return;
+  if (neopixelConnecting) return; // Couleur fixe tant que la connexion est en cours
+
+  bool connected = (WiFi.status() == WL_CONNECTED);
+
+  if (!neopixelStatusKnown || connected != neopixelLastWifiConnected) {
+    neopixelSetWifiState(connected);
+    return;
+  }
+
+  unsigned long now = millis();
+  if (now - neopixelHeartbeatPreviousMillis >= NEOPIXEL_HEARTBEAT_INTERVAL_MS) {
+    neopixelHeartbeatPreviousMillis = now;
+    neopixelHeartbeatState = !neopixelHeartbeatState;
+    uint32_t color = connected
+      ? (neopixelHeartbeatState ? strip->Color(0, 50, 0) : strip->Color(0, 10, 0))
+      : (neopixelHeartbeatState ? strip->Color(50, 0, 0) : strip->Color(10, 0, 0));
+    strip->setPixelColor(0, color);
+    strip->show();
+  }
+}
+
+void neopixelRestoreWifiStatus() {
+  neopixelResumeStatus();
+  updateNeoPixelWifiStatus();
+}
+
+void neopixelShowRebootFlash() {
+  if (!neopixelReady()) return;
+  neopixelStatusPaused = true;
+  strip->setBrightness(60);
+  strip->setPixelColor(0, strip->Color(255, 0, 255)); // Violet
+  strip->show();
+}
+
 void neopixelRainbow() {
   if (!strip) return;
   for (int i = 0; i < 256; i++) {
@@ -2905,8 +3005,10 @@ static void runBuiltinLedTestTask() {
 }
 
 static void runNeopixelTestTask() {
+  neopixelPauseStatus();
   resetNeoPixelTest();
   testNeoPixel();
+  neopixelRestoreWifiStatus();
 }
 
 static void runOledTestTask() {
@@ -3100,8 +3202,10 @@ void handleNeoPixelTest() {
     return;
   }
 
+  neopixelPauseStatus();
   resetNeoPixelTest();
   testNeoPixel();
+  neopixelRestoreWifiStatus();
   sendActionResponse(200, neopixelAvailable, neopixelTestResult, {
     jsonBoolField("running", false),
     jsonBoolField("available", neopixelAvailable),
@@ -3122,6 +3226,7 @@ void handleNeoPixelPattern() {
     return;
   }
 
+  neopixelPauseStatus();
   String message;
   if (pattern == "rainbow") {
     neopixelRainbow();
@@ -3152,9 +3257,11 @@ void handleNeoPixelPattern() {
     message = String(Texts::off);
   } else {
     sendOperationError(400, Texts::configuration_invalid.str());
+    neopixelRestoreWifiStatus();
     return;
   }
 
+  neopixelRestoreWifiStatus();
   sendOperationSuccess(message);
 }
 
@@ -4817,6 +4924,15 @@ void setup() {
     delay(1000);
   }
 
+  // NeoPixel (WiFi feedback heartbeat)
+  detectNeoPixelSupport();
+  if (strip != nullptr) {
+    strip->begin();
+    strip->setBrightness(60);
+    strip->clear();
+    strip->show();
+  }
+
   // WiFi
   WiFi.mode(WIFI_STA);
   WiFi.persistent(false);
@@ -4835,6 +4951,7 @@ void setup() {
   Serial.println("Connexion WiFi...");
   const int maxWiFiAttempts = 40;
   int attempt = 0;
+  neopixelShowConnecting();
   if (oledAvailable) {
     oledShowWiFiStatus(String(Texts::wifi_connection),
                        String(Texts::loading),
@@ -4878,6 +4995,7 @@ void setup() {
       oledShowWiFiStatus(String(Texts::wifi_connection), String(detailBuf), footer, 100);
     }
     displayWiFiConnected(WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
+    neopixelSetWifiState(true);
     if (startMDNSService(true)) {
       Serial.printf("[Accès] Lien constant : %s\r\n", getStableAccessURL().c_str());
     } else {
@@ -4893,17 +5011,11 @@ void setup() {
                          -1);
     }
     displayWiFiFailed();
+    neopixelSetWifiState(false);
   }
 
   // Détections
   detectBuiltinLED();
-  detectNeoPixelSupport();
-
-  if (strip != nullptr) {
-    strip->begin();
-    strip->clear();
-    strip->show();
-  }
   
   if (ENABLE_I2C_SCAN) {
     scanI2C();
@@ -5036,6 +5148,7 @@ void setup() {
 void loop() {
   server.handleClient();
   maintainNetworkServices();
+  updateNeoPixelWifiStatus();
 
 #if ENABLE_BUTTONS
   maintainButtons();

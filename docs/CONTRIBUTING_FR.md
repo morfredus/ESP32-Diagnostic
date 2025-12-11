@@ -1,4 +1,4 @@
-# Contribuer (FR) – v3.21.0
+# Contribuer (FR) – v3.21.1
 
 Les contributions qui améliorent la fiabilité du diagnostic et l'expérience utilisateur sont les bienvenues.
 

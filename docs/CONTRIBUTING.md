@@ -1,4 +1,4 @@
-# Contributing (EN) – v3.21.0
+# Contributing (EN) – v3.21.1
 
 We welcome improvements that strengthen the diagnostic experience while keeping the firmware reliable.
 

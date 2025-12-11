@@ -1,8 +1,18 @@
-# ESP32 Diagnostic Suite (v3.21.0)
+# ESP32 Diagnostic Suite (v3.21.1)
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## ⚠️ Version 3.21.0 Highlights - BREAKING CHANGE
+## 🟢 Version 3.21.1 Highlights - NeoPixel Wi-Fi Status Indicator
+
+**Real-time Wi-Fi connectivity feedback via NeoPixel/WS2812 RGB LED:**
+- **Yellow (connection in progress)** during Wi-Fi connection attempt at startup
+- **Green heartbeat (0, 50, 0) pulsing every 1 second** when Wi-Fi connected
+- **Red heartbeat (50, 0, 0) pulsing every 1 second** when Wi-Fi disconnected
+- **Violet flash (255, 0, 255)** on BOOT button long press confirmation
+- **Non-blocking heartbeat** managed in main loop - updates every 1 second
+- **Test isolation** - heartbeat pauses during `/api/neopixel-test` and `/api/neopixel-pattern` calls, automatically resumes after
+
+## Previous: version 3.21.0
 
 **Complete ESP32 Classic Pin Mapping Revision** - Hardware migration required:
 - **11 pin changes** to resolve boot issues (strapping pins GPIO 4/12/15) and USB-UART communication (protect GPIO 1/3)
