@@ -18,12 +18,22 @@
 - Memory footprint: 18KB (safe for 4MB ESP32 Classic)
 - MQTT disabled by default (ENABLE_MQTT_BRIDGE=false)
 
-## [Version 3.21.1] - 2025-12-11
+## [Version 3.22.1] - 2025-12-12
 
-### Added
-- **NeoPixel Wi-Fi Status Indicator**: Real-time visual feedback on NeoPixel/WS2812 RGB LED
-  - **Automatic initialization** during startup sequence
-  - **Yellow (50, 50, 0)**: Connection attempt in progress during boot
+### Fixed — Duplicate/obsolete pin mapping (ESP32 Classic)
+1. Buttons corrected: `BTN1` 32 → 2, `BTN2` 33 → 5 (internal pull-up)
+2. RGB LED aligned: `R=13`, `G=26` (was 14), `B=33` (was 25)
+3. Sensors harmonized:
+   - `DHT` 32 → 15
+   - `HC-SR04` TRIG 27 → 12, ECHO 33 → 35
+   - `PWM` on 4; `Buzzer` on 19
+
+Reference: `include/board_config.h` is the single source of truth for pin mappings.
+
+### Changed - ESP32-S3 Pin Mapping (v3.22.0)
+- **RGB LED relocated**: Green 45 → 41, Blue 47 → 42
+- **Rationale**: Free strapping pins to avoid boot conflicts
+- **Red unchanged**: GPIO 21 remains
   - **Green heartbeat** (0, 50, 0) / (0, 10, 0): Successfully connected to Wi-Fi
   - **Red heartbeat** (50, 0, 0) / (10, 0, 0): Wi-Fi disconnected
   - **Heartbeat frequency**: 1 Hz (alternates every 1 second)

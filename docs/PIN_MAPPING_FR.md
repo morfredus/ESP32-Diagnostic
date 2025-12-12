@@ -20,17 +20,17 @@
 
 ## ESP32 Classic (DevKitC)
 - I2C : SDA=21, SCL=22
-- Boutons : BTN1=32, BTN2=33 (avec pull-up interne)
-- LED RGB : R=13, G=14, B=25
-- Capteurs : DHT=32, Lumière=39, HC-SR04 TRIG=27/ECHO=33, PWM/Buzzer=5
+- Boutons : BTN1=2, BTN2=5 (pull-up interne)
+- LED RGB : R=13, V=26, B=33
+- Capteurs : DHT=15, Lumière=39, HC-SR04 TRIG=12 / ECHO=35, PWM=4, Buzzer=19
 - TFT ST7789 : MOSI=23, SCLK=18, CS=27, DC=14, RST=25, BL=32
 - GPS (UART2) : RXD=16, TXD=17, PPS=36
 - NeoPixel : pin `-1` (désactivé par défaut), nombre 8, luminosité 50
-- Notes : GPIO 34/35/36/39 sont en entrée uniquement ; broches de strapping 0/2/4/5/12/15 évitées pour LED/périphériques ; GPIO 6-11 réservées au flash ; UART0 (GPIO1/3) protégé ; ADC2 inutilisable quand le Wi-Fi est actif ; voir docs/PIN_MAPPING_CHANGES_FR.md pour détails des 11 modifications.
+- Notes : GPIO 34/35/36/39 sont en entrée uniquement ; GPIO 6-11 réservées au flash ; UART0 (GPIO1/3) protégé ; ADC2 inutilisable quand le Wi-Fi est actif.
 
 ## Conflits à éviter
 - S3 : réserver GPIO 35–44 ; RGB utilise 21/45/47 ; NeoPixel sur pin 48 ; I2C sur 15/16, laisser 19/20 libres pour l'USB ; GPIO45 est une broche de strapping (laisser la LED éteinte au boot) ; Mouvement=46, Distance ECHO=6, Lumière=4 ; TFT occupe 7–13, GPS 17–18.
-- Classic : éviter LED/périphériques sur broches de strapping (0/2/4/5/12/15) ; boutons utilisent GPIO avec pull-up interne (32/33) ; PWM/Buzzer sur GPIO 5 acceptable si LOW au boot ; protéger UART0 (GPIO1/3 réservés au USB-UART) ; GPIO 34/35/36/39 en entrée uniquement ; privilégier ADC1 pour les mesures analogiques ; TFT occupe GPIO 18/23/27/14/25/32.
+- Classic : éviter de modifier les broches réservées (0/2/4/5/12/15) sans connaissance des implications de strapping ; préférer ADC1 pour les mesures analogiques ; TFT occupe GPIO 18/23/27/14/25/32.
 
 ## Comment changer les pins
 - Statique : éditez `include/board_config.h`, reconstruisez avec `pio run -e <environment>`.

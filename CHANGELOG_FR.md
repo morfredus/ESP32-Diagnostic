@@ -1,7 +1,17 @@
-## [Version 3.22.0] - 2025-12-11
+## [Version 3.22.1] - 2025-12-12
 
-### Changé - Pin Mapping ESP32-S3
-- **LED RGB repositionnées** : LED verte déplacée de GPIO 45 vers GPIO 41, LED bleue déplacée de GPIO 47 vers GPIO 42
+### Corrigé — Doublons de mapping (ESP32 Classic)
+1. Boutons corrigés: `BTN1` passé de 32 → 2, `BTN2` de 33 → 5 (pull-up interne)
+2. LED RGB alignées: `R=13`, `V=26` (au lieu de 14), `B=33` (au lieu de 25)
+3. Capteurs harmonisés:
+   - `DHT` 32 → 15
+   - `HC-SR04` TRIG 27 → 12, ECHO 33 → 35
+   - `PWM` sur 4 ; `Buzzer` sur 19
+
+Référence: `include/board_config.h` est la source unique de vérité pour le mapping des broches.
+
+### Changé - Pin Mapping ESP32-S3 (v3.22.0)
+- **LED RGB repositionnées** : LED verte de GPIO 45 → 41, LED bleue de GPIO 47 → 42
 - **Justification** : Libération des broches de strapping GPIO 45/47 pour éviter les conflits au démarrage
 - **LED rouge inchangée** : GPIO 21 maintenu (broche sécurisée)
 - **Impact ESP32-S3** : Recâblage matériel requis pour LED verte et bleue
