@@ -1,4 +1,4 @@
-# Pin Mapping � Quick Reference (v3.22.0)
+# Pin Mapping – Quick Reference (v3.22.1)
 
 > WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
@@ -6,9 +6,9 @@
 
 The firmware supports three distinct build environments, each with optimized pin configurations:
 
-1. **`esp32s3_n16r8`** (default) � ESP32-S3 DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM OPI/QSPI)
-2. **`esp32s3_n8r8`** � ESP32-S3 DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
-3. **`esp32devkitc`** � ESP32 Classic DevKitC (4MB Flash, no PSRAM)
+1. **`esp32s3_n16r8`** (default) – ESP32-S3 DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM OPI/QSPI)
+2. **`esp32s3_n8r8`** – ESP32-S3 DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
+3. **`esp32devkitc`** – ESP32 Classic DevKitC (4MB Flash, no PSRAM)
 
 Pin mappings are defined in `include/board_config.h` using conditional compilation based on `TARGET_ESP32_S3` or `TARGET_ESP32_CLASSIC`.
 
@@ -48,8 +48,8 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **Backlight (BL):** GPIO 7
 
 ### GPS Module (UART1)
-- **RXD:** GPIO 18 (GPS TX ? ESP RX)
-- **TXD:** GPIO 17 (GPS RX ? ESP TX)
+- **RXD:** GPIO 18 (GPS TX → ESP RX)
+- **TXD:** GPIO 17 (GPS RX → ESP TX)
 - **PPS:** GPIO 8
 
 ### NeoPixel / WS2812B
@@ -58,10 +58,10 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **Brightness:** 50 (0-255)
 
 ### ESP32-S3 Important Notes
-- GPIO 35�44 are reserved by the octal PSRAM/Flash interface; keep them free.
+- GPIO 35–44 are reserved by the octal PSRAM/Flash interface; keep them free.
 - GPIO 48 is dedicated to the NeoPixel.
 - RGB LED uses GPIO 21/45/47 (Red/Green/Blue respectively); GPIO45 is a strapping pin, keep LED off at boot.
-- Strapping pins: GPIO 0, GPIO 45, GPIO 46 � keep stable during boot.
+- Strapping pins: GPIO 0, GPIO 45, GPIO 46 – keep stable during boot.
 - USB CDC is enabled; keep GPIO 19/20 free for USB D-/D+ (I2C moved to 15/16).
 
 ---
@@ -99,8 +99,8 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **Backlight (BL):** GPIO 32
 
 ### GPS Module (UART2)
-- **RXD:** GPIO 16 (RX2, GPS TX ? ESP RX)
-- **TXD:** GPIO 17 (TX2, GPS RX ? ESP TX)
+- **RXD:** GPIO 16 (RX2, GPS TX → ESP RX)
+- **TXD:** GPIO 17 (TX2, GPS RX → ESP TX)
 - **PPS:** GPIO 36
 
 ### NeoPixel / WS2812B
@@ -109,11 +109,11 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **Brightness:** 50 (0-255)
 
 ### ESP32 Classic Important Notes
-- **Input-Only Pins:** GPIO 34, 35, 36, 39 (VP/VN) � can only read, cannot output.
-- **Strapping Pins:** GPIO 0, GPIO 2, GPIO 4, GPIO 5, GPIO 12, GPIO 15 � avoid LEDs/peripherals on these pins to prevent boot issues.
-- **UART0 (USB-UART):** GPIO 1 (TX0) and GPIO 3 (RX0) are reserved for flashing/debugging � do not connect external devices.
+- **Input-Only Pins:** GPIO 34, 35, 36, 39 (VP/VN) – can only read, cannot output.
+- **Strapping Pins:** GPIO 0, GPIO 2, GPIO 4, GPIO 5, GPIO 12, GPIO 15 – avoid LEDs/peripherals on these pins to prevent boot issues.
+- **UART0 (USB-UART):** GPIO 1 (TX0) and GPIO 3 (RX0) are reserved for flashing/debugging – do not connect external devices.
 - **Flash Pins:** GPIO 6-11 are connected to SPI Flash � do not use.
-- **ADC2 Limitation:** ADC2 (GPIO 0, 2, 4, 12-15, 25-27) cannot be used when WiFi is active.
+- **ADC2 Limitation:** ADC2 (GPIO 0, 2, 4, 12–15, 25–27) cannot be used when WiFi is active.
 - **Current Limit:** Max 12 mA per GPIO; use transistor/driver for higher loads.
 - **Hardware Migration Required:** v3.21.0 introduces 11 pin changes to resolve boot and USB communication issues. See `docs/PIN_MAPPING_CHANGES_FR.md` for detailed rationale.
 
