@@ -1,11 +1,11 @@
-﻿# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.22.0)
+﻿# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.22.1)
 
-> **AVERTISSEMENT** : v3.22.0 remappe les GPIO pour ESP32-S3 et ESP32 Classic. Un recâblage matériel est nécessaire. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : v3.22.1 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
-Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.22.0 et ses trois environnements de build.
+Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.22.1 et ses trois environnements de build.
 Elle aide à planifier les campagnes de validation et à vérifier si des périphériques optionnels nécessitent un câblage supplémentaire.
 
-> **Important :** La version 3.22.0 (PlatformIO) n'active toujours pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
+> **Important :** La version 3.22.1 (PlatformIO) n'active toujours pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
 
 **✨ Nouveau en v3.22.0 :** MQTT Publisher pour publication en temps réel des métriques système (mémoire, WiFi, capteurs) vers Home Assistant, NodeRED, InfluxDB et autres brokers MQTT. Non-bloquant avec auto-reconnexion. **Désactivé par défaut.**
 
