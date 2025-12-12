@@ -1,15 +1,17 @@
-# ESP32 Diagnostic Suite (v3.22.0)
+# ESP32 Diagnostic Suite (v3.22.1)
 
-> **AVERTISSEMENT** : v3.22.0 remappe les GPIO pour ESP32-S3 et ESP32 Classic. Un recâblage matériel est nécessaire. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : v3.22.1 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## 🟢 Nouveautés de la version 3.22.0 - Remapping GPIO
+## 🟢 Nouveautés de la version 3.22.1 - Corrections de mapping (Classic)
 
-**Révision complète du pin mapping pour ESP32-S3 et ESP32 Classic** - Migration matérielle requise :
-- **Corrections ESP32-S3** : LED RGB repositionnées pour libérer GPIO 45/47 (broches de strapping) vers GPIO 41/42 (broches dédiées)
-- **ESP32 Classic inchangé** : Configuration maintenue après optimisation v3.21.0
-- **Documentation détaillée** : Voir [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) pour les tables complètes et [docs/PIN_MAPPING_CHANGES_FR.md](docs/PIN_MAPPING_CHANGES_FR.md) pour l'historique des modifications
+**Corrections de mapping pour ESP32 Classic** — Harmonisation avec `board_config.h` :
+- Boutons : BTN1=2, BTN2=5 (pull-up interne)
+- LED RGB : R=13, V=26, B=33
+- Capteurs : DHT=15, HC-SR04 TRIG=12 / ECHO=35, PWM=4, Buzzer=19
+**Rappel ESP32-S3** — Remapping GPIO maintenu : V=41 (ancien 45), B=42 (ancien 47), R=21
+**Documentation** : Voir [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING_CHANGES_FR.md](docs/PIN_MAPPING_CHANGES_FR.md)
 - **Impact** : ESP32-S3 nécessite recâblage matériel, ESP32 Classic inchangé
 - **Sécurité** : Configuration optimisée pour éviter les conflits avec les broches de strapping et USB
 

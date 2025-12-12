@@ -1,4 +1,4 @@
-﻿# Mapping des pins — Référence rapide (v3.22.0)
+﻿# Mapping des pins — Référence rapide (v3.22.1)
 
 > **AVERTISSEMENT** : v3.22.0 remappe les GPIO pour ESP32-S3 et ESP32 Classic. Un recâblage matériel est nécessaire. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
