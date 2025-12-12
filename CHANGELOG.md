@@ -1,4 +1,4 @@
-## [Version 3.22.0] - 2025-12-11
+## [Version 3.22.0] - 2025-01-11
 
 ### Added
 - MQTT Publisher integration for real-time metrics

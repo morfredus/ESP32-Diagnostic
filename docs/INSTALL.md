@@ -1,5 +1,6 @@
 # Installation Guide (EN)
-> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+
+> WARNING: v3.22.1 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 Follow the steps below to deploy the ESP32 Diagnostic Suite on your board.
 
@@ -9,9 +10,9 @@ Follow the steps below to deploy the ESP32 Diagnostic Suite on your board.
 
 ### Hardware
 - **Supported boards (v3.21.0):**
-  - **ESP32-S3-DevKitC-1 N16R8** (16MB Flash, 8MB PSRAM) — Primary target, environment: `esp32s3_n16r8`
-  - **ESP32-S3-DevKitC-1 N8R8** (8MB Flash, 8MB PSRAM) — Environment: `esp32s3_n8r8`
-  - **ESP32-DevKitC Classic** (4MB Flash, no PSRAM) — Environment: `esp32devkitc`
+  - **ESP32-S3-DevKitC-1 N16R8** (16MB Flash, 8MB PSRAM) ï¿½ Primary target, environment: `esp32s3_n16r8`
+  - **ESP32-S3-DevKitC-1 N8R8** (8MB Flash, 8MB PSRAM) ï¿½ Environment: `esp32s3_n8r8`
+  - **ESP32-DevKitC Classic** (4MB Flash, no PSRAM) ï¿½ Environment: `esp32devkitc`
 - USB cable with data capability.
 - Optional: NeoPixel/WS2812B LED strip, 0.96" OLED screen, TFT ST7789 display, sensors (DHT, HC-SR04, etc.).
 
@@ -49,9 +50,9 @@ Detailed configuration notes are available in [CONFIG.md](CONFIG.md).
 ## 5. Compile and upload
 1. In Visual Studio Code, open the PlatformIO sidebar.
 2. Select your target environment from `platformio.ini`:
-   - **esp32s3_n16r8** (default) — ESP32-S3 with 16MB Flash, 8MB PSRAM
-   - **esp32s3_n8r8** — ESP32-S3 with 8MB Flash, 8MB PSRAM
-   - **esp32devkitc** — Classic ESP32 with 4MB Flash, no PSRAM
+   - **esp32s3_n16r8** (default) ï¿½ ESP32-S3 with 16MB Flash, 8MB PSRAM
+   - **esp32s3_n8r8** ï¿½ ESP32-S3 with 8MB Flash, 8MB PSRAM
+   - **esp32devkitc** ï¿½ Classic ESP32 with 4MB Flash, no PSRAM
 3. Click **Build** to compile, then **Upload** to flash the firmware.
 4. Open the **Serial Monitor** (115200 baud) to view the boot sequence.
 

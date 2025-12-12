@@ -1,11 +1,11 @@
-# ESP32 Diagnostic Suite � Feature Matrix (v3.22.0)
+# ESP32 Diagnostic Suite – Feature Matrix (v3.22.1)
 
-> WARNING: v3.22.0 remaps GPIOs for ESP32-S3 and ESP32 Classic. Hardware rewiring is required. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: v3.22.1 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
-This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.22.0 with three distinct build environments.
+This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.22.1 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.
 
-> **Important:** Current release 3.22.0 (PlatformIO) still ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+> **Important:** Current release 3.22.1 (PlatformIO) still ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
 
 **✨ New in v3.22.0:** MQTT Publisher for real-time system metrics publishing (memory, WiFi, sensors) to Home Assistant, NodeRED, InfluxDB and other MQTT brokers. Non-blocking with auto-reconnect. **Disabled by default.**
 

@@ -1,6 +1,6 @@
-﻿# ESP32 Diagnostic Suite – Guide de l'interface web (v3.22.0)
+﻿# ESP32 Diagnostic Suite – Guide de l’interface web (v3.22.1)
 
-> **AVERTISSEMENT** : v3.22.0 remappe les GPIO pour ESP32-S3 et ESP32 Classic. Un recâblage matériel est nécessaire. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : v3.22.1 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
 Le tableau de bord web embarqué constitue la surface de contrôle principale pour les techniciens. Ce guide couvre la disposition,
 les interactions et les points d'extension disponibles en version 3.16.0. Cette version introduit la surveillance en temps réel de la connexion WiFi, la configuration dynamique des écrans, et des capacités améliorées de diagnostic réseau.
