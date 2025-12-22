@@ -4,111 +4,138 @@
 // =========================================================
 //         Configuration Pinout ESP32-S3 DevKitC-1 N16R8
 // =========================================================
-// Cette section définit les broches (Pins) de l'ESP32-S3 (une version plus récente et puissante).
 #if defined(TARGET_ESP32_S3)
 
+    #define BOARD_NAME "ESP32-S3 DevKitC-1"
+
 // ============================================================
-// RAPPELS DE SÉCURITÉ ESP32-S3 (Basé sur le tableau de câblage)
+// RAPPELS DE SÉCURITÉ ESP32-S3
 // ============================================================
-// !!! TRÈS IMPORTANT : Lisez ceci avant de connecter quoi que ce soit !!!
-//
-// - Tension logique: 3.3 V uniquement sur GPIO. 
-//   -> L'ESP32-S3 fonctionne en 3.3 Volts. **Ne jamais appliquer 5V directement** sur les broches GPIO,
-//      sauf si un circuit de protection/conversion (comme un diviseur de tension) est utilisé.
-// - GPIO0 : broche BOOT (strapping) – réservée au boot, ne pas connecter d'élément maintenu à LOW.
-//   -> Cette broche est utilisée par l'ESP32 pour démarrer. Ne l'utilisez pas pour autre chose.
-// - GPIO46 : utilisé pour le capteur PIR. À vérifier pour l'impact potentiel sur le JTAG (moins critique que GPIO0).
-//   -> C'est une broche spéciale qui peut être liée au débogage (JTAG). Attention lors de l'utilisation.
-// - GPS TX (vers RXD 18) et HC-SR04 ECHO (vers GPIO 35) : nécessitent un DIVISEUR DE TENSION si le signal est 5V.
-//   -> Si ces capteurs sont alimentés en 5V, leurs signaux de sortie doivent être abaissés à 3.3V pour l'ESP32. 
-// - LEDs : ajouter résistance série 220–470 O (0.25 W).
-//   -> **Obligatoire** pour limiter le courant et éviter de griller la LED et/ou la broche de l'ESP32.
+// - Tension logique GPIO : 3.3 V uniquement (aucune broche n'est 5V tolérante).
+// - Ne jamais appliquer 5V directement sur une GPIO (utiliser diviseur ou interface).
+// - GPIO0 : broche BOOT (strapping) – ne rien connecter qui la force à LOW au boot.
+// - GPIO46 : utilisé pour PIR, attention au JTAG / boot.
+// - GPS TX (vers RXD 18) et HC-SR04 ECHO (vers GPIO 35) : Diviseur de tension OBLIGATOIRE si capteurs alimentés en 5V.
+// - LEDs : ajouter résistance série 220–470 O (0.25 W) pour limiter le courant.
 // - I2C (GPIO 15/16) : pull-up 4.7 kO vers 3.3 V OBLIGATOIRE.
-//   -> Pour le protocole I2C, des résistances de "pull-up" (tirage vers le haut) sont nécessaires 
-//      sur les lignes SDA et SCL pour que la communication fonctionne correctement.
 // - Buzzer : transistor nécessaire (avec résistance de base 1–10 kO) si passif ou courant >12 mA.
-//   -> Un buzzer (surtout s'il est passif ou consomme beaucoup) demande plus de courant que l'ESP32 ne peut fournir directement. 
-//      Un transistor agit comme un interrupteur puissant commandé par l'ESP32.
 // ============================================================
 
+
 // ------------------------------------
-// DÉTAIL TECHNIQUE : Le Diviseur de Tension
+// DÉTAIL TECHNIQUE : Diviseur de Tension
 // ------------------------------------
-// OBJECTIF : Protéger les entrées de l'ESP32 (3.3V max) lorsqu'elles reçoivent un signal d'un composant 5V.
-// FONCTIONNEMENT : Le diviseur utilise deux résistances (R1 et R2) pour "diviser" la tension d'entrée (V_in).
-// Le signal de sortie (V_out) que reçoit l'ESP32 est calculé par la formule :
-// $$V_{out} = V_{in} \cdot \frac{R_2}{R_1 + R_2}$$
-// Pour abaisser 5V à 3.3V (ou moins) pour l'ESP32, on choisit généralement R1=10 kOhm et R2=20 kOhm, 
-// ou plus simplement R1=2kOhm et R2=3kOhm.
-// S'applique ici aux broches d'entrée (RXD) du GPS et au signal ECHO du HC-SR04 si ils sont en 5V.
-// 
+// Vout = Vin * (R2 / (R1 + R2))
+// Exemple recommandé : R1 = 10 kO (haut), R2 = 20 kO (bas) ? 5V ? ~3.3V
+// Variante basse impédance : R1 = 2 kO, R2 = 3 kO
+// Utilisation : GPS TX ? ESP32 RX, HC-SR04 ECHO ? ESP32
 // ------------------------------------
 
 
 // ------------------------------------
 // GPS (UART1)
 // ------------------------------------
-// Configuration de la communication série (UART1) avec le module GPS.
-#define PIN_GPS_RXD           18  // GPS TX (vers RXD de l'ESP32). **Si 5V, Diviseur de tension OBLIGATOIRE.**
-#define PIN_GPS_TXD           17  // GPS RX (vers TXD de l'ESP32). Câblage direct.
-#define PIN_GPS_PPS           8   // GPS PPS, Câblage direct.
+#define GPS_RXD 18  // Entrée RX ESP32 (depuis TX GPS) – 3.3V, diviseur obligatoire si GPS 5V
+#define GPS_TXD 17  // Sortie TX ESP32 (vers RX GPS) – 3.3V
+#define GPS_PPS  8  // Entrée PPS GPS (1PPS) – 3.3V
+
 
 // ------------------------------------
-// TFT ST7789 (SPI)
+// TFT ST7789 (SPI) — Ordre SPI standardisé
 // ------------------------------------
-// Configuration de l'écran couleur (TFT) utilisant le protocole SPI.
-#define TFT_MOSI              11  // SPI MOSI (Master Out Slave In) : Broche de données vers l'écran. Câblage direct.
-#define TFT_SCLK              12  // SPI Clock (Horloge) : Broche de synchronisation. Câblage direct.
-#define TFT_CS                10  // Chip Select : Broche pour activer spécifiquement cet écran. Câblage direct.
-#define TFT_DC                9   // Data/Command : Broche pour indiquer si les données sont des pixels ou une commande. Câblage direct.
-#define TFT_RST               13  // Reset écran. Pull-up/down selon librairie.
-#define TFT_BL                7   // Backlight (Rétroéclairage) : Souvent utilisé avec le PWM pour ajuster la luminosité.
+// Alias :
+//   MOSI = DIN / SDA / SDI / DATA / DI
+//   MISO = DO / SDO
+//   SCLK = SCK / CLK / SCL
+//   CS   = CS / CE / SS / TCS
+//   DC   = D/C / A0 / RS
+//   RST  = RST / RESET / RES
+//   BL   = BL / LED / BACKLIGHT
+// Tension logique : 3.3V
+
+#define TFT_MISO      14  // MISO TFT/SD (DO / SDO) – entrée 3.3V (ne jamais recevoir 5V)
+#define TFT_MOSI      11  // MOSI (DIN / SDA / SDI / DATA / DI) – sortie 3.3V
+#define TFT_SCLK      12  // Horloge SPI (SCK / CLK / SCL) – sortie 3.3V
+#define TFT_CS        10  // Chip Select TFT – sortie 3.3V
+#define TFT_DC         9  // Data/Command – sortie 3.3V
+#define TFT_RST       13  // Reset matériel TFT – sortie 3.3V
+#define TFT_BL         7  // Rétroéclairage TFT – sortie 3.3V (PWM possible)
+#define TOUCH_CS      -1  // Pas de tactile câblé
+
+
+// ------------------------------------
+// ILI9341 (SPI) — Compatible ST7789
+// ------------------------------------
+#define ILI9341_MISO  TFT_MISO
+#define ILI9341_MOSI  TFT_MOSI
+#define ILI9341_SCLK  TFT_SCLK
+#define ILI9341_CS    TFT_CS
+#define ILI9341_DC    TFT_DC
+#define ILI9341_RST   TFT_RST
+#define ILI9341_BL    TFT_BL
+
+
+// ------------------------------------
+// SD Card (SPI partagé)
+// ------------------------------------
+#define SD_MISO      14  // MISO SD – entrée 3.3V
+#define SD_MOSI      11  // MOSI SD – sortie 3.3V
+#define SD_SCLK      12  // Horloge SD – sortie 3.3V
+#define SD_CS         1  // Chip Select SD – sortie 3.3V
+
 
 // ------------------------------------
 // I2C
 // ------------------------------------
-// Configuration du bus de communication I2C.
-#define I2C_SDA       15  // SDA (Serial Data Line). **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
-#define I2C_SCL       16  // SCL (Serial Clock Line). **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
-
-// ------------------------------------
-// DÉTAIL TECHNIQUE : Le Bus I2C (Inter-Integrated Circuit)
-// ------------------------------------
-// OBJECTIF : Permettre à plusieurs capteurs/périphériques de communiquer avec l'ESP32 en utilisant seulement deux broches (SDA et SCL).
-// L'IMPÉRATIF PULL-UP : Le bus I2C utilise des sorties à drain ouvert (open-drain). Des résistances externes (Pull-Up, typiquement 4.7 kOhm vers 3.3V) sont nécessaires pour tirer le signal vers le haut.
-// 
-// ------------------------------------
+#define I2C_SDA 15  // SDA – open-drain 3.3V, pull-up externe 4.7 kO ? 3.3V
+#define I2C_SCL 16  // SCL – open-drain 3.3V, pull-up externe 4.7 kO ? 3.3V
 
 
 // ------------------------------------
-// LED RGB
+// LED RGB & NeoPixel
 // ------------------------------------
-#define RGB_LED_PIN_R 21 // Rouge. Résistance série **220O - 470O**.
-#define RGB_LED_PIN_G 41 // Vert. Résistance série **220O - 470O**.
-#define RGB_LED_PIN_B 42 // Bleu. Résistance série **220O - 470O**.
-#define NEOPIXEL_PIN          48 // NeoPixel Intégrée. Data (Réservée).
+#define LED_RED    21 // LED Rouge – sortie 3.3V, résistance série 220–470 O
+#define LED_GREEN  41 // LED Verte – sortie 3.3V, résistance série 220–470 O
+#define LED_BLUE   42 // LED Bleue – sortie 3.3V, résistance série 220–470 O
+#define NEOPIXEL   48 // Data NeoPixel – sortie 3.3V (LED souvent alimentée en 5V)
+
 
 // ------------------------------------
 // Boutons
 // ------------------------------------
-#define PIN_BUTTON_BOOT       0   // Bouton BOOT (strap). Réservé au boot.
-#define PIN_BUTTON_1          38  // Bouton vers GND. Utiliser **Pull-Up interne**.
-#define PIN_BUTTON_2          39  // Bouton vers GND. Utiliser **Pull-Up interne**.
+#define BUTTON_BOOT 0   // Bouton BOOT – entrée 3.3V, vers GND à l’appui
+#define BUTTON_1   38   // Bouton utilisateur 1 – entrée 3.3V, pull-up interne
+#define BUTTON_2   39   // Bouton utilisateur 2 – entrée 3.3V, pull-up interne
+
 
 // ------------------------------------
-// Capteurs & Sorties
+// ENCODEUR ROTATIF (HW-040)
 // ------------------------------------
-#define PWM_PIN       20  // PWM générique. Résistance série **220O - 470O** si LED.
-#define BUZZER_PIN    6   // Buzzer. Transistor + **Résistance base 1–10kO**.
-#define DHT_PIN       5   // DHT. **Pull-Up 10kO vers 3.3V**.
-#define MOTION_SENSOR_PIN 46 // PIR. Câblage direct. **(Potentiel JTAG - attention au boot).**
-#define LIGHT_SENSOR_PIN 4  // LDR. **Diviseur ~10kO**.
+// - Module passif (contacts mécaniques).
+// - Recommandation : condensateurs 10 nF entre CLK?GND et DT?GND pour debounce matériel.
+// - SW : utiliser pull-up interne.
+#define ROTARY_CLK   47  // Signal A / CLK / S1 – entrée 3.3V, ~10 nF recommandé
+#define ROTARY_DT    45  // Signal B / DT / S2 – entrée 3.3V, ~10 nF recommandé
+#define ROTARY_SW    40  // Bouton SW – entrée 3.3V, pull-up interne
+
 
 // ------------------------------------
-// Capteurs de Distance
+// Capteurs & Sorties diverses
 // ------------------------------------
-#define DISTANCE_TRIG_PIN 2  // HC-SR04 TRIG. Câblage direct.
-#define DISTANCE_ECHO_PIN 35 // HC-SR04 ECHO. **Si 5V, ajouter Diviseur de tension OBLIGATOIRE.**
+#define PWM            20 // PWM générique – sortie 3.3V (LED via R 220–470 O ou transistor)
+#define BUZZER          6 // Commande buzzer – sortie 3.3V, transistor + R base 1–10 kO recommandé
+#define DHT             5 // Capteur DHT – DATA 3.3V, pull-up typique 10 kO si nécessaire
+#define MOTION_SENSOR  46 // PIR – entrée 3.3V (adapter si module 5V)
+#define LIGHT_SENSOR    4 // LDR via diviseur – entrée ADC 3.3V max, R typique 10 kO
+
+
+// ------------------------------------
+// Capteur de Distance HC-SR04
+// ------------------------------------
+// - TRIG : accepte 3.3V ? OK
+// - ECHO : sort du 5V ? diviseur obligatoire
+#define DISTANCE_TRIG 2   // TRIG – sortie 3.3V
+#define DISTANCE_ECHO 35  // ECHO – entrée 3.3V, diviseur recommandé (10 kO / 20 kO)
 
 
 // =========================================================
@@ -116,89 +143,100 @@
 // =========================================================
 #elif defined(TARGET_ESP32_CLASSIC)
 
+    #define BOARD_NAME "ESP32 Classic DevKitC"
+
 // ============================================================
-// RAPPELS DE SÉCURITÉ ESP32-WROOM (Basé sur le tableau de câblage)
+// RAPPELS DE SÉCURITÉ ESP32-WROOM
 // ============================================================
-// - Tension logique: 3.3 V uniquement sur GPIO.
-// - Éviter GPIO0 (strap), GPIO1, 3 (UART0 - console série).
-// - GPIO34, 35, 36, 39: entrées seulement (pas de sortie, pas de pull interne).
-// - GPS TX (vers RXD 16) et HC-SR04 ECHO (vers GPIO 35) : nécessitent un DIVISEUR DE TENSION si le signal est 5V.
-// - LEDs : ajouter résistance série 220–470 O (0.25 W).
-// - I2C (GPIO 21/22) : pull-up 4.7 kO vers 3.3 V OBLIGATOIRE.
-// - Buzzer : transistor nécessaire (avec résistance de base 1–10 kO) si passif ou courant >12 mA.
+// - GPIO 3.3V uniquement.
+// - GPIO0 : boot, éviter.
+// - GPIO1/3 : UART0 console.
+// - GPIO34–39 : entrées uniquement.
+// - GPS TX et HC-SR04 ECHO : diviseur obligatoire si 5V.
+// - LEDs : résistance série 220–470 O.
+// - I2C : pull-up 4.7 kO obligatoire.
 // ============================================================
 
-// ------------------------------------
-// DÉTAIL TECHNIQUE : Le Diviseur de Tension
-// ------------------------------------
-// OBJECTIF : Protéger les entrées de l'ESP32 (3.3V max) lorsqu'elles reçoivent un signal d'un composant 5V.
-// FONCTIONNEMENT : Le diviseur utilise deux résistances (R1 et R2) pour "diviser" la tension d'entrée (V_in).
-// Le signal de sortie (V_out) que reçoit l'ESP32 est calculé par la formule :
-// $$V_{out} = V_{in} \cdot \frac{R_2}{R_1 + R_2}$$
-// Pour abaisser 5V à 3.3V (ou moins) pour l'ESP32, on choisit généralement R1=10 kOhm et R2=20 kOhm, 
-// ou plus simplement R1=2kOhm et R2=3kOhm.
-// S'applique ici aux broches d'entrée (RXD) du GPS et au signal ECHO du HC-SR04 si ils sont en 5V.
-// 
-// ------------------------------------
 
 // ------------------------------------
 // GPS (UART2)
 // ------------------------------------
-#define PIN_GPS_RXD           16  // GPS TX (vers RXD de l'ESP32). **Si 5V, Diviseur de tension OBLIGATOIRE.**
-#define PIN_GPS_TXD           17  // GPS RX (vers TXD de l'ESP32). Câblage direct.
-#define PIN_GPS_PPS           36  // GPS PPS. Entrée seule, câblage direct.
+#define GPS_RXD 16  // RX ESP32 – entrée 3.3V, diviseur si GPS 5V
+#define GPS_TXD 17  // TX ESP32 – sortie 3.3V
+#define GPS_PPS 36  // PPS GPS – entrée 3.3V (GPIO36 = entrée uniquement)
+
 
 // ------------------------------------
 // TFT ST7789 (SPI)
 // ------------------------------------
-#define TFT_SCLK              18  // SPI Clock. Câblage direct.
-#define TFT_MOSI              23  // SPI MOSI. Câblage direct.
-#define TFT_CS                27  // Chip Select. Câblage direct.
-#define TFT_DC                14  // Data/Command. Câblage direct.
-#define TFT_RST               25  // Reset écran. Pull-up/down selon librairie.
-#define TFT_BL                32  // Backlight (PWM). Câblage direct (PWM).
+#define TFT_MISO     -1  // Non câblé sur ce module TFT
+#define TFT_MOSI      23 // MOSI – sortie 3.3V
+#define TFT_SCLK      18 // Horloge SPI – sortie 3.3V
+#define TFT_CS        27 // Chip Select TFT – sortie 3.3V
+#define TFT_DC        14 // Data/Command – sortie 3.3V
+#define TFT_RST       25 // Reset TFT – sortie 3.3V
+#define TFT_BL        32 // Backlight – sortie 3.3V (PWM possible)
+
+
+// ------------------------------------
+// ILI9341 (SPI)
+// ------------------------------------
+#define ILI9341_MISO  -1
+#define ILI9341_MOSI  TFT_MOSI
+#define ILI9341_SCLK  TFT_SCLK
+#define ILI9341_CS    TFT_CS
+#define ILI9341_DC    TFT_DC
+#define ILI9341_RST   TFT_RST
+#define ILI9341_BL    TFT_BL
+
 
 // ------------------------------------
 // I2C
 // ------------------------------------
-#define I2C_SDA       21  // SDA. **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
-#define I2C_SCL       22  // SCL. **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
+#define I2C_SDA 21  // SDA – open-drain 3.3V, pull-up 4.7 kO
+#define I2C_SCL 22  // SCL – open-drain 3.3V, pull-up 4.7 kO
 
-// ------------------------------------
-// DÉTAIL TECHNIQUE : Le Bus I2C (Inter-Integrated Circuit)
-// ------------------------------------
-// OBJECTIF : Permettre à plusieurs capteurs/périphériques de communiquer avec l'ESP32 en utilisant seulement deux broches (SDA et SCL).
-// L'IMPÉRATIF PULL-UP : Le bus I2C utilise des sorties à drain ouvert (open-drain). Des résistances externes (Pull-Up, typiquement 4.7 kOhm vers 3.3V) sont nécessaires pour tirer le signal vers le haut.
-// 
-// ------------------------------------
 
 // ------------------------------------
 // LED RGB
 // ------------------------------------
-#define RGB_LED_PIN_R 13  // Rouge. Résistance série **220O - 470O**. (Déplacé de 26 pour éviter le doublon avec LED V).
-#define RGB_LED_PIN_G 26  // Vert. Résistance série **220O - 470O**.
-#define RGB_LED_PIN_B 33  // Bleu. Résistance série **220O - 470O**.
+#define LED_RED     13 // LED Rouge – sortie 3.3V, résistance 220–470 O
+#define LED_GREEN   26 // LED Verte – sortie 3.3V, résistance 220–470 O
+#define LED_BLUE    33 // LED Bleue – sortie 3.3V, résistance 220–470 O
+#define LED_BUILTIN  2 // LED intégrée – sortie 3.3V
+
 
 // ------------------------------------
 // Boutons
 // ------------------------------------
-#define PIN_BUTTON_BOOT       0   // Bouton BOOT (strap). Réservé au boot, ne pas utiliser comme bouton utilisateur.
-#define PIN_BUTTON_1          2   // Bouton vers GND. Utiliser **Pull-Up interne**. (Déplacé de 32).
-#define PIN_BUTTON_2          5   // Bouton vers GND. Utiliser **Pull-Up interne**. (Déplacé de 13 pour libérer LED R, et de 33 pour résoudre conflit).
+#define BUTTON_BOOT 0  // Bouton BOOT – entrée 3.3V, vers GND
+#define BUTTON_1    5  // Bouton user 1 – entrée 3.3V, pull-up interne
+#define BUTTON_2   12  // Bouton user 2 – entrée 3.3V, pull-up interne
+
+
+// ------------------------------------
+// ENCODEUR ROTATIF (HW-040)
+// ------------------------------------
+#define ROTARY_CLK   4   // Signal A / CLK / S1 – entrée 3.3V, ~10 nF recommandé
+#define ROTARY_DT    13  // Signal B / DT / S2 – entrée 3.3V, ~10 nF possible
+#define ROTARY_SW    26  // Bouton SW – entrée 3.3V, pull-up interne
+
 
 // ------------------------------------
 // Capteurs & Sorties
 // ------------------------------------
-#define PWM_PIN       4   // PWM générique. Résistance série **220O - 470O** si LED.
-#define BUZZER_PIN    19  // Buzzer. Transistor + **Résistance base 1–10kO**.
-#define DHT_PIN       15  // DHT. **Pull-Up 10kO vers 3.3V**. (Déplacé de 4 pour éviter le doublon avec PWM).
-#define LIGHT_SENSOR_PIN 39 // LDR. Entrée seule. **Diviseur ~10kO**.
+#define PWM          4  // PWM générique – sortie 3.3V
+#define BUZZER      19  // Commande buzzer – sortie 3.3V, transistor + R base 1–10 kO
+#define DHT         15  // Capteur DHT – DATA 3.3V, pull-up 10 kO si nécessaire
+#define LIGHT_SENSOR 39 // LDR via diviseur – entrée ADC 3.3V max, R typique 10 kO
+
 
 // ------------------------------------
-// Capteurs de Distance
+// Capteur de Distance
 // ------------------------------------
-#define DISTANCE_TRIG_PIN 12 // HC-SR04 TRIG. Sortie. (Déplacé de 32).
-#define DISTANCE_ECHO_PIN 35 // HC-SR04 ECHO. Entrée seule. **Si 5V, Diviseur de tension OBLIGATOIRE.**
+#define DISTANCE_TRIG 1  // TRIG – sortie 3.3V
+#define DISTANCE_ECHO 35 // ECHO – entrée 3.3V, diviseur obligatoire si capteur 5V
+
 
 #else
     #error "Aucune cible definie ! Verifiez platformio.ini (TARGET_ESP32_...)"
