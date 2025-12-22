@@ -454,6 +454,8 @@ String generateJavaScript() {
   js += F(";const MOTION_SENSOR_PIN=");
   js += String(MOTION_SENSOR_PIN);
   js += F(";const PWM_PIN=");
+  js += String(PWM_PIN);
+  js += F(";const BUZZER_PIN=");
   js += String(BUZZER_PIN);
   js += F(";const DEFAULT_TRANSLATIONS=");
   js += buildTranslationsJSON();
