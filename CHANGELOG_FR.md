@@ -1,8 +1,60 @@
-## [Version 3.24.0] - 2025-12-22
+## [Version 3.25.0] - 2025-12-22
 
-### 🔄 Changement Architectural Majeur : Système de Broches GPIO Simplifié
+### ✅ Restauration de Fonctionnalité : Remapping Dynamique des GPIO via l'UI Web
 
-**Changement Non-Rétrocompatible :** Les broches GPIO sont maintenant des constantes de compilation. Le remapping dynamique via l'UI Web a été supprimé.
+**Changement Majeur :** Réintroduction du remapping runtime des broches avec une architecture améliorée qui évite les conflits de préprocesseur.
+
+### Ajouté
+- **Variables Runtime de Broches en Minuscules** : Nouvelle architecture utilisant des noms en minuscules pour éviter les conflits de préprocesseur
+  - Exemple : `int i2c_sda = I2C_SDA;` (variable runtime) initialisée depuis `#define I2C_SDA 15` (constante de compilation)
+  - Noms en minuscules (`i2c_sda`, `rgb_led_pin_r`, etc.) empêchent l'expansion de macros
+  - Variables déclarées dans `src/main.cpp:201-216`
+  - Déclarations externes dans `include/web_interface.h:24-35`
+
+### Restauré
+- **Remapping Dynamique des Broches** : L'UI Web peut maintenant modifier les broches GPIO à l'exécution (fonctionnalité restaurée de v3.23.x)
+  - `handleOLEDConfig()` - Remapping broches I2C pour OLED/capteurs
+  - `handleRGBLedConfig()` - Remapping broches LED RGB
+  - `handleBuzzerConfig()` - Remapping broche buzzer
+  - `handleDHTConfig()` - Remapping broche capteur DHT
+  - `handleLightSensorConfig()` - Remapping broche capteur de lumière
+  - `handleDistanceSensorConfig()` - Remapping broches capteur de distance
+  - `handleMotionSensorConfig()` - Remapping broche capteur de mouvement
+
+### Modifié
+- **Toutes les Références aux Broches GPIO** : Remplacement systématique des defines MAJUSCULES par des variables runtime minuscules dans tout le code
+  - `src/main.cpp` : ~100+ références mises à jour dans les fonctions de test, handlers et injection JavaScript
+  - `src/environmental_sensors.cpp` : Références broches I2C mises à jour
+  - Maintient les defines de compilation dans `board_config.h` (MAJUSCULES) comme valeurs initiales
+
+### Architecture
+**Système GPIO à Deux Couches Restauré (avec nommage amélioré)** :
+1. **Valeurs par défaut compile-time** (`board_config.h`) : `#define I2C_SDA 15` (MAJUSCULES)
+2. **Variables runtime** (`main.cpp`) : `int i2c_sda = I2C_SDA;` (minuscules)
+3. **Amélioration Clé** : Conventions de nommage différentes empêchent les conflits de préprocesseur
+
+### Avantages
+- ✅ **Remapping dynamique fonctionne** : Les utilisateurs peuvent changer les broches via l'UI Web sans recompilation
+- ✅ **Pas de conflits préprocesseur** : Les variables runtime en minuscules ne déclenchent pas l'expansion de macros
+- ✅ **Architecture plus claire** : Convention de nommage distingue clairement compile-time vs runtime
+- ✅ **Toutes fonctionnalités préservées** : Aucune fonctionnalité perdue par rapport à v3.23.x
+
+### Technique
+- **Rétrocompatibilité** : ⚠️ Nécessite une mise à jour du firmware depuis v3.24.0
+- **Matériel** : Aucun changement matériel requis
+- **Fichiers Modifiés** :
+  - `src/main.cpp` : Ajout variables runtime, restauration handlers, mise à jour toutes références broches
+  - `include/web_interface.h` : Ajout déclarations extern pour variables runtime
+  - `src/environmental_sensors.cpp` : Mise à jour pour utiliser variables runtime minuscules
+  - `platformio.ini` : Passage version à 3.25.0
+
+---
+
+## [Version 3.24.0] - 2025-12-22 (ANNULÉE)
+
+### 🔄 Changement Architectural Majeur : Système de Broches GPIO Simplifié (ANNULÉ DANS v3.25.0)
+
+**Changement Non-Rétrocompatible :** Les broches GPIO étaient des constantes de compilation. Le remapping dynamique via l'UI Web avait été supprimé.
 
 ### Modifié
 - **Architecture GPIO Simplifiée** : Suppression du système à deux couches
