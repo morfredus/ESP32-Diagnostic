@@ -1,3 +1,21 @@
+## [Version 3.23.2] - 2025-12-22
+
+### Fixed
+- **Environmental Sensors I2C Initialization**: Corrected I2C pin references in environmental sensors
+  - Fixed `environmental_sensors.cpp:56-58` to use runtime variables `I2C_SDA` and `I2C_SCL`
+  - Previously referenced `DEFAULT_I2C_SDA` and `DEFAULT_I2C_SCL` directly (compile-time defines)
+  - Added `extern` declarations to access runtime variables from `main.cpp`
+  - Now respects dynamic I2C pin configuration via Web UI
+
+### Technical
+- **File Changed**: `src/environmental_sensors.cpp:56-58`
+- **Architecture Note**: Runtime variables (`int I2C_SDA`) and compile-time defines (`#define DEFAULT_I2C_SDA`)
+  must coexist for Web UI dynamic remapping to work. Removing the `DEFAULT_` prefix causes preprocessor conflicts.
+- **Impact**: Ensures environmental sensors (AHT20, BMP280) use correct I2C pins when remapped
+- **Backward Compatibility**: ✅ Fully compatible with v3.23.1
+
+---
+
 ## [Version 3.23.1] - 2025-12-22
 
 ### Fixed
