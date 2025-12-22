@@ -1,3 +1,19 @@
+## [Version 3.23.1] - 2025-12-22
+
+### Corrigé
+- **Affichage Pin Buzzer dans l'UI Web** : Correction de l'initialisation du champ de la broche buzzer
+  - Affichait précédemment la valeur de `PWM_PIN` au lieu de `BUZZER_PIN` dans l'interface web
+  - Fonction affectée : `buildDisplaySignal()` dans `web_interface.h:85`
+  - Affiche désormais correctement la valeur de BUZZER_PIN (ESP32-S3: GPIO 6, ESP32 Classic: GPIO 19)
+  - PWM et Buzzer sont des broches distinctes comme défini dans `board_config.h`
+
+### Technique
+- **Fichier Modifié** : `include/web_interface.h:85`
+- **Impact** : Correction visuelle uniquement - comportement runtime inchangé (backend utilisait déjà la bonne broche)
+- **Rétrocompatibilité** : ✅ Entièrement compatible avec v3.23.0
+
+---
+
 ## [Version 3.23.0] - 2025-12-22
 
 ### Ajouté
