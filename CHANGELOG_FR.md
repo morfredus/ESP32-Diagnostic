@@ -1,3 +1,143 @@
+## [Version 3.24.0] - 2025-12-22
+
+### 🔄 Changement Architectural Majeur : Système de Broches GPIO Simplifié
+
+**Changement Non-Rétrocompatible :** Les broches GPIO sont maintenant des constantes de compilation. Le remapping dynamique via l'UI Web a été supprimé.
+
+### Modifié
+- **Architecture GPIO Simplifiée** : Suppression du système à deux couches
+  - Élimination du préfixe `DEFAULT_` de tous les noms de broches GPIO dans `board_config.h`
+  - Suppression des variables runtime de broches dans `main.cpp` (lignes 198-217)
+  - Les broches GPIO sont maintenant accessibles directement comme constantes `#define`
+  - Exemple : `RGB_LED_PIN_R` au lieu de `DEFAULT_RGB_LED_PIN_R` + `int RGB_LED_PIN_R`
+
+- **Comportement de l'Interface Web** :
+  - Les handlers de configuration de broches ignorent maintenant les changements (assignations commentées)
+  - L'UI Web affiche les broches actuelles pour référence seulement
+  - Pour changer les broches, les utilisateurs doivent éditer `board_config.h` et recompiler
+
+- **Modifications du Code** :
+  - `src/main.cpp` : Suppression des déclarations de variables de broches, mise à jour des handlers
+  - `include/web_interface.h` : Suppression des déclarations `extern` de broches
+  - `src/environmental_sensors.cpp` : Suppression des déclarations `extern`, utilise les defines directement
+
+### Supprimé
+- **Remapping de Broches à Runtime** : L'UI Web ne peut plus modifier les broches GPIO à l'exécution
+- **Préfixe `DEFAULT_`** : Toutes les broches GPIO utilisent maintenant des noms directs (ex. `I2C_SDA` et non `DEFAULT_I2C_SDA`)
+- **Variables Runtime** : Plus de pattern `int I2C_SDA = DEFAULT_I2C_SDA;`
+
+### Documentation
+- **Mise à jour `docs/PIN_POLICY.md`** : Reflète la nouvelle architecture à constantes de compilation
+- **Mise à jour `docs/PIN_POLICY_FR.md`** : Documentation française mise à jour
+- Suppression des références au remapping runtime et au préfixe `DEFAULT_`
+
+### Avantages
+- ✅ **Code plus simple** : Le système GPIO à une couche est plus facile à comprendre
+- ✅ **Meilleures performances** : Le compilateur peut optimiser l'accès aux broches constantes
+- ✅ **Intention plus claire** : Les assignations de broches sont fixées à la compilation
+- ✅ **Pas de conflits préprocesseur** : Élimine les problèmes de collision de noms
+
+### Guide de Migration
+**Pour les Utilisateurs :**
+- Les changements de broches nécessitent maintenant d'éditer `board_config.h` et de recompiler
+- Aucun changement fonctionnel si vous utilisez les assignations de broches par défaut
+
+**Pour les Développeurs :**
+- Remplacer `DEFAULT_NOM_GPIO` par `NOM_GPIO` dans `board_config.h`
+- Supprimer les déclarations de variables runtime
+- Accéder aux broches directement via les defines
+
+### Technique
+- **Rétrocompatibilité** : ⚠️ Changement non-rétrocompatible - nécessite une mise à jour du firmware
+- **Matériel** : Aucun changement matériel requis
+- **Fichiers Modifiés** :
+  - `src/main.cpp` : Suppression variables de broches, mise à jour handlers
+  - `include/web_interface.h` : Suppression déclarations extern
+  - `src/environmental_sensors.cpp` : Utilisation directe des defines
+  - `include/board_config.h` : Suppression préfixes `DEFAULT_` (déjà fait par l'utilisateur)
+  - `docs/PIN_POLICY.md`, `docs/PIN_POLICY_FR.md` : Mises à jour documentation
+  - `platformio.ini` : Passage version à 3.24.0
+
+---
+
+## [Version 3.23.2] - 2025-12-22 (OBSOLÈTE)
+
+### Corrigé
+- **Initialisation I2C des Capteurs Environnementaux** : Correction des références aux broches I2C dans les capteurs environnementaux
+  - Correction de `environmental_sensors.cpp:56-58` pour utiliser les variables runtime `I2C_SDA` et `I2C_SCL`
+  - Référençait précédemment `DEFAULT_I2C_SDA` et `DEFAULT_I2C_SCL` directement (defines de compilation)
+  - Ajout de déclarations `extern` pour accéder aux variables runtime depuis `main.cpp`
+  - Respecte désormais la configuration dynamique des broches I2C via l'UI Web
+
+### Technique
+- **Fichier Modifié** : `src/environmental_sensors.cpp:56-58`
+- **Note d'Architecture** : Les variables runtime (`int I2C_SDA`) et les defines de compilation (`#define DEFAULT_I2C_SDA`)
+  doivent coexister pour que le remapping dynamique via l'UI Web fonctionne. Retirer le préfixe `DEFAULT_` crée des conflits de préprocesseur.
+- **Impact** : Assure que les capteurs environnementaux (AHT20, BMP280) utilisent les bonnes broches I2C lorsqu'elles sont remappées
+- **Rétrocompatibilité** : ✅ Entièrement compatible avec v3.23.1
+
+---
+
+## [Version 3.23.1] - 2025-12-22
+
+### Corrigé
+- **Affichage Pin Buzzer dans l'UI Web** : Correction de l'initialisation du champ de la broche buzzer
+  - Affichait précédemment la valeur de `PWM_PIN` au lieu de `BUZZER_PIN` dans l'interface web
+  - Fonction affectée : `buildDisplaySignal()` dans `web_interface.h:85`
+  - Affiche désormais correctement la valeur de BUZZER_PIN (ESP32-S3: GPIO 6, ESP32 Classic: GPIO 19)
+  - PWM et Buzzer sont des broches distinctes comme défini dans `board_config.h`
+
+### Technique
+- **Fichier Modifié** : `include/web_interface.h:85`
+- **Impact** : Correction visuelle uniquement - comportement runtime inchangé (backend utilisait déjà la bonne broche)
+- **Rétrocompatibilité** : ✅ Entièrement compatible avec v3.23.0
+
+---
+
+## [Version 3.23.0] - 2025-12-22
+
+### Ajouté
+- **Variable PWM_PIN** : Ajout de la variable runtime `PWM_PIN` manquante dans `main.cpp`
+  - Auparavant, `PWM_PIN` était déclaré comme `extern` dans `web_interface.h` mais non défini
+  - Désormais correctement initialisé depuis `DEFAULT_PWM_PIN` dans `board_config.h`
+  - ESP32-S3 : PWM sur GPIO 20, Buzzer sur GPIO 6
+  - ESP32 Classic : PWM sur GPIO 4, Buzzer sur GPIO 19
+- **Documentation Politique des Broches** : Nouveaux guides complets pour la gestion GPIO
+  - `docs/PIN_POLICY.md` (Anglais) - Politique complète de mapping des broches pour développeurs
+  - `docs/PIN_POLICY_FR.md` (Français) - Guide détaillé de la politique de mapping GPIO
+  - Explique le principe de "source unique de vérité" (`board_config.h`)
+  - Inclut les considérations de sécurité, conventions de nommage et exemples pratiques
+
+### Modifié
+- **Injection JavaScript** : Correction de l'injection de PWM_PIN et BUZZER_PIN dans l'UI Web
+  - Les deux broches sont désormais correctement injectées dans les constantes JavaScript
+  - Auparavant, `PWM_PIN` se voyait incorrectement attribuer la valeur de `BUZZER_PIN`
+  - Fichiers affectés : `main.cpp:4812-4815`, `web_interface.h:456-459`
+- **Unification NEOPIXEL_PIN** : Élimination de la redéfinition `DEFAULT_NEOPIXEL_PIN`
+  - Suppression de la définition dupliquée dans `config.h` et `config-example.h`
+  - Utilise désormais `NEOPIXEL_PIN` directement depuis `board_config.h` (GPIO 48 pour ESP32-S3)
+  - Commentaires ajoutés pour clarifier que `NEOPIXEL_PIN` est défini dans `board_config.h`
+
+### Corrigé
+- **Cohérence du Mapping des Broches** : Toutes les références GPIO utilisent exclusivement `board_config.h`
+  - Élimination de l'ambiguïté entre `DEFAULT_NEOPIXEL_PIN` et `NEOPIXEL_PIN`
+  - Séparation correcte de `PWM_PIN` et `BUZZER_PIN` (ce sont des broches distinctes)
+  - Amélioration des commentaires des variables de broches runtime pour référencer `board_config.h` comme source
+
+### Technique
+- **Rétrocompatibilité** : ✅ Entièrement compatible avec v3.22.1
+  - Aucun changement matériel requis
+  - L'UI Web affiche désormais correctement les broches PWM et Buzzer
+  - Toutes les fonctionnalités existantes préservées
+
+### Documentation
+- Nouveau guide développeur expliquant l'architecture du mapping GPIO
+- Clarifie la différence entre `PIN_*` (fixe) et `DEFAULT_*` (configurable à l'exécution)
+- Fournit des exemples étape par étape pour ajouter de nouveaux capteurs
+- Disponible en anglais et français
+
+---
+
 ## [Version 3.22.1] - 2025-12-12
 
 ### Corrigé — Doublons de mapping (ESP32 Classic)
