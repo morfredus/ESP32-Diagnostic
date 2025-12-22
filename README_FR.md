@@ -1,10 +1,35 @@
-# ESP32 Diagnostic Suite (v3.22.1)
+# ESP32 Diagnostic Suite (v3.25.0)
 
-> **AVERTISSEMENT** : v3.22.1 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **Note** : v3.25.0 restaure le remapping dynamique des broches GPIO via l'interface Web avec une architecture améliorée qui prévient les conflits de préprocesseur. Le système utilise des variables runtime en minuscules (`i2c_sda`) initialisées à partir de defines compile-time en MAJUSCULES (`I2C_SDA`) dans `board_config.h`.
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## 🟢 Nouveautés de la version 3.22.1 - Corrections de mapping (Classic)
+## ✨ Nouveautés de la version 3.25.0 - Remapping Dynamique des Broches Restauré
+
+**Amélioration Architecturale Majeure :**
+- **Le remapping dynamique de broches fonctionne à nouveau** - Les utilisateurs peuvent changer les broches GPIO via l'interface Web sans recompilation
+- **Aucun conflit de préprocesseur** - Résolu en utilisant des variables runtime en minuscules (`i2c_sda`, `rgb_led_pin_r`, etc.)
+- **Architecture à deux couches** - Defines en MAJUSCULES dans `board_config.h`, variables en minuscules dans `main.cpp`
+- **Tous les handlers fonctionnels** - I2C, LED RGB, Buzzer, DHT, Lumière, Distance, Capteurs de mouvement
+
+**Innovation Clé :**
+```cpp
+// board_config.h (valeur par défaut compile-time)
+#define I2C_SDA 15
+
+// main.cpp (variable runtime - modifiable via interface Web)
+int i2c_sda = I2C_SDA;
+```
+
+**Avantages :**
+- ✅ Flexibilité matérielle restaurée - Testez différentes configurations de broches sans recompilation
+- ✅ Convention de nommage claire - MAJUSCULES = compile-time, minuscules = runtime
+- ✅ Aucun problème de préprocesseur - Des noms différents préviennent les conflits d'expansion de macros
+- ✅ Toutes les fonctionnalités préservées - Aucune fonctionnalité perdue depuis v3.23.x
+
+**Voir :** [docs/RELEASE_NOTES_3.25.0_FR.md](docs/RELEASE_NOTES_3.25.0_FR.md) pour les détails techniques complets.
+
+## Précédent : version 3.22.1 - Corrections de mapping (Classic)
 
 **Corrections de mapping pour ESP32 Classic** — Harmonisation avec `board_config.h` :
 - Boutons : BTN1=2, BTN2=5 (pull-up interne)
@@ -15,7 +40,7 @@ Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord
 - **Impact** : ESP32-S3 nécessite recâblage matériel, ESP32 Classic inchangé
 - **Sécurité** : Configuration optimisée pour éviter les conflits avec les broches de strapping et USB
 
-## Précédent : version 3.21.1 - Indicateur d'état Wi-Fi NeoPixel
+## Précédent : version 3.22.0 - Indicateur d'état Wi-Fi NeoPixel
 
 **Rétroaction d'état de connectivité Wi-Fi en temps réel via LED RGB NeoPixel/WS2812 :**
 - **Jaune (connexion en cours)** pendant la tentative de connexion Wi-Fi au démarrage
