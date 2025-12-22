@@ -203,10 +203,11 @@ uint8_t oledRotation = DEFAULT_OLED_ROTATION;
 int oledWidth = SCREEN_WIDTH;
 int oledHeight = SCREEN_HEIGHT;
 
-// Runtime pin variables (initialized from config.h, modifiable via web interface)
+// Runtime pin variables (initialized from board_config.h, modifiable via web interface)
 int RGB_LED_PIN_R = DEFAULT_RGB_LED_PIN_R;
 int RGB_LED_PIN_G = DEFAULT_RGB_LED_PIN_G;
 int RGB_LED_PIN_B = DEFAULT_RGB_LED_PIN_B;
+int PWM_PIN = DEFAULT_PWM_PIN;
 int BUZZER_PIN = DEFAULT_BUZZER_PIN;
 int DHT_PIN = DEFAULT_DHT_PIN;
 uint8_t DHT_SENSOR_TYPE = DEFAULT_DHT_SENSOR_TYPE;
@@ -230,8 +231,8 @@ bool mdnsResponderInitialized = false;
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C oled(U8G2_R0, U8X8_PIN_NONE);
 
 
-// NeoPixel (from config.h)
-int LED_PIN = DEFAULT_NEOPIXEL_PIN;
+// NeoPixel (from board_config.h via config.h)
+int LED_PIN = NEOPIXEL_PIN;
 int LED_COUNT = DEFAULT_NEOPIXEL_COUNT;
 
 // TFT pins (modifiables via web)
@@ -4809,6 +4810,8 @@ void handleJavaScriptRoute() {
   pinVars += ";const MOTION_SENSOR_PIN=";
   pinVars += String(MOTION_SENSOR_PIN);
   pinVars += ";const PWM_PIN=";
+  pinVars += String(PWM_PIN);
+  pinVars += ";const BUZZER_PIN=";
   pinVars += String(BUZZER_PIN);
   pinVars += ";";
 
