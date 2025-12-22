@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite (v3.25.0)
+# ESP32 Diagnostic Suite (v3.25.1)
 
-> **Note**: v3.25.0 restores dynamic GPIO pin remapping via Web UI with improved architecture that prevents preprocessor conflicts. The system uses lowercase runtime variables (`i2c_sda`) initialized from UPPERCASE compile-time defines (`I2C_SDA`) in `board_config.h`.
+> **Note**: v3.25.1 is a patch release (maintenance/documentation alignment). v3.25.0 restored dynamic GPIO pin remapping via Web UI with improved architecture that prevents preprocessor conflicts. The system uses lowercase runtime variables (`i2c_sda`) initialized from UPPERCASE compile-time defines (`I2C_SDA`) in `board_config.h`.
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
