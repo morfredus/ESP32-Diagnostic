@@ -1,3 +1,9 @@
+## [Version 3.25.1] - 2025-12-22
+
+### Changed
+- Patch version bump: updated version to 3.25.1 in platformio.ini and documentation files.
+- Minor maintenance and documentation alignment for release process.
+
 ## [Version 3.25.0] - 2025-12-22
 
 ### ✅ Feature Restoration: Dynamic GPIO Pin Remapping via Web UI

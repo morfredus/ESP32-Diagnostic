@@ -1,3 +1,9 @@
+## [Version 3.25.1] - 2025-12-22
+
+### Modifié
+- Passage en version 3.25.1 : mise à jour du numéro de version dans platformio.ini et les fichiers de documentation.
+- Maintenance mineure et alignement documentaire pour le processus de release.
+
 ## [Version 3.25.0] - 2025-12-22
 
 ### ✅ Restauration de Fonctionnalité : Remapping Dynamique des GPIO via l'UI Web
