@@ -19,8 +19,20 @@ extern DiagnosticInfo diagnosticData;
 extern const char* const DIAGNOSTIC_SECURE_SCHEME;
 extern const char* const DIAGNOSTIC_LEGACY_SCHEME;
 
-// Note: GPIO pins are now compile-time constants defined in board_config.h
-// No extern declarations needed - pins are accessed directly via defines
+// Runtime pin variables (lowercase) for dynamic remapping via Web UI
+// Initialized from board_config.h defines (UPPERCASE) - avoids preprocessor conflicts
+extern int i2c_sda;              // I2C SDA pin (modifiable at runtime)
+extern int i2c_scl;              // I2C SCL pin (modifiable at runtime)
+extern int rgb_led_pin_r;        // RGB LED Red channel
+extern int rgb_led_pin_g;        // RGB LED Green channel
+extern int rgb_led_pin_b;        // RGB LED Blue channel
+extern int pwm_pin;              // PWM output
+extern int buzzer_pin;           // Buzzer output
+extern int dht_pin;              // DHT temperature/humidity sensor
+extern int light_sensor_pin;     // Light sensor (LDR)
+extern int distance_trig_pin;    // Distance sensor trigger (HC-SR04)
+extern int distance_echo_pin;    // Distance sensor echo (HC-SR04)
+extern int motion_sensor_pin;    // Motion sensor (PIR)
 
 // Déclarations forward des fonctions
 String htmlEscape(const String& raw);

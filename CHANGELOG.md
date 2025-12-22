@@ -1,8 +1,60 @@
-## [Version 3.24.0] - 2025-12-22
+## [Version 3.25.0] - 2025-12-22
 
-### 🔄 Major Architectural Change: Simplified GPIO Pin System
+### ✅ Feature Restoration: Dynamic GPIO Pin Remapping via Web UI
 
-**Breaking Change:** GPIO pins are now compile-time constants. Dynamic pin remapping via Web UI has been removed.
+**Major Change:** Reintroduced runtime pin remapping with improved architecture that avoids preprocessor conflicts.
+
+### Added
+- **Runtime Pin Variables with Lowercase Names**: New architecture uses lowercase variable names to avoid preprocessor conflicts
+  - Example: `int i2c_sda = I2C_SDA;` (runtime variable) initialized from `#define I2C_SDA 15` (compile-time constant)
+  - Lowercase names (`i2c_sda`, `rgb_led_pin_r`, etc.) prevent macro expansion conflicts
+  - Variables declared in `src/main.cpp:201-216`
+  - External declarations in `include/web_interface.h:24-35`
+
+### Restored
+- **Dynamic Pin Remapping**: Web UI can now modify GPIO pins at runtime (functionality restored from v3.23.x)
+  - `handleOLEDConfig()` - I2C pin remapping for OLED/sensors
+  - `handleRGBLedConfig()` - RGB LED pin remapping
+  - `handleBuzzerConfig()` - Buzzer pin remapping
+  - `handleDHTConfig()` - DHT sensor pin remapping
+  - `handleLightSensorConfig()` - Light sensor pin remapping
+  - `handleDistanceSensorConfig()` - Distance sensor pin remapping
+  - `handleMotionSensorConfig()` - Motion sensor pin remapping
+
+### Changed
+- **All GPIO Pin References**: Systematically replaced UPPERCASE defines with lowercase runtime variables throughout codebase
+  - `src/main.cpp`: ~100+ references updated in test functions, handlers, and JavaScript injection
+  - `src/environmental_sensors.cpp`: I2C pin references updated
+  - Maintains compile-time defines in `board_config.h` (UPPERCASE) as initial values
+
+### Architecture
+**Two-Layer GPIO System Restored (with improved naming)**:
+1. **Compile-time defaults** (`board_config.h`): `#define I2C_SDA 15` (UPPERCASE)
+2. **Runtime variables** (`main.cpp`): `int i2c_sda = I2C_SDA;` (lowercase)
+3. **Key Improvement**: Different naming conventions prevent preprocessor conflicts
+
+### Benefits
+- ✅ **Dynamic remapping works**: Users can change pins via Web UI without recompilation
+- ✅ **No preprocessor conflicts**: Lowercase runtime variables don't trigger macro expansion
+- ✅ **Cleaner architecture**: Naming convention clearly distinguishes compile-time vs runtime
+- ✅ **All functionality preserved**: No features lost compared to v3.23.x
+
+### Technical
+- **Backward Compatibility**: ⚠️ Requires firmware update from v3.24.0
+- **Hardware**: No hardware changes required
+- **Files Modified**:
+  - `src/main.cpp`: Added runtime variables, restored handlers, updated all pin references
+  - `include/web_interface.h`: Added extern declarations for runtime variables
+  - `src/environmental_sensors.cpp`: Updated to use lowercase runtime variables
+  - `platformio.ini`: Version bump to 3.25.0
+
+---
+
+## [Version 3.24.0] - 2025-12-22 (REVERTED)
+
+### 🔄 Major Architectural Change: Simplified GPIO Pin System (REVERTED IN v3.25.0)
+
+**Breaking Change:** GPIO pins were compile-time constants. Dynamic pin remapping via Web UI was removed.
 
 ### Changed
 - **GPIO Architecture Simplified**: Removed two-layer pin system
