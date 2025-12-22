@@ -82,6 +82,9 @@
 #include <Wire.h>
 #include <Adafruit_NeoPixel.h>
 #include <U8g2lib.h>
+#include <SPI.h>
+#include <SD.h>
+#include <FS.h>
 #include <vector>
 #include <cstring>
 #include <string>
@@ -214,6 +217,17 @@ int light_sensor_pin = LIGHT_SENSOR;
 int distance_trig_pin = DISTANCE_TRIG;
 int distance_echo_pin = DISTANCE_ECHO;
 int motion_sensor_pin = MOTION_SENSOR;
+
+// SD Card pins (modifiable via web interface)
+int sd_miso_pin = SD_MISO;
+int sd_mosi_pin = SD_MOSI;
+int sd_sclk_pin = SD_SCLK;
+int sd_cs_pin = SD_CS;
+
+// Rotary Encoder pins (modifiable via web interface)
+int rotary_clk_pin = ROTARY_CLK;
+int rotary_dt_pin = ROTARY_DT;
+int rotary_sw_pin = ROTARY_SW;
 
 // OLED display settings (from config.h)
 uint8_t oledRotation = DEFAULT_OLED_ROTATION;
@@ -372,6 +386,8 @@ static AsyncTestRunner neopixelTestRunner = {"NeoPixelTest", nullptr, false};
 static AsyncTestRunner oledTestRunner = {"OLEDTest", nullptr, false};
 static AsyncTestRunner rgbLedTestRunner = {"RgbLedTest", nullptr, false};
 static AsyncTestRunner buzzerTestRunner = {"BuzzerTest", nullptr, false};
+static AsyncTestRunner sdTestRunner = {"SDTest", nullptr, false};
+static AsyncTestRunner rotaryTestRunner = {"RotaryTest", nullptr, false};
 
 bool runtimeBLE = false;
 
@@ -407,6 +423,28 @@ float distanceValue = -1.0;
 String motionSensorTestResult = DEFAULT_TEST_RESULT_STR;
 bool motionSensorAvailable = false;
 bool motionDetected = false;
+
+// ========== SD CARD ==========
+String sdTestResult = DEFAULT_TEST_RESULT_STR;
+bool sdAvailable = false;
+bool sdTested = false;
+SPIClass * sdSPI = nullptr;
+uint64_t sdCardSize = 0;
+uint8_t sdCardType = 0;
+String sdCardTypeStr = "Unknown";
+
+// ========== ENCODEUR ROTATIF ==========
+String rotaryTestResult = DEFAULT_TEST_RESULT_STR;
+volatile long rotaryPosition = 0;
+volatile bool rotaryButtonPressed = false;
+volatile unsigned long lastRotaryInterruptTime = 0;
+volatile unsigned long lastButtonPressTime = 0;
+const unsigned long rotaryDebounceDelay = 5;
+const unsigned long buttonDebounceDelay = 50;
+bool rotaryAvailable = false;
+bool rotaryTested = false;
+int lastRotaryState = 0;
+int lastButtonState = HIGH;
 
 // ========== BOUTONS ==========
 // Gestion simple avec anti-rebond et actions utiles par défaut
