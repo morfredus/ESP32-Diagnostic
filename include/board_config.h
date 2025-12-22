@@ -110,6 +110,24 @@
 #define DISTANCE_TRIG_PIN 2  // HC-SR04 TRIG. Câblage direct.
 #define DISTANCE_ECHO_PIN 35 // HC-SR04 ECHO. **Si 5V, ajouter Diviseur de tension OBLIGATOIRE.**
 
+// ------------------------------------
+// Lecteur de Carte SD (SPI)
+// ------------------------------------
+// Configuration du lecteur de carte SD utilisant le protocole SPI.
+// Note: Partage le bus SPI avec l'écran TFT (MOSI, SCLK), seul CS est dédié.
+#define SD_MISO           37  // SPI MISO (Master In Slave Out) : Broche de données depuis la carte SD. Câblage direct.
+#define SD_MOSI           11  // SPI MOSI (partagé avec TFT). Câblage direct.
+#define SD_SCLK           12  // SPI Clock (partagé avec TFT). Câblage direct.
+#define SD_CS             36  // Chip Select SD : Broche pour activer spécifiquement la carte SD. Câblage direct.
+
+// ------------------------------------
+// Bouton Codeur Rotatif HW-040
+// ------------------------------------
+// Configuration du bouton codeur rotatif (rotary encoder) avec bouton intégré.
+#define ENCODER_CLK       14  // CLK (Clock/A) : Signal d'horloge du codeur. Utiliser **Pull-Up interne**.
+#define ENCODER_DT        47  // DT (Data/B) : Signal de données du codeur. Utiliser **Pull-Up interne**.
+#define ENCODER_SW        40  // SW (Switch) : Bouton-poussoir intégré. Utiliser **Pull-Up interne**.
+
 
 // =========================================================
 //         MAPPING ESP32 CLASSIQUE (DevKitC)
@@ -199,6 +217,24 @@
 // ------------------------------------
 #define DISTANCE_TRIG_PIN 12 // HC-SR04 TRIG. Sortie. (Déplacé de 32).
 #define DISTANCE_ECHO_PIN 35 // HC-SR04 ECHO. Entrée seule. **Si 5V, Diviseur de tension OBLIGATOIRE.**
+
+// ------------------------------------
+// Lecteur de Carte SD (SPI)
+// ------------------------------------
+// Configuration du lecteur de carte SD utilisant le protocole SPI.
+// Note: Partage le bus SPI avec l'écran TFT (MOSI, SCLK), seul CS est dédié.
+#define SD_MISO           19  // SPI MISO (Master In Slave Out) : Broche de données depuis la carte SD. Câblage direct.
+#define SD_MOSI           23  // SPI MOSI (partagé avec TFT). Câblage direct.
+#define SD_SCLK           18  // SPI Clock (partagé avec TFT). Câblage direct.
+#define SD_CS             5   // Chip Select SD : Broche pour activer spécifiquement la carte SD. Câblage direct. (Réutilise broche DHT si nécessaire).
+
+// ------------------------------------
+// Bouton Codeur Rotatif HW-040
+// ------------------------------------
+// Configuration du bouton codeur rotatif (rotary encoder) avec bouton intégré.
+#define ENCODER_CLK       26  // CLK (Clock/A) : Signal d'horloge du codeur. Utiliser **Pull-Up interne**. (Partagé avec LED_V si non utilisée).
+#define ENCODER_DT        27  // DT (Data/B) : Signal de données du codeur. Utiliser **Pull-Up interne**.
+#define ENCODER_SW        33  // SW (Switch) : Bouton-poussoir intégré. Utiliser **Pull-Up interne**. (Partagé avec LED_B si non utilisée).
 
 #else
     #error "Aucune cible definie ! Verifiez platformio.ini (TARGET_ESP32_...)"

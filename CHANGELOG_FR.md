@@ -1,3 +1,54 @@
+## [Version 3.26.0] - 2025-12-22
+
+### 🎉 Nouvelles Fonctionnalités : Support Lecteur de Carte SD & Encodeur Rotatif HW-040
+
+**Ajout Majeur :** Support complet pour lecteur de carte SD et encodeur rotatif avec configuration GPIO dynamique.
+
+### Ajouté
+- **Support Lecteur de Carte SD (SPI)**
+  - Définitions broches GPIO dans `board_config.h` pour ESP32-S3 et ESP32 Classic
+  - ESP32-S3 : MISO=37, MOSI=11 (partagé avec TFT), SCLK=12 (partagé avec TFT), CS=36
+  - ESP32 Classic : MISO=19, MOSI=23 (partagé avec TFT), SCLK=18 (partagé avec TFT), CS=5
+  - Variables runtime : `sd_miso`, `sd_mosi`, `sd_sclk`, `sd_cs`
+  - Fonctions : `initSDCard()`, `testSDCard()`, `getSDCardSize()`, `getSDCardUsed()`, `getSDCardType()`
+  - Endpoints API Web :
+    - `/api/sdcard-test` - Test lecture/écriture/suppression carte SD
+    - `/api/sdcard-info` - Informations carte SD (taille, utilisé, type)
+    - `/api/sdcard-config` - Configuration broches GPIO carte SD
+    - `/api/sdcard-format` - Formatage carte SD (placeholder)
+
+- **Support Encodeur Rotatif HW-040**
+  - Définitions broches GPIO dans `board_config.h` pour ESP32-S3 et ESP32 Classic
+  - ESP32-S3 : CLK=14, DT=47, SW=40 (avec pull-ups internes)
+  - ESP32 Classic : CLK=26, DT=27, SW=33 (avec pull-ups internes)
+  - Variables runtime : `encoder_clk`, `encoder_dt`, `encoder_sw`
+  - Détection rotation et bouton basée sur ISR avec anti-rebond (5ms)
+  - Fonctions : `initEncoder()`, `encoderISR()`, `encoderButtonISR()`, `getEncoderPosition()`, `resetEncoderPosition()`, `isEncoderButtonPressed()`
+  - Endpoints API Web :
+    - `/api/encoder-read` - Lecture position actuelle et état bouton
+    - `/api/encoder-reset` - Réinitialisation position encodeur à zéro
+    - `/api/encoder-config` - Configuration broches GPIO encodeur
+
+### Modifié
+- **Fonctions d'Export Améliorées**
+  - Tous formats d'export (TXT, JSON, CSV) incluent maintenant informations carte SD et encodeur rotatif
+  - API Overview (`/api/overview`) inclut statut carte SD et encodeur
+  - Constantes JavaScript injectées pour broches SD et encodeur
+
+### Technique
+- **Fichiers Modifiés** :
+  - `include/board_config.h` : Ajout définitions GPIO SD et encodeur
+  - `src/main.cpp` : Ajout includes (SD.h, SPI.h), variables runtime, appels initialisation, handlers, routes
+  - `include/web_interface.h` : Ajout déclarations extern pour broches SD et encodeur
+  - `platformio.ini` : Passage version à 3.26.0
+
+### Architecture
+- **Carte SD** : Utilise bibliothèque SD standard avec communication SPI (partage bus avec écran TFT)
+- **Encodeur Rotatif** : Piloté par interruptions avec anti-rebond, suivi position, et état bouton
+- **Configuration Broches** : Suit PIN_POLICY - toutes références GPIO via `board_config.h`
+
+---
+
 ## [Version 3.25.0] - 2025-12-22
 
 ### ✅ Restauration de Fonctionnalité : Remapping Dynamique des GPIO via l'UI Web

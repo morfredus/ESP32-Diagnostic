@@ -80,6 +80,8 @@
   #include <soc/soc_caps.h>
 #endif
 #include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
 #include <Adafruit_NeoPixel.h>
 #include <U8g2lib.h>
 #include <vector>
@@ -215,6 +217,17 @@ int distance_trig_pin = DISTANCE_TRIG_PIN;
 int distance_echo_pin = DISTANCE_ECHO_PIN;
 int motion_sensor_pin = MOTION_SENSOR_PIN;
 
+// SD Card pins (modifiable via web interface)
+int sd_miso = SD_MISO;
+int sd_mosi = SD_MOSI;
+int sd_sclk = SD_SCLK;
+int sd_cs = SD_CS;
+
+// Rotary Encoder pins (modifiable via web interface)
+int encoder_clk = ENCODER_CLK;
+int encoder_dt = ENCODER_DT;
+int encoder_sw = ENCODER_SW;
+
 // OLED display settings (from config.h)
 uint8_t oledRotation = DEFAULT_OLED_ROTATION;
 int oledWidth = SCREEN_WIDTH;
@@ -258,6 +271,18 @@ Adafruit_NeoPixel *strip = nullptr;
 
 // NeoPixel heartbeat state
 volatile bool neopixelStatusPaused = false;
+
+// SD Card state
+bool sdCardAvailable = false;
+uint64_t sdCardSize = 0;
+uint64_t sdCardUsed = 0;
+
+// Rotary Encoder state
+volatile int encoderPosition = 0;
+volatile int lastEncoderCLK = HIGH;
+volatile bool encoderButtonPressed = false;
+volatile unsigned long lastEncoderInterrupt = 0;
+const unsigned long ENCODER_DEBOUNCE_MS = 5;
 unsigned long neopixelHeartbeatPreviousMillis = 0;
 const unsigned long NEOPIXEL_HEARTBEAT_INTERVAL_MS = 1000;
 bool neopixelHeartbeatState = false;
@@ -284,6 +309,21 @@ void neopixelPauseStatus();
 void neopixelResumeStatus();
 void neopixelRestoreWifiStatus();
 void updateNeoPixelWifiStatus();
+
+// Forward declarations for SD Card functions
+bool initSDCard();
+void testSDCard();
+uint64_t getSDCardSize();
+uint64_t getSDCardUsed();
+String getSDCardType();
+
+// Forward declarations for Rotary Encoder functions
+void IRAM_ATTR encoderISR();
+void IRAM_ATTR encoderButtonISR();
+void initEncoder();
+int getEncoderPosition();
+void resetEncoderPosition();
+bool isEncoderButtonPressed();
 
 // Built-in LED (from config.h)
 int BUILTIN_LED_PIN = DEFAULT_BUILTIN_LED_PIN;
@@ -2531,11 +2571,178 @@ void scanSPI() {
   #endif
 }
 
+// ========== SD CARD ==========
+bool initSDCard() {
+  Serial.println("\r\n=== INITIALISATION CARTE SD ===");
+
+  // Initialize SPI for SD Card
+  SPI.begin(sd_sclk, sd_miso, sd_mosi, sd_cs);
+
+  // Try to mount SD card
+  if (!SD.begin(sd_cs)) {
+    Serial.println("Échec du montage de la carte SD");
+    sdCardAvailable = false;
+    return false;
+  }
+
+  uint8_t cardType = SD.cardType();
+  if (cardType == CARD_NONE) {
+    Serial.println("Aucune carte SD détectée");
+    sdCardAvailable = false;
+    return false;
+  }
+
+  sdCardAvailable = true;
+  sdCardSize = SD.cardSize() / (1024 * 1024);
+  sdCardUsed = SD.usedBytes() / (1024 * 1024);
+
+  Serial.print("Type de carte SD: ");
+  Serial.println(getSDCardType());
+  Serial.print("Taille: ");
+  Serial.print(sdCardSize);
+  Serial.println(" MB");
+  Serial.print("Utilisé: ");
+  Serial.print(sdCardUsed);
+  Serial.println(" MB");
+
+  return true;
+}
+
+void testSDCard() {
+  Serial.println("\r\n=== TEST CARTE SD ===");
+
+  if (!sdCardAvailable) {
+    Serial.println("Carte SD non disponible");
+    return;
+  }
+
+  // Test write
+  File testFile = SD.open("/test.txt", FILE_WRITE);
+  if (!testFile) {
+    Serial.println("Échec de création du fichier test");
+    return;
+  }
+
+  testFile.println("ESP32 Diagnostic Suite - SD Card Test");
+  testFile.close();
+  Serial.println("Écriture du fichier test OK");
+
+  // Test read
+  testFile = SD.open("/test.txt");
+  if (!testFile) {
+    Serial.println("Échec de lecture du fichier test");
+    return;
+  }
+
+  Serial.println("Contenu du fichier test:");
+  while (testFile.available()) {
+    Serial.write(testFile.read());
+  }
+  testFile.close();
+
+  // Test delete
+  if (SD.remove("/test.txt")) {
+    Serial.println("Suppression du fichier test OK");
+  } else {
+    Serial.println("Échec de suppression du fichier test");
+  }
+}
+
+uint64_t getSDCardSize() {
+  if (!sdCardAvailable) return 0;
+  return SD.cardSize() / (1024 * 1024);
+}
+
+uint64_t getSDCardUsed() {
+  if (!sdCardAvailable) return 0;
+  return SD.usedBytes() / (1024 * 1024);
+}
+
+String getSDCardType() {
+  if (!sdCardAvailable) return "None";
+
+  uint8_t cardType = SD.cardType();
+  switch (cardType) {
+    case CARD_MMC:
+      return "MMC";
+    case CARD_SD:
+      return "SDSC";
+    case CARD_SDHC:
+      return "SDHC";
+    default:
+      return "Unknown";
+  }
+}
+
+// ========== ROTARY ENCODER ==========
+void IRAM_ATTR encoderISR() {
+  unsigned long currentTime = millis();
+  if (currentTime - lastEncoderInterrupt < ENCODER_DEBOUNCE_MS) {
+    return;
+  }
+
+  int clkValue = digitalRead(encoder_clk);
+  int dtValue = digitalRead(encoder_dt);
+
+  if (clkValue != lastEncoderCLK) {
+    if (dtValue != clkValue) {
+      encoderPosition++;
+    } else {
+      encoderPosition--;
+    }
+    lastEncoderInterrupt = currentTime;
+  }
+  lastEncoderCLK = clkValue;
+}
+
+void IRAM_ATTR encoderButtonISR() {
+  unsigned long currentTime = millis();
+  if (currentTime - lastEncoderInterrupt < ENCODER_DEBOUNCE_MS) {
+    return;
+  }
+
+  encoderButtonPressed = !digitalRead(encoder_sw);
+  lastEncoderInterrupt = currentTime;
+}
+
+void initEncoder() {
+  Serial.println("\r\n=== INITIALISATION ENCODEUR ROTATIF ===");
+
+  pinMode(encoder_clk, INPUT_PULLUP);
+  pinMode(encoder_dt, INPUT_PULLUP);
+  pinMode(encoder_sw, INPUT_PULLUP);
+
+  lastEncoderCLK = digitalRead(encoder_clk);
+
+  attachInterrupt(digitalPinToInterrupt(encoder_clk), encoderISR, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(encoder_sw), encoderButtonISR, CHANGE);
+
+  Serial.println("Encodeur rotatif initialisé");
+  Serial.print("CLK: GPIO ");
+  Serial.println(encoder_clk);
+  Serial.print("DT: GPIO ");
+  Serial.println(encoder_dt);
+  Serial.print("SW: GPIO ");
+  Serial.println(encoder_sw);
+}
+
+int getEncoderPosition() {
+  return encoderPosition;
+}
+
+void resetEncoderPosition() {
+  encoderPosition = 0;
+}
+
+bool isEncoderButtonPressed() {
+  return encoderButtonPressed;
+}
+
 // ========== LISTING PARTITIONS ==========
 void listPartitions() {
   Serial.println("\r\n=== PARTITIONS FLASH ===");
   partitionsInfo = "";
-  
+
   esp_partition_iterator_t it = esp_partition_find(ESP_PARTITION_TYPE_ANY, ESP_PARTITION_SUBTYPE_ANY, NULL);
   
   int count = 0;
@@ -3803,6 +4010,96 @@ void handleMotionSensorTest() {
   });
 }
 
+// SD Card Handlers
+void handleSDCardTest() {
+  testSDCard();
+  sendJsonResponse(200, {
+    jsonBoolField("success", sdCardAvailable),
+    jsonStringField("type", getSDCardType()),
+    jsonNumberField("size", String(sdCardSize)),
+    jsonNumberField("used", String(sdCardUsed))
+  });
+}
+
+void handleSDCardInfo() {
+  String json;
+  json.reserve(200);
+  json = "{";
+  json += "\"available\":" + String(sdCardAvailable ? "true" : "false") + ",";
+  json += "\"type\":\"" + getSDCardType() + "\",";
+  json += "\"size\":" + String(sdCardSize) + ",";
+  json += "\"used\":" + String(sdCardUsed) + ",";
+  json += "\"free\":" + String(sdCardSize - sdCardUsed);
+  json += "}";
+
+  server.send(200, "application/json", json);
+}
+
+void handleSDCardConfig() {
+  if (server.hasArg("miso")) sd_miso = server.arg("miso").toInt();
+  if (server.hasArg("mosi")) sd_mosi = server.arg("mosi").toInt();
+  if (server.hasArg("sclk")) sd_sclk = server.arg("sclk").toInt();
+  if (server.hasArg("cs")) sd_cs = server.arg("cs").toInt();
+
+  sendJsonResponse(200, {
+    jsonBoolField("success", true),
+    jsonNumberField("miso", String(sd_miso)),
+    jsonNumberField("mosi", String(sd_mosi)),
+    jsonNumberField("sclk", String(sd_sclk)),
+    jsonNumberField("cs", String(sd_cs))
+  });
+}
+
+void handleSDCardFormat() {
+  if (!sdCardAvailable) {
+    sendJsonResponse(400, {
+      jsonBoolField("success", false),
+      jsonStringField("error", "SD Card not available")
+    });
+    return;
+  }
+
+  // Note: SD.format() is not available in standard SD library
+  // This would require FS.h and proper implementation
+  sendJsonResponse(200, {
+    jsonBoolField("success", true),
+    jsonStringField("message", "Format function not implemented yet")
+  });
+}
+
+// Rotary Encoder Handlers
+void handleEncoderRead() {
+  String json;
+  json.reserve(150);
+  json = "{";
+  json += "\"position\":" + String(encoderPosition) + ",";
+  json += "\"buttonPressed\":" + String(encoderButtonPressed ? "true" : "false");
+  json += "}";
+
+  server.send(200, "application/json", json);
+}
+
+void handleEncoderReset() {
+  resetEncoderPosition();
+  sendJsonResponse(200, {
+    jsonBoolField("success", true),
+    jsonNumberField("position", String(encoderPosition))
+  });
+}
+
+void handleEncoderConfig() {
+  if (server.hasArg("clk")) encoder_clk = server.arg("clk").toInt();
+  if (server.hasArg("dt")) encoder_dt = server.arg("dt").toInt();
+  if (server.hasArg("sw")) encoder_sw = server.arg("sw").toInt();
+
+  sendJsonResponse(200, {
+    jsonBoolField("success", true),
+    jsonNumberField("clk", String(encoder_clk)),
+    jsonNumberField("dt", String(encoder_dt)),
+    jsonNumberField("sw", String(encoder_sw))
+  });
+}
+
 // GPS Handlers
 void handleGPSData() {
   updateGPS();
@@ -4082,6 +4379,21 @@ void handleOverview() {
   json += "\"total\":" + String(diagnosticData.totalGPIO) + ",";
   json += "\"i2c_count\":" + String(diagnosticData.i2cCount) + ",";
   json += "\"i2c_devices\":\"" + diagnosticData.i2cDevices + "\"";
+  json += "},";
+
+  // SD Card info
+  json += "\"sdcard\":{";
+  json += "\"available\":" + String(sdCardAvailable ? "true" : "false") + ",";
+  json += "\"type\":\"" + getSDCardType() + "\",";
+  json += "\"size\":" + String(sdCardSize) + ",";
+  json += "\"used\":" + String(sdCardUsed) + ",";
+  json += "\"free\":" + String(sdCardSize - sdCardUsed);
+  json += "},";
+
+  // Rotary Encoder info
+  json += "\"encoder\":{";
+  json += "\"position\":" + String(encoderPosition) + ",";
+  json += "\"buttonPressed\":" + String(encoderButtonPressed ? "true" : "false");
   json += "}";
 
   json += "}";
@@ -4166,7 +4478,22 @@ void handleExportTXT() {
   txt += String(Texts::device_count) + ": " + String(diagnosticData.i2cCount) + " - " + diagnosticData.i2cDevices + "\r\n";
   txt += "SPI: " + spiInfo + "\r\n";
   txt += "\r\n";
-  
+
+  txt += "=== SD CARD ===\r\n";
+  txt += "Available: " + String(sdCardAvailable ? "Yes" : "No") + "\r\n";
+  if (sdCardAvailable) {
+    txt += "Type: " + getSDCardType() + "\r\n";
+    txt += "Size: " + String(sdCardSize) + " MB\r\n";
+    txt += "Used: " + String(sdCardUsed) + " MB\r\n";
+    txt += "Free: " + String(sdCardSize - sdCardUsed) + " MB\r\n";
+  }
+  txt += "\r\n";
+
+  txt += "=== ROTARY ENCODER ===\r\n";
+  txt += "Position: " + String(encoderPosition) + "\r\n";
+  txt += "Button Pressed: " + String(encoderButtonPressed ? "Yes" : "No") + "\r\n";
+  txt += "\r\n";
+
   txt += "=== " + String(Texts::test) + " ===\r\n";
   txt += String(Texts::builtin_led) + ": " + builtinLedTestResult + "\r\n";
   txt += String(Texts::neopixel) + ": " + neopixelTestResult + "\r\n";
@@ -4260,7 +4587,20 @@ void handleExportJSON() {
   json += "\"i2c_devices\":\"" + diagnosticData.i2cDevices + "\",";
   json += "\"spi\":\"" + spiInfo + "\"";
   json += "},";
-  
+
+  json += "\"sdcard\":{";
+  json += "\"available\":" + String(sdCardAvailable ? "true" : "false") + ",";
+  json += "\"type\":\"" + getSDCardType() + "\",";
+  json += "\"size_mb\":" + String(sdCardSize) + ",";
+  json += "\"used_mb\":" + String(sdCardUsed) + ",";
+  json += "\"free_mb\":" + String(sdCardSize - sdCardUsed);
+  json += "},";
+
+  json += "\"encoder\":{";
+  json += "\"position\":" + String(encoderPosition) + ",";
+  json += "\"button_pressed\":" + String(encoderButtonPressed ? "true" : "false");
+  json += "},";
+
   json += "\"hardware_tests\":{";
   json += "\"builtin_led\":\"" + builtinLedTestResult + "\",";
   json += "\"neopixel\":\"" + neopixelTestResult + "\",";
@@ -4337,7 +4677,18 @@ void handleExportCSV() {
   
   csv += String(Texts::i2c_peripherals) + "," + String(Texts::device_count) + "," + String(diagnosticData.i2cCount) + "\r\n";
   csv += String(Texts::i2c_peripherals) + "," + String(Texts::devices) + "," + diagnosticData.i2cDevices + "\r\n";
-  
+
+  csv += "SD Card,Available," + String(sdCardAvailable ? "Yes" : "No") + "\r\n";
+  if (sdCardAvailable) {
+    csv += "SD Card,Type," + getSDCardType() + "\r\n";
+    csv += "SD Card,Size MB," + String(sdCardSize) + "\r\n";
+    csv += "SD Card,Used MB," + String(sdCardUsed) + "\r\n";
+    csv += "SD Card,Free MB," + String(sdCardSize - sdCardUsed) + "\r\n";
+  }
+
+  csv += "Rotary Encoder,Position," + String(encoderPosition) + "\r\n";
+  csv += "Rotary Encoder,Button Pressed," + String(encoderButtonPressed ? "Yes" : "No") + "\r\n";
+
   csv += String(Texts::test) + "," + String(Texts::builtin_led) + "," + builtinLedTestResult + "\r\n";
   csv += String(Texts::test) + "," + String(Texts::neopixel) + "," + neopixelTestResult + "\r\n";
   csv += String(Texts::test) + ",OLED," + oledTestResult + "\r\n";
@@ -4820,6 +5171,20 @@ void handleJavaScriptRoute() {
   pinVars += String(pwm_pin);
   pinVars += ";const BUZZER_PIN=";
   pinVars += String(buzzer_pin);
+  pinVars += ";const SD_MISO=";
+  pinVars += String(sd_miso);
+  pinVars += ";const SD_MOSI=";
+  pinVars += String(sd_mosi);
+  pinVars += ";const SD_SCLK=";
+  pinVars += String(sd_sclk);
+  pinVars += ";const SD_CS=";
+  pinVars += String(sd_cs);
+  pinVars += ";const ENCODER_CLK=";
+  pinVars += String(encoder_clk);
+  pinVars += ";const ENCODER_DT=";
+  pinVars += String(encoder_dt);
+  pinVars += ";const ENCODER_SW=";
+  pinVars += String(encoder_sw);
   pinVars += ";";
 
   Serial.printf("Sending pin variables: %d bytes\n", pinVars.length());
@@ -4942,6 +5307,12 @@ void setup() {
     strip->clear();
     strip->show();
   }
+
+  // SD Card initialization
+  initSDCard();
+
+  // Rotary Encoder initialization
+  initEncoder();
 
   // WiFi
   WiFi.mode(WIFI_STA);
@@ -5117,6 +5488,17 @@ void setup() {
 
   server.on("/api/motion-sensor-config", handleMotionSensorConfig);
   server.on("/api/motion-sensor-test", handleMotionSensorTest);
+
+  // SD Card
+  server.on("/api/sdcard-test", handleSDCardTest);
+  server.on("/api/sdcard-info", handleSDCardInfo);
+  server.on("/api/sdcard-config", handleSDCardConfig);
+  server.on("/api/sdcard-format", handleSDCardFormat);
+
+  // Rotary Encoder
+  server.on("/api/encoder-read", handleEncoderRead);
+  server.on("/api/encoder-reset", handleEncoderReset);
+  server.on("/api/encoder-config", handleEncoderConfig);
 
   // GPS Module
   server.on("/api/gps", handleGPSData);

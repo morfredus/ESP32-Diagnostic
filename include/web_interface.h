@@ -33,6 +33,13 @@ extern int light_sensor_pin;     // Light sensor (LDR)
 extern int distance_trig_pin;    // Distance sensor trigger (HC-SR04)
 extern int distance_echo_pin;    // Distance sensor echo (HC-SR04)
 extern int motion_sensor_pin;    // Motion sensor (PIR)
+extern int sd_miso;              // SD Card MISO (SPI)
+extern int sd_mosi;              // SD Card MOSI (SPI)
+extern int sd_sclk;              // SD Card SCLK (SPI)
+extern int sd_cs;                // SD Card CS (Chip Select)
+extern int encoder_clk;          // Rotary Encoder CLK (Clock/A)
+extern int encoder_dt;           // Rotary Encoder DT (Data/B)
+extern int encoder_sw;           // Rotary Encoder SW (Switch/Button)
 
 // Déclarations forward des fonctions
 String htmlEscape(const String& raw);

@@ -1,3 +1,54 @@
+## [Version 3.26.0] - 2025-12-22
+
+### 🎉 New Features: SD Card Reader & Rotary Encoder HW-040 Support
+
+**Major Addition:** Full support for SD card reader and rotary encoder with dynamic GPIO configuration.
+
+### Added
+- **SD Card Reader Support (SPI)**
+  - GPIO pin definitions in `board_config.h` for both ESP32-S3 and ESP32 Classic
+  - ESP32-S3: MISO=37, MOSI=11 (shared with TFT), SCLK=12 (shared with TFT), CS=36
+  - ESP32 Classic: MISO=19, MOSI=23 (shared with TFT), SCLK=18 (shared with TFT), CS=5
+  - Runtime pin variables: `sd_miso`, `sd_mosi`, `sd_sclk`, `sd_cs`
+  - Functions: `initSDCard()`, `testSDCard()`, `getSDCardSize()`, `getSDCardUsed()`, `getSDCardType()`
+  - Web API endpoints:
+    - `/api/sdcard-test` - Test SD card read/write/delete
+    - `/api/sdcard-info` - Get SD card information (size, used, type)
+    - `/api/sdcard-config` - Configure SD card GPIO pins
+    - `/api/sdcard-format` - Format SD card (placeholder)
+
+- **Rotary Encoder HW-040 Support**
+  - GPIO pin definitions in `board_config.h` for both ESP32-S3 and ESP32 Classic
+  - ESP32-S3: CLK=14, DT=47, SW=40 (with internal pull-ups)
+  - ESP32 Classic: CLK=26, DT=27, SW=33 (with internal pull-ups)
+  - Runtime pin variables: `encoder_clk`, `encoder_dt`, `encoder_sw`
+  - ISR-based rotation and button detection with debouncing (5ms)
+  - Functions: `initEncoder()`, `encoderISR()`, `encoderButtonISR()`, `getEncoderPosition()`, `resetEncoderPosition()`, `isEncoderButtonPressed()`
+  - Web API endpoints:
+    - `/api/encoder-read` - Read current position and button state
+    - `/api/encoder-reset` - Reset encoder position to zero
+    - `/api/encoder-config` - Configure encoder GPIO pins
+
+### Changed
+- **Export Functions Enhanced**
+  - All export formats (TXT, JSON, CSV) now include SD card and rotary encoder information
+  - Overview API (`/api/overview`) includes SD card and encoder status
+  - JavaScript constants injected for SD and encoder pins
+
+### Technical
+- **Files Modified**:
+  - `include/board_config.h`: Added SD and encoder GPIO definitions
+  - `src/main.cpp`: Added includes (SD.h, SPI.h), runtime variables, initialization calls, handlers, routes
+  - `include/web_interface.h`: Added extern declarations for SD and encoder pins
+  - `platformio.ini`: Version bump to 3.26.0
+
+### Architecture
+- **SD Card**: Uses standard SD library with SPI communication (shares bus with TFT display)
+- **Rotary Encoder**: Interrupt-driven with debouncing, position tracking, and button state
+- **Pin Configuration**: Follows PIN_POLICY - all GPIO references via `board_config.h`
+
+---
+
 ## [Version 3.25.0] - 2025-12-22
 
 ### ✅ Feature Restoration: Dynamic GPIO Pin Remapping via Web UI
