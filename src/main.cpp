@@ -194,15 +194,33 @@ String getArduinoCoreVersionString() {
 }
 
 // ========== HARDWARE PIN CONFIGURATION (from board_config.h) ==========
-// Note: GPIO pins are now compile-time constants defined in board_config.h
-// No runtime variables needed - pins are fixed at compilation
+// Runtime pin variables (lowercase) initialized from board_config.h defines (UPPERCASE)
+// Using lowercase names avoids preprocessor conflicts while enabling dynamic remapping
+
+// I2C pins for OLED and environmental sensors (modifiable via web interface)
+int i2c_sda = I2C_SDA;
+int i2c_scl = I2C_SCL;
+
+// RGB LED pins (modifiable via web interface)
+int rgb_led_pin_r = RGB_LED_PIN_R;
+int rgb_led_pin_g = RGB_LED_PIN_G;
+int rgb_led_pin_b = RGB_LED_PIN_B;
+
+// Sensor and output pins (modifiable via web interface)
+int pwm_pin = PWM_PIN;
+int buzzer_pin = BUZZER_PIN;
+int dht_pin = DHT_PIN;
+int light_sensor_pin = LIGHT_SENSOR_PIN;
+int distance_trig_pin = DISTANCE_TRIG_PIN;
+int distance_echo_pin = DISTANCE_ECHO_PIN;
+int motion_sensor_pin = MOTION_SENSOR_PIN;
 
 // OLED display settings (from config.h)
 uint8_t oledRotation = DEFAULT_OLED_ROTATION;
 int oledWidth = SCREEN_WIDTH;
 int oledHeight = SCREEN_HEIGHT;
 
-// DHT sensor type (still configurable at runtime)
+// DHT sensor type (configurable at runtime)
 uint8_t DHT_SENSOR_TYPE = DEFAULT_DHT_SENSOR_TYPE;
 
 // ========== OBJETS GLOBAUX ==========
@@ -491,20 +509,20 @@ static void onButton1Pressed() {
     case 3: r = 0; g = 0; b = 255; break;     // Bleu
     case 4: r = 255; g = 255; b = 255; break; // Blanc
   }
-  
-  if (RGB_LED_PIN_R >= 0 && RGB_LED_PIN_G >= 0 && RGB_LED_PIN_B >= 0) {
-    analogWrite(RGB_LED_PIN_R, r);
-    analogWrite(RGB_LED_PIN_G, g);
-    analogWrite(RGB_LED_PIN_B, b);
+
+  if (rgb_led_pin_r >= 0 && rgb_led_pin_g >= 0 && rgb_led_pin_b >= 0) {
+    analogWrite(rgb_led_pin_r, r);
+    analogWrite(rgb_led_pin_g, g);
+    analogWrite(rgb_led_pin_b, b);
   }
-  
+
   rgbStep++;
 }
 
 // Bouton 2: Bip à l'appui
 static void onButton2Pressed() {
-  if (BUZZER_PIN >= 0) {
-    tone(BUZZER_PIN, 1000, 200);
+  if (buzzer_pin >= 0) {
+    tone(buzzer_pin, 1000, 200);
   }
 }
 
@@ -1411,10 +1429,10 @@ unsigned long benchmarkMemory() {
 void ensureI2CBusConfigured() {
   Wire.end();
 #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 3, 0)
-  Wire.setPins(I2C_SDA, I2C_SCL);
+  Wire.setPins(i2c_sda, i2c_scl);
   Wire.begin();
 #else
-  Wire.begin(I2C_SDA, I2C_SCL);
+  Wire.begin(i2c_sda, i2c_scl);
 #endif
   Wire.setClock(400000);
 }
@@ -1424,7 +1442,7 @@ void scanI2C() {
 
   Serial.println("\r\n=== SCAN I2C ===");
   ensureI2CBusConfigured();
-  Serial.printf("I2C: SDA=%d, SCL=%d\r\n", I2C_SDA, I2C_SCL);
+  Serial.printf("I2C: SDA=%d, SCL=%d\r\n", i2c_sda, i2c_scl);
   
   diagnosticData.i2cDevices = "";
   diagnosticData.i2cCount = 0;
@@ -1862,7 +1880,7 @@ void applyOLEDOrientation() {
 void detectOLED() {
   Serial.println("\r\n=== DETECTION OLED ===");
   ensureI2CBusConfigured();
-  Serial.printf("I2C: SDA=%d, SCL=%d\r\n", I2C_SDA, I2C_SCL);
+  Serial.printf("I2C: SDA=%d, SCL=%d\r\n", i2c_sda, i2c_scl);
 
   Wire.beginTransmission(SCREEN_ADDRESS);
   bool i2cDetected = (Wire.endTransmission() == 0);
@@ -1882,7 +1900,7 @@ void detectOLED() {
     } else {
       // [OPT-009]: Buffer-based not_detected message (1 vs 4 allocations)
       char notDetBuf[128];
-      snprintf(notDetBuf, sizeof(notDetBuf), "%s (SDA:%d SCL:%d)", Texts::not_detected.str().c_str(), I2C_SDA, I2C_SCL);
+      snprintf(notDetBuf, sizeof(notDetBuf), "%s (SDA:%d SCL:%d)", Texts::not_detected.str().c_str(), i2c_sda, i2c_scl);
       oledTestResult = String(notDetBuf);
     }
     Serial.println("OLED: Non detecte\r\n");
@@ -1899,7 +1917,7 @@ void oledStepWelcome() {
   char buf[32];
   snprintf(buf, sizeof(buf), "I2C: 0x%02X", SCREEN_ADDRESS);
   oled.drawStr(0, 45, buf);
-  snprintf(buf, sizeof(buf), "SDA:%d SCL:%d", I2C_SDA, I2C_SCL);
+  snprintf(buf, sizeof(buf), "SDA:%d SCL:%d", i2c_sda, i2c_scl);
   oled.drawStr(0, 60, buf);
   oled.sendBuffer();
   delay(700);
@@ -2545,35 +2563,35 @@ void listPartitions() {
 void testRGBLed() {
   Serial.println("\r\n=== TEST LED RGB ===");
 
-  if (RGB_LED_PIN_R < 0 || RGB_LED_PIN_G < 0 || RGB_LED_PIN_B < 0) {
+  if (rgb_led_pin_r < 0 || rgb_led_pin_g < 0 || rgb_led_pin_b < 0) {
     rgbLedTestResult = String(Texts::configuration_invalid);
     rgbLedAvailable = false;
     Serial.println("LED RGB: Configuration invalide");
     return;
   }
 
-  pinMode(RGB_LED_PIN_R, OUTPUT);
-  pinMode(RGB_LED_PIN_G, OUTPUT);
-  pinMode(RGB_LED_PIN_B, OUTPUT);
+  pinMode(rgb_led_pin_r, OUTPUT);
+  pinMode(rgb_led_pin_g, OUTPUT);
+  pinMode(rgb_led_pin_b, OUTPUT);
 
-  Serial.printf("Test LED RGB - R:%d G:%d B:%d\r\n", RGB_LED_PIN_R, RGB_LED_PIN_G, RGB_LED_PIN_B);
+  Serial.printf("Test LED RGB - R:%d G:%d B:%d\r\n", rgb_led_pin_r, rgb_led_pin_g, rgb_led_pin_b);
 
-  digitalWrite(RGB_LED_PIN_R, LOW);
-  digitalWrite(RGB_LED_PIN_G, LOW);
-  digitalWrite(RGB_LED_PIN_B, LOW);
+  digitalWrite(rgb_led_pin_r, LOW);
+  digitalWrite(rgb_led_pin_g, LOW);
+  digitalWrite(rgb_led_pin_b, LOW);
   delay(120);
 
-  digitalWrite(RGB_LED_PIN_R, HIGH);
+  digitalWrite(rgb_led_pin_r, HIGH);
   delay(150);
-  digitalWrite(RGB_LED_PIN_R, LOW);
+  digitalWrite(rgb_led_pin_r, LOW);
 
-  digitalWrite(RGB_LED_PIN_G, HIGH);
+  digitalWrite(rgb_led_pin_g, HIGH);
   delay(150);
-  digitalWrite(RGB_LED_PIN_G, LOW);
+  digitalWrite(rgb_led_pin_g, LOW);
 
-  digitalWrite(RGB_LED_PIN_B, HIGH);
+  digitalWrite(rgb_led_pin_b, HIGH);
   delay(150);
-  digitalWrite(RGB_LED_PIN_B, LOW);
+  digitalWrite(rgb_led_pin_b, LOW);
 
   rgbLedTestResult = OK_STR;
   rgbLedAvailable = true;
@@ -2581,10 +2599,10 @@ void testRGBLed() {
 }
 
 void setRGBLedColor(int r, int g, int b) {
-  if (RGB_LED_PIN_R >= 0 && RGB_LED_PIN_G >= 0 && RGB_LED_PIN_B >= 0) {
-    analogWrite(RGB_LED_PIN_R, r);
-    analogWrite(RGB_LED_PIN_G, g);
-    analogWrite(RGB_LED_PIN_B, b);
+  if (rgb_led_pin_r >= 0 && rgb_led_pin_g >= 0 && rgb_led_pin_b >= 0) {
+    analogWrite(rgb_led_pin_r, r);
+    analogWrite(rgb_led_pin_g, g);
+    analogWrite(rgb_led_pin_b, b);
   }
 }
 
@@ -2592,23 +2610,23 @@ void setRGBLedColor(int r, int g, int b) {
 void testBuzzer() {
   Serial.println("\r\n=== TEST BUZZER ===");
 
-  if (BUZZER_PIN < 0) {
+  if (buzzer_pin < 0) {
     buzzerTestResult = String(Texts::configuration_invalid);
     buzzerAvailable = false;
     Serial.println("Buzzer: Configuration invalide");
     return;
   }
 
-  pinMode(BUZZER_PIN, OUTPUT);
-  Serial.printf("Test Buzzer - Pin:%d\r\n", BUZZER_PIN);
+  pinMode(buzzer_pin, OUTPUT);
+  Serial.printf("Test Buzzer - Pin:%d\r\n", buzzer_pin);
 
-  tone(BUZZER_PIN, 1000, 160);
+  tone(buzzer_pin, 1000, 160);
   delay(220);
-  tone(BUZZER_PIN, 1500, 160);
+  tone(buzzer_pin, 1500, 160);
   delay(220);
-  tone(BUZZER_PIN, 2000, 160);
+  tone(buzzer_pin, 2000, 160);
   delay(220);
-  noTone(BUZZER_PIN);
+  noTone(buzzer_pin);
 
   buzzerTestResult = OK_STR;
   buzzerAvailable = true;
@@ -2617,7 +2635,7 @@ void testBuzzer() {
 
 void playBuzzerTone(int frequency, int duration) {
   if (BUZZER_PIN >= 0) {
-    tone(BUZZER_PIN, frequency, duration);
+    tone(buzzer_pin, frequency, duration);
   }
 }
 
@@ -2631,27 +2649,27 @@ void testDHTSensor() {
   const char* sensorName = getDhtSensorName();
   Serial.printf("\r\n=== TEST %s ===\r\n", sensorName);
 
-  if (DHT_PIN < 0) {
+  if (dht_pin < 0) {
     dhtTestResult = String(Texts::configuration_invalid);
     dhtAvailable = false;
     Serial.printf("%s: Configuration invalide\r\n", sensorName);
     return;
   }
 
-  Serial.printf("Lecture %s - Pin:%d\r\n", sensorName, DHT_PIN);
+  Serial.printf("Lecture %s - Pin:%d\r\n", sensorName, dht_pin);
 
-  pinMode(DHT_PIN, OUTPUT);
-  digitalWrite(DHT_PIN, LOW);
+  pinMode(dht_pin, OUTPUT);
+  digitalWrite(dht_pin, LOW);
   delay(20);
-  digitalWrite(DHT_PIN, HIGH);
+  digitalWrite(dht_pin, HIGH);
   delayMicroseconds(40);
-  pinMode(DHT_PIN, INPUT_PULLUP);
+  pinMode(dht_pin, INPUT_PULLUP);
 
   uint8_t data[5] = {0};
   uint8_t bits[40] = {0};
 
   unsigned long timeout = millis();
-  while (digitalRead(DHT_PIN) == HIGH) {
+  while (digitalRead(dht_pin) == HIGH) {
     if (millis() - timeout > 100) {
       dhtTestResult = String(Texts::error_label);
       dhtAvailable = false;
@@ -2661,7 +2679,7 @@ void testDHTSensor() {
   }
 
   timeout = millis();
-  while (digitalRead(DHT_PIN) == LOW) {
+  while (digitalRead(dht_pin) == LOW) {
     if (millis() - timeout > 100) {
       dhtTestResult = String(Texts::error_label);
       dhtAvailable = false;
@@ -2671,7 +2689,7 @@ void testDHTSensor() {
   }
 
   timeout = millis();
-  while (digitalRead(DHT_PIN) == HIGH) {
+  while (digitalRead(dht_pin) == HIGH) {
     if (millis() - timeout > 100) {
       dhtTestResult = String(Texts::error_label);
       dhtAvailable = false;
@@ -2682,13 +2700,13 @@ void testDHTSensor() {
 
   for (int i = 0; i < 40; i++) {
     timeout = micros();
-    while (digitalRead(DHT_PIN) == LOW) {
+    while (digitalRead(dht_pin) == LOW) {
       if (micros() - timeout > 100) break;
     }
 
     unsigned long t = micros();
     timeout = micros();
-    while (digitalRead(DHT_PIN) == HIGH) {
+    while (digitalRead(dht_pin) == HIGH) {
       if (micros() - timeout > 100) break;
     }
 
@@ -2736,20 +2754,20 @@ void testDHTSensor() {
 void testLightSensor() {
   Serial.println("\r\n=== TEST LIGHT SENSOR ===");
 
-  if (LIGHT_SENSOR_PIN < 0) {
+  if (light_sensor_pin < 0) {
     lightSensorTestResult = String(Texts::configuration_invalid);
     lightSensorAvailable = false;
     Serial.println("Light Sensor: Configuration invalide");
     return;
   }
 
-  pinMode(LIGHT_SENSOR_PIN, INPUT);
-  Serial.printf("Lecture Light Sensor - Pin:%d\r\n", LIGHT_SENSOR_PIN);
+  pinMode(light_sensor_pin, INPUT);
+  Serial.printf("Lecture Light Sensor - Pin:%d\r\n", light_sensor_pin);
 
   int sum = 0;
   const int samples = 6;
   for (int i = 0; i < samples; i++) {
-    sum += analogRead(LIGHT_SENSOR_PIN);
+    sum += analogRead(light_sensor_pin);
     delay(8);
     yield();
   }
@@ -2764,7 +2782,7 @@ void testLightSensor() {
 void testDistanceSensor() {
   Serial.println("\r\n=== TEST DISTANCE SENSOR (HC-SR04) ===");
 
-  if (DISTANCE_TRIG_PIN < 0 || DISTANCE_ECHO_PIN < 0) {
+  if (distance_trig_pin < 0 || distance_echo_pin < 0) {
     distanceSensorTestResult = String(Texts::configuration_invalid);
     distanceSensorAvailable = false;
     Serial.println("Distance Sensor: Configuration invalide");
@@ -2773,43 +2791,43 @@ void testDistanceSensor() {
 
   // ESP32-S3 (OPI Flash/PSRAM): GPIO 35..48 sont généralement réservées
   // Si utilisées pour TRIG/ECHO, la mesure échouera systématiquement
-  if ((DISTANCE_TRIG_PIN >= 35 && DISTANCE_TRIG_PIN <= 48) ||
-      (DISTANCE_ECHO_PIN >= 35 && DISTANCE_ECHO_PIN <= 48)) {
+  if ((distance_trig_pin >= 35 && distance_trig_pin <= 48) ||
+      (distance_echo_pin >= 35 && distance_echo_pin <= 48)) {
     distanceSensorTestResult = String(Texts::configuration_invalid);
     distanceSensorAvailable = false;
     Serial.printf("Distance Sensor: Pins invalides sur ESP32-S3 OPI (TRIG=%d, ECHO=%d). Evitez GPIO 35..48.\r\n",
-                  DISTANCE_TRIG_PIN, DISTANCE_ECHO_PIN);
+                  distance_trig_pin, distance_echo_pin);
     Serial.println("Suggestion: TRIG=26 (sortie), ECHO=25 (entrée) si le bus I2C secondaire est inactif.");
     return;
   }
 
-  pinMode(DISTANCE_TRIG_PIN, OUTPUT);
-  pinMode(DISTANCE_ECHO_PIN, INPUT);
+  pinMode(distance_trig_pin, OUTPUT);
+  pinMode(distance_echo_pin, INPUT);
 
-  Serial.printf("Distance Sensor - Trig:%d Echo:%d\r\n", DISTANCE_TRIG_PIN, DISTANCE_ECHO_PIN);
+  Serial.printf("Distance Sensor - Trig:%d Echo:%d\r\n", distance_trig_pin, distance_echo_pin);
 
   // Assurer ECHO à LOW avant de déclencher (éviter faux négatifs)
   {
     unsigned long waitStart = micros();
-    while (digitalRead(DISTANCE_ECHO_PIN) == HIGH && (micros() - waitStart) < 200000UL) {
+    while (digitalRead(distance_echo_pin) == HIGH && (micros() - waitStart) < 200000UL) {
       yield();
     }
   }
 
   // Séquence TRIG: 10 µs HIGH après stabilisation LOW
-  digitalWrite(DISTANCE_TRIG_PIN, LOW);
+  digitalWrite(distance_trig_pin, LOW);
   delayMicroseconds(4);
-  digitalWrite(DISTANCE_TRIG_PIN, HIGH);
+  digitalWrite(distance_trig_pin, HIGH);
   delayMicroseconds(10);
-  digitalWrite(DISTANCE_TRIG_PIN, LOW);
+  digitalWrite(distance_trig_pin, LOW);
 
   // Mesure de l'impulsion ECHO (timeout élargi)
   unsigned long timeoutUs = 60000UL; // 60 ms
   unsigned long duration = 0UL;
 #if defined(ARDUINO_ARCH_ESP32)
-  duration = pulseInLong(DISTANCE_ECHO_PIN, HIGH, timeoutUs);
+  duration = pulseInLong(distance_echo_pin, HIGH, timeoutUs);
 #else
-  duration = pulseIn(DISTANCE_ECHO_PIN, HIGH, timeoutUs);
+  duration = pulseIn(distance_echo_pin, HIGH, timeoutUs);
 #endif
 
   if (duration > 0UL) {
@@ -2829,19 +2847,19 @@ void testDistanceSensor() {
 void testMotionSensor() {
   Serial.println("\r\n=== TEST MOTION SENSOR (PIR) ===");
 
-  if (MOTION_SENSOR_PIN < 0) {
+  if (motion_sensor_pin < 0) {
     motionSensorTestResult = String(Texts::configuration_invalid);
     motionSensorAvailable = false;
     Serial.println("Motion Sensor: Configuration invalide");
     return;
   }
 
-  pinMode(MOTION_SENSOR_PIN, INPUT);
-  Serial.printf("Motion Sensor - Pin:%d\r\n", MOTION_SENSOR_PIN);
+  pinMode(motion_sensor_pin, INPUT);
+  Serial.printf("Motion Sensor - Pin:%d\r\n", motion_sensor_pin);
 
   delay(30);
   yield();
-  motionDetected = digitalRead(MOTION_SENSOR_PIN);
+  motionDetected = digitalRead(motion_sensor_pin);
 
   motionSensorTestResult = OK_STR;
   motionSensorAvailable = true;
@@ -3284,16 +3302,17 @@ void handleOLEDConfig() {
     int newHeight = server.hasArg("height") ? server.arg("height").toInt() : oledHeight;
 
     if (newSDA >= 0 && newSDA <= 48 && newSCL >= 0 && newSCL <= 48 && newRotation >= 0 && newRotation <= 3) {
-      // Note: I2C pins are now compile-time constants from board_config.h
-      // Pin changes require recompilation
+      bool pinsChanged = (i2c_sda != newSDA) || (i2c_scl != newSCL);
       bool rotationChanged = (oledRotation != static_cast<uint8_t>(newRotation));
       bool resolutionChanged = (oledWidth != newWidth) || (oledHeight != newHeight);
 
+      i2c_sda = newSDA;
+      i2c_scl = newSCL;
       oledRotation = static_cast<uint8_t>(newRotation);
       oledWidth = newWidth;
       oledHeight = newHeight;
 
-      if (rotationChanged || resolutionChanged) {
+      if (pinsChanged || rotationChanged || resolutionChanged) {
         resetOLEDTest();
         Wire.end();
         detectOLED();
@@ -3303,11 +3322,11 @@ void handleOLEDConfig() {
 
       // [OPT-007]: Buffer-based message formatting to reduce allocations (1 vs 9)
       char messageBuffer[128];
-      snprintf(messageBuffer, sizeof(messageBuffer), "I2C reconfigure: SDA:%d SCL:%d Rot:%d Res:%dx%d", 
-               I2C_SDA, I2C_SCL, oledRotation, oledWidth, oledHeight);
+      snprintf(messageBuffer, sizeof(messageBuffer), "I2C reconfigure: SDA:%d SCL:%d Rot:%d Res:%dx%d",
+               i2c_sda, i2c_scl, oledRotation, oledWidth, oledHeight);
       sendOperationSuccess(String(messageBuffer), {
-        jsonNumberField("sda", I2C_SDA),
-        jsonNumberField("scl", I2C_SCL),
+        jsonNumberField("sda", i2c_sda),
+        jsonNumberField("scl", i2c_scl),
         jsonNumberField("rotation", oledRotation),
         jsonNumberField("width", oledWidth),
         jsonNumberField("height", oledHeight)
@@ -3573,11 +3592,9 @@ void handleStressTest() {
 // Handlers API pour les nouveaux capteurs
 void handleRGBLedConfig() {
   if (server.hasArg("r") && server.hasArg("g") && server.hasArg("b")) {
-    // Note: RGB LED pins are now compile-time constants from board_config.h
-    // Pin changes require recompilation
-    // RGB_LED_PIN_R = server.arg("r").toInt();
-    // RGB_LED_PIN_G = server.arg("g").toInt();
-    // RGB_LED_PIN_B = server.arg("b").toInt();
+    rgb_led_pin_r = server.arg("r").toInt();
+    rgb_led_pin_g = server.arg("g").toInt();
+    rgb_led_pin_b = server.arg("b").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
     sendActionResponse(200, true, OK_STR);
   } else {
@@ -3629,9 +3646,7 @@ void handleRGBLedColor() {
 
 void handleBuzzerConfig() {
   if (server.hasArg("pin")) {
-    // Note: Buzzer pin is now a compile-time constant from board_config.h
-    // Pin changes require recompilation
-    // BUZZER_PIN = server.arg("pin").toInt();
+    buzzer_pin = server.arg("pin").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
     sendActionResponse(200, true, OK_STR);
   } else {
@@ -3684,10 +3699,8 @@ void handleDHTConfig() {
   bool updated = false;
 
   if (server.hasArg("pin")) {
-    // Note: DHT pin is now a compile-time constant from board_config.h
-    // Pin changes require recompilation
-    // DHT_PIN = server.arg("pin").toInt();
-    // updated = true;
+    dht_pin = server.arg("pin").toInt();
+    updated = true;
   }
 
   if (server.hasArg("type")) {
@@ -3734,9 +3747,7 @@ void handleDHTTest() {
 
 void handleLightSensorConfig() {
   if (server.hasArg("pin")) {
-    // Note: Light sensor pin is now a compile-time constant from board_config.h
-    // Pin changes require recompilation
-    // LIGHT_SENSOR_PIN = server.arg("pin").toInt();
+    light_sensor_pin = server.arg("pin").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
     sendActionResponse(200, true, OK_STR);
   } else {
@@ -3755,10 +3766,8 @@ void handleLightSensorTest() {
 
 void handleDistanceSensorConfig() {
   if (server.hasArg("trig") && server.hasArg("echo")) {
-    // Note: Distance sensor pins are now compile-time constants from board_config.h
-    // Pin changes require recompilation
-    // DISTANCE_TRIG_PIN = server.arg("trig").toInt();
-    // DISTANCE_ECHO_PIN = server.arg("echo").toInt();
+    distance_trig_pin = server.arg("trig").toInt();
+    distance_echo_pin = server.arg("echo").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
     sendActionResponse(200, true, OK_STR);
   } else {
@@ -3777,9 +3786,7 @@ void handleDistanceSensorTest() {
 
 void handleMotionSensorConfig() {
   if (server.hasArg("pin")) {
-    // Note: Motion sensor pin is now a compile-time constant from board_config.h
-    // Pin changes require recompilation
-    // MOTION_SENSOR_PIN = server.arg("pin").toInt();
+    motion_sensor_pin = server.arg("pin").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
     sendActionResponse(200, true, OK_STR);
   } else {
@@ -4004,7 +4011,7 @@ void handleScreensInfo() {
   json = "{";
   json += "\"oled\":{\"available\":" + String(oledAvailable ? "true" : "false") +
           ",\"status\":\"" + oledTestResult + "\",";
-  json += "\"pins\":{\"sda\":" + String(I2C_SDA) + ",\"scl\":" + String(I2C_SCL) + "},";
+  json += "\"pins\":{\"sda\":" + String(i2c_sda) + ",\"scl\":" + String(i2c_scl) + "},";
   json += "\"rotation\":" + String(oledRotation) + ",";
   json += "\"width\":" + String(oledWidth) + ",\"height\":" + String(oledHeight) + "}";
   
@@ -4794,31 +4801,31 @@ void handleJavaScriptRoute() {
 
   // Send pin constants from board_config.h (BEFORE translations and static code)
   String pinVars = "const RGB_LED_PIN_R=";
-  pinVars += String(RGB_LED_PIN_R);
+  pinVars += String(rgb_led_pin_r);
   pinVars += ";const RGB_LED_PIN_G=";
-  pinVars += String(RGB_LED_PIN_G);
+  pinVars += String(rgb_led_pin_g);
   pinVars += ";const RGB_LED_PIN_B=";
-  pinVars += String(RGB_LED_PIN_B);
+  pinVars += String(rgb_led_pin_b);
   pinVars += ";const DHT_PIN=";
-  pinVars += String(DHT_PIN);
+  pinVars += String(dht_pin);
   pinVars += ";const LIGHT_SENSOR_PIN=";
-  pinVars += String(LIGHT_SENSOR_PIN);
+  pinVars += String(light_sensor_pin);
   pinVars += ";const DISTANCE_TRIG_PIN=";
-  pinVars += String(DISTANCE_TRIG_PIN);
+  pinVars += String(distance_trig_pin);
   pinVars += ";const DISTANCE_ECHO_PIN=";
-  pinVars += String(DISTANCE_ECHO_PIN);
+  pinVars += String(distance_echo_pin);
   pinVars += ";const MOTION_SENSOR_PIN=";
-  pinVars += String(MOTION_SENSOR_PIN);
+  pinVars += String(motion_sensor_pin);
   pinVars += ";const PWM_PIN=";
-  pinVars += String(PWM_PIN);
+  pinVars += String(pwm_pin);
   pinVars += ";const BUZZER_PIN=";
-  pinVars += String(BUZZER_PIN);
+  pinVars += String(buzzer_pin);
   pinVars += ";";
 
   Serial.printf("Sending pin variables: %d bytes\n", pinVars.length());
-  Serial.printf("  RGB_R=%d, RGB_G=%d, RGB_B=%d\n", RGB_LED_PIN_R, RGB_LED_PIN_G, RGB_LED_PIN_B);
-  Serial.printf("  DHT=%d, LIGHT=%d, MOTION=%d, PWM=%d\n", DHT_PIN, LIGHT_SENSOR_PIN, MOTION_SENSOR_PIN, BUZZER_PIN);
-  Serial.printf("  DIST_TRIG=%d, DIST_ECHO=%d\n", DISTANCE_TRIG_PIN, DISTANCE_ECHO_PIN);
+  Serial.printf("  RGB_R=%d, RGB_G=%d, RGB_B=%d\n", rgb_led_pin_r, rgb_led_pin_g, rgb_led_pin_b);
+  Serial.printf("  DHT=%d, LIGHT=%d, MOTION=%d, PWM=%d\n", dht_pin, light_sensor_pin, motion_sensor_pin, buzzer_pin);
+  Serial.printf("  DIST_TRIG=%d, DIST_ECHO=%d\n", distance_trig_pin, distance_echo_pin);
   server.sendContent(pinVars);
 
   // Send translations
@@ -4913,7 +4920,7 @@ void setup() {
 #else
   Serial.println("     TARGET: UNKNOWN - CHECK platformio.ini!");
 #endif
-  Serial.printf("     RGB LED Pins: R=%d G=%d B=%d\r\n", RGB_LED_PIN_R, RGB_LED_PIN_G, RGB_LED_PIN_B);
+  Serial.printf("     RGB LED Pins: R=%d G=%d B=%d\r\n", rgb_led_pin_r, rgb_led_pin_g, rgb_led_pin_b);
   Serial.println("===============================================\r\n");
 
   printPSRAMDiagnostic();
