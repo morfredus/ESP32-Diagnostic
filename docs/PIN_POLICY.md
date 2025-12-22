@@ -1,6 +1,6 @@
 # GPIO Pin Mapping Policy
 
-**ESP32 Diagnostic Suite - Version 3.24.0**
+**ESP32 Diagnostic Suite - Version 3.25.0**
 
 ---
 
@@ -70,39 +70,57 @@ The file defines pins differently for each ESP32 variant:
 #endif
 ```
 
-### 2. Compile-Time Constants (Since v3.24.0)
+### 2. Two-Layer Architecture (v3.25.0)
 
-**Important Change:** GPIO pins are now **compile-time constants**. This means:
+**Current Design:** GPIO pins use a **two-layer architecture** with distinct naming conventions:
 
-- **No runtime variables** - pins are accessed directly via `#define` macros
-- **Pin changes require recompilation** - the Web UI no longer supports dynamic pin remapping
-- **Simpler architecture** - eliminates the two-layer system (no more `DEFAULT_` prefix)
-- **Better performance** - compiler can optimize pin access more effectively
-
-**Previous Architecture (v3.23.x and earlier):**
+**Layer 1: Compile-Time Defaults (UPPERCASE in `board_config.h`)**
 ```cpp
-#define DEFAULT_RGB_LED_PIN_R 21  // Compile-time default
-int RGB_LED_PIN_R = DEFAULT_RGB_LED_PIN_R;  // Runtime variable
+#define I2C_SDA       15  // SDA pin default
+#define I2C_SCL       16  // SCL pin default
+#define RGB_LED_PIN_R 21  // RGB Red channel default
 ```
 
-**Current Architecture (v3.24.0+):**
+**Layer 2: Runtime Variables (lowercase in `main.cpp`)**
 ```cpp
-#define RGB_LED_PIN_R 21  // Compile-time constant (used directly)
+int i2c_sda = I2C_SDA;          // Modifiable at runtime via Web UI
+int i2c_scl = I2C_SCL;          // Modifiable at runtime via Web UI
+int rgb_led_pin_r = RGB_LED_PIN_R;  // Modifiable at runtime via Web UI
 ```
 
-### 3. Web Interface Behavior
+**Key Insight:** Using different naming conventions (UPPERCASE vs lowercase) prevents the preprocessor from expanding lowercase variable names, eliminating conflicts while maintaining both layers.
 
-The Web UI still displays current pin assignments for reference, but:
-- **Pin configuration is read-only** - changes are not saved or applied
-- **To change pins**, you must:
-  1. Edit `include/board_config.h`
-  2. Recompile the project
-  3. Upload the new firmware
+**Benefits:**
+- ✅ **Dynamic pin remapping works** - Users can change pins via Web UI without recompilation
+- ✅ **No preprocessor conflicts** - Different names prevent macro expansion issues
+- ✅ **Clear distinction** - UPPERCASE = compile-time defaults, lowercase = runtime active pins
+- ✅ **Performance** - Compiler optimizes constant initialization
+- ✅ **Hardware flexibility** - Test different pin configurations easily
+
+### 3. Web Interface Behavior (v3.25.0)
+
+The Web UI fully supports **dynamic pin remapping**:
+- **Runtime pin changes work** - Modify GPIO pins via Web UI without recompilation
+- **Configuration handlers active** - All pin configuration endpoints functional:
+  - I2C pins (OLED and environmental sensors)
+  - RGB LED pins (R, G, B channels)
+  - Buzzer, DHT sensor, Light sensor
+  - Distance sensor (Trigger and Echo)
+  - Motion sensor
+- **Changes take effect immediately** - No firmware upload required
+
+**To change default pins permanently**, you can:
+  1. Edit `include/board_config.h` (UPPERCASE defines)
+  2. Recompile and upload
+
+**To change pins temporarily for testing**:
+  1. Use Web UI pin configuration
+  2. Changes persist until device reboot
 
 ```cpp
-// In web_interface.h
-js += F("const RGB_LED_PIN_R=");
-js += String(RGB_LED_PIN_R);  // Injects current value
+// In web_interface.h - JavaScript injection
+js += F("const i2c_sda=");
+js += String(i2c_sda);  // Injects current runtime value (lowercase)
 ```
 
 ---
@@ -111,24 +129,33 @@ js += String(RGB_LED_PIN_R);  // Injects current value
 
 ### ✅ DO:
 
-1. **Always reference pins from `board_config.h`**
+1. **Use lowercase runtime variables in code**
    ```cpp
-   // GOOD - uses pin directly from board_config.h
-   pinMode(RGB_LED_PIN_R, OUTPUT);
+   // GOOD - uses lowercase runtime variable (can be changed via Web UI)
+   pinMode(rgb_led_pin_r, OUTPUT);
+   digitalWrite(buzzer_pin, HIGH);
    ```
 
-2. **Include board_config.h before using pins**
+2. **Include board_config.h and declare extern for runtime variables**
    ```cpp
    // GOOD
    #include "board_config.h"
-   analogWrite(PWM_PIN, 128);
+   extern int pwm_pin;  // Runtime variable from main.cpp
+   analogWrite(pwm_pin, 128);
    ```
 
-3. **Check pin availability before using**
+3. **Initialize runtime variables from UPPERCASE defines**
+   ```cpp
+   // GOOD - in main.cpp
+   int i2c_sda = I2C_SDA;  // Initialize from board_config.h default
+   ```
+
+4. **Check pin availability before using**
    ```cpp
    // GOOD
    #ifdef DHT_PIN
-     dht.begin(DHT_PIN);
+     extern int dht_pin;
+     dht.begin(dht_pin);
    #endif
    ```
 
@@ -266,14 +293,17 @@ js += String(ULTRASONIC_ECHO_PIN);
 
 ## ✨ Summary
 
-1. **`board_config.h` is the ONLY place to define GPIO pins**
-2. Never hardcode GPIO numbers in your code
-3. Use runtime variables for dynamic pin remapping
-4. Follow naming conventions (`PIN_*` vs `DEFAULT_*`)
-5. Always read safety comments before wiring hardware
+1. **`board_config.h` is the ONLY place to define GPIO pin defaults (UPPERCASE)**
+2. **Use lowercase runtime variables** in code for dynamic pin remapping
+3. Never hardcode GPIO numbers in your code
+4. **Two-layer architecture**: UPPERCASE defines (compile-time) → lowercase variables (runtime)
+5. Follow naming conventions (UPPERCASE for defaults, lowercase for runtime)
+6. Always read safety comments before wiring hardware
 
 By following this policy, you ensure:
 - ✅ Multi-board compatibility (ESP32-S3 / Classic)
+- ✅ Dynamic pin remapping via Web UI
+- ✅ No preprocessor conflicts
 - ✅ No pin conflicts or duplicates
 - ✅ Easy maintenance and debugging
 - ✅ Safe hardware operation

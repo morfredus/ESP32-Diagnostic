@@ -1,10 +1,35 @@
-# ESP32 Diagnostic Suite (v3.22.1)
+# ESP32 Diagnostic Suite (v3.25.0)
 
-> WARNING: v3.22.1 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> **Note**: v3.25.0 restores dynamic GPIO pin remapping via Web UI with improved architecture that prevents preprocessor conflicts. The system uses lowercase runtime variables (`i2c_sda`) initialized from UPPERCASE compile-time defines (`I2C_SDA`) in `board_config.h`.
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## ?? Version 3.21.1 Highlights - NeoPixel Wi-Fi Status Indicator
+## ✨ Version 3.25.0 Highlights - Dynamic GPIO Pin Remapping Restored
+
+**Major Architectural Improvement:**
+- **Dynamic pin remapping works again** - Users can change GPIO pins via Web UI without recompilation
+- **No preprocessor conflicts** - Solved by using lowercase runtime variables (`i2c_sda`, `rgb_led_pin_r`, etc.)
+- **Two-layer architecture** - UPPERCASE defines in `board_config.h`, lowercase variables in `main.cpp`
+- **All handlers functional** - I2C, RGB LED, Buzzer, DHT, Light, Distance, Motion sensors
+
+**Key Innovation:**
+```cpp
+// board_config.h (compile-time default)
+#define I2C_SDA 15
+
+// main.cpp (runtime variable - modifiable via Web UI)
+int i2c_sda = I2C_SDA;
+```
+
+**Benefits:**
+- ✅ Hardware flexibility restored - Test different pin configurations without recompilation
+- ✅ Clean naming convention - UPPERCASE = compile-time, lowercase = runtime
+- ✅ No preprocessor issues - Different names prevent macro expansion conflicts
+- ✅ All functionality preserved - No features lost from v3.23.x
+
+**See:** [docs/RELEASE_NOTES_3.25.0.md](docs/RELEASE_NOTES_3.25.0.md) for complete technical details.
+
+## Previous: Version 3.22.1
 
 **Real-time Wi-Fi connectivity feedback via NeoPixel/WS2812 RGB LED:**
 - **Yellow (connection in progress)** during Wi-Fi connection attempt at startup

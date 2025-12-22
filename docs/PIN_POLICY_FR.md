@@ -1,6 +1,6 @@
 # Politique de Mapping des GPIO
 
-**Suite de Diagnostic ESP32 - Version 3.24.0**
+**Suite de Diagnostic ESP32 - Version 3.25.0**
 
 ---
 
@@ -70,61 +70,57 @@ Le fichier définit les broches différemment pour chaque variante d'ESP32 :
 #endif
 ```
 
-### 2. Constantes de Compilation (Depuis v3.24.0)
+### 2. Architecture à Deux Couches (v3.25.0)
 
-**Changement Important :** Les broches GPIO sont maintenant des **constantes de compilation**. Cela signifie :
+**Conception Actuelle :** Les broches GPIO utilisent une **architecture à deux couches** avec des conventions de nommage distinctes :
 
-- **Pas de variables runtime** - les broches sont accessibles directement via des macros `#define`
-- **Les changements de broches nécessitent une recompilation** - l'interface Web ne supporte plus le remapping dynamique
-- **Architecture simplifiée** - élimine le système à deux couches (plus de préfixe `DEFAULT_`)
-- **Meilleures performances** - le compilateur peut optimiser l'accès aux broches plus efficacement
-
-**Architecture Précédente (v3.23.x et antérieures) :**
+**Couche 1 : Valeurs par Défaut Compile-Time (MAJUSCULES dans `board_config.h`)**
 ```cpp
-#define DEFAULT_RGB_LED_PIN_R 21  // Valeur par défaut compile-time
-int RGB_LED_PIN_R = DEFAULT_RGB_LED_PIN_R;  // Variable runtime
+#define I2C_SDA       15  // Broche SDA par défaut
+#define I2C_SCL       16  // Broche SCL par défaut
+#define RGB_LED_PIN_R 21  // Canal rouge RGB par défaut
 ```
 
-**Architecture Actuelle (v3.24.0+) :**
+**Couche 2 : Variables Runtime (minuscules dans `main.cpp`)**
 ```cpp
-#define RGB_LED_PIN_R 21  // Constante de compilation (utilisée directement)
+int i2c_sda = I2C_SDA;          // Modifiable à l'exécution via interface Web
+int i2c_scl = I2C_SCL;          // Modifiable à l'exécution via interface Web
+int rgb_led_pin_r = RGB_LED_PIN_R;  // Modifiable à l'exécution via interface Web
 ```
 
-### 3. Comportement de l'Interface Web
+**Point Clé :** Utiliser des conventions de nommage différentes (MAJUSCULES vs minuscules) empêche le préprocesseur d'expander les noms de variables en minuscules, éliminant les conflits tout en maintenant les deux couches.
 
-L'interface Web affiche toujours les assignations de broches actuelles pour référence, mais :
-- **La configuration des broches est en lecture seule** - les changements ne sont pas sauvegardés ni appliqués
-- **Pour changer les broches**, vous devez :
-  1. Éditer `include/board_config.h`
-  2. Recompiler le projet
-  3. Uploader le nouveau firmware
+**Avantages :**
+- ✅ **Le remapping dynamique fonctionne** - Les utilisateurs peuvent changer les broches via l'interface Web sans recompilation
+- ✅ **Aucun conflit de préprocesseur** - Des noms différents préviennent les problèmes d'expansion de macros
+- ✅ **Distinction claire** - MAJUSCULES = valeurs par défaut compile-time, minuscules = broches actives runtime
+- ✅ **Performance** - Le compilateur optimise l'initialisation constante
+- ✅ **Flexibilité matérielle** - Testez différentes configurations de broches facilement
 
-```cpp
-// Dans web_interface.h (reste inchangé)
-int RGB_LED_PIN_R = DEFAULT_RGB_LED_PIN_R;
-int RGB_LED_PIN_G = DEFAULT_RGB_LED_PIN_G;
-int RGB_LED_PIN_B = DEFAULT_RGB_LED_PIN_B;
-int PWM_PIN = DEFAULT_PWM_PIN;
-int BUZZER_PIN = DEFAULT_BUZZER_PIN;
-int DHT_PIN = DEFAULT_DHT_PIN;
-// ... plus de variables runtime ...
-```
+### 3. Comportement de l'Interface Web (v3.25.0)
 
-**Pourquoi des variables runtime ?** Elles permettent le **remapping dynamique** via l'interface Web sans recompiler !
+L'interface Web supporte pleinement le **remapping dynamique des broches** :
+- **Les changements de broches runtime fonctionnent** - Modifiez les broches GPIO via l'interface Web sans recompilation
+- **Handlers de configuration actifs** - Tous les endpoints de configuration de broches sont fonctionnels :
+  - Broches I2C (OLED et capteurs environnementaux)
+  - Broches LED RGB (canaux R, V, B)
+  - Buzzer, capteur DHT, capteur de lumière
+  - Capteur de distance (Trigger et Echo)
+  - Capteur de mouvement
+- **Les changements prennent effet immédiatement** - Aucun upload de firmware requis
 
-### 3. Accès via l'Interface Web
+**Pour changer les broches par défaut de façon permanente**, vous pouvez :
+  1. Éditer `include/board_config.h` (defines MAJUSCULES)
+  2. Recompiler et uploader
 
-L'interface Web peut :
-- **Afficher** les assignations de broches actuelles
-- **Modifier** les assignations de broches à l'exécution pour les tests
-- **Persister** les changements entre les redémarrages (fonctionnalité future)
-
-Les broches sont injectées dans le JavaScript au chargement de la page :
+**Pour changer les broches temporairement pour des tests** :
+  1. Utiliser la configuration de broches de l'interface Web
+  2. Les changements persistent jusqu'au redémarrage de l'appareil
 
 ```cpp
-// Dans web_interface.h
-js += F("const RGB_LED_PIN_R=");
-js += String(RGB_LED_PIN_R);  // Injecte la valeur actuelle
+// Dans web_interface.h - Injection JavaScript
+js += F("const i2c_sda=");
+js += String(i2c_sda);  // Injecte la valeur runtime actuelle (minuscules)
 ```
 
 ---
@@ -133,24 +129,34 @@ js += String(RGB_LED_PIN_R);  // Injecte la valeur actuelle
 
 ### ✅ À FAIRE :
 
-1. **Toujours référencer les broches depuis `board_config.h`**
+1. **Utiliser les variables runtime en minuscules dans le code**
    ```cpp
-   // BON
-   pinMode(DEFAULT_RGB_LED_PIN_R, OUTPUT);
+   // BON - utilise la variable runtime en minuscules (peut être changée via interface Web)
+   pinMode(rgb_led_pin_r, OUTPUT);
+   digitalWrite(buzzer_pin, HIGH);
    ```
 
-2. **Utiliser les variables runtime pour les broches dynamiques**
+2. **Inclure board_config.h et déclarer extern pour les variables runtime**
    ```cpp
    // BON
-   analogWrite(PWM_PIN, 128);  // Utilise la variable runtime
+   #include "board_config.h"
+   extern int pwm_pin;  // Variable runtime depuis main.cpp
+   analogWrite(pwm_pin, 128);
    ```
 
-3. **Vérifier la disponibilité de la broche avant utilisation**
+3. **Initialiser les variables runtime depuis les defines MAJUSCULES**
+   ```cpp
+   // BON - dans main.cpp
+   int i2c_sda = I2C_SDA;  // Initialiser depuis la valeur par défaut de board_config.h
+   ```
+
+4. **Vérifier la disponibilité de la broche avant utilisation**
    ```cpp
    // BON
-   if (DHT_PIN >= 0) {
-     dht.begin(DHT_PIN);
-   }
+   #ifdef DHT_PIN
+     extern int dht_pin;
+     dht.begin(dht_pin);
+   #endif
    ```
 
 ### ❌ À NE PAS FAIRE :
@@ -179,19 +185,19 @@ js += String(RGB_LED_PIN_R);  // Injecte la valeur actuelle
 
 ### Signification des Préfixes :
 
-- **`PIN_`** : Broches matérielles fixes (GPS, boutons)
-  - Exemple : `PIN_GPS_RXD`, `PIN_BUTTON_1`
-  - **Ne peuvent pas être modifiées** à l'exécution (contrainte matérielle)
+- **`PIN_`** : Broches matérielles fixes (boutons, GPS)
+  - Exemple : `PIN_GPS_RXD`, `PIN_BUTTON_1`, `PIN_BUTTON_BOOT`
+  - Utilisées pour les connexions matérielles spécifiques
 
-- **`DEFAULT_`** : Valeurs par défaut pour les broches configurables à l'exécution
-  - Exemple : `DEFAULT_RGB_LED_PIN_R`, `DEFAULT_DHT_PIN`
-  - **Peuvent être modifiées** à l'exécution via l'interface Web
+- **Pas de préfixe** : Broches de capteurs et périphériques
+  - Exemple : `RGB_LED_PIN_R`, `DHT_PIN`, `BUZZER_PIN`
+  - Définies par variante de carte dans `board_config.h`
 
 ### Cas Spéciaux :
 
 - **`NEOPIXEL_PIN`** : NeoPixel intégré sur ESP32-S3 (GPIO 48)
 - **`TFT_*`** : Broches SPI de l'écran TFT
-- **`DEFAULT_I2C_SDA/SCL`** : Broches du bus I2C
+- **`I2C_SDA/SCL`** : Broches du bus I2C
 
 ---
 
@@ -199,41 +205,41 @@ js += String(RGB_LED_PIN_R);  // Injecte la valeur actuelle
 
 Supposons que vous vouliez ajouter un **nouveau capteur ultrasonique** sur une broche différente.
 
-### Étape 1 : Définir dans `board_config.h`
+### Étape 1 : Définir dans `board_config.h` (MAJUSCULES)
 
 ```cpp
 #if defined(TARGET_ESP32_S3)
-  #define DEFAULT_ULTRASONIC_TRIG_PIN 14
-  #define DEFAULT_ULTRASONIC_ECHO_PIN 21
+  #define ULTRASONIC_TRIG_PIN 14
+  #define ULTRASONIC_ECHO_PIN 21
 #elif defined(TARGET_ESP32_CLASSIC)
-  #define DEFAULT_ULTRASONIC_TRIG_PIN 23
-  #define DEFAULT_ULTRASONIC_ECHO_PIN 34
+  #define ULTRASONIC_TRIG_PIN 23
+  #define ULTRASONIC_ECHO_PIN 34
 #endif
 ```
 
-### Étape 2 : Créer les variables runtime dans `main.cpp`
+### Étape 2 : Créer les variables runtime dans `main.cpp` (minuscules)
 
 ```cpp
-int ULTRASONIC_TRIG_PIN = DEFAULT_ULTRASONIC_TRIG_PIN;
-int ULTRASONIC_ECHO_PIN = DEFAULT_ULTRASONIC_ECHO_PIN;
+int ultrasonic_trig_pin = ULTRASONIC_TRIG_PIN;  // Runtime, modifiable via Web UI
+int ultrasonic_echo_pin = ULTRASONIC_ECHO_PIN;  // Runtime, modifiable via Web UI
 ```
 
-### Étape 3 : Utiliser dans votre code
+### Étape 3 : Utiliser directement dans votre code
 
 ```cpp
 void setupUltrasonic() {
-  pinMode(ULTRASONIC_TRIG_PIN, OUTPUT);
-  pinMode(ULTRASONIC_ECHO_PIN, INPUT);
+  pinMode(ultrasonic_trig_pin, OUTPUT);
+  pinMode(ultrasonic_echo_pin, INPUT);
 }
 
 long measureDistance() {
-  digitalWrite(ULTRASONIC_TRIG_PIN, LOW);
+  digitalWrite(ultrasonic_trig_pin, LOW);
   delayMicroseconds(2);
-  digitalWrite(ULTRASONIC_TRIG_PIN, HIGH);
+  digitalWrite(ultrasonic_trig_pin, HIGH);
   delayMicroseconds(10);
-  digitalWrite(ULTRASONIC_TRIG_PIN, LOW);
+  digitalWrite(ultrasonic_trig_pin, LOW);
 
-  long duration = pulseIn(ULTRASONIC_ECHO_PIN, HIGH);
+  long duration = pulseIn(ultrasonic_echo_pin, HIGH);
   return duration * 0.034 / 2;  // Convertir en cm
 }
 ```
@@ -243,10 +249,10 @@ long measureDistance() {
 Ajouter à l'injection JavaScript dans `web_interface.h` :
 
 ```cpp
-js += F(";const ULTRASONIC_TRIG_PIN=");
-js += String(ULTRASONIC_TRIG_PIN);
-js += F(";const ULTRASONIC_ECHO_PIN=");
-js += String(ULTRASONIC_ECHO_PIN);
+js += F(";const ultrasonic_trig_pin=");
+js += String(ultrasonic_trig_pin);  // Variable runtime en minuscules
+js += F(";const ultrasonic_echo_pin=");
+js += String(ultrasonic_echo_pin);
 ```
 
 ---
@@ -283,14 +289,17 @@ js += String(ULTRASONIC_ECHO_PIN);
 
 ## ✨ Résumé
 
-1. **`board_config.h` est le SEUL endroit pour définir les broches GPIO**
-2. Ne jamais coder en dur les numéros de GPIO dans votre code
-3. Utiliser les variables runtime pour le remapping dynamique des broches
-4. Suivre les conventions de nommage (`PIN_*` vs `DEFAULT_*`)
-5. Toujours lire les commentaires de sécurité avant de câbler le matériel
+1. **`board_config.h` est le SEUL endroit pour définir les valeurs par défaut des broches GPIO (MAJUSCULES)**
+2. **Utiliser les variables runtime en minuscules** dans le code pour le remapping dynamique
+3. Ne jamais coder en dur les numéros de GPIO dans votre code
+4. **Architecture à deux couches** : defines MAJUSCULES (compile-time) → variables minuscules (runtime)
+5. Suivre les conventions de nommage (MAJUSCULES pour les valeurs par défaut, minuscules pour runtime)
+6. Toujours lire les commentaires de sécurité avant de câbler le matériel
 
 En suivant cette politique, vous assurez :
 - ✅ Compatibilité multi-cartes (ESP32-S3 / Classic)
+- ✅ Remapping dynamique des broches via interface Web
+- ✅ Aucun conflit de préprocesseur
 - ✅ Aucun conflit ou doublon de broches
 - ✅ Maintenance et débogage faciles
 - ✅ Fonctionnement sûr du matériel
