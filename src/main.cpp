@@ -193,28 +193,17 @@ String getArduinoCoreVersionString() {
 #endif
 }
 
-// ========== HARDWARE PIN CONFIGURATION (from config.h) ==========
-// Pins I2C pour OLED (modifiables via web ou config.h)
-int I2C_SCL = DEFAULT_I2C_SCL;
-int I2C_SDA = DEFAULT_I2C_SDA;
+// ========== HARDWARE PIN CONFIGURATION (from board_config.h) ==========
+// Note: GPIO pins are now compile-time constants defined in board_config.h
+// No runtime variables needed - pins are fixed at compilation
 
 // OLED display settings (from config.h)
 uint8_t oledRotation = DEFAULT_OLED_ROTATION;
 int oledWidth = SCREEN_WIDTH;
 int oledHeight = SCREEN_HEIGHT;
 
-// Runtime pin variables (initialized from board_config.h, modifiable via web interface)
-int RGB_LED_PIN_R = DEFAULT_RGB_LED_PIN_R;
-int RGB_LED_PIN_G = DEFAULT_RGB_LED_PIN_G;
-int RGB_LED_PIN_B = DEFAULT_RGB_LED_PIN_B;
-int PWM_PIN = DEFAULT_PWM_PIN;
-int BUZZER_PIN = DEFAULT_BUZZER_PIN;
-int DHT_PIN = DEFAULT_DHT_PIN;
+// DHT sensor type (still configurable at runtime)
 uint8_t DHT_SENSOR_TYPE = DEFAULT_DHT_SENSOR_TYPE;
-int LIGHT_SENSOR_PIN = DEFAULT_LIGHT_SENSOR_PIN;
-int DISTANCE_TRIG_PIN = DEFAULT_DISTANCE_TRIG_PIN;
-int DISTANCE_ECHO_PIN = DEFAULT_DISTANCE_ECHO_PIN;
-int MOTION_SENSOR_PIN = DEFAULT_MOTION_SENSOR_PIN;
 
 // ========== OBJETS GLOBAUX ==========
 WebServer server(WEB_SERVER_PORT);
@@ -3295,17 +3284,16 @@ void handleOLEDConfig() {
     int newHeight = server.hasArg("height") ? server.arg("height").toInt() : oledHeight;
 
     if (newSDA >= 0 && newSDA <= 48 && newSCL >= 0 && newSCL <= 48 && newRotation >= 0 && newRotation <= 3) {
-      bool pinsChanged = (I2C_SDA != newSDA) || (I2C_SCL != newSCL);
+      // Note: I2C pins are now compile-time constants from board_config.h
+      // Pin changes require recompilation
       bool rotationChanged = (oledRotation != static_cast<uint8_t>(newRotation));
       bool resolutionChanged = (oledWidth != newWidth) || (oledHeight != newHeight);
 
-      I2C_SDA = newSDA;
-      I2C_SCL = newSCL;
       oledRotation = static_cast<uint8_t>(newRotation);
       oledWidth = newWidth;
       oledHeight = newHeight;
 
-      if (pinsChanged || rotationChanged || resolutionChanged) {
+      if (rotationChanged || resolutionChanged) {
         resetOLEDTest();
         Wire.end();
         detectOLED();
@@ -3585,9 +3573,11 @@ void handleStressTest() {
 // Handlers API pour les nouveaux capteurs
 void handleRGBLedConfig() {
   if (server.hasArg("r") && server.hasArg("g") && server.hasArg("b")) {
-    RGB_LED_PIN_R = server.arg("r").toInt();
-    RGB_LED_PIN_G = server.arg("g").toInt();
-    RGB_LED_PIN_B = server.arg("b").toInt();
+    // Note: RGB LED pins are now compile-time constants from board_config.h
+    // Pin changes require recompilation
+    // RGB_LED_PIN_R = server.arg("r").toInt();
+    // RGB_LED_PIN_G = server.arg("g").toInt();
+    // RGB_LED_PIN_B = server.arg("b").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
     sendActionResponse(200, true, OK_STR);
   } else {
@@ -3639,7 +3629,9 @@ void handleRGBLedColor() {
 
 void handleBuzzerConfig() {
   if (server.hasArg("pin")) {
-    BUZZER_PIN = server.arg("pin").toInt();
+    // Note: Buzzer pin is now a compile-time constant from board_config.h
+    // Pin changes require recompilation
+    // BUZZER_PIN = server.arg("pin").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
     sendActionResponse(200, true, OK_STR);
   } else {
@@ -3692,8 +3684,10 @@ void handleDHTConfig() {
   bool updated = false;
 
   if (server.hasArg("pin")) {
-    DHT_PIN = server.arg("pin").toInt();
-    updated = true;
+    // Note: DHT pin is now a compile-time constant from board_config.h
+    // Pin changes require recompilation
+    // DHT_PIN = server.arg("pin").toInt();
+    // updated = true;
   }
 
   if (server.hasArg("type")) {
@@ -3740,7 +3734,9 @@ void handleDHTTest() {
 
 void handleLightSensorConfig() {
   if (server.hasArg("pin")) {
-    LIGHT_SENSOR_PIN = server.arg("pin").toInt();
+    // Note: Light sensor pin is now a compile-time constant from board_config.h
+    // Pin changes require recompilation
+    // LIGHT_SENSOR_PIN = server.arg("pin").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
     sendActionResponse(200, true, OK_STR);
   } else {
@@ -3759,8 +3755,10 @@ void handleLightSensorTest() {
 
 void handleDistanceSensorConfig() {
   if (server.hasArg("trig") && server.hasArg("echo")) {
-    DISTANCE_TRIG_PIN = server.arg("trig").toInt();
-    DISTANCE_ECHO_PIN = server.arg("echo").toInt();
+    // Note: Distance sensor pins are now compile-time constants from board_config.h
+    // Pin changes require recompilation
+    // DISTANCE_TRIG_PIN = server.arg("trig").toInt();
+    // DISTANCE_ECHO_PIN = server.arg("echo").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
     sendActionResponse(200, true, OK_STR);
   } else {
@@ -3779,7 +3777,9 @@ void handleDistanceSensorTest() {
 
 void handleMotionSensorConfig() {
   if (server.hasArg("pin")) {
-    MOTION_SENSOR_PIN = server.arg("pin").toInt();
+    // Note: Motion sensor pin is now a compile-time constant from board_config.h
+    // Pin changes require recompilation
+    // MOTION_SENSOR_PIN = server.arg("pin").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
     sendActionResponse(200, true, OK_STR);
   } else {
