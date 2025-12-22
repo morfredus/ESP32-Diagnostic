@@ -53,8 +53,7 @@ uint8_t bmp280_addr = 0;  // Will be set during init
 
 // Initialize environmental sensors
 void initEnvironmentalSensors() {
-  extern int I2C_SDA;
-  extern int I2C_SCL;
+  // Note: I2C pins are now compile-time constants from board_config.h
   Serial.printf("Initializing environmental sensors on I2C (SDA=%d SCL=%d)\r\n", I2C_SDA, I2C_SCL);
   
   envSensorAvailable = false;

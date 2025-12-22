@@ -1,6 +1,6 @@
 # GPIO Pin Mapping Policy
 
-**ESP32 Diagnostic Suite - Version 3.23.0**
+**ESP32 Diagnostic Suite - Version 3.24.0**
 
 ---
 
@@ -48,55 +48,56 @@ The file defines pins differently for each ESP32 variant:
 ```cpp
 #if defined(TARGET_ESP32_S3)
   // ESP32-S3 DevKitC-1 pins
-  #define PIN_GPS_RXD           18
-  #define PIN_GPS_TXD           17
-  #define DEFAULT_RGB_LED_PIN_R 21
-  #define DEFAULT_RGB_LED_PIN_G 41
-  #define DEFAULT_RGB_LED_PIN_B 42
-  #define DEFAULT_PWM_PIN       20
-  #define DEFAULT_BUZZER_PIN    6
+  #define PIN_GPS_RXD        18
+  #define PIN_GPS_TXD        17
+  #define RGB_LED_PIN_R      21
+  #define RGB_LED_PIN_G      41
+  #define RGB_LED_PIN_B      42
+  #define PWM_PIN            20
+  #define BUZZER_PIN         6
   // ... more pins ...
 
 #elif defined(TARGET_ESP32_CLASSIC)
   // ESP32 Classic DevKit pins
-  #define PIN_GPS_RXD           16
-  #define PIN_GPS_TXD           17
-  #define DEFAULT_RGB_LED_PIN_R 13
-  #define DEFAULT_RGB_LED_PIN_G 26
-  #define DEFAULT_RGB_LED_PIN_B 33
-  #define DEFAULT_PWM_PIN       4
-  #define DEFAULT_BUZZER_PIN    19
+  #define PIN_GPS_RXD        16
+  #define PIN_GPS_TXD        17
+  #define RGB_LED_PIN_R      13
+  #define RGB_LED_PIN_G      26
+  #define RGB_LED_PIN_B      33
+  #define PWM_PIN            4
+  #define BUZZER_PIN         19
   // ... more pins ...
 #endif
 ```
 
-### 2. Runtime Variables in `main.cpp`
+### 2. Compile-Time Constants (Since v3.24.0)
 
-In `src/main.cpp`, we create **runtime variables** initialized from `board_config.h`:
+**Important Change:** GPIO pins are now **compile-time constants**. This means:
 
+- **No runtime variables** - pins are accessed directly via `#define` macros
+- **Pin changes require recompilation** - the Web UI no longer supports dynamic pin remapping
+- **Simpler architecture** - eliminates the two-layer system (no more `DEFAULT_` prefix)
+- **Better performance** - compiler can optimize pin access more effectively
+
+**Previous Architecture (v3.23.x and earlier):**
 ```cpp
-#include "board_config.h"
-
-// Runtime pin variables (initialized from board_config.h)
-int RGB_LED_PIN_R = DEFAULT_RGB_LED_PIN_R;
-int RGB_LED_PIN_G = DEFAULT_RGB_LED_PIN_G;
-int RGB_LED_PIN_B = DEFAULT_RGB_LED_PIN_B;
-int PWM_PIN = DEFAULT_PWM_PIN;
-int BUZZER_PIN = DEFAULT_BUZZER_PIN;
-int DHT_PIN = DEFAULT_DHT_PIN;
-// ... more runtime variables ...
+#define DEFAULT_RGB_LED_PIN_R 21  // Compile-time default
+int RGB_LED_PIN_R = DEFAULT_RGB_LED_PIN_R;  // Runtime variable
 ```
 
-**Why runtime variables?** They allow **dynamic remapping** through the Web UI without recompiling!
+**Current Architecture (v3.24.0+):**
+```cpp
+#define RGB_LED_PIN_R 21  // Compile-time constant (used directly)
+```
 
-### 3. Web Interface Access
+### 3. Web Interface Behavior
 
-The Web UI can:
-- **Display** the current pin assignments
-- **Modify** pin assignments at runtime for testing
-- **Persist** changes across reboots (future feature)
-
-The pins are injected into JavaScript when the page loads:
+The Web UI still displays current pin assignments for reference, but:
+- **Pin configuration is read-only** - changes are not saved or applied
+- **To change pins**, you must:
+  1. Edit `include/board_config.h`
+  2. Recompile the project
+  3. Upload the new firmware
 
 ```cpp
 // In web_interface.h
@@ -112,22 +113,23 @@ js += String(RGB_LED_PIN_R);  // Injects current value
 
 1. **Always reference pins from `board_config.h`**
    ```cpp
-   // GOOD
-   pinMode(DEFAULT_RGB_LED_PIN_R, OUTPUT);
+   // GOOD - uses pin directly from board_config.h
+   pinMode(RGB_LED_PIN_R, OUTPUT);
    ```
 
-2. **Use the runtime variables for dynamic pins**
+2. **Include board_config.h before using pins**
    ```cpp
    // GOOD
-   analogWrite(PWM_PIN, 128);  // Uses runtime variable
+   #include "board_config.h"
+   analogWrite(PWM_PIN, 128);
    ```
 
 3. **Check pin availability before using**
    ```cpp
    // GOOD
-   if (DHT_PIN >= 0) {
+   #ifdef DHT_PIN
      dht.begin(DHT_PIN);
-   }
+   #endif
    ```
 
 ### ❌ DON'T:
@@ -156,19 +158,19 @@ js += String(RGB_LED_PIN_R);  // Injects current value
 
 ### Prefix Meanings:
 
-- **`PIN_`**: Fixed hardware pins (GPS, buttons)
-  - Example: `PIN_GPS_RXD`, `PIN_BUTTON_1`
-  - **Cannot be changed** at runtime (hardware constraint)
+- **`PIN_`**: Fixed hardware pins (buttons, GPS)
+  - Example: `PIN_GPS_RXD`, `PIN_BUTTON_1`, `PIN_BUTTON_BOOT`
+  - Used for hardware-specific connections
 
-- **`DEFAULT_`**: Default values for runtime-configurable pins
-  - Example: `DEFAULT_RGB_LED_PIN_R`, `DEFAULT_DHT_PIN`
-  - **Can be changed** at runtime via Web UI
+- **No prefix**: Sensor and peripheral pins
+  - Example: `RGB_LED_PIN_R`, `DHT_PIN`, `BUZZER_PIN`
+  - Defined per board variant in `board_config.h`
 
 ### Special Cases:
 
 - **`NEOPIXEL_PIN`**: Built-in NeoPixel on ESP32-S3 (GPIO 48)
 - **`TFT_*`**: TFT display SPI pins
-- **`DEFAULT_I2C_SDA/SCL`**: I2C bus pins
+- **`I2C_SDA/SCL`**: I2C bus pins
 
 ---
 
@@ -180,22 +182,26 @@ Let's say you want to add a **new ultrasonic sensor** on a different pin.
 
 ```cpp
 #if defined(TARGET_ESP32_S3)
-  #define DEFAULT_ULTRASONIC_TRIG_PIN 14
-  #define DEFAULT_ULTRASONIC_ECHO_PIN 21
+  #define ULTRASONIC_TRIG_PIN 14
+  #define ULTRASONIC_ECHO_PIN 21
 #elif defined(TARGET_ESP32_CLASSIC)
-  #define DEFAULT_ULTRASONIC_TRIG_PIN 23
-  #define DEFAULT_ULTRASONIC_ECHO_PIN 34
+  #define ULTRASONIC_TRIG_PIN 23
+  #define ULTRASONIC_ECHO_PIN 34
 #endif
 ```
 
-### Step 2: Create runtime variables in `main.cpp`
+### Step 2: Use directly in your code
 
 ```cpp
-int ULTRASONIC_TRIG_PIN = DEFAULT_ULTRASONIC_TRIG_PIN;
-int ULTRASONIC_ECHO_PIN = DEFAULT_ULTRASONIC_ECHO_PIN;
+#include "board_config.h"
+
+void initUltrasonicSensor() {
+  pinMode(ULTRASONIC_TRIG_PIN, OUTPUT);
+  pinMode(ULTRASONIC_ECHO_PIN, INPUT);
+}
 ```
 
-### Step 3: Use in your code
+### Step 3: Compile and upload
 
 ```cpp
 void setupUltrasonic() {

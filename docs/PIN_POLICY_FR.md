@@ -1,6 +1,6 @@
 # Politique de Mapping des GPIO
 
-**Suite de Diagnostic ESP32 - Version 3.23.0**
+**Suite de Diagnostic ESP32 - Version 3.24.0**
 
 ---
 
@@ -48,36 +48,59 @@ Le fichier définit les broches différemment pour chaque variante d'ESP32 :
 ```cpp
 #if defined(TARGET_ESP32_S3)
   // Broches ESP32-S3 DevKitC-1
-  #define PIN_GPS_RXD           18
-  #define PIN_GPS_TXD           17
-  #define DEFAULT_RGB_LED_PIN_R 21
-  #define DEFAULT_RGB_LED_PIN_G 41
-  #define DEFAULT_RGB_LED_PIN_B 42
-  #define DEFAULT_PWM_PIN       20
-  #define DEFAULT_BUZZER_PIN    6
+  #define PIN_GPS_RXD        18
+  #define PIN_GPS_TXD        17
+  #define RGB_LED_PIN_R      21
+  #define RGB_LED_PIN_G      41
+  #define RGB_LED_PIN_B      42
+  #define PWM_PIN            20
+  #define BUZZER_PIN         6
   // ... plus de broches ...
 
 #elif defined(TARGET_ESP32_CLASSIC)
   // Broches ESP32 Classic DevKit
-  #define PIN_GPS_RXD           16
-  #define PIN_GPS_TXD           17
-  #define DEFAULT_RGB_LED_PIN_R 13
-  #define DEFAULT_RGB_LED_PIN_G 26
-  #define DEFAULT_RGB_LED_PIN_B 33
-  #define DEFAULT_PWM_PIN       4
-  #define DEFAULT_BUZZER_PIN    19
+  #define PIN_GPS_RXD        16
+  #define PIN_GPS_TXD        17
+  #define RGB_LED_PIN_R      13
+  #define RGB_LED_PIN_G      26
+  #define RGB_LED_PIN_B      33
+  #define PWM_PIN            4
+  #define BUZZER_PIN         19
   // ... plus de broches ...
 #endif
 ```
 
-### 2. Variables Runtime dans `main.cpp`
+### 2. Constantes de Compilation (Depuis v3.24.0)
 
-Dans `src/main.cpp`, nous créons des **variables runtime** initialisées depuis `board_config.h` :
+**Changement Important :** Les broches GPIO sont maintenant des **constantes de compilation**. Cela signifie :
+
+- **Pas de variables runtime** - les broches sont accessibles directement via des macros `#define`
+- **Les changements de broches nécessitent une recompilation** - l'interface Web ne supporte plus le remapping dynamique
+- **Architecture simplifiée** - élimine le système à deux couches (plus de préfixe `DEFAULT_`)
+- **Meilleures performances** - le compilateur peut optimiser l'accès aux broches plus efficacement
+
+**Architecture Précédente (v3.23.x et antérieures) :**
+```cpp
+#define DEFAULT_RGB_LED_PIN_R 21  // Valeur par défaut compile-time
+int RGB_LED_PIN_R = DEFAULT_RGB_LED_PIN_R;  // Variable runtime
+```
+
+**Architecture Actuelle (v3.24.0+) :**
+```cpp
+#define RGB_LED_PIN_R 21  // Constante de compilation (utilisée directement)
+```
+
+### 3. Comportement de l'Interface Web
+
+L'interface Web affiche toujours les assignations de broches actuelles pour référence, mais :
+- **La configuration des broches est en lecture seule** - les changements ne sont pas sauvegardés ni appliqués
+- **Pour changer les broches**, vous devez :
+  1. Éditer `include/board_config.h`
+  2. Recompiler le projet
+  3. Uploader le nouveau firmware
 
 ```cpp
-#include "board_config.h"
-
-// Variables runtime des broches (initialisées depuis board_config.h)
+// Dans web_interface.h (reste inchangé)
 int RGB_LED_PIN_R = DEFAULT_RGB_LED_PIN_R;
 int RGB_LED_PIN_G = DEFAULT_RGB_LED_PIN_G;
 int RGB_LED_PIN_B = DEFAULT_RGB_LED_PIN_B;

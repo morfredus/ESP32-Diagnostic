@@ -1,4 +1,66 @@
-## [Version 3.23.2] - 2025-12-22
+## [Version 3.24.0] - 2025-12-22
+
+### 🔄 Major Architectural Change: Simplified GPIO Pin System
+
+**Breaking Change:** GPIO pins are now compile-time constants. Dynamic pin remapping via Web UI has been removed.
+
+### Changed
+- **GPIO Architecture Simplified**: Removed two-layer pin system
+  - Eliminated `DEFAULT_` prefix from all GPIO pin names in `board_config.h`
+  - Removed runtime pin variables from `main.cpp` (lines 198-217)
+  - GPIO pins are now accessed directly as `#define` constants
+  - Example: `RGB_LED_PIN_R` instead of `DEFAULT_RGB_LED_PIN_R` + `int RGB_LED_PIN_R`
+
+- **Web Interface Behavior**:
+  - Pin configuration handlers now ignore changes (commented out assignments)
+  - Web UI displays current pins for reference only
+  - To change pins, users must edit `board_config.h` and recompile
+
+- **Code Changes**:
+  - `src/main.cpp`: Removed pin variable declarations, updated handlers
+  - `include/web_interface.h`: Removed `extern` pin declarations
+  - `src/environmental_sensors.cpp`: Removed `extern` declarations, uses defines directly
+
+### Removed
+- **Runtime Pin Remapping**: Web UI can no longer modify GPIO pins at runtime
+- **`DEFAULT_` Prefix**: All GPIO pins now use direct names (e.g., `I2C_SDA` not `DEFAULT_I2C_SDA`)
+- **Runtime Variables**: No more `int I2C_SDA = DEFAULT_I2C_SDA;` pattern
+
+### Documentation
+- **Updated `docs/PIN_POLICY.md`**: Reflects new compile-time constant architecture
+- **Updated `docs/PIN_POLICY_FR.md`**: French documentation updated
+- Removed references to runtime remapping and `DEFAULT_` prefix
+
+### Benefits
+- ✅ **Simpler codebase**: One-layer GPIO system is easier to understand
+- ✅ **Better performance**: Compiler can optimize constant pin access
+- ✅ **Clearer intent**: Pin assignments are fixed at compile time
+- ✅ **No preprocessor conflicts**: Eliminates name collision issues
+
+### Migration Guide
+**For Users:**
+- Pin changes now require editing `board_config.h` and recompiling
+- No functional changes if using default pin assignments
+
+**For Developers:**
+- Replace `DEFAULT_GPIO_NAME` with `GPIO_NAME` in `board_config.h`
+- Remove runtime variable declarations
+- Access pins directly via defines
+
+### Technical
+- **Backward Compatibility**: ⚠️ Breaking change - requires firmware update
+- **Hardware**: No hardware changes required
+- **Files Modified**:
+  - `src/main.cpp`: Pin variable removal, handler updates
+  - `include/web_interface.h`: Extern declaration removal
+  - `src/environmental_sensors.cpp`: Direct define usage
+  - `include/board_config.h`: Removed `DEFAULT_` prefixes (already done by user)
+  - `docs/PIN_POLICY.md`, `docs/PIN_POLICY_FR.md`: Documentation updates
+  - `platformio.ini`: Version bump to 3.24.0
+
+---
+
+## [Version 3.23.2] - 2025-12-22 (DEPRECATED)
 
 ### Fixed
 - **Environmental Sensors I2C Initialization**: Corrected I2C pin references in environmental sensors
