@@ -1,3 +1,47 @@
+## [Version 3.23.0] - 2025-12-22
+
+### Added
+- **PWM_PIN variable**: Added missing `PWM_PIN` runtime variable in `main.cpp`
+  - Previously, `PWM_PIN` was declared as `extern` in `web_interface.h` but not defined
+  - Now properly initialized from `DEFAULT_PWM_PIN` in `board_config.h`
+  - ESP32-S3: PWM on GPIO 20, Buzzer on GPIO 6
+  - ESP32 Classic: PWM on GPIO 4, Buzzer on GPIO 19
+- **Pin Policy Documentation**: New comprehensive guides for GPIO management
+  - `docs/PIN_POLICY.md` (English) - Complete pin mapping policy for developers
+  - `docs/PIN_POLICY_FR.md` (French) - Guide détaillé de la politique de mapping GPIO
+  - Explains the "single source of truth" principle (`board_config.h`)
+  - Includes safety considerations, naming conventions, and practical examples
+
+### Changed
+- **JavaScript Injection**: Corrected PWM_PIN and BUZZER_PIN injection in Web UI
+  - Both pins are now properly injected into JavaScript constants
+  - Previously, `PWM_PIN` was incorrectly assigned the value of `BUZZER_PIN`
+  - Affected files: `main.cpp:4812-4815`, `web_interface.h:456-459`
+- **NEOPIXEL_PIN Unification**: Eliminated `DEFAULT_NEOPIXEL_PIN` redefinition
+  - Removed duplicate definition from `config.h` and `config-example.h`
+  - Now uses `NEOPIXEL_PIN` directly from `board_config.h` (GPIO 48 for ESP32-S3)
+  - Comments added to clarify that `NEOPIXEL_PIN` is defined in `board_config.h`
+
+### Fixed
+- **Pin Mapping Consistency**: All GPIO references now exclusively use `board_config.h`
+  - Eliminated ambiguity between `DEFAULT_NEOPIXEL_PIN` and `NEOPIXEL_PIN`
+  - Separated `PWM_PIN` and `BUZZER_PIN` properly (they are distinct pins)
+  - Improved runtime pin variable comments to reference `board_config.h` as source
+
+### Technical
+- **Backward Compatibility**: ✅ Fully compatible with v3.22.1
+  - No hardware changes required
+  - Web UI now correctly displays both PWM and Buzzer pins
+  - All existing functionality preserved
+
+### Documentation
+- New developer guide explaining GPIO mapping architecture
+- Clarifies the difference between `PIN_*` (fixed) and `DEFAULT_*` (runtime-configurable)
+- Provides step-by-step examples for adding new sensors
+- Available in English and French
+
+---
+
 ## [Version 3.22.0] - 2025-01-11
 
 ### Added
