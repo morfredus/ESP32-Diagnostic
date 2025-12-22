@@ -1,3 +1,19 @@
+## [Version 3.23.1] - 2025-12-22
+
+### Fixed
+- **Web UI Buzzer Pin Display**: Corrected buzzer pin input field initialization
+  - Previously displayed `PWM_PIN` value instead of `BUZZER_PIN` in web interface
+  - Affected function: `buildDisplaySignal()` in `web_interface.h:85`
+  - Now correctly shows BUZZER_PIN value (ESP32-S3: GPIO 6, ESP32 Classic: GPIO 19)
+  - PWM and Buzzer are distinct pins as defined in `board_config.h`
+
+### Technical
+- **File Changed**: `include/web_interface.h:85`
+- **Impact**: Visual fix only - runtime behavior unchanged (backend already used correct pin)
+- **Backward Compatibility**: ✅ Fully compatible with v3.23.0
+
+---
+
 ## [Version 3.23.0] - 2025-12-22
 
 ### Added
