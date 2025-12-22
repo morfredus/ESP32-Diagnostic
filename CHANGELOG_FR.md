@@ -1,4 +1,66 @@
-## [Version 3.23.2] - 2025-12-22
+## [Version 3.24.0] - 2025-12-22
+
+### 🔄 Changement Architectural Majeur : Système de Broches GPIO Simplifié
+
+**Changement Non-Rétrocompatible :** Les broches GPIO sont maintenant des constantes de compilation. Le remapping dynamique via l'UI Web a été supprimé.
+
+### Modifié
+- **Architecture GPIO Simplifiée** : Suppression du système à deux couches
+  - Élimination du préfixe `DEFAULT_` de tous les noms de broches GPIO dans `board_config.h`
+  - Suppression des variables runtime de broches dans `main.cpp` (lignes 198-217)
+  - Les broches GPIO sont maintenant accessibles directement comme constantes `#define`
+  - Exemple : `RGB_LED_PIN_R` au lieu de `DEFAULT_RGB_LED_PIN_R` + `int RGB_LED_PIN_R`
+
+- **Comportement de l'Interface Web** :
+  - Les handlers de configuration de broches ignorent maintenant les changements (assignations commentées)
+  - L'UI Web affiche les broches actuelles pour référence seulement
+  - Pour changer les broches, les utilisateurs doivent éditer `board_config.h` et recompiler
+
+- **Modifications du Code** :
+  - `src/main.cpp` : Suppression des déclarations de variables de broches, mise à jour des handlers
+  - `include/web_interface.h` : Suppression des déclarations `extern` de broches
+  - `src/environmental_sensors.cpp` : Suppression des déclarations `extern`, utilise les defines directement
+
+### Supprimé
+- **Remapping de Broches à Runtime** : L'UI Web ne peut plus modifier les broches GPIO à l'exécution
+- **Préfixe `DEFAULT_`** : Toutes les broches GPIO utilisent maintenant des noms directs (ex. `I2C_SDA` et non `DEFAULT_I2C_SDA`)
+- **Variables Runtime** : Plus de pattern `int I2C_SDA = DEFAULT_I2C_SDA;`
+
+### Documentation
+- **Mise à jour `docs/PIN_POLICY.md`** : Reflète la nouvelle architecture à constantes de compilation
+- **Mise à jour `docs/PIN_POLICY_FR.md`** : Documentation française mise à jour
+- Suppression des références au remapping runtime et au préfixe `DEFAULT_`
+
+### Avantages
+- ✅ **Code plus simple** : Le système GPIO à une couche est plus facile à comprendre
+- ✅ **Meilleures performances** : Le compilateur peut optimiser l'accès aux broches constantes
+- ✅ **Intention plus claire** : Les assignations de broches sont fixées à la compilation
+- ✅ **Pas de conflits préprocesseur** : Élimine les problèmes de collision de noms
+
+### Guide de Migration
+**Pour les Utilisateurs :**
+- Les changements de broches nécessitent maintenant d'éditer `board_config.h` et de recompiler
+- Aucun changement fonctionnel si vous utilisez les assignations de broches par défaut
+
+**Pour les Développeurs :**
+- Remplacer `DEFAULT_NOM_GPIO` par `NOM_GPIO` dans `board_config.h`
+- Supprimer les déclarations de variables runtime
+- Accéder aux broches directement via les defines
+
+### Technique
+- **Rétrocompatibilité** : ⚠️ Changement non-rétrocompatible - nécessite une mise à jour du firmware
+- **Matériel** : Aucun changement matériel requis
+- **Fichiers Modifiés** :
+  - `src/main.cpp` : Suppression variables de broches, mise à jour handlers
+  - `include/web_interface.h` : Suppression déclarations extern
+  - `src/environmental_sensors.cpp` : Utilisation directe des defines
+  - `include/board_config.h` : Suppression préfixes `DEFAULT_` (déjà fait par l'utilisateur)
+  - `docs/PIN_POLICY.md`, `docs/PIN_POLICY_FR.md` : Mises à jour documentation
+  - `platformio.ini` : Passage version à 3.24.0
+
+---
+
+## [Version 3.23.2] - 2025-12-22 (OBSOLÈTE)
 
 ### Corrigé
 - **Initialisation I2C des Capteurs Environnementaux** : Correction des références aux broches I2C dans les capteurs environnementaux
