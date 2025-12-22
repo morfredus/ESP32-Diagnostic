@@ -1,3 +1,143 @@
+## [Version 3.24.0] - 2025-12-22
+
+### 🔄 Major Architectural Change: Simplified GPIO Pin System
+
+**Breaking Change:** GPIO pins are now compile-time constants. Dynamic pin remapping via Web UI has been removed.
+
+### Changed
+- **GPIO Architecture Simplified**: Removed two-layer pin system
+  - Eliminated `DEFAULT_` prefix from all GPIO pin names in `board_config.h`
+  - Removed runtime pin variables from `main.cpp` (lines 198-217)
+  - GPIO pins are now accessed directly as `#define` constants
+  - Example: `RGB_LED_PIN_R` instead of `DEFAULT_RGB_LED_PIN_R` + `int RGB_LED_PIN_R`
+
+- **Web Interface Behavior**:
+  - Pin configuration handlers now ignore changes (commented out assignments)
+  - Web UI displays current pins for reference only
+  - To change pins, users must edit `board_config.h` and recompile
+
+- **Code Changes**:
+  - `src/main.cpp`: Removed pin variable declarations, updated handlers
+  - `include/web_interface.h`: Removed `extern` pin declarations
+  - `src/environmental_sensors.cpp`: Removed `extern` declarations, uses defines directly
+
+### Removed
+- **Runtime Pin Remapping**: Web UI can no longer modify GPIO pins at runtime
+- **`DEFAULT_` Prefix**: All GPIO pins now use direct names (e.g., `I2C_SDA` not `DEFAULT_I2C_SDA`)
+- **Runtime Variables**: No more `int I2C_SDA = DEFAULT_I2C_SDA;` pattern
+
+### Documentation
+- **Updated `docs/PIN_POLICY.md`**: Reflects new compile-time constant architecture
+- **Updated `docs/PIN_POLICY_FR.md`**: French documentation updated
+- Removed references to runtime remapping and `DEFAULT_` prefix
+
+### Benefits
+- ✅ **Simpler codebase**: One-layer GPIO system is easier to understand
+- ✅ **Better performance**: Compiler can optimize constant pin access
+- ✅ **Clearer intent**: Pin assignments are fixed at compile time
+- ✅ **No preprocessor conflicts**: Eliminates name collision issues
+
+### Migration Guide
+**For Users:**
+- Pin changes now require editing `board_config.h` and recompiling
+- No functional changes if using default pin assignments
+
+**For Developers:**
+- Replace `DEFAULT_GPIO_NAME` with `GPIO_NAME` in `board_config.h`
+- Remove runtime variable declarations
+- Access pins directly via defines
+
+### Technical
+- **Backward Compatibility**: ⚠️ Breaking change - requires firmware update
+- **Hardware**: No hardware changes required
+- **Files Modified**:
+  - `src/main.cpp`: Pin variable removal, handler updates
+  - `include/web_interface.h`: Extern declaration removal
+  - `src/environmental_sensors.cpp`: Direct define usage
+  - `include/board_config.h`: Removed `DEFAULT_` prefixes (already done by user)
+  - `docs/PIN_POLICY.md`, `docs/PIN_POLICY_FR.md`: Documentation updates
+  - `platformio.ini`: Version bump to 3.24.0
+
+---
+
+## [Version 3.23.2] - 2025-12-22 (DEPRECATED)
+
+### Fixed
+- **Environmental Sensors I2C Initialization**: Corrected I2C pin references in environmental sensors
+  - Fixed `environmental_sensors.cpp:56-58` to use runtime variables `I2C_SDA` and `I2C_SCL`
+  - Previously referenced `DEFAULT_I2C_SDA` and `DEFAULT_I2C_SCL` directly (compile-time defines)
+  - Added `extern` declarations to access runtime variables from `main.cpp`
+  - Now respects dynamic I2C pin configuration via Web UI
+
+### Technical
+- **File Changed**: `src/environmental_sensors.cpp:56-58`
+- **Architecture Note**: Runtime variables (`int I2C_SDA`) and compile-time defines (`#define DEFAULT_I2C_SDA`)
+  must coexist for Web UI dynamic remapping to work. Removing the `DEFAULT_` prefix causes preprocessor conflicts.
+- **Impact**: Ensures environmental sensors (AHT20, BMP280) use correct I2C pins when remapped
+- **Backward Compatibility**: ✅ Fully compatible with v3.23.1
+
+---
+
+## [Version 3.23.1] - 2025-12-22
+
+### Fixed
+- **Web UI Buzzer Pin Display**: Corrected buzzer pin input field initialization
+  - Previously displayed `PWM_PIN` value instead of `BUZZER_PIN` in web interface
+  - Affected function: `buildDisplaySignal()` in `web_interface.h:85`
+  - Now correctly shows BUZZER_PIN value (ESP32-S3: GPIO 6, ESP32 Classic: GPIO 19)
+  - PWM and Buzzer are distinct pins as defined in `board_config.h`
+
+### Technical
+- **File Changed**: `include/web_interface.h:85`
+- **Impact**: Visual fix only - runtime behavior unchanged (backend already used correct pin)
+- **Backward Compatibility**: ✅ Fully compatible with v3.23.0
+
+---
+
+## [Version 3.23.0] - 2025-12-22
+
+### Added
+- **PWM_PIN variable**: Added missing `PWM_PIN` runtime variable in `main.cpp`
+  - Previously, `PWM_PIN` was declared as `extern` in `web_interface.h` but not defined
+  - Now properly initialized from `DEFAULT_PWM_PIN` in `board_config.h`
+  - ESP32-S3: PWM on GPIO 20, Buzzer on GPIO 6
+  - ESP32 Classic: PWM on GPIO 4, Buzzer on GPIO 19
+- **Pin Policy Documentation**: New comprehensive guides for GPIO management
+  - `docs/PIN_POLICY.md` (English) - Complete pin mapping policy for developers
+  - `docs/PIN_POLICY_FR.md` (French) - Guide détaillé de la politique de mapping GPIO
+  - Explains the "single source of truth" principle (`board_config.h`)
+  - Includes safety considerations, naming conventions, and practical examples
+
+### Changed
+- **JavaScript Injection**: Corrected PWM_PIN and BUZZER_PIN injection in Web UI
+  - Both pins are now properly injected into JavaScript constants
+  - Previously, `PWM_PIN` was incorrectly assigned the value of `BUZZER_PIN`
+  - Affected files: `main.cpp:4812-4815`, `web_interface.h:456-459`
+- **NEOPIXEL_PIN Unification**: Eliminated `DEFAULT_NEOPIXEL_PIN` redefinition
+  - Removed duplicate definition from `config.h` and `config-example.h`
+  - Now uses `NEOPIXEL_PIN` directly from `board_config.h` (GPIO 48 for ESP32-S3)
+  - Comments added to clarify that `NEOPIXEL_PIN` is defined in `board_config.h`
+
+### Fixed
+- **Pin Mapping Consistency**: All GPIO references now exclusively use `board_config.h`
+  - Eliminated ambiguity between `DEFAULT_NEOPIXEL_PIN` and `NEOPIXEL_PIN`
+  - Separated `PWM_PIN` and `BUZZER_PIN` properly (they are distinct pins)
+  - Improved runtime pin variable comments to reference `board_config.h` as source
+
+### Technical
+- **Backward Compatibility**: ✅ Fully compatible with v3.22.1
+  - No hardware changes required
+  - Web UI now correctly displays both PWM and Buzzer pins
+  - All existing functionality preserved
+
+### Documentation
+- New developer guide explaining GPIO mapping architecture
+- Clarifies the difference between `PIN_*` (fixed) and `DEFAULT_*` (runtime-configurable)
+- Provides step-by-step examples for adding new sensors
+- Available in English and French
+
+---
+
 ## [Version 3.22.0] - 2025-01-11
 
 ### Added

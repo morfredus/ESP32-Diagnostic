@@ -68,8 +68,8 @@
 // I2C
 // ------------------------------------
 // Configuration du bus de communication I2C.
-#define DEFAULT_I2C_SDA       15  // SDA (Serial Data Line). **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
-#define DEFAULT_I2C_SCL       16  // SCL (Serial Clock Line). **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
+#define I2C_SDA       15  // SDA (Serial Data Line). **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
+#define I2C_SCL       16  // SCL (Serial Clock Line). **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
 
 // ------------------------------------
 // DÉTAIL TECHNIQUE : Le Bus I2C (Inter-Integrated Circuit)
@@ -83,9 +83,9 @@
 // ------------------------------------
 // LED RGB
 // ------------------------------------
-#define DEFAULT_RGB_LED_PIN_R 21 // Rouge. Résistance série **220O - 470O**.
-#define DEFAULT_RGB_LED_PIN_G 41 // Vert. Résistance série **220O - 470O**.
-#define DEFAULT_RGB_LED_PIN_B 42 // Bleu. Résistance série **220O - 470O**.
+#define RGB_LED_PIN_R 21 // Rouge. Résistance série **220O - 470O**.
+#define RGB_LED_PIN_G 41 // Vert. Résistance série **220O - 470O**.
+#define RGB_LED_PIN_B 42 // Bleu. Résistance série **220O - 470O**.
 #define NEOPIXEL_PIN          48 // NeoPixel Intégrée. Data (Réservée).
 
 // ------------------------------------
@@ -98,17 +98,17 @@
 // ------------------------------------
 // Capteurs & Sorties
 // ------------------------------------
-#define DEFAULT_PWM_PIN       20  // PWM générique. Résistance série **220O - 470O** si LED.
-#define DEFAULT_BUZZER_PIN    6   // Buzzer. Transistor + **Résistance base 1–10kO**.
-#define DEFAULT_DHT_PIN       5   // DHT. **Pull-Up 10kO vers 3.3V**.
-#define DEFAULT_MOTION_SENSOR_PIN 46 // PIR. Câblage direct. **(Potentiel JTAG - attention au boot).**
-#define DEFAULT_LIGHT_SENSOR_PIN 4  // LDR. **Diviseur ~10kO**.
+#define PWM_PIN       20  // PWM générique. Résistance série **220O - 470O** si LED.
+#define BUZZER_PIN    6   // Buzzer. Transistor + **Résistance base 1–10kO**.
+#define DHT_PIN       5   // DHT. **Pull-Up 10kO vers 3.3V**.
+#define MOTION_SENSOR_PIN 46 // PIR. Câblage direct. **(Potentiel JTAG - attention au boot).**
+#define LIGHT_SENSOR_PIN 4  // LDR. **Diviseur ~10kO**.
 
 // ------------------------------------
 // Capteurs de Distance
 // ------------------------------------
-#define DEFAULT_DISTANCE_TRIG_PIN 2  // HC-SR04 TRIG. Câblage direct.
-#define DEFAULT_DISTANCE_ECHO_PIN 35 // HC-SR04 ECHO. **Si 5V, ajouter Diviseur de tension OBLIGATOIRE.**
+#define DISTANCE_TRIG_PIN 2  // HC-SR04 TRIG. Câblage direct.
+#define DISTANCE_ECHO_PIN 35 // HC-SR04 ECHO. **Si 5V, ajouter Diviseur de tension OBLIGATOIRE.**
 
 
 // =========================================================
@@ -161,8 +161,8 @@
 // ------------------------------------
 // I2C
 // ------------------------------------
-#define DEFAULT_I2C_SDA       21  // SDA. **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
-#define DEFAULT_I2C_SCL       22  // SCL. **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
+#define I2C_SDA       21  // SDA. **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
+#define I2C_SCL       22  // SCL. **Pull-Up 4.7kO vers 3.3V OBLIGATOIRE.**
 
 // ------------------------------------
 // DÉTAIL TECHNIQUE : Le Bus I2C (Inter-Integrated Circuit)
@@ -175,9 +175,9 @@
 // ------------------------------------
 // LED RGB
 // ------------------------------------
-#define DEFAULT_RGB_LED_PIN_R 13  // Rouge. Résistance série **220O - 470O**. (Déplacé de 26 pour éviter le doublon avec LED V).
-#define DEFAULT_RGB_LED_PIN_G 26  // Vert. Résistance série **220O - 470O**.
-#define DEFAULT_RGB_LED_PIN_B 33  // Bleu. Résistance série **220O - 470O**.
+#define RGB_LED_PIN_R 13  // Rouge. Résistance série **220O - 470O**. (Déplacé de 26 pour éviter le doublon avec LED V).
+#define RGB_LED_PIN_G 26  // Vert. Résistance série **220O - 470O**.
+#define RGB_LED_PIN_B 33  // Bleu. Résistance série **220O - 470O**.
 
 // ------------------------------------
 // Boutons
@@ -189,16 +189,16 @@
 // ------------------------------------
 // Capteurs & Sorties
 // ------------------------------------
-#define DEFAULT_PWM_PIN       4   // PWM générique. Résistance série **220O - 470O** si LED.
-#define DEFAULT_BUZZER_PIN    19  // Buzzer. Transistor + **Résistance base 1–10kO**.
-#define DEFAULT_DHT_PIN       15  // DHT. **Pull-Up 10kO vers 3.3V**. (Déplacé de 4 pour éviter le doublon avec PWM).
-#define DEFAULT_LIGHT_SENSOR_PIN 39 // LDR. Entrée seule. **Diviseur ~10kO**.
+#define PWM_PIN       4   // PWM générique. Résistance série **220O - 470O** si LED.
+#define BUZZER_PIN    19  // Buzzer. Transistor + **Résistance base 1–10kO**.
+#define DHT_PIN       15  // DHT. **Pull-Up 10kO vers 3.3V**. (Déplacé de 4 pour éviter le doublon avec PWM).
+#define LIGHT_SENSOR_PIN 39 // LDR. Entrée seule. **Diviseur ~10kO**.
 
 // ------------------------------------
 // Capteurs de Distance
 // ------------------------------------
-#define DEFAULT_DISTANCE_TRIG_PIN 12 // HC-SR04 TRIG. Sortie. (Déplacé de 32).
-#define DEFAULT_DISTANCE_ECHO_PIN 35 // HC-SR04 ECHO. Entrée seule. **Si 5V, Diviseur de tension OBLIGATOIRE.**
+#define DISTANCE_TRIG_PIN 12 // HC-SR04 TRIG. Sortie. (Déplacé de 32).
+#define DISTANCE_ECHO_PIN 35 // HC-SR04 ECHO. Entrée seule. **Si 5V, Diviseur de tension OBLIGATOIRE.**
 
 #else
     #error "Aucune cible definie ! Verifiez platformio.ini (TARGET_ESP32_...)"
