@@ -1,3 +1,47 @@
+## [Version 3.23.0] - 2025-12-22
+
+### Ajouté
+- **Variable PWM_PIN** : Ajout de la variable runtime `PWM_PIN` manquante dans `main.cpp`
+  - Auparavant, `PWM_PIN` était déclaré comme `extern` dans `web_interface.h` mais non défini
+  - Désormais correctement initialisé depuis `DEFAULT_PWM_PIN` dans `board_config.h`
+  - ESP32-S3 : PWM sur GPIO 20, Buzzer sur GPIO 6
+  - ESP32 Classic : PWM sur GPIO 4, Buzzer sur GPIO 19
+- **Documentation Politique des Broches** : Nouveaux guides complets pour la gestion GPIO
+  - `docs/PIN_POLICY.md` (Anglais) - Politique complète de mapping des broches pour développeurs
+  - `docs/PIN_POLICY_FR.md` (Français) - Guide détaillé de la politique de mapping GPIO
+  - Explique le principe de "source unique de vérité" (`board_config.h`)
+  - Inclut les considérations de sécurité, conventions de nommage et exemples pratiques
+
+### Modifié
+- **Injection JavaScript** : Correction de l'injection de PWM_PIN et BUZZER_PIN dans l'UI Web
+  - Les deux broches sont désormais correctement injectées dans les constantes JavaScript
+  - Auparavant, `PWM_PIN` se voyait incorrectement attribuer la valeur de `BUZZER_PIN`
+  - Fichiers affectés : `main.cpp:4812-4815`, `web_interface.h:456-459`
+- **Unification NEOPIXEL_PIN** : Élimination de la redéfinition `DEFAULT_NEOPIXEL_PIN`
+  - Suppression de la définition dupliquée dans `config.h` et `config-example.h`
+  - Utilise désormais `NEOPIXEL_PIN` directement depuis `board_config.h` (GPIO 48 pour ESP32-S3)
+  - Commentaires ajoutés pour clarifier que `NEOPIXEL_PIN` est défini dans `board_config.h`
+
+### Corrigé
+- **Cohérence du Mapping des Broches** : Toutes les références GPIO utilisent exclusivement `board_config.h`
+  - Élimination de l'ambiguïté entre `DEFAULT_NEOPIXEL_PIN` et `NEOPIXEL_PIN`
+  - Séparation correcte de `PWM_PIN` et `BUZZER_PIN` (ce sont des broches distinctes)
+  - Amélioration des commentaires des variables de broches runtime pour référencer `board_config.h` comme source
+
+### Technique
+- **Rétrocompatibilité** : ✅ Entièrement compatible avec v3.22.1
+  - Aucun changement matériel requis
+  - L'UI Web affiche désormais correctement les broches PWM et Buzzer
+  - Toutes les fonctionnalités existantes préservées
+
+### Documentation
+- Nouveau guide développeur expliquant l'architecture du mapping GPIO
+- Clarifie la différence entre `PIN_*` (fixe) et `DEFAULT_*` (configurable à l'exécution)
+- Fournit des exemples étape par étape pour ajouter de nouveaux capteurs
+- Disponible en anglais et français
+
+---
+
 ## [Version 3.22.1] - 2025-12-12
 
 ### Corrigé — Doublons de mapping (ESP32 Classic)

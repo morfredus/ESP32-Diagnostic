@@ -27,7 +27,7 @@
 
 // --- LED Common ---
 #define DEFAULT_BUILTIN_LED_PIN -1
-#define DEFAULT_NEOPIXEL_PIN 48 // Le 48 est maintenant l'adresse Neopixel
+// NEOPIXEL_PIN is now defined in board_config.h (no redefinition here)
 #define DEFAULT_NEOPIXEL_COUNT 1
 #define DEFAULT_NEOPIXEL_BRIGHTNESS 50
 #define CUSTOM_LED_PIN -1
