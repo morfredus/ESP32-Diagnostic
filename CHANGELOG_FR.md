@@ -1,3 +1,21 @@
+## [Version 3.23.2] - 2025-12-22
+
+### Corrigé
+- **Initialisation I2C des Capteurs Environnementaux** : Correction des références aux broches I2C dans les capteurs environnementaux
+  - Correction de `environmental_sensors.cpp:56-58` pour utiliser les variables runtime `I2C_SDA` et `I2C_SCL`
+  - Référençait précédemment `DEFAULT_I2C_SDA` et `DEFAULT_I2C_SCL` directement (defines de compilation)
+  - Ajout de déclarations `extern` pour accéder aux variables runtime depuis `main.cpp`
+  - Respecte désormais la configuration dynamique des broches I2C via l'UI Web
+
+### Technique
+- **Fichier Modifié** : `src/environmental_sensors.cpp:56-58`
+- **Note d'Architecture** : Les variables runtime (`int I2C_SDA`) et les defines de compilation (`#define DEFAULT_I2C_SDA`)
+  doivent coexister pour que le remapping dynamique via l'UI Web fonctionne. Retirer le préfixe `DEFAULT_` crée des conflits de préprocesseur.
+- **Impact** : Assure que les capteurs environnementaux (AHT20, BMP280) utilisent les bonnes broches I2C lorsqu'elles sont remappées
+- **Rétrocompatibilité** : ✅ Entièrement compatible avec v3.23.1
+
+---
+
 ## [Version 3.23.1] - 2025-12-22
 
 ### Corrigé
