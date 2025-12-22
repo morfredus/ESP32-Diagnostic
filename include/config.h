@@ -38,7 +38,7 @@
 // --- TFT Common ---
 #define ENABLE_TFT_DISPLAY  true
 #define TFT_WIDTH           240
-#define TFT_HEIGHT          240
+#define TFT_HEIGHT          320
 #define TFT_ROTATION        2
 #define TFT_BACKLIGHT_PWM   255
 
