@@ -4,6 +4,8 @@
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
+**IMPORTANT :** Toute référence de broche dans le code ou la documentation **doit** impérativement utiliser les macros définies dans `include/board_config.h`. Ce fichier est **l'unique source de vérité** pour le mapping et le nommage des pins. N'utilisez jamais de numéros de broche en dur ni d'alias locaux. Toute modification de mapping doit être faite dans `board_config.h` et répercutée partout via ses macros.
+
 ## 🟢 Nouveautés de la version 3.22.1 - Corrections de mapping (Classic)
 
 **Corrections de mapping pour ESP32 Classic** — Harmonisation avec `board_config.h` :

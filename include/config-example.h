@@ -45,12 +45,13 @@
 #define SCREEN_ADDRESS 0x3C
 #define DEFAULT_OLED_ROTATION 0      // 0, 1, 2, or 3 (90° increments)
 
-// --- LED Common ---
-#define DEFAULT_BUILTIN_LED_PIN -1
-#define DEFAULT_NEOPIXEL_PIN 48 // Now enabled on ESP32-S3 pin 48
+
+// [PIN POLICY] Toutes les pins doivent être référencées exclusivement via board_config.h
+// Les constantes de configuration LED suivantes sont conservées uniquement si elles ne sont PAS des numéros de GPIO :
+// - DEFAULT_NEOPIXEL_COUNT, DEFAULT_NEOPIXEL_BRIGHTNESS
+// Les pins doivent être utilisées via les macros de board_config.h (ex : NEOPIXEL, LED_BUILTIN, etc.)
 #define DEFAULT_NEOPIXEL_COUNT 1
 #define DEFAULT_NEOPIXEL_BRIGHTNESS 50
-#define CUSTOM_LED_PIN -1
 
 // --- Sensors Common ---
 #define DEFAULT_DHT_SENSOR_TYPE 22   // 11 for DHT11, 22 for DHT22

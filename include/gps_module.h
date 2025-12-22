@@ -1,6 +1,6 @@
 /*
  * GPS_MODULE.H - GPS NEO-6M/NEO-8M/NEO-M8 Module Handler
- * Uses UART1 with pins configured in config.h
+ * Utilise UART1 avec les pins référencées UNIQUEMENT via board_config.h (GPS_RXD, GPS_TXD, GPS_PPS)
  * Parses NMEA sentences for location, altitude, satellites, HDOP
  */
 

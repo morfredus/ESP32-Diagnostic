@@ -93,7 +93,7 @@ La version 3.22.0 résout les conflits GPIO de strapping sur ESP32-S3 en dépla�
 | LED rouge | 13   | Aucun changement par rapport à v3.21.0 |
 | LED verte | 26   | Aucun changement par rapport à v3.21.0 |
 | LED bleue | 33   | Aucun changement par rapport à v3.21.0 |
-| NeoPixel  | 2    | Aucun changement (configurable via CUSTOM_LED_PIN) |
+| NeoPixel  | 2    | Aucun changement (mapping via board_config.h uniquement) |
 
 ## Modifications du code
 

@@ -14,25 +14,17 @@ bool gpsAvailable = false;
 
 // GPS UART Configuration
 void initGPS() {
-  #if defined(PIN_GPS_RXD) && defined(PIN_GPS_TXD) && PIN_GPS_RXD >= 0 && PIN_GPS_TXD >= 0
-    Serial.printf("Initializing GPS on RX=%d TX=%d\r\n", PIN_GPS_RXD, PIN_GPS_TXD);
-    
+    Serial.printf("Initializing GPS on RX=%d TX=%d\r\n", GPS_RXD, GPS_TXD);
     // Initialize UART1 for GPS
-    gpsSerial.begin(9600, SERIAL_8N1, PIN_GPS_RXD, PIN_GPS_TXD);
+    gpsSerial.begin(9600, SERIAL_8N1, GPS_RXD, GPS_TXD);
     gpsSerial.setRxBufferSize(2048);  // Increased buffer for NMEA sentences
-    
     // Setup PPS interrupt if available
-    #if defined(PIN_GPS_PPS) && PIN_GPS_PPS >= 0
-      pinMode(PIN_GPS_PPS, INPUT);
-      Serial.printf("GPS PPS signal on GPIO %d\r\n", PIN_GPS_PPS);
-    #endif
-    
+#if defined(GPS_PPS) && (GPS_PPS >= 0)
+    pinMode(GPS_PPS, INPUT);
+    Serial.printf("GPS PPS signal on GPIO %d\r\n", GPS_PPS);
+#endif
     gpsAvailable = true;
     delay(100);
-  #else
-    Serial.println("GPS: Pins not configured correctly");
-    gpsAvailable = false;
-  #endif
 }
 
 // Read and parse GPS NMEA sentences

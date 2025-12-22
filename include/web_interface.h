@@ -19,16 +19,9 @@ extern DiagnosticInfo diagnosticData;
 extern const char* const DIAGNOSTIC_SECURE_SCHEME;
 extern const char* const DIAGNOSTIC_LEGACY_SCHEME;
 
-// Pin configuration variables from board_config.h (dynamic references)
-extern int RGB_LED_PIN_R;      // RGB LED Red channel
-extern int RGB_LED_PIN_G;      // RGB LED Green channel
-extern int RGB_LED_PIN_B;      // RGB LED Blue channel
-extern int DHT_PIN;            // DHT temperature/humidity sensor
-extern int LIGHT_SENSOR_PIN;   // Light sensor (LDR)
-extern int DISTANCE_TRIG_PIN;  // Distance sensor trigger (HC-SR04)
-extern int DISTANCE_ECHO_PIN;  // Distance sensor echo (HC-SR04)
-extern int MOTION_SENSOR_PIN;  // Motion sensor (PIR)
-extern int PWM_PIN;            // PWM/Buzzer output
+
+// [PIN POLICY] Toutes les références de broches doivent utiliser exclusivement les macros définies dans board_config.h
+// Ne pas déclarer de variables dynamiques ou locales pour les pins ici.
 
 // Déclarations forward des fonctions
 String htmlEscape(const String& raw);
@@ -436,26 +429,21 @@ String generateJavaScript() {
   js += F(" - Initialisation');const UPDATE_INTERVAL=5000;let currentLang='");
   js += (currentLanguage == LANG_FR) ? "fr" : "en";
   js += F("';let updateTimer=null;let isConnected=true;");
-  // Pin configuration variables from board_config.h (injected server-side BEFORE static code)
-  js += F("const RGB_LED_PIN_R=");
-  js += String(RGB_LED_PIN_R);
-  js += F(";const RGB_LED_PIN_G=");
-  js += String(RGB_LED_PIN_G);
-  js += F(";const RGB_LED_PIN_B=");
-  js += String(RGB_LED_PIN_B);
-  js += F(";const DHT_PIN=");
-  js += String(DHT_PIN);
+  // Injection des pins définies dans board_config.h uniquement
+  js += F("const DHT_PIN=");
+  js += String(DHT);
   js += F(";const LIGHT_SENSOR_PIN=");
-  js += String(LIGHT_SENSOR_PIN);
+  js += String(LIGHT_SENSOR);
   js += F(";const DISTANCE_TRIG_PIN=");
-  js += String(DISTANCE_TRIG_PIN);
+  js += String(DISTANCE_TRIG);
   js += F(";const DISTANCE_ECHO_PIN=");
-  js += String(DISTANCE_ECHO_PIN);
+  js += String(DISTANCE_ECHO);
   js += F(";const MOTION_SENSOR_PIN=");
-  js += String(MOTION_SENSOR_PIN);
+  js += String(MOTION_SENSOR);
   js += F(";const PWM_PIN=");
-  js += String(BUZZER_PIN);
-  js += F(";const DEFAULT_TRANSLATIONS=");
+  js += String(BUZZER);
+  js += F(";");
+  js += F("const DEFAULT_TRANSLATIONS=");
   js += buildTranslationsJSON();
   js += F(";let translationsCache=DEFAULT_TRANSLATIONS;");
   // JavaScript static chunk streamed from PROGMEM (note: in production, we use chunked route)

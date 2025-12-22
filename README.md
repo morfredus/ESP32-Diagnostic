@@ -4,6 +4,9 @@
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
+**IMPORTANT:** All pin references in code and documentation **must** use the macros defined in `include/board_config.h`. This file is the **only source of truth** for pin mapping and naming. Do not use hardcoded pin numbers or local aliases. Any change to pin mapping must be made in `board_config.h` and reflected everywhere via its macros.
+
+
 ## ?? Version 3.21.1 Highlights - NeoPixel Wi-Fi Status Indicator
 
 **Real-time Wi-Fi connectivity feedback via NeoPixel/WS2812 RGB LED:**

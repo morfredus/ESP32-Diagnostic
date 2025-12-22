@@ -1,6 +1,6 @@
 /*
  * TFT_DISPLAY.H - TFT ST7789 Display Management
- * Support for 240x240 TFT LCD display with boot splash screen
+ * Support pour écran TFT 240x240, toutes les pins SPI/TFT doivent être référencées UNIQUEMENT via board_config.h (TFT_MOSI, TFT_SCLK, TFT_CS, TFT_DC, TFT_RST, TFT_BL)
  */
 
 #ifndef TFT_DISPLAY_H

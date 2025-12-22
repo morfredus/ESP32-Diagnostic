@@ -1,103 +1,65 @@
-# Modifications du Pin Mapping ESP32 Classic - Résolution des problèmes de boot et communication USB
 
-## Date : 9 décembre 2025
-## Version : 3.21.0 (à venir)
+# Synthèse des changements de mapping de pins (décembre 2025)
 
----
+Ce document liste les changements appliqués pour garantir la cohérence totale entre le code source, la configuration et la documentation, en prenant `include/board_config.h` comme référence absolue pour le nommage et l'affectation des pins.
 
-## Contexte
+## Règle de référence
+- **Seul le fichier `include/board_config.h` fait foi** pour le nommage et l'affectation des broches.
+- Toutes les autres occurrences dans le code, la configuration et la documentation ont été alignées sur ce fichier.
 
-L'ancien mapping des pins ESP32 Classic (DevKitC) présentait plusieurs problèmes critiques :
-- **Problèmes de boot** : utilisation de broches de strapping (GPIO 0, 2, 4, 5, 12, 15) sans précautions
-- **Conflits USB-UART** : GPIO 1 (TX0) et GPIO 3 (RX0) utilisés pour des périphériques externes
-- **Boutons inadaptés** : GPIO 34 et 35 utilisés comme boutons mais ce sont des pins input-only
-- **LED RGB sur pins de strapping** : LED connectées à GPIO 12, 14, 15 causant des états forcés au boot
+## Changements principaux
 
-Ces problèmes pouvaient empêcher le boot, bloquer le flashing, ou causer des comportements imprévisibles.
+### 1. Harmonisation des noms de pins dans le code source
+- Tous les fichiers `.cpp` et `.h` du projet utilisent désormais **exclusivement** les macros et noms définis dans `board_config.h` pour accéder aux broches matérielles (ex : `GPS_RXD`, `TFT_MOSI`, `LED_RED`, etc.).
+- Suppression des alias ou redéfinitions locales de pins (ex : `DEFAULT_I2C_SDA`, `DEFAULT_RGB_LED_PIN_R`, etc.) au profit des noms standards de `board_config.h`.
+- Les initialisations dynamiques de pins dans le code utilisent les macros de `board_config.h`.
 
----
+### 2. Mise à jour de la configuration
+- Les sections de configuration (`config.h`, `config-example.h`) ne redéfinissent plus de pins déjà présentes dans `board_config.h`.
+- Les valeurs par défaut pour les périphériques (I2C, LED, capteurs, etc.) pointent vers les macros de `board_config.h`.
 
-## Modifications numérotées du Pin Mapping
+### 3. Documentation utilisateur
+- Tous les documents de la section `docs/` (notamment `PIN_MAPPING.md`, `PIN_MAPPING_FR.md`, `USAGE.md`, `USAGE_FR.md`, etc.) ont été relus et corrigés pour refléter **exactement** le mapping et les noms de pins de `board_config.h`.
+- Les exemples de code, tableaux de correspondance et schémas de câblage utilisent les bons noms et numéros de GPIO.
 
-### 1️⃣ **GPS PPS : GPIO 4 → GPIO 36**
-**Ancien:** `#define PIN_GPS_PPS 4`  
-**Nouveau:** `#define PIN_GPS_PPS 36`
+### 4. Historique et traçabilité
+- Un numéro de changement a été ajouté dans `platformio.ini` pour tracer cette harmonisation (voir la section [Changelog] dans ce document ou dans `platformio.ini`).
 
-**Raison:** GPIO 4 est une **broche de strapping** critique pour le boot (contrôle du mode SDIO). Un niveau forcé par le GPS PPS pourrait empêcher le démarrage. GPIO 36 (VP) est une entrée dédiée, idéale pour un signal PPS (Pulse Per Second).
+## Exemple de correspondance (extrait)
+| Fonction           | Nom macro         | GPIO ESP32-S3 | GPIO ESP32 Classic |
+|--------------------|-------------------|---------------|--------------------|
+| I2C SDA            | I2C_SDA           | 15            | 21                 |
+| I2C SCL            | I2C_SCL           | 16            | 22                 |
+| LED Rouge          | LED_RED           | 21            | 13                 |
+| LED Verte          | LED_GREEN         | 41            | 26                 |
+| LED Bleue          | LED_BLUE          | 42            | 33                 |
+| NeoPixel           | NEOPIXEL          | 48            | -1                 |
+| Bouton BOOT        | BUTTON_BOOT       | 0             | 0                  |
+| Bouton 1           | BUTTON_1          | 38            | 5                  |
+| Bouton 2           | BUTTON_2          | 39            | 12                 |
+| Buzzer             | BUZZER            | 6             | 19                 |
+| Capteur DHT        | DHT               | 5             | 15                 |
+| Capteur lumière    | LIGHT_SENSOR      | 4             | 39                 |
+| Capteur distance T | DISTANCE_TRIG     | 2             | 1                  |
+| Capteur distance E | DISTANCE_ECHO     | 35            | 35                 |
+| GPS RX             | GPS_RXD           | 18            | 16                 |
+| GPS TX             | GPS_TXD           | 17            | 17                 |
+| GPS PPS            | GPS_PPS           | 8             | 36                 |
+| TFT MOSI           | TFT_MOSI          | 11            | 23                 |
+| TFT SCLK           | TFT_SCLK          | 12            | 18                 |
+| TFT CS             | TFT_CS            | 10            | 27                 |
+| TFT DC             | TFT_DC            | 9             | 14                 |
+| TFT RST            | TFT_RST           | 13            | 25                 |
+| TFT BL             | TFT_BL            | 7             | 32                 |
 
----
-
-### 2️⃣ **TFT CS (Chip Select) : GPIO 19 → GPIO 27**
-**Ancien:** `#define TFT_CS 19`  
-**Nouveau:** `#define TFT_CS 27`
-
-**Raison:** GPIO 19 est proche des pins UART0 (USB-UART) et pouvait causer des interférences lors du flashing. GPIO 27 est plus sûr, sans conflit avec les interfaces critiques.
-
----
-
-### 3️⃣ **TFT DC (Data/Command) : GPIO 27 → GPIO 14**
-**Ancien:** `#define TFT_DC 27`  
-**Nouveau:** `#define TFT_DC 14`
-
-**Raison:** Échange de position avec CS pour une meilleure organisation du câblage. GPIO 14 reste une broche de strapping mais est acceptable pour un signal de contrôle (DC) car il n'est actif qu'après le boot.
-
----
-
-### 4️⃣ **TFT RST (Reset) : GPIO 26 → GPIO 25**
-**Ancien:** `#define TFT_RST 26`  
-**Nouveau:** `#define TFT_RST 25`
-
-**Raison:** GPIO 26 était proche de GPIO 27 (conflits potentiels). GPIO 25 offre un meilleur groupement physique des pins TFT et évite les interférences avec ADC2 lors de l'utilisation Wi-Fi.
-
----
-
-### 5️⃣ **TFT BL (Backlight) : GPIO 13 → GPIO 32**
-**Ancien:** `#define TFT_BL 13`  
-**Nouveau:** `#define TFT_BL 32`
-
-**Raison:** GPIO 13 est souvent utilisé pour la LED interne sur certaines cartes et peut causer des conflits. GPIO 32 est plus sûr et peut gérer le rétroéclairage sans interférence.
+Pour la liste exhaustive, se référer à `include/board_config.h`.
 
 ---
 
-### 6️⃣ **LED RGB Rouge : GPIO 12 → GPIO 13**
-**Ancien:** `#define DEFAULT_RGB_LED_PIN_R 12`  
-**Nouveau:** `#define DEFAULT_RGB_LED_PIN_R 13`
+**Remarque :**
+Aucune fonctionnalité n'a été ajoutée ou supprimée. Seule la cohérence de nommage et de mapping a été assurée sur l'ensemble du projet.
 
-**Raison:** **GPIO 12 est une broche de strapping critique** (MTDI, contrôle la tension flash). Une LED allumée au boot peut forcer un mauvais niveau et empêcher le démarrage. GPIO 13 est plus sûr pour une LED.
-
----
-
-### 7️⃣ **LED RGB Bleue : GPIO 15 → GPIO 25**
-**Ancien:** `#define DEFAULT_RGB_LED_PIN_B 15`  
-**Nouveau:** `#define DEFAULT_RGB_LED_PIN_B 25`
-
-**Raison:** **GPIO 15 est une broche de strapping** (MTDO, contrôle le mode debug JTAG). Une LED bleue allumée peut bloquer le boot. GPIO 25 n'est pas une broche de strapping et convient parfaitement.
-
----
-
-### 8️⃣ **Bouton 1 : GPIO 34 → GPIO 32**
-**Ancien:** `#define PIN_BUTTON_1 34`  
-**Nouveau:** `#define PIN_BUTTON_1 32`
-
-**Raison:** GPIO 34 est **input-only** (pas de pull-up interne), nécessitant une résistance externe. GPIO 32 supporte `INPUT_PULLUP` en interne, simplifiant le câblage.
-
----
-
-### 9️⃣ **Distance TRIG (HC-SR04) : GPIO 32 → GPIO 27**
-**Ancien:** `#define DEFAULT_DISTANCE_TRIG_PIN 32`  
-**Nouveau:** `#define DEFAULT_DISTANCE_TRIG_PIN 27`
-
-**Raison:** GPIO 32 était réaffecté au Bouton 1. GPIO 27 est une sortie standard parfaite pour le signal TRIG du capteur ultrason.
-
----
-
-### 🔟 **DHT Température/Humidité : GPIO 25 → GPIO 32**
-**Ancien:** `#define DEFAULT_DHT_PIN 25`  
-**Nouveau:** `#define DEFAULT_DHT_PIN 32`
-
-**Raison:** GPIO 25 était réaffecté à la LED bleue. GPIO 32 supporte le protocole DHT et peut partager la pin avec le Bouton 1 si géré correctement en temps (non simultané).
-
----
+Dernière mise à jour : 21 décembre 2025.
 
 ### 1️⃣1️⃣ **Capteur de mouvement (PIR) : GPIO 36 supprimé**
 **Ancien:** `#define DEFAULT_MOTION_SENSOR_PIN 36`  

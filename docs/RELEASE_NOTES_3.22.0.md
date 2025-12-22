@@ -93,7 +93,7 @@ Version 3.22.0 resolves GPIO strapping conflicts on ESP32-S3 by relocating RGB L
 | Red LED   | 13   | No change from v3.21.0 |
 | Green LED | 26   | No change from v3.21.0 |
 | Blue LED  | 33   | No change from v3.21.0 |
-| NeoPixel  | 2    | No change (configurable via CUSTOM_LED_PIN) |
+| NeoPixel  | 2    | No change (mapping via board_config.h only) |
 
 ## Code Changes
 

@@ -1,6 +1,6 @@
 /*
  * ENVIRONMENTAL_SENSORS.H - AHT20 (Temp/Humidity) + BMP280 (Pressure) Handler
- * Uses I2C with pins configured in config.h
+ * Utilise I2C avec les pins référencées UNIQUEMENT via board_config.h (I2C_SDA, I2C_SCL)
  * AHT20 I2C Address: 0x38
  * BMP280 I2C Address: 0x76 or 0x77
  */

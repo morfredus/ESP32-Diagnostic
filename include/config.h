@@ -8,7 +8,8 @@
 #define DIAGNOSTIC_VERBOSE 0
 #define DIAGNOSTIC_PREFER_SECURE 0
 
-// --- Pin mapping specific to each board ---
+// --- Pin mapping spécifique à chaque carte ---
+// Toutes les pins doivent être référencées UNIQUEMENT via board_config.h dans tout le projet !
 #include "board_config.h"
 
 // =========================================================
@@ -25,12 +26,13 @@
 #define SCREEN_ADDRESS 0x3C
 #define DEFAULT_OLED_ROTATION 0
 
-// --- LED Common ---
-#define DEFAULT_BUILTIN_LED_PIN -1
-#define DEFAULT_NEOPIXEL_PIN 48 // Le 48 est maintenant l'adresse Neopixel
+
+// [PIN POLICY] Toutes les pins doivent être référencées exclusivement via board_config.h
+// Les constantes de configuration LED suivantes sont conservées uniquement si elles ne sont PAS des numéros de GPIO :
+// - DEFAULT_NEOPIXEL_COUNT, DEFAULT_NEOPIXEL_BRIGHTNESS
+// Les pins doivent être utilisées via les macros de board_config.h (ex : NEOPIXEL, LED_BUILTIN, etc.)
 #define DEFAULT_NEOPIXEL_COUNT 1
 #define DEFAULT_NEOPIXEL_BRIGHTNESS 50
-#define CUSTOM_LED_PIN -1
 
 // --- Sensors Common ---
 #define DEFAULT_DHT_SENSOR_TYPE 22
