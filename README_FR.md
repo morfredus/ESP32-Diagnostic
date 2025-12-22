@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite (v3.25.0)
+# ESP32 Diagnostic Suite (v3.25.1)
 
-> **Note** : v3.25.0 restaure le remapping dynamique des broches GPIO via l'interface Web avec une architecture améliorée qui prévient les conflits de préprocesseur. Le système utilise des variables runtime en minuscules (`i2c_sda`) initialisées à partir de defines compile-time en MAJUSCULES (`I2C_SDA`) dans `board_config.h`.
+> **Note** : v3.25.1 est une version de maintenance (alignement documentation/processus). v3.25.0 a restauré le remapping dynamique des broches GPIO via l'interface Web avec une architecture améliorée qui prévient les conflits de préprocesseur. Le système utilise des variables runtime en minuscules (`i2c_sda`) initialisées à partir de defines compile-time en MAJUSCULES (`I2C_SDA`) dans `board_config.h`.
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 

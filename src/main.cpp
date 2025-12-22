@@ -202,18 +202,18 @@ int i2c_sda = I2C_SDA;
 int i2c_scl = I2C_SCL;
 
 // RGB LED pins (modifiable via web interface)
-int rgb_led_pin_r = RGB_LED_PIN_R;
-int rgb_led_pin_g = RGB_LED_PIN_G;
-int rgb_led_pin_b = RGB_LED_PIN_B;
+int rgb_led_pin_r = LED_RED;
+int rgb_led_pin_g = LED_GREEN;
+int rgb_led_pin_b = LED_BLUE;
 
 // Sensor and output pins (modifiable via web interface)
-int pwm_pin = PWM_PIN;
-int buzzer_pin = BUZZER_PIN;
-int dht_pin = DHT_PIN;
-int light_sensor_pin = LIGHT_SENSOR_PIN;
-int distance_trig_pin = DISTANCE_TRIG_PIN;
-int distance_echo_pin = DISTANCE_ECHO_PIN;
-int motion_sensor_pin = MOTION_SENSOR_PIN;
+int pwm_pin = PWM;
+int buzzer_pin = BUZZER;
+int dht_pin = DHT;
+int light_sensor_pin = LIGHT_SENSOR;
+int distance_trig_pin = DISTANCE_TRIG;
+int distance_echo_pin = DISTANCE_ECHO;
+int motion_sensor_pin = MOTION_SENSOR;
 
 // OLED display settings (from config.h)
 uint8_t oledRotation = DEFAULT_OLED_ROTATION;
@@ -239,7 +239,7 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C oled(U8G2_R0, U8X8_PIN_NONE);
 
 
 // NeoPixel (from board_config.h via config.h)
-int LED_PIN = NEOPIXEL_PIN;
+int LED_PIN = NEOPIXEL;
 int LED_COUNT = DEFAULT_NEOPIXEL_COUNT;
 
 // TFT pins (modifiables via web)
@@ -286,7 +286,7 @@ void neopixelRestoreWifiStatus();
 void updateNeoPixelWifiStatus();
 
 // Built-in LED (from config.h)
-int BUILTIN_LED_PIN = DEFAULT_BUILTIN_LED_PIN;
+int BUILTIN_LED_PIN = LED_BUILTIN;
 bool builtinLedTested = false;
 bool builtinLedAvailable = false;
 String builtinLedTestResult = DEFAULT_TEST_RESULT_STR;
@@ -411,9 +411,9 @@ bool motionDetected = false;
 // ========== BOUTONS ==========
 // Gestion simple avec anti-rebond et actions utiles par défaut
 #if ENABLE_BUTTONS
-static int buttonBootPin = PIN_BUTTON_BOOT;
-static int button1Pin = PIN_BUTTON_1;
-static int button2Pin = PIN_BUTTON_2;
+static int buttonBootPin = BUTTON_BOOT;
+static int button1Pin = BUTTON_1;
+static int button2Pin = BUTTON_2;
 static int buttonBootLast = HIGH;
 static int button1Last = HIGH;
 static int button2Last = HIGH;
@@ -2634,7 +2634,7 @@ void testBuzzer() {
 }
 
 void playBuzzerTone(int frequency, int duration) {
-  if (BUZZER_PIN >= 0) {
+  if (BUZZER >= 0) {
     tone(buzzer_pin, frequency, duration);
   }
 }
