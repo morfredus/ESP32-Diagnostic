@@ -1,3 +1,85 @@
+## [Version 3.26.0] - 2025-12-23
+
+### ✨ Nouvelles Fonctionnalités : Support Carte SD et Encodeur Rotatif HW-040
+
+**Ajout Majeur :** Intégration complète du lecteur de carte SD et de l'encodeur rotatif HW-040 avec configuration GPIO dynamique.
+
+### Ajouts - Support Carte SD
+- **Gestion de Carte SD** : Initialisation et tests complets basés sur SPI
+  - Détection automatique du type de carte (MMC, SDSC, SDHC)
+  - Détection de la taille et rapport de capacité
+  - Tests de vérification lecture/écriture
+  - Support de totalBytes() et usedBytes()
+- **Configuration GPIO Dynamique** :
+  - `sd_miso_pin`, `sd_mosi_pin`, `sd_sclk_pin`, `sd_cs_pin` (modifiables via interface web)
+  - Valeurs par défaut depuis `board_config.h` : `SD_MISO`, `SD_MOSI`, `SD_SCLK`, `SD_CS`
+- **Points d'API** :
+  - `/api/sd-config` - Configurer les pins de la carte SD
+  - `/api/sd-test` - Lancer un test avec vérification lecture/écriture
+  - `/api/sd-info` - Obtenir les informations (type, taille, utilisation)
+- **Fonctions de Test** :
+  - `initSD()` - Initialiser la carte SD avec configuration SPI
+  - `testSD()` - Test complet incluant vérification fichier
+  - `getSDInfo()` - Récupérer les informations détaillées
+  - Support de test asynchrone via `sdTestRunner`
+
+### Ajouts - Support Encodeur Rotatif HW-040
+- **Gestion Encodeur Rotatif** : Encodeur basé sur interruptions avec bouton intégré
+  - Anti-rebond matériel pour rotation (5ms) et bouton (50ms)
+  - Suivi de position avec détection incrémentation/décrémentation
+  - Détection d'appui bouton avec auto-reset
+- **Configuration GPIO Dynamique** :
+  - `rotary_clk_pin`, `rotary_dt_pin`, `rotary_sw_pin` (modifiables via interface web)
+  - Valeurs par défaut depuis `board_config.h` : `ROTARY_CLK`, `ROTARY_DT`, `ROTARY_SW`
+- **Implémentation ISR** :
+  - `rotaryISR()` - Gestionnaire d'interruption IRAM pour détection rotation
+  - `rotaryButtonISR()` - Gestionnaire d'interruption IRAM pour appuis bouton
+  - Encodage en quadrature pour suivi précis de position
+- **Points d'API** :
+  - `/api/rotary-config` - Configurer les pins de l'encodeur
+  - `/api/rotary-test` - Lancer un test interactif de 5 secondes
+  - `/api/rotary-position` - Obtenir position actuelle et état bouton
+  - `/api/rotary-reset` - Réinitialiser le compteur de position à zéro
+- **Fonctions de Test** :
+  - `initRotaryEncoder()` - Initialiser avec attachement d'interruptions
+  - `testRotaryEncoder()` - Test interactif de 5 secondes
+  - `getRotaryPosition()`, `getRotaryButtonState()`, `resetRotaryPosition()`
+  - Support de test asynchrone via `rotaryTestRunner`
+
+### Modifications - board_config.h
+- **ESP32-S3 DevKitC-1 N16R8** :
+  - Pins carte SD : MISO=14, MOSI=11, SCLK=12, CS=1
+  - Pins encodeur rotatif : CLK=47, DT=45, SW=40
+- **ESP32 Classic DevKitC** :
+  - Pins encodeur rotatif : CLK=4, DT=13, SW=26
+  - (La carte SD partage les pins avec le TFT sur la variante classique)
+
+### Modifications - Exports
+- **Export TXT** : Ajout des résultats de tests carte SD et encodeur rotatif
+- **Export JSON** : Ajout des champs `sd_card` et `rotary_encoder` dans `hardware_tests`
+- **Export CSV** : Ajout des lignes de résultats pour carte SD et encodeur rotatif
+
+### Technique
+- **Includes Ajoutés** : `<SPI.h>`, `<SD.h>`, `<FS.h>` pour le support carte SD
+- **Variables Globales** :
+  - SD : `sdTestResult`, `sdAvailable`, `sdCardSize`, `sdCardType`, `sdCardTypeStr`
+  - Encodeur : `rotaryPosition` (volatile), `rotaryButtonPressed` (volatile), timestamps d'interruption
+- **Allocation de Pile** :
+  - Test SD : 6144 octets (opérations I/O fichier)
+  - Test encodeur : 4096 octets (boucle de test interactive)
+- **Notes Matérielles** :
+  - Carte SD nécessite câblage SPI approprié, partage le bus avec TFT sur ESP32-S3
+  - Encodeur Rotatif HW-040 : condensateurs 10nF recommandés pour anti-rebond matériel
+  - Toutes les pins utilisent des niveaux logiques 3.3V
+
+### Architecture
+- Suit le pattern existant de remapping GPIO dynamique (variables en minuscules)
+- Exécuteurs de tests asynchrones pour interface web non-bloquante
+- Format de réponse API cohérent avec champs `success`, `result`, `available`
+- Fonctions ISR marquées avec `IRAM_ATTR` pour sécurité d'interruption
+
+---
+
 ## [Version 3.25.1] - 2025-12-22
 
 ### Modifié
