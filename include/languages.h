@@ -481,11 +481,7 @@ class TextField {
   X(memory_section, "Memory & Storage", "Mémoire & Stockage") \
   X(memory_intro, "Detailed memory information and external storage", "Informations mémoire détaillées et stockage externe") \
   X(input_devices_section, "Input Devices & Controls", "Périphériques d'entrée") \
-  X(input_devices_intro, "Buttons, encoders and user input devices", "Boutons, encodeurs et dispositifs d'entrée utilisateur") \
-  X(internal_sram, "Internal SRAM", "SRAM interne") \
-  X(psram_external, "External PSRAM", "PSRAM externe") \
-  X(flash_type, "Flash Type", "Type de flash") \
-  X(flash_speed, "Flash Speed", "Vitesse flash") \
+  X(input_devices_intro, "Buttons, encoders and user input devices", "Boutons, encodeurs et dispositifs d'entrée utilisateur")
 
 
 namespace Texts {
