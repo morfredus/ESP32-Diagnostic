@@ -1,3 +1,50 @@
+## [Version 3.27.2] - 2025-12-23
+
+### 🔧 Corrections & Améliorations
+
+**Corrections de Bugs & Nouvelles Fonctionnalités:** Correction du monitoring du bouton HW-040 + Ajout de 3 moniteurs de boutons matériels (BOOT, BOUTON1, BOUTON2).
+
+### Corrigé
+- **Monitoring Encodeur Rotatif HW-040** :
+  - Correction de l'état du bouton qui ne revenait pas à "Relâché" après être "Appuyé"
+  - Remplacement du texte en dur par traductions i18n (`button_pressed`, `button_released`)
+  - Le monitoring alterne maintenant correctement entre les labels "Surveiller" et "Arrêter"
+  - Les mises à jour d'état en temps réel utilisent maintenant les fonctions de traduction
+
+### Ajouté
+- **Monitoring des Boutons Matériels** (3 nouvelles cartouches dans le menu Périphériques) :
+  - **Bouton BOOT** (GPIO 0) : Monitoring du bouton boot intégré avec pin configurable
+  - **Bouton Utilisateur 1** (GPIO 38/5) : Bouton programmable avec pull-up interne
+  - **Bouton Utilisateur 2** (GPIO 39/12) : Bouton programmable avec pull-up interne
+- **Nouvelles Clés i18n** (12 ajouts) :
+  - `button_boot`, `button_boot_desc`, `button_1`, `button_1_desc`, `button_2`, `button_2_desc`
+  - `button_pin`, `button_state`, `button_pressed`, `button_released`
+  - `monitor_button`, `stop_monitoring`
+- **Fonctions JavaScript** :
+  - `toggleBootButtonMonitoring()` : Surveillance en temps réel du bouton BOOT
+  - `toggleButton1Monitoring()` : Surveillance en temps réel du Bouton 1
+  - `toggleButton2Monitoring()` : Surveillance en temps réel du Bouton 2
+  - `applyButtonConfig(buttonId)` : Configuration des pins GPIO des boutons via API
+
+### Détails Techniques
+- Chaque cartouche de bouton inclut :
+  - Configuration de pin avec validation (min=0, max=48)
+  - Affichage d'état en temps réel (code couleur : vert=Relâché, rouge=Appuyé)
+  - Bouton de basculement de surveillance (intervalle de polling 100ms)
+  - Intégration API : `/api/button-state?button=<boot|1|2>` et `/api/button-config`
+- Pins des boutons depuis `board_config.h` : `BUTTON_BOOT`, `BUTTON_1`, `BUTTON_2`
+- Entièrement bilingue (anglais/français) avec intégration i18n complète
+
+### Fichiers Modifiés
+- `include/languages.h` : Ajout de 12 nouvelles clés de traduction
+- `include/web_interface.h` :
+  - Correction de `toggleRotaryMonitoring()` pour utiliser les fonctions `tr()`
+  - Ajout de 3 fonctions de monitoring de boutons
+  - Mise à jour de `buildInputDevices()` avec 3 cartouches de boutons
+- `platformio.ini` : Version 3.27.1 → 3.27.2
+
+---
+
 ## [Version 3.27.0] - 2025-12-23
 
 ### ✨ Réorganisation de l'interface et Internationalisation
