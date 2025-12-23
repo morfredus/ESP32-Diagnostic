@@ -1,3 +1,75 @@
+## [Version 3.27.0] - 2025-12-23
+
+### ✨ Réorganisation de l'interface et Internationalisation
+
+**Refonte Majeure :** Internationalisation complète des fonctionnalités Carte SD et Encodeur Rotatif + nouvelle structure de menus.
+
+### Ajouts
+- **Nouveaux Menus de Navigation** :
+  - Menu "Périphériques" pour boutons, encodeurs et contrôles d'entrée utilisateur
+  - Menu "Mémoire" pour carte SD, Flash, SRAM et informations PSRAM
+  - Organisation améliorée : Aperçu → Affichage & Signal → Capteurs → Périphériques → Mémoire → Tests Matériel → Sans fil → Performances → Export
+- **Internationalisation Complète** (45+ nouvelles clés de traduction) :
+  - Carte SD : `sd_card`, `sd_card_desc`, `sd_pins_spi`, `sd_pin_miso/mosi/sclk/cs`, `test_sd`, etc.
+  - Encodeur rotatif : `rotary_encoder`, `rotary_encoder_desc`, `rotary_pins`, `rotary_position`, `rotary_button`, etc.
+  - Section mémoire : `memory_section`, `memory_intro`, `internal_sram`, `psram_external`, `flash_type/speed`
+  - Périphériques d'entrée : `input_devices_section`, `input_devices_intro`
+- **Support Multilingue** : Toutes les nouvelles fonctionnalités supportent les traductions anglais/français via `languages.h`
+
+### Modifié
+- Remplacement de tout le texte français en dur par des variables i18n
+- Boutons de menu réorganisés avec nouvelles entrées `nav_input_devices` et `nav_memory`
+- Infrastructure préparée pour catégorisation logique du matériel
+
+### Limitations Connues
+- Les menus Périphériques et Mémoire affichent actuellement du contenu temporaire
+- Implémentation complète de `buildMemory()` et `buildInputDevices()` en attente
+- Carte SD et Encodeur Rotatif toujours dans le menu Capteurs (migration en attente)
+
+---
+
+## [Version 3.26.4] - 2025-12-23
+
+### Corrigé
+- **Largeur des Champs d'Entrée** : Augmentation de la largeur des champs GPIO de 50px à 70px pour carte SD et encodeur rotatif
+  - Corrige le problème d'affichage où seul 1 chiffre était visible
+  - Permet la saisie et l'affichage corrects des numéros GPIO à 2 chiffres (0-48)
+  - Affecte toutes les pins SD (MISO, MOSI, SCLK, CS) et pins rotatif (CLK, DT, SW)
+
+---
+
+## [Version 3.26.3] - 2025-12-23
+
+### Corrigé
+- **Support ESP32 Classique** : Ajout des defines GPIO manquants pour carte SD pour `TARGET_ESP32_CLASSIC` dans `board_config.h`
+  - `SD_MISO = 19`, `SD_MOSI = 23`, `SD_SCLK = 18`, `SD_CS = 5`
+  - Corrige les valeurs GPIO incorrectes (1,1,1,1) affichées sur les cartes ESP32 classiques
+  - Ajout des attributs `min="0" max="48"` à toutes les entrées GPIO carte SD et encodeur rotatif dans l'interface web
+- **Configuration GPIO** : Support maintenant de la plage GPIO complète (0-48) pour toutes les variantes ESP32
+
+---
+
+## [Version 3.26.2] - 2025-12-23
+
+### Ajouté
+- **Sortie Console de Débogage** : Ajout de console.log dans le navigateur pour vérifier l'injection des pins GPIO
+  - Affiche toutes les valeurs GPIO carte SD et encodeur rotatif : `{SD_MISO: 14, SD_MOSI: 11, ...}`
+  - Aide à vérifier que les valeurs de `board_config.h` sont correctement injectées dans JavaScript
+  - Utile pour dépanner les problèmes de configuration GPIO
+
+---
+
+## [Version 3.26.1] - 2025-12-23
+
+### Corrigé
+- **Injection GPIO Dynamique** : Correction des valeurs GPIO carte SD et encodeur rotatif non injectées dynamiquement
+  - Ajout des variables JavaScript `SD_MISO_PIN`, `SD_MOSI_PIN`, `SD_SCLK_PIN`, `SD_CS_PIN` dans `/api/pin-vars`
+  - Ajout des variables JavaScript `ROTARY_CLK_PIN`, `ROTARY_DT_PIN`, `ROTARY_SW_PIN`
+  - Remplacement des valeurs en dur dans l'interface web par des variables dynamiques
+  - Les valeurs GPIO s'initialisent maintenant correctement depuis les defines de `board_config.h`
+
+---
+
 ## [Version 3.26.0] - 2025-12-23
 
 ### ✨ Nouvelles Fonctionnalités : Support Carte SD et Encodeur Rotatif HW-040
