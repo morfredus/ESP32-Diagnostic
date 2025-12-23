@@ -489,7 +489,19 @@ class TextField {
   X(memory_section, "Memory & Storage", "Mémoire & Stockage") \
   X(memory_intro, "Detailed memory information and external storage", "Informations mémoire détaillées et stockage externe") \
   X(input_devices_section, "Input Devices & Controls", "Périphériques d'entrée") \
-  X(input_devices_intro, "Buttons, encoders and user input devices", "Boutons, encodeurs et dispositifs d'entrée utilisateur")
+  X(input_devices_intro, "Buttons, encoders and user input devices", "Boutons, encodeurs et dispositifs d'entrée utilisateur") \
+  X(button_boot, "Boot Button", "Bouton Boot") \
+  X(button_boot_desc, "Built-in boot button for firmware flashing and reset", "Bouton boot intégré pour flashage et réinitialisation") \
+  X(button_1, "User Button 1", "Bouton Utilisateur 1") \
+  X(button_1_desc, "User programmable button 1 with internal pull-up", "Bouton utilisateur 1 programmable avec pull-up interne") \
+  X(button_2, "User Button 2", "Bouton Utilisateur 2") \
+  X(button_2_desc, "User programmable button 2 with internal pull-up", "Bouton utilisateur 2 programmable avec pull-up interne") \
+  X(button_pin, "Pin", "Pin") \
+  X(button_state, "State", "État") \
+  X(button_pressed, "Pressed", "Appuyé") \
+  X(button_released, "Released", "Relâché") \
+  X(monitor_button, "Monitor", "Surveiller") \
+  X(stop_monitoring, "Stop", "Arrêter")
 
 
 namespace Texts {
