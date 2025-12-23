@@ -198,6 +198,15 @@
 
 
 // ------------------------------------
+// SD Card (SPI)
+// ------------------------------------
+#define SD_MISO      19  // MISO SD – entrée 3.3V
+#define SD_MOSI      23  // MOSI SD – sortie 3.3V (partagé avec TFT)
+#define SD_SCLK      18  // Horloge SD – sortie 3.3V (partagé avec TFT)
+#define SD_CS         5  // Chip Select SD – sortie 3.3V
+
+
+// ------------------------------------
 // LED RGB
 // ------------------------------------
 #define LED_RED     13 // LED Rouge – sortie 3.3V, résistance 220–470 O
