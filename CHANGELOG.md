@@ -1,3 +1,50 @@
+## [Version 3.27.2] - 2025-12-23
+
+### 🔧 Fixes & Enhancements
+
+**Bug Fixes & New Features:** Fixed HW-040 rotary encoder button monitoring + Added 3 hardware button monitors (BOOT, BUTTON1, BUTTON2).
+
+### Fixed
+- **HW-040 Rotary Encoder Monitoring**:
+  - Fixed button state not updating to "Released" after being "Pressed"
+  - Replaced hardcoded text with i18n translations (`button_pressed`, `button_released`)
+  - Monitoring now properly alternates between "Monitor" and "Stop" button labels
+  - Real-time state updates now use proper translation functions
+
+### Added
+- **Hardware Button Monitoring** (3 new cartridges in Input Devices menu):
+  - **BOOT Button** (GPIO 0): Built-in boot button monitoring with configurable pin
+  - **User Button 1** (GPIO 38/5): Programmable button with internal pull-up
+  - **User Button 2** (GPIO 39/12): Programmable button with internal pull-up
+- **New i18n Keys** (12 additions):
+  - `button_boot`, `button_boot_desc`, `button_1`, `button_1_desc`, `button_2`, `button_2_desc`
+  - `button_pin`, `button_state`, `button_pressed`, `button_released`
+  - `monitor_button`, `stop_monitoring`
+- **JavaScript Functions**:
+  - `toggleBootButtonMonitoring()`: Real-time BOOT button state monitoring
+  - `toggleButton1Monitoring()`: Real-time Button 1 state monitoring
+  - `toggleButton2Monitoring()`: Real-time Button 2 state monitoring
+  - `applyButtonConfig(buttonId)`: Configure button GPIO pins via API
+
+### Technical Details
+- Each button cartridge includes:
+  - Pin configuration with validation (min=0, max=48)
+  - Real-time state display (color-coded: green=Released, red=Pressed)
+  - Monitoring toggle button (100ms polling interval)
+  - API integration: `/api/button-state?button=<boot|1|2>` and `/api/button-config`
+- Button pins sourced from `board_config.h`: `BUTTON_BOOT`, `BUTTON_1`, `BUTTON_2`
+- Fully bilingual (English/French) with proper i18n integration
+
+### Files Modified
+- `include/languages.h`: Added 12 new translation keys
+- `include/web_interface.h`:
+  - Fixed `toggleRotaryMonitoring()` to use `tr()` functions
+  - Added 3 button monitoring functions
+  - Updated `buildInputDevices()` with 3 button cartridges
+- `platformio.ini`: Version 3.27.1 → 3.27.2
+
+---
+
 ## [Version 3.27.0] - 2025-12-23
 
 ### ✨ UI Reorganization & Internationalization
