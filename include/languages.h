@@ -483,6 +483,8 @@ class TextField {
   X(sd_format, "Format Card", "Formater carte") \
   X(sd_format_warning, "Warning: This will erase all data on the SD card!", "Attention : Ceci effacera toutes les données de la carte SD !") \
   X(sd_format_confirm, "Are you sure you want to format the SD card?", "Êtes-vous sûr de vouloir formater la carte SD ?") \
+  X(gpio_shared_warning, "Shared GPIO 13 (TFT + SD – MISO)", "GPIO 13 partagé (TFT + SD – MISO)") \
+  X(gpio_13_shared_desc, "GPIO 13 is shared between the TFT and SD Card (MISO line). Strictly compliant SPI wiring and proper software management are required.", "Le GPIO 13 est partagé entre le TFT et la carte SD (ligne MISO). Un câblage SPI strictement conforme et une gestion logicielle adaptée sont requis.") \
   X(sd_read_test_running, "Running read test...", "Test de lecture en cours...") \
   X(sd_write_test_running, "Running write test...", "Test d'écriture en cours...") \
   X(sd_format_running, "Formatting SD card...", "Formatage de la carte SD...") \

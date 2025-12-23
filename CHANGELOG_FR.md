@@ -1,3 +1,74 @@
+## [Version 3.28.0] - 2025-12-23
+
+### 🚀 Nouvelles Fonctionnalités & Corrections
+
+**Améliorations Majeures:** Correction erreur JavaScript BUTTON_BOOT + Ajout configuration MISO TFT + Nouveaux endpoints API carte SD + Avertissement partage GPIO 13
+
+### Corrigé
+- **Erreur JavaScript BUTTON_BOOT**:
+  - Correction `ReferenceError: BUTTON_BOOT is not defined`
+  - Injection de toutes les constantes de broches manquantes depuis `board_config.h` vers JavaScript
+  - Ajouté: `ROTARY_CLK_PIN`, `ROTARY_DT_PIN`, `ROTARY_SW_PIN`, `BUTTON_BOOT`, `BUTTON_1`, `BUTTON_2`
+  - Ajouté: `SD_MISO_PIN`, `SD_MOSI_PIN`, `SD_SCLK_PIN`, `SD_CS_PIN`, `TFT_MISO_PIN`
+  - Toutes les définitions GPIO correctement sourcées depuis `board_config.h` (contrat immuable)
+
+- **Configuration BUTTON_BOOT**:
+  - BUTTON_BOOT rendu non-configurable selon les spécifications
+  - Changé d'un input éditable à un affichage en lecture seule
+  - Marqué "(non configurable)" dans l'UI pour éviter toute modification accidentelle
+  - Préserve l'intégrité du bouton boot natif ESP32
+
+### Ajouté
+- **Configuration Broche MISO TFT**:
+  - Ajout de la broche MISO à l'affichage des broches SPI: `MISO`, `MOSI`, `SCLK`, `CS`, `DC`, `RST`
+  - Ajout d'un champ de saisie MISO configurable dans la section configuration TFT
+  - Complète la gestion des broches SPI dans l'interface web
+  - Reflète correctement GPIO 13 depuis `board_config.h` pour ESP32-S3
+
+- **Nouveaux Endpoints API Carte SD**:
+  - `/api/sd-test-read`: Test des opérations de lecture carte SD
+  - `/api/sd-test-write`: Test des opérations d'écriture avec horodatage
+  - `/api/sd-format`: Nettoyage des fichiers de test SD (nettoyage sécurisé, pas formatage bas niveau)
+  - Format de réponse JSON cohérent avec les endpoints existants
+  - Initialisation automatique de la carte SD si indisponible
+
+- **Avertissement Partage GPIO 13**:
+  - Ajout d'un avertissement visible dans la section Carte SD (boîte d'avertissement jaune)
+  - Alerte les utilisateurs que GPIO 13 est partagé entre TFT et SD (ligne MISO)
+  - Souligne le besoin d'un câblage SPI strictement conforme et d'une gestion logicielle adaptée
+  - Nouvelles clés i18n: `gpio_shared_warning`, `gpio_13_shared_desc` (EN/FR)
+
+### Détails Techniques
+- **Interface Web** (`include/web_interface.h`):
+  - L'injection de broches inclut maintenant toutes les broches ROTARY, BUTTON, SD et TFT
+  - Bouton BOOT affiché en lecture seule avec indicateur visuel
+  - Avertissement GPIO 13 stylisé avec style d'alerte type Bootstrap
+  - Support i18n complet maintenu pour toutes les nouvelles fonctionnalités
+
+- **Implémentation API** (`src/main.cpp`):
+  - `handleSDTestRead()`: Crée un fichier de test si nécessaire, teste la capacité de lecture
+  - `handleSDTestWrite()`: Teste la capacité d'écriture avec données horodatées
+  - `handleSDFormat()`: Supprime tous les fichiers de test (`/test_*.txt`)
+  - Gestion d'erreur appropriée pour les cartes SD indisponibles
+
+- **Traductions** (`include/languages.h`):
+  - `gpio_shared_warning`: "Shared GPIO 13 (TFT + SD – MISO)" / "GPIO 13 partagé (TFT + SD – MISO)"
+  - `gpio_13_shared_desc`: Explication complète en EN/FR sur les exigences de partage SPI
+
+### Conformité
+- Toutes les définitions GPIO sourcées depuis `board_config.h` (contrat immuable)
+- Aucune valeur de broche codée en dur dans JavaScript
+- Respecte `board_config.h` comme source unique de vérité
+- Aucune modification de `board_config.h` lui-même (comme requis)
+
+### Fichiers Modifiés
+- `include/web_interface.h`: Injection broches, affichage bouton BOOT, avertissement GPIO, champ MISO
+- `include/languages.h`: Ajout de 2 nouvelles clés de traduction pour l'avertissement GPIO
+- `src/main.cpp`: Ajout de 3 nouveaux gestionnaires d'endpoints carte SD + enregistrement routes
+- `platformio.ini`: Version 3.27.2 → 3.28.0
+
+---
+
 ## [Version 3.27.2] - 2025-12-23
 
 ### 🔧 Corrections & Améliorations
