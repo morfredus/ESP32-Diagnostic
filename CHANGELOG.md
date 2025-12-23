@@ -1,3 +1,122 @@
+## [Version 3.27.2] - 2025-12-23
+
+### 🔧 Fixes & Enhancements
+
+**Bug Fixes & New Features:** Fixed HW-040 rotary encoder button monitoring + Added 3 hardware button monitors (BOOT, BUTTON1, BUTTON2).
+
+### Fixed
+- **HW-040 Rotary Encoder Monitoring**:
+  - Fixed button state not updating to "Released" after being "Pressed"
+  - Replaced hardcoded text with i18n translations (`button_pressed`, `button_released`)
+  - Monitoring now properly alternates between "Monitor" and "Stop" button labels
+  - Real-time state updates now use proper translation functions
+
+### Added
+- **Hardware Button Monitoring** (3 new cartridges in Input Devices menu):
+  - **BOOT Button** (GPIO 0): Built-in boot button monitoring with configurable pin
+  - **User Button 1** (GPIO 38/5): Programmable button with internal pull-up
+  - **User Button 2** (GPIO 39/12): Programmable button with internal pull-up
+- **New i18n Keys** (12 additions):
+  - `button_boot`, `button_boot_desc`, `button_1`, `button_1_desc`, `button_2`, `button_2_desc`
+  - `button_pin`, `button_state`, `button_pressed`, `button_released`
+  - `monitor_button`, `stop_monitoring`
+- **JavaScript Functions**:
+  - `toggleBootButtonMonitoring()`: Real-time BOOT button state monitoring
+  - `toggleButton1Monitoring()`: Real-time Button 1 state monitoring
+  - `toggleButton2Monitoring()`: Real-time Button 2 state monitoring
+  - `applyButtonConfig(buttonId)`: Configure button GPIO pins via API
+
+### Technical Details
+- Each button cartridge includes:
+  - Pin configuration with validation (min=0, max=48)
+  - Real-time state display (color-coded: green=Released, red=Pressed)
+  - Monitoring toggle button (100ms polling interval)
+  - API integration: `/api/button-state?button=<boot|1|2>` and `/api/button-config`
+- Button pins sourced from `board_config.h`: `BUTTON_BOOT`, `BUTTON_1`, `BUTTON_2`
+- Fully bilingual (English/French) with proper i18n integration
+
+### Files Modified
+- `include/languages.h`: Added 12 new translation keys
+- `include/web_interface.h`:
+  - Fixed `toggleRotaryMonitoring()` to use `tr()` functions
+  - Added 3 button monitoring functions
+  - Updated `buildInputDevices()` with 3 button cartridges
+- `platformio.ini`: Version 3.27.1 → 3.27.2
+
+---
+
+## [Version 3.27.0] - 2025-12-23
+
+### ✨ UI Reorganization & Internationalization
+
+**Major Refactoring:** Complete internationalization of SD Card and Rotary Encoder features + new menu structure.
+
+### Added
+- **New Navigation Menus**:
+  - "Input Devices" menu for buttons, encoders, and user input controls
+  - "Memory" menu for SD Card, Flash, SRAM, and PSRAM information
+  - Improved menu organization: Overview → Display & Signal → Sensors → Input Devices → Memory → Hardware Tests → Wireless → Performance → Export
+- **Complete Internationalization** (45+ new translation keys):
+  - SD Card: `sd_card`, `sd_card_desc`, `sd_pins_spi`, `sd_pin_miso/mosi/sclk/cs`, `test_sd`, etc.
+  - Rotary Encoder: `rotary_encoder`, `rotary_encoder_desc`, `rotary_pins`, `rotary_position`, `rotary_button`, etc.
+  - Memory section: `memory_section`, `memory_intro`, `internal_sram`, `psram_external`, `flash_type/speed`
+  - Input devices: `input_devices_section`, `input_devices_intro`
+- **Language Support**: All new features now support English/French translations via `languages.h`
+
+### Changed
+- Replaced all hardcoded French text with i18n variables
+- Menu buttons reorganized with new `nav_input_devices` and `nav_memory` entries
+- Prepared infrastructure for logical hardware categorization
+
+### Known Limitations
+- Input Devices and Memory menus currently show placeholder content
+- Full implementation of `buildMemory()` and `buildInputDevices()` pending
+- SD Card and Rotary Encoder still appear in Sensors menu (migration pending)
+
+---
+
+## [Version 3.26.4] - 2025-12-23
+
+### Fixed
+- **UI Input Width**: Increased GPIO input field width from 50px to 70px for SD Card and Rotary Encoder
+  - Fixes display issue where only 1 digit was visible
+  - Allows proper input and display of 2-digit GPIO numbers (0-48)
+  - Affects all SD pins (MISO, MOSI, SCLK, CS) and Rotary pins (CLK, DT, SW)
+
+---
+
+## [Version 3.26.3] - 2025-12-23
+
+### Fixed
+- **ESP32 Classic Support**: Added missing SD Card GPIO defines for `TARGET_ESP32_CLASSIC` in `board_config.h`
+  - `SD_MISO = 19`, `SD_MOSI = 23`, `SD_SCLK = 18`, `SD_CS = 5`
+  - Fixes incorrect GPIO values (1,1,1,1) displayed on ESP32 classic boards
+  - Added `min="0" max="48"` attributes to all SD and Rotary Encoder GPIO inputs in web UI
+- **GPIO Configuration**: Now supports full GPIO range (0-48) for all ESP32 variants
+
+---
+
+## [Version 3.26.2] - 2025-12-23
+
+### Added
+- **Debug Console Output**: Added browser console.log to verify GPIO pin injection
+  - Displays all SD and Rotary Encoder GPIO values: `{SD_MISO: 14, SD_MOSI: 11, ...}`
+  - Helps verify that `board_config.h` values are properly injected into JavaScript
+  - Useful for troubleshooting GPIO configuration issues
+
+---
+
+## [Version 3.26.1] - 2025-12-23
+
+### Fixed
+- **Dynamic GPIO Injection**: Fixed SD Card and Rotary Encoder GPIO values not being dynamically injected
+  - Added `SD_MISO_PIN`, `SD_MOSI_PIN`, `SD_SCLK_PIN`, `SD_CS_PIN` JavaScript variables in `/api/pin-vars`
+  - Added `ROTARY_CLK_PIN`, `ROTARY_DT_PIN`, `ROTARY_SW_PIN` JavaScript variables
+  - Replaced hardcoded values in web interface with dynamic variables
+  - GPIO values now properly initialize from `board_config.h` defines
+
+---
+
 ## [Version 3.26.0] - 2025-12-23
 
 ### ✨ New Features: SD Card and Rotary Encoder HW-040 Support
