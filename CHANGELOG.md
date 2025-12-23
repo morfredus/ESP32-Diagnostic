@@ -1,3 +1,75 @@
+## [Version 3.27.0] - 2025-12-23
+
+### ✨ UI Reorganization & Internationalization
+
+**Major Refactoring:** Complete internationalization of SD Card and Rotary Encoder features + new menu structure.
+
+### Added
+- **New Navigation Menus**:
+  - "Input Devices" menu for buttons, encoders, and user input controls
+  - "Memory" menu for SD Card, Flash, SRAM, and PSRAM information
+  - Improved menu organization: Overview → Display & Signal → Sensors → Input Devices → Memory → Hardware Tests → Wireless → Performance → Export
+- **Complete Internationalization** (45+ new translation keys):
+  - SD Card: `sd_card`, `sd_card_desc`, `sd_pins_spi`, `sd_pin_miso/mosi/sclk/cs`, `test_sd`, etc.
+  - Rotary Encoder: `rotary_encoder`, `rotary_encoder_desc`, `rotary_pins`, `rotary_position`, `rotary_button`, etc.
+  - Memory section: `memory_section`, `memory_intro`, `internal_sram`, `psram_external`, `flash_type/speed`
+  - Input devices: `input_devices_section`, `input_devices_intro`
+- **Language Support**: All new features now support English/French translations via `languages.h`
+
+### Changed
+- Replaced all hardcoded French text with i18n variables
+- Menu buttons reorganized with new `nav_input_devices` and `nav_memory` entries
+- Prepared infrastructure for logical hardware categorization
+
+### Known Limitations
+- Input Devices and Memory menus currently show placeholder content
+- Full implementation of `buildMemory()` and `buildInputDevices()` pending
+- SD Card and Rotary Encoder still appear in Sensors menu (migration pending)
+
+---
+
+## [Version 3.26.4] - 2025-12-23
+
+### Fixed
+- **UI Input Width**: Increased GPIO input field width from 50px to 70px for SD Card and Rotary Encoder
+  - Fixes display issue where only 1 digit was visible
+  - Allows proper input and display of 2-digit GPIO numbers (0-48)
+  - Affects all SD pins (MISO, MOSI, SCLK, CS) and Rotary pins (CLK, DT, SW)
+
+---
+
+## [Version 3.26.3] - 2025-12-23
+
+### Fixed
+- **ESP32 Classic Support**: Added missing SD Card GPIO defines for `TARGET_ESP32_CLASSIC` in `board_config.h`
+  - `SD_MISO = 19`, `SD_MOSI = 23`, `SD_SCLK = 18`, `SD_CS = 5`
+  - Fixes incorrect GPIO values (1,1,1,1) displayed on ESP32 classic boards
+  - Added `min="0" max="48"` attributes to all SD and Rotary Encoder GPIO inputs in web UI
+- **GPIO Configuration**: Now supports full GPIO range (0-48) for all ESP32 variants
+
+---
+
+## [Version 3.26.2] - 2025-12-23
+
+### Added
+- **Debug Console Output**: Added browser console.log to verify GPIO pin injection
+  - Displays all SD and Rotary Encoder GPIO values: `{SD_MISO: 14, SD_MOSI: 11, ...}`
+  - Helps verify that `board_config.h` values are properly injected into JavaScript
+  - Useful for troubleshooting GPIO configuration issues
+
+---
+
+## [Version 3.26.1] - 2025-12-23
+
+### Fixed
+- **Dynamic GPIO Injection**: Fixed SD Card and Rotary Encoder GPIO values not being dynamically injected
+  - Added `SD_MISO_PIN`, `SD_MOSI_PIN`, `SD_SCLK_PIN`, `SD_CS_PIN` JavaScript variables in `/api/pin-vars`
+  - Added `ROTARY_CLK_PIN`, `ROTARY_DT_PIN`, `ROTARY_SW_PIN` JavaScript variables
+  - Replaced hardcoded values in web interface with dynamic variables
+  - GPIO values now properly initialize from `board_config.h` defines
+
+---
+
 ## [Version 3.26.0] - 2025-12-23
 
 ### ✨ New Features: SD Card and Rotary Encoder HW-040 Support

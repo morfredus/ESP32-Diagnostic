@@ -451,6 +451,41 @@ class TextField {
   X(test_environmental, "Test Sensors", "Tester les capteurs") \
   X(knots, "knots", "nœuds") \
   X(hpa, "hPa", "hPa") \
+  X(nav_input_devices, "Input Devices", "Périphériques") \
+  X(nav_memory, "Memory", "Mémoire") \
+  X(sd_card, "SD Card Reader", "Lecteur carte SD") \
+  X(sd_card_desc, "SD Card reader for data storage and logging", "Lecteur de carte SD pour stockage de données et logs") \
+  X(sd_pins_spi, "SPI Pins", "Pins SPI") \
+  X(sd_pin_miso, "MISO", "MISO") \
+  X(sd_pin_mosi, "MOSI", "MOSI") \
+  X(sd_pin_sclk, "SCLK", "SCLK") \
+  X(sd_pin_cs, "CS", "CS") \
+  X(test_sd, "Test SD", "Tester SD") \
+  X(sd_card_type, "Card Type", "Type de carte") \
+  X(sd_card_size, "Card Size", "Taille carte") \
+  X(sd_read_speed, "Read Speed", "Vitesse lecture") \
+  X(sd_write_speed, "Write Speed", "Vitesse écriture") \
+  X(rotary_encoder, "Rotary Encoder HW-040", "Encodeur rotatif HW-040") \
+  X(rotary_encoder_desc, "Rotary encoder with integrated push button", "Encodeur rotatif avec bouton intégré") \
+  X(rotary_pins, "Encoder Pins", "Pins encodeur") \
+  X(rotary_pin_clk, "CLK", "CLK") \
+  X(rotary_pin_dt, "DT", "DT") \
+  X(rotary_pin_sw, "SW", "SW") \
+  X(rotary_position, "Position", "Position") \
+  X(rotary_button, "Button", "Bouton") \
+  X(rotary_button_released, "Released", "Relâché") \
+  X(rotary_button_pressed, "Pressed", "Appuyé") \
+  X(test_rotary, "Test", "Tester") \
+  X(rotary_monitor, "Monitor", "Surveiller") \
+  X(rotary_reset, "Reset", "Réinitialiser") \
+  X(memory_section, "Memory & Storage", "Mémoire & Stockage") \
+  X(memory_intro, "Detailed memory information and external storage", "Informations mémoire détaillées et stockage externe") \
+  X(input_devices_section, "Input Devices & Controls", "Périphériques d'entrée") \
+  X(input_devices_intro, "Buttons, encoders and user input devices", "Boutons, encodeurs et dispositifs d'entrée utilisateur") \
+  X(internal_sram, "Internal SRAM", "SRAM interne") \
+  X(psram_external, "External PSRAM", "PSRAM externe") \
+  X(flash_type, "Flash Type", "Type de flash") \
+  X(flash_speed, "Flash Speed", "Vitesse flash") \
 
 
 namespace Texts {
