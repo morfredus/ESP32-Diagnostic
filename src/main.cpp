@@ -4182,6 +4182,114 @@ void handleSDInfo() {
   });
 }
 
+void handleSDTestRead() {
+  if (!sdAvailable) {
+    initSD();
+  }
+
+  if (!sdAvailable) {
+    sendJsonResponse(200, {
+      jsonBoolField("success", false),
+      jsonStringField("result", String(Texts::not_available))
+    });
+    return;
+  }
+
+  // Test lecture
+  const char* testFile = "/test_read.txt";
+
+  // Créer un fichier de test si nécessaire
+  if (!SD.exists(testFile)) {
+    File file = SD.open(testFile, FILE_WRITE);
+    if (file) {
+      file.println("ESP32 Read Test Data");
+      file.close();
+    }
+  }
+
+  // Lecture
+  File file = SD.open(testFile);
+  if (!file) {
+    sendJsonResponse(200, {
+      jsonBoolField("success", false),
+      jsonStringField("result", "Read test failed: Cannot open file")
+    });
+    return;
+  }
+
+  String readData = file.readStringUntil('\n');
+  file.close();
+
+  sendJsonResponse(200, {
+    jsonBoolField("success", true),
+    jsonStringField("result", "Read test OK - " + String(readData.length()) + " bytes read")
+  });
+}
+
+void handleSDTestWrite() {
+  if (!sdAvailable) {
+    initSD();
+  }
+
+  if (!sdAvailable) {
+    sendJsonResponse(200, {
+      jsonBoolField("success", false),
+      jsonStringField("result", String(Texts::not_available))
+    });
+    return;
+  }
+
+  // Test écriture
+  const char* testFile = "/test_write.txt";
+  const char* testData = "ESP32 Write Test - ";
+
+  File file = SD.open(testFile, FILE_WRITE);
+  if (!file) {
+    sendJsonResponse(200, {
+      jsonBoolField("success", false),
+      jsonStringField("result", "Write test failed: Cannot create file")
+    });
+    return;
+  }
+
+  file.print(testData);
+  file.println(millis());
+  file.close();
+
+  sendJsonResponse(200, {
+    jsonBoolField("success", true),
+    jsonStringField("result", "Write test OK - File created successfully")
+  });
+}
+
+void handleSDFormat() {
+  if (!sdAvailable) {
+    initSD();
+  }
+
+  if (!sdAvailable) {
+    sendJsonResponse(200, {
+      jsonBoolField("success", false),
+      jsonStringField("result", String(Texts::not_available))
+    });
+    return;
+  }
+
+  // Nettoyer tous les fichiers de test
+  SD.remove("/test_esp32.txt");
+  SD.remove("/test_read.txt");
+  SD.remove("/test_write.txt");
+
+  // Note: Full SD card formatting requires low-level access
+  // This is a basic cleanup of test files
+  // For full format, would need SD_MMC.format() or similar
+
+  sendJsonResponse(200, {
+    jsonBoolField("success", true),
+    jsonStringField("result", "Test files cleaned - SD card ready")
+  });
+}
+
 // ========== ROTARY ENCODER HANDLERS ==========
 void handleRotaryConfig() {
   if (server.hasArg("clk") && server.hasArg("dt") && server.hasArg("sw")) {
@@ -5580,6 +5688,9 @@ void setup() {
   server.on("/api/sd-config", handleSDConfig);
   server.on("/api/sd-test", handleSDTest);
   server.on("/api/sd-info", handleSDInfo);
+  server.on("/api/sd-test-read", handleSDTestRead);
+  server.on("/api/sd-test-write", handleSDTestWrite);
+  server.on("/api/sd-format", handleSDFormat);
 
   // Rotary Encoder
   server.on("/api/rotary-config", handleRotaryConfig);
