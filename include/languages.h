@@ -451,6 +451,57 @@ class TextField {
   X(test_environmental, "Test Sensors", "Tester les capteurs") \
   X(knots, "knots", "nœuds") \
   X(hpa, "hPa", "hPa") \
+  X(nav_input_devices, "Input Devices", "Périphériques") \
+  X(nav_memory, "Memory", "Mémoire") \
+  X(sd_card, "SD Card Reader", "Lecteur carte SD") \
+  X(sd_card_desc, "SD Card reader for data storage and logging", "Lecteur de carte SD pour stockage de données et logs") \
+  X(sd_pins_spi, "SPI Pins", "Pins SPI") \
+  X(sd_pin_miso, "MISO", "MISO") \
+  X(sd_pin_mosi, "MOSI", "MOSI") \
+  X(sd_pin_sclk, "SCLK", "SCLK") \
+  X(sd_pin_cs, "CS", "CS") \
+  X(test_sd, "Test SD", "Tester SD") \
+  X(sd_card_type, "Card Type", "Type de carte") \
+  X(sd_card_size, "Card Size", "Taille carte") \
+  X(sd_read_speed, "Read Speed", "Vitesse lecture") \
+  X(sd_write_speed, "Write Speed", "Vitesse écriture") \
+  X(rotary_encoder, "Rotary Encoder HW-040", "Encodeur rotatif HW-040") \
+  X(rotary_encoder_desc, "Rotary encoder with integrated push button", "Encodeur rotatif avec bouton intégré") \
+  X(rotary_pins, "Encoder Pins", "Pins encodeur") \
+  X(rotary_pin_clk, "CLK", "CLK") \
+  X(rotary_pin_dt, "DT", "DT") \
+  X(rotary_pin_sw, "SW", "SW") \
+  X(rotary_position, "Position", "Position") \
+  X(rotary_button, "Button", "Bouton") \
+  X(rotary_button_released, "Released", "Relâché") \
+  X(rotary_button_pressed, "Pressed", "Appuyé") \
+  X(test_rotary, "Test", "Tester") \
+  X(rotary_monitor, "Monitor", "Surveiller") \
+  X(rotary_reset, "Reset", "Réinitialiser") \
+  X(sd_test_read, "Read Test", "Test lecture") \
+  X(sd_test_write, "Write Test", "Test écriture") \
+  X(sd_format, "Format Card", "Formater carte") \
+  X(sd_format_warning, "Warning: This will erase all data on the SD card!", "Attention : Ceci effacera toutes les données de la carte SD !") \
+  X(sd_format_confirm, "Are you sure you want to format the SD card?", "Êtes-vous sûr de vouloir formater la carte SD ?") \
+  X(sd_read_test_running, "Running read test...", "Test de lecture en cours...") \
+  X(sd_write_test_running, "Running write test...", "Test d'écriture en cours...") \
+  X(sd_format_running, "Formatting SD card...", "Formatage de la carte SD...") \
+  X(memory_section, "Memory & Storage", "Mémoire & Stockage") \
+  X(memory_intro, "Detailed memory information and external storage", "Informations mémoire détaillées et stockage externe") \
+  X(input_devices_section, "Input Devices & Controls", "Périphériques d'entrée") \
+  X(input_devices_intro, "Buttons, encoders and user input devices", "Boutons, encodeurs et dispositifs d'entrée utilisateur") \
+  X(button_boot, "Boot Button", "Bouton Boot") \
+  X(button_boot_desc, "Built-in boot button for firmware flashing and reset", "Bouton boot intégré pour flashage et réinitialisation") \
+  X(button_1, "User Button 1", "Bouton Utilisateur 1") \
+  X(button_1_desc, "User programmable button 1 with internal pull-up", "Bouton utilisateur 1 programmable avec pull-up interne") \
+  X(button_2, "User Button 2", "Bouton Utilisateur 2") \
+  X(button_2_desc, "User programmable button 2 with internal pull-up", "Bouton utilisateur 2 programmable avec pull-up interne") \
+  X(button_pin, "Pin", "Pin") \
+  X(button_state, "State", "État") \
+  X(button_pressed, "Pressed", "Appuyé") \
+  X(button_released, "Released", "Relâché") \
+  X(monitor_button, "Monitor", "Surveiller") \
+  X(stop_monitoring, "Stop", "Arrêter")
 
 
 namespace Texts {
