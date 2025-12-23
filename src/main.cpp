@@ -5276,7 +5276,7 @@ void handleJavaScriptRoute() {
   pinVars += String(rotary_dt_pin);
   pinVars += ";const ROTARY_SW_PIN=";
   pinVars += String(rotary_sw_pin);
-  pinVars += ";";
+  pinVars += ";console.log('GPIO Pins from board_config:',{SD_MISO:SD_MISO_PIN,SD_MOSI:SD_MOSI_PIN,SD_SCLK:SD_SCLK_PIN,SD_CS:SD_CS_PIN,ROTARY_CLK:ROTARY_CLK_PIN,ROTARY_DT:ROTARY_DT_PIN,ROTARY_SW:ROTARY_SW_PIN});";
 
   Serial.printf("Sending pin variables: %d bytes\n", pinVars.length());
   Serial.printf("  RGB_R=%d, RGB_G=%d, RGB_B=%d\n", rgb_led_pin_r, rgb_led_pin_g, rgb_led_pin_b);
