@@ -1,3 +1,85 @@
+## [Version 3.26.0] - 2025-12-23
+
+### ✨ New Features: SD Card and Rotary Encoder HW-040 Support
+
+**Major Addition:** Full integration of SD Card reader and Rotary Encoder HW-040 with runtime GPIO configuration.
+
+### Added - SD Card Support
+- **SD Card Management**: Complete SPI-based SD card initialization and testing
+  - Auto-detection of card type (MMC, SDSC, SDHC)
+  - Card size detection and capacity reporting
+  - Read/write verification tests
+  - Support for totalBytes() and usedBytes() reporting
+- **Runtime GPIO Configuration**:
+  - `sd_miso_pin`, `sd_mosi_pin`, `sd_sclk_pin`, `sd_cs_pin` (modifiable via web UI)
+  - Default values from `board_config.h`: `SD_MISO`, `SD_MOSI`, `SD_SCLK`, `SD_CS`
+- **API Endpoints**:
+  - `/api/sd-config` - Configure SD card pins
+  - `/api/sd-test` - Run SD card test with read/write verification
+  - `/api/sd-info` - Get SD card information (type, size, usage)
+- **Test Functions**:
+  - `initSD()` - Initialize SD card with SPI configuration
+  - `testSD()` - Complete test including file write/read verification
+  - `getSDInfo()` - Retrieve detailed SD card information
+  - Async test support via `sdTestRunner`
+
+### Added - Rotary Encoder HW-040 Support
+- **Rotary Encoder Management**: Full interrupt-based encoder with button support
+  - Hardware debouncing for rotation (5ms) and button (50ms)
+  - Position tracking with increment/decrement detection
+  - Button press detection with auto-reset
+- **Runtime GPIO Configuration**:
+  - `rotary_clk_pin`, `rotary_dt_pin`, `rotary_sw_pin` (modifiable via web UI)
+  - Default values from `board_config.h`: `ROTARY_CLK`, `ROTARY_DT`, `ROTARY_SW`
+- **ISR Implementation**:
+  - `rotaryISR()` - IRAM interrupt handler for rotation detection
+  - `rotaryButtonISR()` - IRAM interrupt handler for button presses
+  - Quadrature encoding for accurate position tracking
+- **API Endpoints**:
+  - `/api/rotary-config` - Configure encoder pins
+  - `/api/rotary-test` - Run 5-second interactive test
+  - `/api/rotary-position` - Get current position and button state
+  - `/api/rotary-reset` - Reset position counter to zero
+- **Test Functions**:
+  - `initRotaryEncoder()` - Initialize with interrupt attachment
+  - `testRotaryEncoder()` - Interactive 5-second test
+  - `getRotaryPosition()`, `getRotaryButtonState()`, `resetRotaryPosition()`
+  - Async test support via `rotaryTestRunner`
+
+### Changed - board_config.h
+- **ESP32-S3 DevKitC-1 N16R8**:
+  - SD Card pins: MISO=14, MOSI=11, SCLK=12, CS=1
+  - Rotary Encoder pins: CLK=47, DT=45, SW=40
+- **ESP32 Classic DevKitC**:
+  - Rotary Encoder pins: CLK=4, DT=13, SW=26
+  - (SD card shares pins with TFT on classic variant)
+
+### Changed - Exports
+- **TXT Export**: Added SD Card and Rotary Encoder test results
+- **JSON Export**: Added `sd_card` and `rotary_encoder` fields in `hardware_tests`
+- **CSV Export**: Added SD Card and Rotary Encoder test result rows
+
+### Technical
+- **Includes Added**: `<SPI.h>`, `<SD.h>`, `<FS.h>` for SD card support
+- **Global Variables**:
+  - SD: `sdTestResult`, `sdAvailable`, `sdCardSize`, `sdCardType`, `sdCardTypeStr`
+  - Rotary: `rotaryPosition` (volatile), `rotaryButtonPressed` (volatile), interrupt timestamps
+- **Stack Allocation**:
+  - SD test: 6144 bytes (file I/O operations)
+  - Rotary test: 4096 bytes (interactive test loop)
+- **Hardware Notes**:
+  - SD Card requires proper SPI wiring, shares bus with TFT on ESP32-S3
+  - Rotary Encoder HW-040: 10nF capacitors recommended for hardware debouncing
+  - All pins use 3.3V logic levels
+
+### Architecture
+- Follows existing runtime GPIO remapping pattern (lowercase variables)
+- Async test runners for non-blocking web UI
+- Consistent API response format with `success`, `result`, `available` fields
+- ISR functions marked with `IRAM_ATTR` for interrupt safety
+
+---
+
 ## [Version 3.25.1] - 2025-12-22
 
 ### Changed

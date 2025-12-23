@@ -82,6 +82,9 @@
 #include <Wire.h>
 #include <Adafruit_NeoPixel.h>
 #include <U8g2lib.h>
+#include <SPI.h>
+#include <SD.h>
+#include <FS.h>
 #include <vector>
 #include <cstring>
 #include <string>
@@ -214,6 +217,17 @@ int light_sensor_pin = LIGHT_SENSOR;
 int distance_trig_pin = DISTANCE_TRIG;
 int distance_echo_pin = DISTANCE_ECHO;
 int motion_sensor_pin = MOTION_SENSOR;
+
+// SD Card pins (modifiable via web interface)
+int sd_miso_pin = SD_MISO;
+int sd_mosi_pin = SD_MOSI;
+int sd_sclk_pin = SD_SCLK;
+int sd_cs_pin = SD_CS;
+
+// Rotary Encoder pins (modifiable via web interface)
+int rotary_clk_pin = ROTARY_CLK;
+int rotary_dt_pin = ROTARY_DT;
+int rotary_sw_pin = ROTARY_SW;
 
 // OLED display settings (from config.h)
 uint8_t oledRotation = DEFAULT_OLED_ROTATION;
@@ -372,6 +386,8 @@ static AsyncTestRunner neopixelTestRunner = {"NeoPixelTest", nullptr, false};
 static AsyncTestRunner oledTestRunner = {"OLEDTest", nullptr, false};
 static AsyncTestRunner rgbLedTestRunner = {"RgbLedTest", nullptr, false};
 static AsyncTestRunner buzzerTestRunner = {"BuzzerTest", nullptr, false};
+static AsyncTestRunner sdTestRunner = {"SDTest", nullptr, false};
+static AsyncTestRunner rotaryTestRunner = {"RotaryTest", nullptr, false};
 
 bool runtimeBLE = false;
 
@@ -407,6 +423,28 @@ float distanceValue = -1.0;
 String motionSensorTestResult = DEFAULT_TEST_RESULT_STR;
 bool motionSensorAvailable = false;
 bool motionDetected = false;
+
+// ========== SD CARD ==========
+String sdTestResult = DEFAULT_TEST_RESULT_STR;
+bool sdAvailable = false;
+bool sdTested = false;
+SPIClass * sdSPI = nullptr;
+uint64_t sdCardSize = 0;
+uint8_t sdCardType = 0;
+String sdCardTypeStr = "Unknown";
+
+// ========== ENCODEUR ROTATIF ==========
+String rotaryTestResult = DEFAULT_TEST_RESULT_STR;
+volatile long rotaryPosition = 0;
+volatile bool rotaryButtonPressed = false;
+volatile unsigned long lastRotaryInterruptTime = 0;
+volatile unsigned long lastButtonPressTime = 0;
+const unsigned long rotaryDebounceDelay = 5;
+const unsigned long buttonDebounceDelay = 50;
+bool rotaryAvailable = false;
+bool rotaryTested = false;
+int lastRotaryState = 0;
+int lastButtonState = HIGH;
 
 // ========== BOUTONS ==========
 // Gestion simple avec anti-rebond et actions utiles par défaut
@@ -1537,6 +1575,35 @@ void scanWiFiNetworks() {
 #endif
 
   Serial.printf("WiFi: %d reseaux trouves\r\n", n);
+}
+
+// ========== ENCODEUR ROTATIF - ISR ==========
+void IRAM_ATTR rotaryISR() {
+  unsigned long currentTime = millis();
+  if (currentTime - lastRotaryInterruptTime < rotaryDebounceDelay) return;
+  lastRotaryInterruptTime = currentTime;
+
+  int clkState = digitalRead(rotary_clk_pin);
+  int dtState = digitalRead(rotary_dt_pin);
+
+  if (clkState != lastRotaryState) {
+    if (dtState != clkState) {
+      rotaryPosition++;
+    } else {
+      rotaryPosition--;
+    }
+  }
+  lastRotaryState = clkState;
+}
+
+void IRAM_ATTR rotaryButtonISR() {
+  unsigned long currentTime = millis();
+  if (currentTime - lastButtonPressTime < buttonDebounceDelay) return;
+  lastButtonPressTime = currentTime;
+
+  if (digitalRead(rotary_sw_pin) == LOW) {
+    rotaryButtonPressed = true;
+  }
 }
 
 // ========== TEST GPIO ==========
@@ -2866,6 +2933,247 @@ void testMotionSensor() {
   Serial.printf("Motion: %s\r\n", motionDetected ? "Detected" : "None");
 }
 
+// ========== CARTE SD ==========
+bool initSD() {
+  Serial.println("\r\n=== INIT SD CARD ===");
+
+  if (sd_miso_pin < 0 || sd_mosi_pin < 0 || sd_sclk_pin < 0 || sd_cs_pin < 0) {
+    sdTestResult = String(Texts::configuration_invalid);
+    sdAvailable = false;
+    Serial.println("SD: Configuration invalide");
+    return false;
+  }
+
+  // Configuration SPI
+  if (sdSPI == nullptr) {
+    sdSPI = new SPIClass(HSPI);
+  }
+  sdSPI->begin(sd_sclk_pin, sd_miso_pin, sd_mosi_pin, sd_cs_pin);
+
+  if (!SD.begin(sd_cs_pin, *sdSPI)) {
+    sdTestResult = String(Texts::not_detected);
+    sdAvailable = false;
+    Serial.println("SD: Carte non detectee");
+    return false;
+  }
+
+  sdAvailable = true;
+
+  // Détection type de carte
+  sdCardType = SD.cardType();
+  switch (sdCardType) {
+    case CARD_MMC:
+      sdCardTypeStr = "MMC";
+      break;
+    case CARD_SD:
+      sdCardTypeStr = "SDSC";
+      break;
+    case CARD_SDHC:
+      sdCardTypeStr = "SDHC";
+      break;
+    default:
+      sdCardTypeStr = "UNKNOWN";
+  }
+
+  // Taille de la carte
+  sdCardSize = SD.cardSize() / (1024 * 1024);  // MB
+
+  Serial.printf("SD: Type=%s, Size=%llu MB\r\n", sdCardTypeStr.c_str(), sdCardSize);
+
+  char sdBuf[128];
+  snprintf(sdBuf, sizeof(sdBuf), "OK - %s, %llu MB", sdCardTypeStr.c_str(), sdCardSize);
+  sdTestResult = String(sdBuf);
+
+  return true;
+}
+
+void testSD() {
+  Serial.println("\r\n=== TEST SD CARD ===");
+
+  if (!initSD()) {
+    return;
+  }
+
+  // Test écriture/lecture
+  const char* testFile = "/test_esp32.txt";
+  const char* testData = "ESP32 Diagnostic Test";
+
+  // Écriture
+  File file = SD.open(testFile, FILE_WRITE);
+  if (!file) {
+    sdTestResult = "Erreur: Ecriture impossible";
+    Serial.println("SD: Erreur ecriture");
+    return;
+  }
+
+  file.println(testData);
+  file.close();
+  Serial.println("SD: Ecriture OK");
+
+  // Lecture
+  file = SD.open(testFile);
+  if (!file) {
+    sdTestResult = "Erreur: Lecture impossible";
+    Serial.println("SD: Erreur lecture");
+    return;
+  }
+
+  String readData = file.readStringUntil('\n');
+  file.close();
+
+  if (readData == testData) {
+    uint64_t totalBytes = SD.totalBytes() / (1024 * 1024);
+    uint64_t usedBytes = SD.usedBytes() / (1024 * 1024);
+
+    char sdBuf[200];
+    snprintf(sdBuf, sizeof(sdBuf),
+             "OK - %s, Total:%llu MB, Utilise:%llu MB, Libre:%llu MB",
+             sdCardTypeStr.c_str(), totalBytes, usedBytes, totalBytes - usedBytes);
+    sdTestResult = String(sdBuf);
+    sdTested = true;
+    Serial.println("SD: Test complet OK");
+  } else {
+    sdTestResult = "Erreur: Verification lecture";
+    Serial.println("SD: Erreur verification");
+  }
+
+  // Nettoyage
+  SD.remove(testFile);
+}
+
+String getSDInfo() {
+  if (!sdAvailable) {
+    return "Non disponible";
+  }
+
+  String info = "Type: " + sdCardTypeStr;
+  info += ", Taille: " + String((uint32_t)sdCardSize) + " MB";
+  info += ", Total: " + String((uint32_t)(SD.totalBytes() / (1024 * 1024))) + " MB";
+  info += ", Utilise: " + String((uint32_t)(SD.usedBytes() / (1024 * 1024))) + " MB";
+
+  return info;
+}
+
+void resetSDTest() {
+  sdTested = false;
+  sdAvailable = false;
+  SD.end();
+}
+
+// ========== ENCODEUR ROTATIF ==========
+void initRotaryEncoder() {
+  Serial.println("\r\n=== INIT ROTARY ENCODER ===");
+
+  if (rotary_clk_pin < 0 || rotary_dt_pin < 0 || rotary_sw_pin < 0) {
+    rotaryTestResult = String(Texts::configuration_invalid);
+    rotaryAvailable = false;
+    Serial.println("Rotary: Configuration invalide");
+    return;
+  }
+
+  pinMode(rotary_clk_pin, INPUT_PULLUP);
+  pinMode(rotary_dt_pin, INPUT_PULLUP);
+  pinMode(rotary_sw_pin, INPUT_PULLUP);
+
+  lastRotaryState = digitalRead(rotary_clk_pin);
+
+  // Attacher interruptions
+  attachInterrupt(digitalPinToInterrupt(rotary_clk_pin), rotaryISR, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(rotary_dt_pin), rotaryISR, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(rotary_sw_pin), rotaryButtonISR, FALLING);
+
+  rotaryAvailable = true;
+  rotaryTestResult = "Initialise - Tournez l'encodeur";
+
+  Serial.printf("Rotary: CLK=%d, DT=%d, SW=%d\r\n",
+                rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
+}
+
+void testRotaryEncoder() {
+  Serial.println("\r\n=== TEST ROTARY ENCODER ===");
+
+  initRotaryEncoder();
+
+  if (!rotaryAvailable) {
+    return;
+  }
+
+  // Reset position
+  rotaryPosition = 0;
+  rotaryButtonPressed = false;
+
+  Serial.println("Rotary: Tournez l'encodeur et appuyez sur le bouton...");
+
+  unsigned long testStart = millis();
+  bool rotationDetected = false;
+  bool buttonDetected = false;
+
+  // Test pendant 5 secondes
+  while (millis() - testStart < 5000) {
+    if (rotaryPosition != 0) {
+      rotationDetected = true;
+    }
+
+    if (rotaryButtonPressed) {
+      buttonDetected = true;
+      rotaryButtonPressed = false;  // Reset
+    }
+
+    if (rotationDetected && buttonDetected) {
+      break;
+    }
+
+    delay(10);
+    yield();
+  }
+
+  char rotaryBuf[256];
+  if (rotationDetected && buttonDetected) {
+    snprintf(rotaryBuf, sizeof(rotaryBuf),
+             "OK - Rotation: %ld, Bouton: detecte", rotaryPosition);
+    rotaryTested = true;
+  } else if (rotationDetected) {
+    snprintf(rotaryBuf, sizeof(rotaryBuf),
+             "Partiel - Rotation OK (%ld), Bouton non teste", rotaryPosition);
+  } else if (buttonDetected) {
+    snprintf(rotaryBuf, sizeof(rotaryBuf),
+             "Partiel - Bouton OK, Rotation non testee");
+  } else {
+    snprintf(rotaryBuf, sizeof(rotaryBuf),
+             "Erreur - Aucune activite detectee");
+  }
+
+  rotaryTestResult = String(rotaryBuf);
+  Serial.println(rotaryTestResult);
+
+  // Reset pour usage normal
+  rotaryPosition = 0;
+}
+
+void resetRotaryTest() {
+  rotaryTested = false;
+  rotaryPosition = 0;
+  rotaryButtonPressed = false;
+  detachInterrupt(digitalPinToInterrupt(rotary_clk_pin));
+  detachInterrupt(digitalPinToInterrupt(rotary_dt_pin));
+  detachInterrupt(digitalPinToInterrupt(rotary_sw_pin));
+  rotaryAvailable = false;
+}
+
+long getRotaryPosition() {
+  return rotaryPosition;
+}
+
+bool getRotaryButtonState() {
+  bool state = rotaryButtonPressed;
+  rotaryButtonPressed = false;  // Auto-reset après lecture
+  return state;
+}
+
+void resetRotaryPosition() {
+  rotaryPosition = 0;
+}
+
 // ========== TEST STRESS MÉMOIRE ==========
 void memoryStressTest() {
   Serial.println("\r\n=== STRESS TEST MEMOIRE ===");
@@ -3030,6 +3338,16 @@ static void runRgbLedTestTask() {
 
 static void runBuzzerTestTask() {
   testBuzzer();
+}
+
+static void runSDTestTask() {
+  resetSDTest();
+  testSD();
+}
+
+static void runRotaryTestTask() {
+  resetRotaryTest();
+  testRotaryEncoder();
 }
 
 // ========== HANDLERS API ==========
@@ -3803,6 +4121,124 @@ void handleMotionSensorTest() {
   });
 }
 
+// ========== SD CARD HANDLERS ==========
+void handleSDConfig() {
+  if (server.hasArg("miso") && server.hasArg("mosi") &&
+      server.hasArg("sclk") && server.hasArg("cs")) {
+    sd_miso_pin = server.arg("miso").toInt();
+    sd_mosi_pin = server.arg("mosi").toInt();
+    sd_sclk_pin = server.arg("sclk").toInt();
+    sd_cs_pin = server.arg("cs").toInt();
+
+    resetSDTest();
+    sendActionResponse(200, true, OK_STR);
+  } else {
+    sendActionResponse(400, false, String(Texts::configuration_invalid));
+  }
+}
+
+void handleSDTest() {
+  bool alreadyRunning = false;
+  bool started = startAsyncTest(sdTestRunner, runSDTestTask, alreadyRunning, 6144, 1);
+
+  if (started) {
+    sendJsonResponse(202, {
+      jsonBoolField("running", true),
+      jsonBoolField("success", sdAvailable),
+      jsonStringField("result", sdTestResult)
+    });
+    return;
+  }
+
+  if (alreadyRunning) {
+    sendJsonResponse(200, {
+      jsonBoolField("running", true),
+      jsonBoolField("success", sdAvailable),
+      jsonStringField("result", sdTestResult)
+    });
+    return;
+  }
+
+  testSD();
+  sendJsonResponse(200, {
+    jsonBoolField("running", false),
+    jsonBoolField("success", sdAvailable),
+    jsonStringField("result", sdTestResult)
+  });
+}
+
+void handleSDInfo() {
+  if (!sdAvailable) {
+    initSD();
+  }
+
+  sendJsonResponse(200, {
+    jsonBoolField("available", sdAvailable),
+    jsonStringField("type", sdCardTypeStr),
+    jsonNumberField("size_mb", (uint32_t)sdCardSize),
+    jsonNumberField("total_mb", sdAvailable ? (uint32_t)(SD.totalBytes() / (1024 * 1024)) : 0),
+    jsonNumberField("used_mb", sdAvailable ? (uint32_t)(SD.usedBytes() / (1024 * 1024)) : 0),
+    jsonStringField("result", sdTestResult)
+  });
+}
+
+// ========== ROTARY ENCODER HANDLERS ==========
+void handleRotaryConfig() {
+  if (server.hasArg("clk") && server.hasArg("dt") && server.hasArg("sw")) {
+    rotary_clk_pin = server.arg("clk").toInt();
+    rotary_dt_pin = server.arg("dt").toInt();
+    rotary_sw_pin = server.arg("sw").toInt();
+
+    resetRotaryTest();
+    sendActionResponse(200, true, OK_STR);
+  } else {
+    sendActionResponse(400, false, String(Texts::configuration_invalid));
+  }
+}
+
+void handleRotaryTest() {
+  bool alreadyRunning = false;
+  bool started = startAsyncTest(rotaryTestRunner, runRotaryTestTask, alreadyRunning, 4096, 1);
+
+  if (started) {
+    sendJsonResponse(202, {
+      jsonBoolField("running", true),
+      jsonBoolField("success", rotaryAvailable),
+      jsonStringField("result", rotaryTestResult)
+    });
+    return;
+  }
+
+  if (alreadyRunning) {
+    sendJsonResponse(200, {
+      jsonBoolField("running", true),
+      jsonBoolField("success", rotaryAvailable),
+      jsonStringField("result", rotaryTestResult)
+    });
+    return;
+  }
+
+  testRotaryEncoder();
+  sendJsonResponse(200, {
+    jsonBoolField("running", false),
+    jsonBoolField("success", rotaryAvailable),
+    jsonStringField("result", rotaryTestResult)
+  });
+}
+
+void handleRotaryPosition() {
+  sendJsonResponse(200, {
+    jsonNumberField("position", (int32_t)rotaryPosition),
+    jsonBoolField("button_pressed", rotaryButtonPressed),
+    jsonBoolField("available", rotaryAvailable)
+  });
+}
+
+void handleRotaryReset() {
+  resetRotaryPosition();
+  sendActionResponse(200, true, "Position reset");
+}
+
 // GPS Handlers
 void handleGPSData() {
   updateGPS();
@@ -4173,6 +4609,8 @@ void handleExportTXT() {
   txt += "OLED: " + oledTestResult + "\r\n";
   txt += "ADC: " + adcTestResult + "\r\n";
   txt += "PWM: " + pwmTestResult + "\r\n";
+  txt += "SD Card: " + sdTestResult + "\r\n";
+  txt += "Rotary Encoder: " + rotaryTestResult + "\r\n";
   txt += "\r\n";
   
   txt += "=== " + String(Texts::performance_bench) + " ===\r\n";
@@ -4266,7 +4704,9 @@ void handleExportJSON() {
   json += "\"neopixel\":\"" + neopixelTestResult + "\",";
   json += "\"oled\":\"" + oledTestResult + "\",";
   json += "\"adc\":\"" + adcTestResult + "\",";
-  json += "\"pwm\":\"" + pwmTestResult + "\"";
+  json += "\"pwm\":\"" + pwmTestResult + "\",";
+  json += "\"sd_card\":\"" + sdTestResult + "\",";
+  json += "\"rotary_encoder\":\"" + rotaryTestResult + "\"";
   json += "},";
   
   json += "\"performance\":{";
@@ -4343,7 +4783,9 @@ void handleExportCSV() {
   csv += String(Texts::test) + ",OLED," + oledTestResult + "\r\n";
   csv += String(Texts::test) + ",ADC," + adcTestResult + "\r\n";
   csv += String(Texts::test) + ",PWM," + pwmTestResult + "\r\n";
-  
+  csv += String(Texts::test) + ",SD Card," + sdTestResult + "\r\n";
+  csv += String(Texts::test) + ",Rotary Encoder," + rotaryTestResult + "\r\n";
+
   if (diagnosticData.cpuBenchmark > 0) {
     csv += String(Texts::performance_bench) + ",CPU us," + String(diagnosticData.cpuBenchmark) + "\r\n";
     csv += String(Texts::performance_bench) + "," + String(Texts::memory_benchmark) + " us," + String(diagnosticData.memBenchmark) + "\r\n";
@@ -4820,12 +5262,28 @@ void handleJavaScriptRoute() {
   pinVars += String(pwm_pin);
   pinVars += ";const BUZZER_PIN=";
   pinVars += String(buzzer_pin);
-  pinVars += ";";
+  pinVars += ";const SD_MISO_PIN=";
+  pinVars += String(sd_miso_pin);
+  pinVars += ";const SD_MOSI_PIN=";
+  pinVars += String(sd_mosi_pin);
+  pinVars += ";const SD_SCLK_PIN=";
+  pinVars += String(sd_sclk_pin);
+  pinVars += ";const SD_CS_PIN=";
+  pinVars += String(sd_cs_pin);
+  pinVars += ";const ROTARY_CLK_PIN=";
+  pinVars += String(rotary_clk_pin);
+  pinVars += ";const ROTARY_DT_PIN=";
+  pinVars += String(rotary_dt_pin);
+  pinVars += ";const ROTARY_SW_PIN=";
+  pinVars += String(rotary_sw_pin);
+  pinVars += ";console.log('GPIO Pins from board_config:',{SD_MISO:SD_MISO_PIN,SD_MOSI:SD_MOSI_PIN,SD_SCLK:SD_SCLK_PIN,SD_CS:SD_CS_PIN,ROTARY_CLK:ROTARY_CLK_PIN,ROTARY_DT:ROTARY_DT_PIN,ROTARY_SW:ROTARY_SW_PIN});";
 
   Serial.printf("Sending pin variables: %d bytes\n", pinVars.length());
   Serial.printf("  RGB_R=%d, RGB_G=%d, RGB_B=%d\n", rgb_led_pin_r, rgb_led_pin_g, rgb_led_pin_b);
   Serial.printf("  DHT=%d, LIGHT=%d, MOTION=%d, PWM=%d\n", dht_pin, light_sensor_pin, motion_sensor_pin, buzzer_pin);
   Serial.printf("  DIST_TRIG=%d, DIST_ECHO=%d\n", distance_trig_pin, distance_echo_pin);
+  Serial.printf("  SD_MISO=%d, SD_MOSI=%d, SD_SCLK=%d, SD_CS=%d\n", sd_miso_pin, sd_mosi_pin, sd_sclk_pin, sd_cs_pin);
+  Serial.printf("  ROTARY_CLK=%d, ROTARY_DT=%d, ROTARY_SW=%d\n", rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
   server.sendContent(pinVars);
 
   // Send translations
@@ -5117,6 +5575,17 @@ void setup() {
 
   server.on("/api/motion-sensor-config", handleMotionSensorConfig);
   server.on("/api/motion-sensor-test", handleMotionSensorTest);
+
+  // SD Card
+  server.on("/api/sd-config", handleSDConfig);
+  server.on("/api/sd-test", handleSDTest);
+  server.on("/api/sd-info", handleSDInfo);
+
+  // Rotary Encoder
+  server.on("/api/rotary-config", handleRotaryConfig);
+  server.on("/api/rotary-test", handleRotaryTest);
+  server.on("/api/rotary-position", handleRotaryPosition);
+  server.on("/api/rotary-reset", handleRotaryReset);
 
   // GPS Module
   server.on("/api/gps", handleGPSData);
