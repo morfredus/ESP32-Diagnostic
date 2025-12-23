@@ -5262,12 +5262,28 @@ void handleJavaScriptRoute() {
   pinVars += String(pwm_pin);
   pinVars += ";const BUZZER_PIN=";
   pinVars += String(buzzer_pin);
+  pinVars += ";const SD_MISO_PIN=";
+  pinVars += String(sd_miso_pin);
+  pinVars += ";const SD_MOSI_PIN=";
+  pinVars += String(sd_mosi_pin);
+  pinVars += ";const SD_SCLK_PIN=";
+  pinVars += String(sd_sclk_pin);
+  pinVars += ";const SD_CS_PIN=";
+  pinVars += String(sd_cs_pin);
+  pinVars += ";const ROTARY_CLK_PIN=";
+  pinVars += String(rotary_clk_pin);
+  pinVars += ";const ROTARY_DT_PIN=";
+  pinVars += String(rotary_dt_pin);
+  pinVars += ";const ROTARY_SW_PIN=";
+  pinVars += String(rotary_sw_pin);
   pinVars += ";";
 
   Serial.printf("Sending pin variables: %d bytes\n", pinVars.length());
   Serial.printf("  RGB_R=%d, RGB_G=%d, RGB_B=%d\n", rgb_led_pin_r, rgb_led_pin_g, rgb_led_pin_b);
   Serial.printf("  DHT=%d, LIGHT=%d, MOTION=%d, PWM=%d\n", dht_pin, light_sensor_pin, motion_sensor_pin, buzzer_pin);
   Serial.printf("  DIST_TRIG=%d, DIST_ECHO=%d\n", distance_trig_pin, distance_echo_pin);
+  Serial.printf("  SD_MISO=%d, SD_MOSI=%d, SD_SCLK=%d, SD_CS=%d\n", sd_miso_pin, sd_mosi_pin, sd_sclk_pin, sd_cs_pin);
+  Serial.printf("  ROTARY_CLK=%d, ROTARY_DT=%d, ROTARY_SW=%d\n", rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
   server.sendContent(pinVars);
 
   // Send translations
