@@ -478,6 +478,14 @@ class TextField {
   X(test_rotary, "Test", "Tester") \
   X(rotary_monitor, "Monitor", "Surveiller") \
   X(rotary_reset, "Reset", "Réinitialiser") \
+  X(sd_test_read, "Read Test", "Test lecture") \
+  X(sd_test_write, "Write Test", "Test écriture") \
+  X(sd_format, "Format Card", "Formater carte") \
+  X(sd_format_warning, "Warning: This will erase all data on the SD card!", "Attention : Ceci effacera toutes les données de la carte SD !") \
+  X(sd_format_confirm, "Are you sure you want to format the SD card?", "Êtes-vous sûr de vouloir formater la carte SD ?") \
+  X(sd_read_test_running, "Running read test...", "Test de lecture en cours...") \
+  X(sd_write_test_running, "Running write test...", "Test d'écriture en cours...") \
+  X(sd_format_running, "Formatting SD card...", "Formatage de la carte SD...") \
   X(memory_section, "Memory & Storage", "Mémoire & Stockage") \
   X(memory_intro, "Detailed memory information and external storage", "Informations mémoire détaillées et stockage externe") \
   X(input_devices_section, "Input Devices & Controls", "Périphériques d'entrée") \
