@@ -53,12 +53,12 @@
 //   BL   = BL / LED / BACKLIGHT
 // Tension logique : 3.3V
 
-#define TFT_MISO      14  // MISO TFT/SD (DO / SDO) – entrée 3.3V (ne jamais recevoir 5V)
+#define TFT_MISO      13  // MISO TFT/SD (DO / SDO) – entrée 3.3V (ne jamais recevoir 5V)
 #define TFT_MOSI      11  // MOSI (DIN / SDA / SDI / DATA / DI) – sortie 3.3V
 #define TFT_SCLK      12  // Horloge SPI (SCK / CLK / SCL) – sortie 3.3V
 #define TFT_CS        10  // Chip Select TFT – sortie 3.3V
 #define TFT_DC         9  // Data/Command – sortie 3.3V
-#define TFT_RST       13  // Reset matériel TFT – sortie 3.3V
+#define TFT_RST       14  // Reset matériel TFT – sortie 3.3V
 #define TFT_BL         7  // Rétroéclairage TFT – sortie 3.3V (PWM possible)
 #define TOUCH_CS      -1  // Pas de tactile câblé
 
@@ -78,7 +78,7 @@
 // ------------------------------------
 // SD Card (SPI partagé)
 // ------------------------------------
-#define SD_MISO      14  // MISO SD – entrée 3.3V
+#define SD_MISO      13  // MISO SD – entrée 3.3V
 #define SD_MOSI      11  // MOSI SD – sortie 3.3V
 #define SD_SCLK      12  // Horloge SD – sortie 3.3V
 #define SD_CS         1  // Chip Select SD – sortie 3.3V
