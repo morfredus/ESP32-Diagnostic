@@ -1,3 +1,74 @@
+## [Version 3.28.0] - 2025-12-23
+
+### 🚀 New Features & Bug Fixes
+
+**Major Improvements:** Fixed BUTTON_BOOT JavaScript error + Added TFT MISO pin configuration + Added SD card test API endpoints + GPIO 13 sharing warning
+
+### Fixed
+- **BUTTON_BOOT JavaScript Error**:
+  - Fixed `ReferenceError: BUTTON_BOOT is not defined`
+  - Injected all missing pin constants from `board_config.h` into JavaScript
+  - Added: `ROTARY_CLK_PIN`, `ROTARY_DT_PIN`, `ROTARY_SW_PIN`, `BUTTON_BOOT`, `BUTTON_1`, `BUTTON_2`
+  - Added: `SD_MISO_PIN`, `SD_MOSI_PIN`, `SD_SCLK_PIN`, `SD_CS_PIN`, `TFT_MISO_PIN`
+  - All GPIO definitions now properly sourced from `board_config.h` (immutable contract)
+
+- **BUTTON_BOOT Configuration**:
+  - Made BUTTON_BOOT non-configurable per specifications
+  - Changed from editable input to read-only display
+  - Marked as "(non configurable)" in UI to prevent accidental modification
+  - Preserves native ESP32 boot button integrity
+
+### Added
+- **TFT MISO Pin Configuration**:
+  - Added MISO pin to SPI pins display: `MISO`, `MOSI`, `SCLK`, `CS`, `DC`, `RST`
+  - Added configurable MISO input field in TFT configuration section
+  - Completes SPI pin management in web interface
+  - Properly reflects GPIO 13 from `board_config.h` for ESP32-S3
+
+- **SD Card Test API Endpoints**:
+  - `/api/sd-test-read`: Test SD card read operations
+  - `/api/sd-test-write`: Test SD card write operations with timestamp
+  - `/api/sd-format`: Clean SD card test files (safe cleanup, not low-level format)
+  - JSON response format consistent with existing endpoints
+  - Automatic SD initialization if unavailable
+
+- **GPIO 13 Sharing Warning**:
+  - Added visible warning in SD Card section (yellow warning box)
+  - Alerts users that GPIO 13 is shared between TFT and SD (MISO line)
+  - Emphasizes need for strict SPI wiring and proper software management
+  - New i18n keys: `gpio_shared_warning`, `gpio_13_shared_desc` (EN/FR)
+
+### Technical Details
+- **Web Interface** (`include/web_interface.h`):
+  - Pin injection now includes all ROTARY, BUTTON, SD, and TFT pins
+  - BOOT button displayed as read-only with visual indicator
+  - GPIO 13 warning styled with Bootstrap-like alert styling
+  - Full i18n support maintained for all new features
+
+- **API Implementation** (`src/main.cpp`):
+  - `handleSDTestRead()`: Creates test file if needed, tests read capability
+  - `handleSDTestWrite()`: Tests write capability with timestamped data
+  - `handleSDFormat()`: Removes all test files (`/test_*.txt`)
+  - Proper error handling for unavailable SD cards
+
+- **Translations** (`include/languages.h`):
+  - `gpio_shared_warning`: "Shared GPIO 13 (TFT + SD – MISO)" / "GPIO 13 partagé (TFT + SD – MISO)"
+  - `gpio_13_shared_desc`: Full explanation in EN/FR about SPI sharing requirements
+
+### Compliance
+- All GPIO definitions sourced from `board_config.h` (immutable contract)
+- No hardcoded pin values in JavaScript
+- Respects `board_config.h` as single source of truth
+- No modifications to `board_config.h` itself (as required)
+
+### Files Modified
+- `include/web_interface.h`: Pin injection, BOOT button display, GPIO warning, MISO field
+- `include/languages.h`: Added 2 new translation keys for GPIO warning
+- `src/main.cpp`: Added 3 new SD card endpoint handlers + route registration
+- `platformio.ini`: Version 3.27.2 → 3.28.0
+
+---
+
 ## [Version 3.27.2] - 2025-12-23
 
 ### 🔧 Fixes & Enhancements
