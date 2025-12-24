@@ -1,29 +1,36 @@
-# ESP32 Diagnostic Suite (v3.28.3)
+# ESP32 Diagnostic Suite (v3.28.4)
 
-> **Note**: v3.28.3 fixes rotary encoder initialization and adds button monitoring API. All input devices now work correctly from power-on. ✅
+> **Note**: v3.28.4 fixes button monitoring - now properly updates button states in real-time. ✅
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## ✨ Version 3.28.3 Highlights - Input Devices Fixed
+## ✨ Version 3.28.4 Highlights - Button Monitoring Working
 
-**Bug Fixes:**
-- ✅ **Rotary Encoder Initialization** - Now works immediately after boot without manual test
-- ✅ **Button Monitoring API** - New `/api/button-states` endpoint for real-time button state
-- ✅ **Automatic Setup** - All input devices initialize automatically in `setup()`
+**Bug Fix:**
+- ✅ **Button Monitoring Fixed** - States now update correctly when pressing BOOT, Button 1, Button 2
+- ✅ **API Endpoint Corrected** - Frontend expected `/api/button-state` (singular), backend provided `/api/button-states` (plural)
+- ✅ **Real-time Updates** - Button states refresh every 100ms when monitoring enabled
 
 **Key Changes:**
 ```cpp
-// src/main.cpp:5757-5765 - Rotary encoder now initializes on boot
-initRotaryEncoder();
-
-// src/main.cpp:4375-4393 - New button state API handler
-void handleButtonStates() {
-  // Returns real-time state of BOOT, Button1, Button2
+// src/main.cpp:4395-4431 - Individual button state query
+void handleButtonState() {
+  // Accepts ?button=boot|1|2 parameter
+  // Returns: { "pressed": true/false, "released": true/false, "pin": X }
 }
 
-// src/main.cpp:5759 - New API route
-server.on("/api/button-states", handleButtonStates);
+// src/main.cpp:5798 - Route registration
+server.on("/api/button-state", handleButtonState);
 ```
+
+**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.4 details.
+
+## Previous: Version 3.28.3
+
+**Input Devices Fixed:**
+- ✅ **Rotary Encoder Initialization** - Works immediately after boot
+- ✅ **Button Monitoring API** - Backend endpoints added
+- ✅ **Automatic Setup** - All input devices initialize in `setup()`
 
 **See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.3 details.
 

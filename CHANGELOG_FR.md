@@ -1,3 +1,102 @@
+## [Version 3.28.4] - 2025-12-24
+
+### 🐛 Correction de Bug
+
+**Patch de Maintenance :** Correction du monitoring des boutons non fonctionnel - états bloqués sur "Released"
+
+### Corrigé
+
+#### Monitoring des Boutons Non Fonctionnel ✅
+
+**Problème :**
+- Le monitoring des boutons (BOOT, Bouton 1, Bouton 2) affichait toujours l'état "Released"
+- Cliquer sur "Monitor Button" n'avait aucun effet - l'état ne se mettait jamais à jour
+- Le JavaScript frontend appelait le mauvais endpoint API
+
+**Cause Racine :**
+- Le frontend appelle `/api/button-state?button=boot` (singulier) pour les requêtes de bouton individuel
+- Le backend n'avait que l'endpoint `/api/button-states` (pluriel) qui retourne TOUS les boutons
+- Incompatibilité d'endpoint : le frontend attendait une requête de bouton individuel, le backend fournissait une requête groupée
+- Aucun gestionnaire de route enregistré pour `/api/button-state` (singulier)
+
+**Solution :**
+```cpp
+// src/main.cpp:4395-4431 - Ajout du gestionnaire d'état de bouton individuel
+void handleButtonState() {
+  if (!server.hasArg("button")) {
+    sendActionResponse(400, false, "Missing 'button' parameter");
+    return;
+  }
+
+  String buttonParam = server.arg("button");
+  int state = -1;
+  int pin = -1;
+
+  if (buttonParam == "boot") {
+    state = getButtonBootState();
+    pin = buttonBootPin;
+  } else if (buttonParam == "1" || buttonParam == "button1") {
+    state = getButton1State();
+    pin = button1Pin;
+  } else if (buttonParam == "2" || buttonParam == "button2") {
+    state = getButton2State();
+    pin = button2Pin;
+  } else {
+    sendActionResponse(400, false, "Invalid button parameter");
+    return;
+  }
+
+  // LOW = pressé (pull-up), HIGH = relâché
+  bool pressed = (state == LOW && state != -1);
+  bool available = (state != -1);
+
+  sendJsonResponse(200, {
+    jsonBoolField("pressed", pressed),
+    jsonBoolField("released", !pressed && available),
+    jsonBoolField("available", available),
+    jsonNumberField("pin", pin),
+    jsonNumberField("raw_state", state)
+  });
+}
+
+// src/main.cpp:5798 - Enregistrement de la route
+server.on("/api/button-state", handleButtonState);
+```
+
+**Format de Réponse API :**
+```json
+GET /api/button-state?button=boot
+{
+  "pressed": false,
+  "released": true,
+  "available": true,
+  "pin": 0,
+  "raw_state": 1
+}
+```
+
+**Impact :**
+- ✅ Le monitoring des boutons fonctionne maintenant correctement
+- ✅ L'état se met à jour en temps réel (polling 100ms) quand le monitoring est activé
+- ✅ "Pressed" affiché en rouge gras quand le bouton est pressé
+- ✅ "Released" affiché en vert quand le bouton est relâché
+- ✅ Fonctionne pour BOOT (GPIO 0), Bouton 1 et Bouton 2
+
+**Fichiers Modifiés :**
+- `src/main.cpp` :
+  - Lignes 4395-4431 : Ajout du gestionnaire `handleButtonState()`
+  - Ligne 5798 : Enregistrement de la route `/api/button-state`
+- `platformio.ini` : Version 3.28.3 → 3.28.4
+
+**Tests :**
+1. Naviguer vers la page "Dispositifs d'Entrée"
+2. Cliquer sur "Monitor Button" pour le bouton BOOT
+3. Presser le bouton GPIO 0 (BOOT) sur l'ESP32 - l'état devrait changer vers "Pressed" (rouge) ✅
+4. Relâcher le bouton - l'état devrait retourner à "Released" (vert) ✅
+5. Répéter pour Bouton 1 et Bouton 2 ✅
+
+---
+
 ## [Version 3.28.3] - 2025-12-24
 
 ### 🐛 Corrections de Bugs
