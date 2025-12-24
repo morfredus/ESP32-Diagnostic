@@ -3179,20 +3179,29 @@ void resetRotaryPosition() {
   rotaryPosition = 0;
 }
 
-// ========== BUTTON STATE READERS (v3.28.3) ==========
+// ========== BUTTON STATE READERS (v3.28.3/v3.28.5) ==========
+// Read REAL GPIO state for monitoring (not volatile ISR variables)
+// v3.28.5: Use constants directly to ensure correct pin access
 int getButtonBootState() {
-  if (buttonBootPin < 0 || buttonBootPin > 48) return -1;
-  return digitalRead(buttonBootPin);
+  // Use constant directly instead of static variable
+  if (BUTTON_BOOT < 0 || BUTTON_BOOT > 48) return -1;
+  return digitalRead(BUTTON_BOOT);
 }
 
 int getButton1State() {
-  if (button1Pin < 0 || button1Pin > 48) return -1;
-  return digitalRead(button1Pin);
+  if (BUTTON_1 < 0 || BUTTON_1 > 48) return -1;
+  return digitalRead(BUTTON_1);
 }
 
 int getButton2State() {
-  if (button2Pin < 0 || button2Pin > 48) return -1;
-  return digitalRead(button2Pin);
+  if (BUTTON_2 < 0 || BUTTON_2 > 48) return -1;
+  return digitalRead(BUTTON_2);
+}
+
+// v3.28.5 - Read REAL GPIO state of rotary button for monitoring
+int getRotaryButtonGPIOState() {
+  if (rotary_sw_pin < 0 || rotary_sw_pin > 48) return -1;
+  return digitalRead(rotary_sw_pin);
 }
 
 // ========== TEST STRESS MÉMOIRE ==========
@@ -4360,9 +4369,13 @@ void handleRotaryTest() {
 }
 
 void handleRotaryPosition() {
+  // v3.28.5 fix: Read REAL GPIO state for monitoring, not ISR variable
+  int buttonGPIOState = getRotaryButtonGPIOState();
+  bool buttonPressed = (buttonGPIOState == LOW && buttonGPIOState != -1);
+
   sendJsonResponse(200, {
     jsonNumberField("position", (int32_t)rotaryPosition),
-    jsonBoolField("button_pressed", rotaryButtonPressed),
+    jsonBoolField("button_pressed", buttonPressed),
     jsonBoolField("available", rotaryAvailable)
   });
 }
@@ -4373,6 +4386,7 @@ void handleRotaryReset() {
 }
 
 // ========== BUTTON STATE HANDLERS (v3.28.3) ==========
+// v3.28.5: Use constants directly for pins
 void handleButtonStates() {
   int bootState = getButtonBootState();
   int button1State = getButton1State();
@@ -4386,13 +4400,14 @@ void handleButtonStates() {
     jsonBoolField("button1_available", button1State != -1),
     jsonBoolField("button2_pressed", button2State == LOW && button2State != -1),
     jsonBoolField("button2_available", button2State != -1),
-    jsonNumberField("boot_pin", buttonBootPin),
-    jsonNumberField("button1_pin", button1Pin),
-    jsonNumberField("button2_pin", button2Pin)
+    jsonNumberField("boot_pin", BUTTON_BOOT),  // v3.28.5: Use constants
+    jsonNumberField("button1_pin", BUTTON_1),
+    jsonNumberField("button2_pin", BUTTON_2)
   });
 }
 
 // Individual button state (v3.28.4 fix - frontend expects this endpoint)
+// v3.28.5: Use constants directly for pins
 void handleButtonState() {
   if (!server.hasArg("button")) {
     sendActionResponse(400, false, "Missing 'button' parameter");
@@ -4405,13 +4420,13 @@ void handleButtonState() {
 
   if (buttonParam == "boot") {
     state = getButtonBootState();
-    pin = buttonBootPin;
+    pin = BUTTON_BOOT;  // v3.28.5: Use constant directly
   } else if (buttonParam == "1" || buttonParam == "button1") {
     state = getButton1State();
-    pin = button1Pin;
+    pin = BUTTON_1;
   } else if (buttonParam == "2" || buttonParam == "button2") {
     state = getButton2State();
-    pin = button2Pin;
+    pin = BUTTON_2;
   } else {
     sendActionResponse(400, false, "Invalid button parameter (must be 'boot', '1', or '2')");
     return;
