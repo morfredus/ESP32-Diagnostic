@@ -1,8 +1,63 @@
+## [Version 3.28.2] - 2025-12-24
+
+### 🐛 Critical Bug Fix
+
+**Emergency Patch:** Fixed BUTTON_BOOT JavaScript error that was NOT actually fixed in 3.28.0/3.28.1
+
+### Fixed
+
+#### BUTTON_BOOT JavaScript ReferenceError ✅ (REALLY FIXED NOW)
+
+**Problem:**
+- `ReferenceError: BUTTON_BOOT is not defined` error still occurred on Input Devices page
+- Despite attempts to fix in v3.28.0, the error persisted
+- Root cause misidentified in previous versions
+
+**Root Cause:**
+- GPIO constants (BUTTON_BOOT, BUTTON_1, BUTTON_2, TFT_MISO_PIN) were injected in `web_interface.h` but NOT in `main.cpp:handleJavaScriptRoute()`
+- The actual JavaScript served to the browser comes from `handleJavaScriptRoute()`, not from `web_interface.h:generateJavaScript()`
+- `generateJavaScript()` is only used to calculate JavaScript size for statistics
+- Therefore, the constants injected in `web_interface.h` were never actually sent to the browser
+
+**Solution:**
+```cpp
+// src/main.cpp:5397-5405 - Added to handleJavaScriptRoute()
+// Button pins
+pinVars += ";const BUTTON_BOOT=";
+pinVars += String(BUTTON_BOOT);
+pinVars += ";const BUTTON_1=";
+pinVars += String(BUTTON_1);
+pinVars += ";const BUTTON_2=";
+pinVars += String(BUTTON_2);
+// TFT MISO pin
+pinVars += ";const TFT_MISO_PIN=";
+pinVars += String(TFT_MISO);
+```
+
+**Impact:**
+- ✅ Input Devices page now loads WITHOUT JavaScript errors
+- ✅ BUTTON_BOOT displays correctly as read-only GPIO 0
+- ✅ BUTTON_1 and BUTTON_2 function correctly
+- ✅ All GPIO constants now properly injected BEFORE JavaScript functions execute
+
+**Files Modified:**
+- `src/main.cpp` (lines 5397-5415): Added button and TFT MISO constants to pinVars
+- `platformio.ini`: Version 3.28.1 → 3.28.2
+
+**Testing:**
+- Navigate to "Input Devices" page - should load without errors ✅
+- BUTTON_BOOT should show "GPIO 0 (non configurable)" ✅
+- Browser console should show no ReferenceError ✅
+
+---
+
 ## [Version 3.28.1] - 2025-12-24
 
 ### 🐛 Critical Bug Fixes
 
 **Patch Release:** Fixed MISO backend integration + Fixed SD card on ESP32-S3
+
+**NOTE:** BUTTON_BOOT error was NOT fully fixed in this version despite documentation claiming it was. See v3.28.2 for actual fix.
 
 ### Fixed
 - **TFT MISO Backend Integration**:
