@@ -3179,6 +3179,22 @@ void resetRotaryPosition() {
   rotaryPosition = 0;
 }
 
+// ========== BUTTON STATE READERS (v3.28.3) ==========
+int getButtonBootState() {
+  if (buttonBootPin < 0 || buttonBootPin > 48) return -1;
+  return digitalRead(buttonBootPin);
+}
+
+int getButton1State() {
+  if (button1Pin < 0 || button1Pin > 48) return -1;
+  return digitalRead(button1Pin);
+}
+
+int getButton2State() {
+  if (button2Pin < 0 || button2Pin > 48) return -1;
+  return digitalRead(button2Pin);
+}
+
 // ========== TEST STRESS MÉMOIRE ==========
 void memoryStressTest() {
   Serial.println("\r\n=== STRESS TEST MEMOIRE ===");
@@ -4354,6 +4370,26 @@ void handleRotaryPosition() {
 void handleRotaryReset() {
   resetRotaryPosition();
   sendActionResponse(200, true, "Position reset");
+}
+
+// ========== BUTTON STATE HANDLERS (v3.28.3) ==========
+void handleButtonStates() {
+  int bootState = getButtonBootState();
+  int button1State = getButton1State();
+  int button2State = getButton2State();
+
+  // LOW = pressed (pull-up), HIGH = released
+  sendJsonResponse(200, {
+    jsonBoolField("boot_pressed", bootState == LOW && bootState != -1),
+    jsonBoolField("boot_available", bootState != -1),
+    jsonBoolField("button1_pressed", button1State == LOW && button1State != -1),
+    jsonBoolField("button1_available", button1State != -1),
+    jsonBoolField("button2_pressed", button2State == LOW && button2State != -1),
+    jsonBoolField("button2_available", button2State != -1),
+    jsonNumberField("boot_pin", buttonBootPin),
+    jsonNumberField("button1_pin", button1Pin),
+    jsonNumberField("button2_pin", button2Pin)
+  });
 }
 
 // GPS Handlers
@@ -5719,6 +5755,9 @@ void setup() {
   server.on("/api/rotary-position", handleRotaryPosition);
   server.on("/api/rotary-reset", handleRotaryReset);
 
+  // Buttons (v3.28.3)
+  server.on("/api/button-states", handleButtonStates);
+
   // GPS Module
   server.on("/api/gps", handleGPSData);
   server.on("/api/gps-test", handleGPSTest);
@@ -5753,6 +5792,16 @@ void setup() {
   initButtons();
   Serial.printf("Boutons actifs: BTN1=%d, BTN2=%d\r\n", button1Pin, button2Pin);
 #endif
+
+  // Initialize rotary encoder on startup (v3.28.3 fix)
+  Serial.println("Initialisation de l'encodeur rotatif...");
+  initRotaryEncoder();
+  if (rotaryAvailable) {
+    Serial.printf("Encodeur rotatif OK: CLK=%d, DT=%d, SW=%d\r\n",
+                  rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
+  } else {
+    Serial.println("Encodeur rotatif: non disponible ou configuration invalide");
+  }
 }
 
 // ========== LOOP ==========

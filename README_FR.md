@@ -1,30 +1,38 @@
-# ESP32 Diagnostic Suite (v3.28.2)
+# ESP32 Diagnostic Suite (v3.28.3)
 
-> **Note** : v3.28.2 est un patch d'urgence qui corrige ENFIN l'erreur JavaScript BUTTON_BOOT. Les versions 3.28.0 et 3.28.1 prétendaient corriger ce problème mais la correction était incomplète. Cette version inclut également toutes les corrections de la v3.28.1 (intégration backend MISO et carte SD sur ESP32-S3). ✅
+> **Note** : v3.28.3 corrige l'initialisation de l'encodeur rotatif et ajoute l'API de monitoring des boutons. Tous les dispositifs d'entrée fonctionnent maintenant correctement dès la mise sous tension. ✅
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## ✨ Nouveautés de la version 3.28.2 - Erreur BUTTON_BOOT VRAIMENT Corrigée
+## ✨ Nouveautés de la version 3.28.3 - Dispositifs d'Entrée Corrigés
 
-**Correction Critique :**
-- ✅ **Erreur BUTTON_BOOT CORRIGÉE** - ReferenceError sur la page Input Devices enfin résolu
-- ✅ **Cause Racine Identifiée** - Les constantes GPIO étaient injectées au mauvais endroit (web_interface.h au lieu de main.cpp)
-- ✅ **Toutes les Constantes Boutons Fonctionnent** - BUTTON_BOOT, BUTTON_1, BUTTON_2 maintenant disponibles en JavaScript
+**Corrections de Bugs :**
+- ✅ **Initialisation Encodeur Rotatif** - Fonctionne immédiatement après démarrage sans test manuel
+- ✅ **API Monitoring Boutons** - Nouvel endpoint `/api/button-states` pour l'état en temps réel
+- ✅ **Configuration Automatique** - Tous les dispositifs d'entrée s'initialisent automatiquement dans `setup()`
 
-**Correction Technique :**
+**Changements Clés :**
 ```cpp
-// src/main.cpp:5397-5405 - Ajouté à handleJavaScriptRoute()
-// Button pins (MANQUANTS dans v3.28.0/3.28.1)
-pinVars += ";const BUTTON_BOOT=";
-pinVars += String(BUTTON_BOOT);
-pinVars += ";const BUTTON_1=";
-pinVars += String(BUTTON_1);
-pinVars += ";const BUTTON_2=";
-pinVars += String(BUTTON_2);
-// TFT MISO pin
-pinVars += ";const TFT_MISO_PIN=";
-pinVars += String(TFT_MISO);
+// src/main.cpp:5757-5765 - L'encodeur rotatif s'initialise au démarrage
+initRotaryEncoder();
+
+// src/main.cpp:4375-4393 - Nouveau gestionnaire API pour l'état des boutons
+void handleButtonStates() {
+  // Retourne l'état en temps réel de BOOT, Bouton1, Bouton2
+}
+
+// src/main.cpp:5759 - Nouvelle route API
+server.on("/api/button-states", handleButtonStates);
 ```
+
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.28.3.
+
+## Précédent : version 3.28.2
+
+**Erreur JavaScript BUTTON_BOOT Corrigée :**
+- ✅ **Erreur BUTTON_BOOT CORRIGÉE** - ReferenceError sur la page Input Devices résolu
+- ✅ **Cause Racine Identifiée** - Les constantes GPIO étaient injectées au mauvais endroit
+- ✅ **Toutes les Constantes Boutons Fonctionnent** - BUTTON_BOOT, BUTTON_1, BUTTON_2 maintenant disponibles
 
 **Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.28.2.
 
