@@ -1,30 +1,38 @@
-# ESP32 Diagnostic Suite (v3.28.2)
+# ESP32 Diagnostic Suite (v3.28.3)
 
-> **Note**: v3.28.2 is an emergency patch that FINALLY fixes the BUTTON_BOOT JavaScript error. Versions 3.28.0 and 3.28.1 claimed to fix this issue but the fix was incomplete. This version also includes all fixes from 3.28.1 (MISO backend integration and SD card on ESP32-S3). ✅
+> **Note**: v3.28.3 fixes rotary encoder initialization and adds button monitoring API. All input devices now work correctly from power-on. ✅
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## ✨ Version 3.28.2 Highlights - BUTTON_BOOT Error REALLY Fixed
+## ✨ Version 3.28.3 Highlights - Input Devices Fixed
 
-**Critical Fix:**
-- ✅ **BUTTON_BOOT Error FIXED** - ReferenceError on Input Devices page finally resolved
-- ✅ **Root Cause Identified** - GPIO constants were injected in wrong location (web_interface.h instead of main.cpp)
-- ✅ **All Button Constants Working** - BUTTON_BOOT, BUTTON_1, BUTTON_2 now properly available in JavaScript
+**Bug Fixes:**
+- ✅ **Rotary Encoder Initialization** - Now works immediately after boot without manual test
+- ✅ **Button Monitoring API** - New `/api/button-states` endpoint for real-time button state
+- ✅ **Automatic Setup** - All input devices initialize automatically in `setup()`
 
-**Technical Fix:**
+**Key Changes:**
 ```cpp
-// src/main.cpp:5397-5405 - Added to handleJavaScriptRoute()
-// Button pins (MISSING in v3.28.0/3.28.1)
-pinVars += ";const BUTTON_BOOT=";
-pinVars += String(BUTTON_BOOT);
-pinVars += ";const BUTTON_1=";
-pinVars += String(BUTTON_1);
-pinVars += ";const BUTTON_2=";
-pinVars += String(BUTTON_2);
-// TFT MISO pin
-pinVars += ";const TFT_MISO_PIN=";
-pinVars += String(TFT_MISO);
+// src/main.cpp:5757-5765 - Rotary encoder now initializes on boot
+initRotaryEncoder();
+
+// src/main.cpp:4375-4393 - New button state API handler
+void handleButtonStates() {
+  // Returns real-time state of BOOT, Button1, Button2
+}
+
+// src/main.cpp:5759 - New API route
+server.on("/api/button-states", handleButtonStates);
 ```
+
+**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.3 details.
+
+## Previous: Version 3.28.2
+
+**BUTTON_BOOT JavaScript Error Fixed:**
+- ✅ **BUTTON_BOOT Error FIXED** - ReferenceError on Input Devices page resolved
+- ✅ **Root Cause Identified** - GPIO constants were injected in wrong location
+- ✅ **All Button Constants Working** - BUTTON_BOOT, BUTTON_1, BUTTON_2 now properly available
 
 **See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.2 details.
 

@@ -1,3 +1,125 @@
+## [Version 3.28.3] - 2025-12-24
+
+### 🐛 Bug Fixes
+
+**Patch Release:** Fixed rotary encoder initialization + Added button monitoring API
+
+### Fixed
+
+#### 1. Rotary Encoder Not Working Until Reset ✅
+
+**Problem:**
+- Rotary encoder did not respond to rotation or button presses after boot
+- Only worked after navigating to "Input Devices" page and clicking "Test"
+- Made the rotary encoder unusable for normal operation
+
+**Root Cause:**
+- `initRotaryEncoder()` was NEVER called during startup in `setup()`
+- Function was only called inside `testRotaryEncoder()` which is triggered manually via web UI
+- GPIO pins were not configured and interrupts were not attached at boot time
+
+**Solution:**
+```cpp
+// src/main.cpp:5757-5765 - Added to setup()
+// Initialize rotary encoder on startup (v3.28.3 fix)
+Serial.println("Initialisation de l'encodeur rotatif...");
+initRotaryEncoder();
+if (rotaryAvailable) {
+  Serial.printf("Encodeur rotatif OK: CLK=%d, DT=%d, SW=%d\r\n",
+                rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
+} else {
+  Serial.println("Encodeur rotatif: non disponible ou configuration invalide");
+}
+```
+
+**Impact:**
+- ✅ Rotary encoder now initializes automatically on boot
+- ✅ Rotation detection works immediately without manual test
+- ✅ Button presses detected from power-on
+- ✅ Real-time position tracking available via `/api/rotary-position`
+
+#### 2. Button Monitoring Not Functional ✅
+
+**Problem:**
+- "Monitor Button" buttons in web UI did nothing
+- No way to see real-time button state (pressed/released)
+- JavaScript functions existed but backend API endpoints were missing
+
+**Root Cause:**
+- Frontend code referenced monitoring functions (`toggleBootButtonMonitoring()`, etc.)
+- BUT no backend API endpoint existed to read button states in real-time
+- Missing `/api/button-states` route
+
+**Solution:**
+```cpp
+// src/main.cpp:3182-3196 - Added button state reader functions
+int getButtonBootState() {
+  if (buttonBootPin < 0 || buttonBootPin > 48) return -1;
+  return digitalRead(buttonBootPin);
+}
+
+int getButton1State() {
+  if (button1Pin < 0 || button1Pin > 48) return -1;
+  return digitalRead(button1Pin);
+}
+
+int getButton2State() {
+  if (button2Pin < 0 || button2Pin > 48) return -1;
+  return digitalRead(button2Pin);
+}
+
+// src/main.cpp:4375-4393 - Added HTTP handler
+void handleButtonStates() {
+  int bootState = getButtonBootState();
+  int button1State = getButton1State();
+  int button2State = getButton2State();
+
+  // LOW = pressed (pull-up), HIGH = released
+  sendJsonResponse(200, {
+    jsonBoolField("boot_pressed", bootState == LOW && bootState != -1),
+    jsonBoolField("boot_available", bootState != -1),
+    jsonBoolField("button1_pressed", button1State == LOW && button1State != -1),
+    jsonBoolField("button1_available", button1State != -1),
+    jsonBoolField("button2_pressed", button2State == LOW && button2State != -1),
+    jsonBoolField("button2_available", button2State != -1),
+    jsonNumberField("boot_pin", buttonBootPin),
+    jsonNumberField("button1_pin", button1Pin),
+    jsonNumberField("button2_pin", button2Pin)
+  });
+}
+
+// src/main.cpp:5758-5759 - Registered route
+server.on("/api/button-states", handleButtonStates);
+```
+
+**Impact:**
+- ✅ New API endpoint `/api/button-states` returns real-time button states
+- ✅ Returns JSON with pressed state for BOOT, Button 1, and Button 2
+- ✅ Includes pin numbers and availability status
+- ✅ Frontend monitoring can now poll this endpoint for live updates
+
+**Files Modified:**
+- `src/main.cpp`:
+  - Lines 3182-3196: Added button state reader functions
+  - Lines 4375-4393: Added `handleButtonStates()` HTTP handler
+  - Lines 5757-5765: Initialize rotary encoder in `setup()`
+  - Line 5759: Registered `/api/button-states` route
+- `platformio.ini`: Version 3.28.2 → 3.28.3
+
+**Testing:**
+1. **Rotary Encoder:**
+   - Power on ESP32
+   - Rotate encoder immediately - position should change ✅
+   - Press encoder button - should register ✅
+   - Navigate to "Input Devices" - encoder already working ✅
+
+2. **Button Monitoring:**
+   - Navigate to "Input Devices" page
+   - Press BOOT button (GPIO 0) - LED feedback should work ✅
+   - Check `/api/button-states` endpoint - should return current states ✅
+
+---
+
 ## [Version 3.28.2] - 2025-12-24
 
 ### 🐛 Critical Bug Fix
