@@ -1,31 +1,31 @@
-# ESP32 Diagnostic Suite (v3.28.4)
+# ESP32 Diagnostic Suite (v3.28.5)
 
-> **Note**: v3.28.4 fixes button monitoring - now properly updates button states in real-time. ✅
+> **Note**: v3.28.5 fixes rotary encoder button stuck + button monitoring GPIO issues. All input device monitoring now works correctly. ✅
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## ✨ Version 3.28.4 Highlights - Button Monitoring Working
+## ✨ Version 3.28.5 Highlights - Input Monitoring Fixed
 
-**Bug Fix:**
-- ✅ **Button Monitoring Fixed** - States now update correctly when pressing BOOT, Button 1, Button 2
-- ✅ **API Endpoint Corrected** - Frontend expected `/api/button-state` (singular), backend provided `/api/button-states` (plural)
-- ✅ **Real-time Updates** - Button states refresh every 100ms when monitoring enabled
+**Bug Fixes:**
+1. ✅ **Rotary Encoder Button** - No longer stuck on "Pressed", reads real GPIO state
+2. ✅ **BOOT/Button1/Button2 Monitoring** - Now works correctly using direct constant access
 
 **Key Changes:**
 ```cpp
-// src/main.cpp:4395-4431 - Individual button state query
-void handleButtonState() {
-  // Accepts ?button=boot|1|2 parameter
-  // Returns: { "pressed": true/false, "released": true/false, "pin": X }
+// src/main.cpp:3199-3203 - Read real GPIO for rotary button
+int getRotaryButtonGPIOState() {
+  return digitalRead(rotary_sw_pin);
 }
 
-// src/main.cpp:5798 - Route registration
-server.on("/api/button-state", handleButtonState);
+// src/main.cpp:3185-3199 - Use constants directly for buttons
+int getButtonBootState() {
+  return digitalRead(BUTTON_BOOT);  // Direct constant access
+}
 ```
 
-**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.4 details.
+**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.5 details.
 
-## Previous: Version 3.28.3
+## Previous: Version 3.28.4
 
 **Input Devices Fixed:**
 - ✅ **Rotary Encoder Initialization** - Works immediately after boot
