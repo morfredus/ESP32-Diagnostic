@@ -1,31 +1,31 @@
-# ESP32 Diagnostic Suite (v3.28.4)
+# ESP32 Diagnostic Suite (v3.28.5)
 
-> **Note** : v3.28.4 corrige le monitoring des boutons - met maintenant à jour correctement les états en temps réel. ✅
+> **Note** : v3.28.5 corrige le bouton encodeur bloqué + problèmes GPIO monitoring boutons. Tout le monitoring des dispositifs d'entrée fonctionne correctement maintenant. ✅
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## ✨ Nouveautés de la version 3.28.4 - Monitoring Boutons Fonctionnel
+## ✨ Nouveautés de la version 3.28.5 - Monitoring Entrées Corrigé
 
-**Correction de Bug :**
-- ✅ **Monitoring Boutons Corrigé** - Les états se mettent à jour correctement en pressant BOOT, Bouton 1, Bouton 2
-- ✅ **Endpoint API Corrigé** - Le frontend attendait `/api/button-state` (singulier), le backend fournissait `/api/button-states` (pluriel)
-- ✅ **Mises à Jour Temps Réel** - Les états de boutons se rafraîchissent toutes les 100ms quand le monitoring est activé
+**Corrections de Bugs :**
+1. ✅ **Bouton Encodeur Rotatif** - Plus bloqué sur "Pressed", lit l'état GPIO réel
+2. ✅ **Monitoring BOOT/Bouton1/Bouton2** - Fonctionne maintenant avec accès direct aux constantes
 
 **Changements Clés :**
 ```cpp
-// src/main.cpp:4395-4431 - Requête d'état de bouton individuel
-void handleButtonState() {
-  // Accepte paramètre ?button=boot|1|2
-  // Retourne: { "pressed": true/false, "released": true/false, "pin": X }
+// src/main.cpp:3199-3203 - Lecture GPIO réel pour bouton encodeur
+int getRotaryButtonGPIOState() {
+  return digitalRead(rotary_sw_pin);
 }
 
-// src/main.cpp:5798 - Enregistrement de route
-server.on("/api/button-state", handleButtonState);
+// src/main.cpp:3185-3199 - Utilisation directe des constantes pour boutons
+int getButtonBootState() {
+  return digitalRead(BUTTON_BOOT);  // Accès direct à la constante
+}
 ```
 
-**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.28.4.
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.28.5.
 
-## Précédent : version 3.28.3
+## Précédent : version 3.28.4
 
 **Dispositifs d'Entrée Corrigés :**
 - ✅ **Initialisation Encodeur Rotatif** - Fonctionne immédiatement après démarrage

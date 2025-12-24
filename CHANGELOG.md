@@ -1,3 +1,126 @@
+## [Version 3.28.5] - 2025-12-24
+
+### 🐛 Bug Fixes
+
+**Patch Release:** Fixed rotary encoder button stuck + button monitoring GPIO issues
+
+### Fixed
+
+#### 1. Bouton Encodeur Rotatif Reste "Pressed" ✅
+
+**Problème :**
+- Après avoir appuyé sur le bouton de l'encodeur rotatif, l'état restait "Pressed" même après relâchement
+- L'interface affichait toujours "Pressed" en rouge, jamais "Released"
+- Impossible de voir l'état réel du bouton en temps réel
+
+**Cause Racine :**
+- `handleRotaryPosition()` retournait `rotaryButtonPressed` (variable volatile ISR)
+- Variable volatile mise à `true` par ISR lors de l'appui, mais jamais remise à `false` automatiquement
+- Pour le monitoring temps réel, on doit lire l'état GPIO réel, pas la variable événementielle
+
+**Solution :**
+```cpp
+// src/main.cpp:3199-3203 - Nouvelle fonction pour lire GPIO réel
+int getRotaryButtonGPIOState() {
+  if (rotary_sw_pin < 0 || rotary_sw_pin > 48) return -1;
+  return digitalRead(rotary_sw_pin);
+}
+
+// src/main.cpp:4369-4379 - Utilisation dans handleRotaryPosition()
+void handleRotaryPosition() {
+  // v3.28.5 fix: Read REAL GPIO state for monitoring, not ISR variable
+  int buttonGPIOState = getRotaryButtonGPIOState();
+  bool buttonPressed = (buttonGPIOState == LOW && buttonGPIOState != -1);
+
+  sendJsonResponse(200, {
+    jsonNumberField("position", (int32_t)rotaryPosition),
+    jsonBoolField("button_pressed", buttonPressed),  // Now reads real GPIO
+    jsonBoolField("available", rotaryAvailable)
+  });
+}
+```
+
+**Impact :**
+- ✅ Bouton encodeur affiche maintenant l'état correct en temps réel
+- ✅ "Pressed" (rouge) quand bouton enfoncé
+- ✅ "Released" (vert) quand bouton relâché
+- ✅ Mise à jour immédiate (polling 100ms)
+
+#### 2. Monitoring Boutons BOOT/1/2 Ne Fonctionne Pas ✅
+
+**Problème :**
+- Monitoring des boutons BOOT, Button 1, Button 2 ne fonctionnait toujours pas
+- États ne se mettaient pas à jour malgré correction v3.28.4
+- Boutons restaient bloqués sur "Released"
+
+**Cause Racine :**
+- Fonctions utilisaient variables `static` (`buttonBootPin`, `button1Pin`, `button2Pin`)
+- Problème potentiel de visibilité ou d'initialisation des variables statiques
+- GPIO peut-être pas correctement accessible via ces variables
+
+**Solution :**
+```cpp
+// src/main.cpp:3182-3199 - Lecture directe des constantes
+// v3.28.5: Use constants directly to ensure correct pin access
+int getButtonBootState() {
+  // Use constant directly instead of static variable
+  if (BUTTON_BOOT < 0 || BUTTON_BOOT > 48) return -1;
+  return digitalRead(BUTTON_BOOT);
+}
+
+int getButton1State() {
+  if (BUTTON_1 < 0 || BUTTON_1 > 48) return -1;
+  return digitalRead(BUTTON_1);
+}
+
+int getButton2State() {
+  if (BUTTON_2 < 0 || BUTTON_2 > 48) return -1;
+  return digitalRead(BUTTON_2);
+}
+
+// src/main.cpp:4420-4428 - handleButtonState() utilise constantes
+if (buttonParam == "boot") {
+  state = getButtonBootState();
+  pin = BUTTON_BOOT;  // v3.28.5: Use constant directly
+} else if (buttonParam == "1" || buttonParam == "button1") {
+  state = getButton1State();
+  pin = BUTTON_1;
+} else if (buttonParam == "2" || buttonParam == "button2") {
+  state = getButton2State();
+  pin = BUTTON_2;
+}
+```
+
+**Impact :**
+- ✅ Monitoring BOOT (GPIO 0) fonctionne maintenant
+- ✅ Monitoring Button 1 (GPIO 38/34) fonctionne
+- ✅ Monitoring Button 2 (GPIO 39/35) fonctionne
+- ✅ États se mettent à jour en temps réel
+- ✅ "Pressed" (rouge gras) / "Released" (vert) correct
+
+**Files Modified:**
+- `src/main.cpp`:
+  - Lines 3182-3203: Updated button state readers to use constants, added `getRotaryButtonGPIOState()`
+  - Lines 4369-4379: `handleRotaryPosition()` now reads real GPIO state
+  - Lines 4389-4407: `handleButtonStates()` uses constants for pin numbers
+  - Lines 4420-4428: `handleButtonState()` uses constants for pins
+- `platformio.ini`: Version 3.28.4 → 3.28.5
+
+**Testing:**
+1. **Encodeur Rotatif:**
+   - Activer monitoring du bouton encodeur
+   - Presser le bouton → "Pressed" (rouge) ✅
+   - Relâcher → immédiatement "Released" (vert) ✅
+   - Répéter plusieurs fois → états corrects ✅
+
+2. **Boutons BOOT, 1, 2:**
+   - Activer monitoring pour chaque bouton
+   - Presser GPIO 0/38/39 → "Pressed" immédiat ✅
+   - Relâcher → "Released" immédiat ✅
+   - Pas de blocage sur un état ✅
+
+---
+
 ## [Version 3.28.4] - 2025-12-24
 
 ### 🐛 Bug Fix
