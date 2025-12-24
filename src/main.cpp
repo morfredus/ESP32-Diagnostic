@@ -258,6 +258,7 @@ int LED_COUNT = DEFAULT_NEOPIXEL_COUNT;
 
 // TFT pins (modifiables via web)
 #if ENABLE_TFT_DISPLAY
+int tftMISO = TFT_MISO;
 int tftMOSI = TFT_MOSI;
 int tftSCLK = TFT_SCLK;
 int tftCS = TFT_CS;
@@ -2946,7 +2947,11 @@ bool initSD() {
 
   // Configuration SPI
   if (sdSPI == nullptr) {
-    sdSPI = new SPIClass(HSPI);
+#if defined(CONFIG_IDF_TARGET_ESP32)
+    sdSPI = new SPIClass(HSPI);  // ESP32 classic uses HSPI
+#else
+    sdSPI = new SPIClass(FSPI);  // ESP32-S2/S3 use FSPI (SPI2)
+#endif
   }
   sdSPI->begin(sd_sclk_pin, sd_miso_pin, sd_mosi_pin, sd_cs_pin);
 
@@ -3807,15 +3812,16 @@ void handleTFTBoot() {
 void handleTFTConfig() {
 #if ENABLE_TFT_DISPLAY
   // Check for required parameters
-  if (server.hasArg("mosi") && server.hasArg("sclk") && server.hasArg("cs") && 
+  if (server.hasArg("mosi") && server.hasArg("sclk") && server.hasArg("cs") &&
       server.hasArg("dc") && server.hasArg("rst")) {
-    
+
+    int newMISO = server.hasArg("miso") ? server.arg("miso").toInt() : tftMISO;
     int newMOSI = server.arg("mosi").toInt();
     int newSCLK = server.arg("sclk").toInt();
     int newCS = server.arg("cs").toInt();
     int newDC = server.arg("dc").toInt();
     int newRST = server.arg("rst").toInt();
-    
+
     // Optional parameters
     int newBL = server.hasArg("bl") ? server.arg("bl").toInt() : tftBL;
     int newWidth = server.hasArg("width") ? server.arg("width").toInt() : tftWidth;
@@ -3823,12 +3829,13 @@ void handleTFTConfig() {
     int newRotation = server.hasArg("rotation") ? server.arg("rotation").toInt() : tftRotation;
 
     // Validate pin ranges
-    if (newMOSI >= 0 && newMOSI <= 48 && newSCLK >= 0 && newSCLK <= 48 &&
-        newCS >= 0 && newCS <= 48 && newDC >= 0 && newDC <= 48 && 
-        newRST >= -1 && newRST <= 48 && newBL >= -1 && newBL <= 48 &&
-        newRotation >= 0 && newRotation <= 3) {
-      
+    if (newMISO >= -1 && newMISO <= 48 && newMOSI >= 0 && newMOSI <= 48 &&
+        newSCLK >= 0 && newSCLK <= 48 && newCS >= 0 && newCS <= 48 &&
+        newDC >= 0 && newDC <= 48 && newRST >= -1 && newRST <= 48 &&
+        newBL >= -1 && newBL <= 48 && newRotation >= 0 && newRotation <= 3) {
+
       // Update configuration
+      tftMISO = newMISO;
       tftMOSI = newMOSI;
       tftSCLK = newSCLK;
       tftCS = newCS;
@@ -3843,12 +3850,14 @@ void handleTFTConfig() {
       tftAvailable = false;
       // Note: Complete reinitialization would require SPI reconfiguration
       // For now, we just store the values for next reboot
-      
-      String message = "TFT config updated: MOSI:" + String(tftMOSI) + " SCLK:" + String(tftSCLK) + 
-                       " CS:" + String(tftCS) + " DC:" + String(tftDC) + " RST:" + String(tftRST) +
-                       " Res:" + String(tftWidth) + "x" + String(tftHeight) + " Rot:" + String(tftRotation);
-      
+
+      String message = "TFT config updated: MISO:" + String(tftMISO) + " MOSI:" + String(tftMOSI) +
+                       " SCLK:" + String(tftSCLK) + " CS:" + String(tftCS) + " DC:" + String(tftDC) +
+                       " RST:" + String(tftRST) + " Res:" + String(tftWidth) + "x" + String(tftHeight) +
+                       " Rot:" + String(tftRotation);
+
       sendOperationSuccess(message, {
+        jsonNumberField("miso", tftMISO),
         jsonNumberField("mosi", tftMOSI),
         jsonNumberField("sclk", tftSCLK),
         jsonNumberField("cs", tftCS),
@@ -4564,8 +4573,8 @@ void handleScreensInfo() {
   json += "\"status\":\"" + String(tftTestResult.length() > 0 ? tftTestResult : "Ready") + "\",";
   json += "\"width\":" + String(tftWidth) + ",\"height\":" + String(tftHeight) + ",";
   json += "\"rotation\":" + String(tftRotation) + ",";
-  json += "\"pins\":{\"mosi\":" + String(tftMOSI) + ",\"sclk\":" + String(tftSCLK) + 
-          ",\"cs\":" + String(tftCS) + ",\"dc\":" + String(tftDC) + ",\"rst\":" + String(tftRST) + 
+  json += "\"pins\":{\"miso\":" + String(tftMISO) + ",\"mosi\":" + String(tftMOSI) + ",\"sclk\":" + String(tftSCLK) +
+          ",\"cs\":" + String(tftCS) + ",\"dc\":" + String(tftDC) + ",\"rst\":" + String(tftRST) +
           ",\"bl\":" + String(tftBL) + "}}";
   #else
   json += ",\"tft\":{\"available\":false,\"status\":\"Not enabled\"}";

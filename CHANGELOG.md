@@ -1,3 +1,55 @@
+## [Version 3.28.1] - 2025-12-24
+
+### 🐛 Critical Bug Fixes
+
+**Patch Release:** Fixed MISO backend integration + Fixed SD card on ESP32-S3
+
+### Fixed
+- **TFT MISO Backend Integration**:
+  - Fixed MISO field missing from `/api/screens-info` JSON response
+  - Added `tftMISO` variable initialization from `TFT_MISO` constant
+  - Backend now properly returns `tft.pins.miso` field (GPIO 13 for ESP32-S3)
+  - Resolves "MISO: undefined" display issue in web UI
+
+- **TFT MISO Configuration Sync**:
+  - Fixed `configTFT()` JavaScript function not sending MISO value to backend
+  - MISO parameter now properly included in `/api/tft-config` request
+  - Backend `handleTFTConfig()` now accepts and validates MISO parameter
+  - Completes full MISO configuration flow: UI ↔ API ↔ Firmware
+
+- **SD Card Support on ESP32-S3**:
+  - Fixed SD card initialization failing on ESP32-S3 with compilation/runtime errors
+  - Root cause: `HSPI` constant only available on ESP32 classic, not ESP32-S2/S3
+  - Implemented conditional SPI bus selection:
+    - ESP32 classic: `HSPI` (Hardware SPI bus 2)
+    - ESP32-S2/S3: `FSPI` (Flexible SPI bus, equivalent to SPI2)
+  - SD card tests now fully functional on ESP32-S3 N16R8
+
+### Technical Details
+- **Backend Changes** (`src/main.cpp`):
+  - Line 261: Added `int tftMISO = TFT_MISO;` variable declaration
+  - Line 4568: Added `miso` field to TFT pins JSON in `handleScreensInfo()`
+  - Lines 3814-3828: Updated `handleTFTConfig()` to accept and validate MISO parameter
+  - Lines 2950-2954: Added conditional SPI bus selection for SD card initialization
+  - Response JSON now includes: `"pins":{"miso":13,"mosi":11,...}`
+
+- **Frontend Changes** (`include/web_interface.h`):
+  - Line 119: Updated `configTFT()` to retrieve MISO value from input field
+  - Added `const miso=document.getElementById('tftMISO').value;`
+  - API call now includes: `?miso=${miso}&mosi=${mosi}&...`
+
+### Compliance
+- Maintains `board_config.h` immutability - all values sourced from constants
+- No hardcoded GPIO values
+- Proper SPI bus abstraction for ESP32 variant compatibility
+
+### Files Modified
+- `src/main.cpp`: MISO variable, JSON response, config handler, SD SPI bus
+- `include/web_interface.h`: configTFT MISO parameter
+- `platformio.ini`: Version 3.28.0 → 3.28.1
+
+---
+
 ## [Version 3.28.0] - 2025-12-23
 
 ### 🚀 New Features & Bug Fixes

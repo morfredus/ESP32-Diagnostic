@@ -1,3 +1,55 @@
+## [Version 3.28.1] - 2025-12-24
+
+### 🐛 Corrections Critiques
+
+**Version Corrective:** Intégration backend MISO corrigée + Carte SD fonctionnelle sur ESP32-S3
+
+### Corrigé
+- **Intégration Backend MISO TFT**:
+  - Correction champ MISO manquant dans la réponse JSON `/api/screens-info`
+  - Ajout de l'initialisation de la variable `tftMISO` depuis la constante `TFT_MISO`
+  - Le backend retourne maintenant correctement le champ `tft.pins.miso` (GPIO 13 pour ESP32-S3)
+  - Résout le problème d'affichage "MISO: undefined" dans l'interface web
+
+- **Synchronisation Configuration MISO TFT**:
+  - Correction de la fonction JavaScript `configTFT()` qui n'envoyait pas la valeur MISO au backend
+  - Le paramètre MISO est maintenant correctement inclus dans la requête `/api/tft-config`
+  - Le backend `handleTFTConfig()` accepte et valide maintenant le paramètre MISO
+  - Complète le flux de configuration MISO: UI ↔ API ↔ Firmware
+
+- **Support Carte SD sur ESP32-S3**:
+  - Correction de l'échec d'initialisation de la carte SD sur ESP32-S3 avec erreurs de compilation/exécution
+  - Cause racine: La constante `HSPI` n'est disponible que sur ESP32 classique, pas sur ESP32-S2/S3
+  - Implémentation de la sélection conditionnelle du bus SPI:
+    - ESP32 classique: `HSPI` (Bus SPI matériel 2)
+    - ESP32-S2/S3: `FSPI` (Bus SPI flexible, équivalent à SPI2)
+  - Les tests de carte SD sont maintenant pleinement fonctionnels sur ESP32-S3 N16R8
+
+### Détails Techniques
+- **Modifications Backend** (`src/main.cpp`):
+  - Ligne 261: Ajout de la déclaration de variable `int tftMISO = TFT_MISO;`
+  - Ligne 4568: Ajout du champ `miso` au JSON des broches TFT dans `handleScreensInfo()`
+  - Lignes 3814-3828: Mise à jour de `handleTFTConfig()` pour accepter et valider le paramètre MISO
+  - Lignes 2950-2954: Ajout de la sélection conditionnelle du bus SPI pour l'initialisation de la carte SD
+  - La réponse JSON inclut maintenant: `"pins":{"miso":13,"mosi":11,...}`
+
+- **Modifications Frontend** (`include/web_interface.h`):
+  - Ligne 119: Mise à jour de `configTFT()` pour récupérer la valeur MISO depuis le champ de saisie
+  - Ajouté: `const miso=document.getElementById('tftMISO').value;`
+  - L'appel API inclut maintenant: `?miso=${miso}&mosi=${mosi}&...`
+
+### Conformité
+- Maintient l'immuabilité de `board_config.h` - toutes les valeurs proviennent des constantes
+- Aucune valeur GPIO codée en dur
+- Abstraction appropriée du bus SPI pour la compatibilité entre variantes ESP32
+
+### Fichiers Modifiés
+- `src/main.cpp`: Variable MISO, réponse JSON, gestionnaire config, bus SPI SD
+- `include/web_interface.h`: Paramètre MISO dans configTFT
+- `platformio.ini`: Version 3.28.0 → 3.28.1
+
+---
+
 ## [Version 3.28.0] - 2025-12-23
 
 ### 🚀 Nouvelles Fonctionnalités & Corrections
