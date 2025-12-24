@@ -4392,6 +4392,44 @@ void handleButtonStates() {
   });
 }
 
+// Individual button state (v3.28.4 fix - frontend expects this endpoint)
+void handleButtonState() {
+  if (!server.hasArg("button")) {
+    sendActionResponse(400, false, "Missing 'button' parameter");
+    return;
+  }
+
+  String buttonParam = server.arg("button");
+  int state = -1;
+  int pin = -1;
+
+  if (buttonParam == "boot") {
+    state = getButtonBootState();
+    pin = buttonBootPin;
+  } else if (buttonParam == "1" || buttonParam == "button1") {
+    state = getButton1State();
+    pin = button1Pin;
+  } else if (buttonParam == "2" || buttonParam == "button2") {
+    state = getButton2State();
+    pin = button2Pin;
+  } else {
+    sendActionResponse(400, false, "Invalid button parameter (must be 'boot', '1', or '2')");
+    return;
+  }
+
+  // LOW = pressed (pull-up), HIGH = released
+  bool pressed = (state == LOW && state != -1);
+  bool available = (state != -1);
+
+  sendJsonResponse(200, {
+    jsonBoolField("pressed", pressed),
+    jsonBoolField("released", !pressed && available),
+    jsonBoolField("available", available),
+    jsonNumberField("pin", pin),
+    jsonNumberField("raw_state", state)
+  });
+}
+
 // GPS Handlers
 void handleGPSData() {
   updateGPS();
@@ -5757,6 +5795,7 @@ void setup() {
 
   // Buttons (v3.28.3)
   server.on("/api/button-states", handleButtonStates);
+  server.on("/api/button-state", handleButtonState);  // v3.28.4 - individual button query
 
   // GPS Module
   server.on("/api/gps", handleGPSData);

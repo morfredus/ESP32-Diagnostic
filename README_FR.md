@@ -1,29 +1,36 @@
-# ESP32 Diagnostic Suite (v3.28.3)
+# ESP32 Diagnostic Suite (v3.28.4)
 
-> **Note** : v3.28.3 corrige l'initialisation de l'encodeur rotatif et ajoute l'API de monitoring des boutons. Tous les dispositifs d'entrée fonctionnent maintenant correctement dès la mise sous tension. ✅
+> **Note** : v3.28.4 corrige le monitoring des boutons - met maintenant à jour correctement les états en temps réel. ✅
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## ✨ Nouveautés de la version 3.28.3 - Dispositifs d'Entrée Corrigés
+## ✨ Nouveautés de la version 3.28.4 - Monitoring Boutons Fonctionnel
 
-**Corrections de Bugs :**
-- ✅ **Initialisation Encodeur Rotatif** - Fonctionne immédiatement après démarrage sans test manuel
-- ✅ **API Monitoring Boutons** - Nouvel endpoint `/api/button-states` pour l'état en temps réel
-- ✅ **Configuration Automatique** - Tous les dispositifs d'entrée s'initialisent automatiquement dans `setup()`
+**Correction de Bug :**
+- ✅ **Monitoring Boutons Corrigé** - Les états se mettent à jour correctement en pressant BOOT, Bouton 1, Bouton 2
+- ✅ **Endpoint API Corrigé** - Le frontend attendait `/api/button-state` (singulier), le backend fournissait `/api/button-states` (pluriel)
+- ✅ **Mises à Jour Temps Réel** - Les états de boutons se rafraîchissent toutes les 100ms quand le monitoring est activé
 
 **Changements Clés :**
 ```cpp
-// src/main.cpp:5757-5765 - L'encodeur rotatif s'initialise au démarrage
-initRotaryEncoder();
-
-// src/main.cpp:4375-4393 - Nouveau gestionnaire API pour l'état des boutons
-void handleButtonStates() {
-  // Retourne l'état en temps réel de BOOT, Bouton1, Bouton2
+// src/main.cpp:4395-4431 - Requête d'état de bouton individuel
+void handleButtonState() {
+  // Accepte paramètre ?button=boot|1|2
+  // Retourne: { "pressed": true/false, "released": true/false, "pin": X }
 }
 
-// src/main.cpp:5759 - Nouvelle route API
-server.on("/api/button-states", handleButtonStates);
+// src/main.cpp:5798 - Enregistrement de route
+server.on("/api/button-state", handleButtonState);
 ```
+
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.28.4.
+
+## Précédent : version 3.28.3
+
+**Dispositifs d'Entrée Corrigés :**
+- ✅ **Initialisation Encodeur Rotatif** - Fonctionne immédiatement après démarrage
+- ✅ **API Monitoring Boutons** - Endpoints backend ajoutés
+- ✅ **Configuration Automatique** - Tous les dispositifs d'entrée s'initialisent dans `setup()`
 
 **Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.28.3.
 
