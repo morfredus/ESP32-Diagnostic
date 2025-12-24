@@ -1,3 +1,102 @@
+## [Version 3.28.4] - 2025-12-24
+
+### 🐛 Bug Fix
+
+**Patch Release:** Fixed button monitoring not working - states stuck at "Released"
+
+### Fixed
+
+#### Button Monitoring Not Working ✅
+
+**Problem:**
+- Button monitoring buttons (BOOT, Button 1, Button 2) showed state always as "Released"
+- Clicking "Monitor Button" had no effect - state never updated
+- Frontend JavaScript was calling wrong API endpoint
+
+**Root Cause:**
+- Frontend calls `/api/button-state?button=boot` (singular) for individual button queries
+- Backend only had `/api/button-states` (plural) endpoint that returns ALL buttons
+- Endpoint mismatch: frontend expected individual button query, backend provided batch query
+- No route handler registered for `/api/button-state` (singular)
+
+**Solution:**
+```cpp
+// src/main.cpp:4395-4431 - Added individual button state handler
+void handleButtonState() {
+  if (!server.hasArg("button")) {
+    sendActionResponse(400, false, "Missing 'button' parameter");
+    return;
+  }
+
+  String buttonParam = server.arg("button");
+  int state = -1;
+  int pin = -1;
+
+  if (buttonParam == "boot") {
+    state = getButtonBootState();
+    pin = buttonBootPin;
+  } else if (buttonParam == "1" || buttonParam == "button1") {
+    state = getButton1State();
+    pin = button1Pin;
+  } else if (buttonParam == "2" || buttonParam == "button2") {
+    state = getButton2State();
+    pin = button2Pin;
+  } else {
+    sendActionResponse(400, false, "Invalid button parameter");
+    return;
+  }
+
+  // LOW = pressed (pull-up), HIGH = released
+  bool pressed = (state == LOW && state != -1);
+  bool available = (state != -1);
+
+  sendJsonResponse(200, {
+    jsonBoolField("pressed", pressed),
+    jsonBoolField("released", !pressed && available),
+    jsonBoolField("available", available),
+    jsonNumberField("pin", pin),
+    jsonNumberField("raw_state", state)
+  });
+}
+
+// src/main.cpp:5798 - Registered route
+server.on("/api/button-state", handleButtonState);
+```
+
+**API Response Format:**
+```json
+GET /api/button-state?button=boot
+{
+  "pressed": false,
+  "released": true,
+  "available": true,
+  "pin": 0,
+  "raw_state": 1
+}
+```
+
+**Impact:**
+- ✅ Button monitoring now works correctly
+- ✅ State updates in real-time (100ms polling) when monitoring enabled
+- ✅ "Pressed" shown in red bold when button pressed
+- ✅ "Released" shown in green when button released
+- ✅ Works for BOOT (GPIO 0), Button 1, and Button 2
+
+**Files Modified:**
+- `src/main.cpp`:
+  - Lines 4395-4431: Added `handleButtonState()` handler
+  - Line 5798: Registered `/api/button-state` route
+- `platformio.ini`: Version 3.28.3 → 3.28.4
+
+**Testing:**
+1. Navigate to "Input Devices" page
+2. Click "Monitor Button" for BOOT button
+3. Press GPIO 0 (BOOT) button on ESP32 - state should change to "Pressed" (red) ✅
+4. Release button - state should return to "Released" (green) ✅
+5. Repeat for Button 1 and Button 2 ✅
+
+---
+
 ## [Version 3.28.3] - 2025-12-24
 
 ### 🐛 Bug Fixes
