@@ -1,31 +1,49 @@
-# ESP32 Diagnostic Suite (v3.25.1)
+# ESP32 Diagnostic Suite (v3.28.2)
 
-> **Note** : v3.25.1 est une version de maintenance (alignement documentation/processus). v3.25.0 a restauré le remapping dynamique des broches GPIO via l'interface Web avec une architecture améliorée qui prévient les conflits de préprocesseur. Le système utilise des variables runtime en minuscules (`i2c_sda`) initialisées à partir de defines compile-time en MAJUSCULES (`I2C_SDA`) dans `board_config.h`.
+> **Note** : v3.28.2 est un patch d'urgence qui corrige ENFIN l'erreur JavaScript BUTTON_BOOT. Les versions 3.28.0 et 3.28.1 prétendaient corriger ce problème mais la correction était incomplète. Cette version inclut également toutes les corrections de la v3.28.1 (intégration backend MISO et carte SD sur ESP32-S3). ✅
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## ✨ Nouveautés de la version 3.25.0 - Remapping Dynamique des Broches Restauré
+## ✨ Nouveautés de la version 3.28.2 - Erreur BUTTON_BOOT VRAIMENT Corrigée
 
-**Amélioration Architecturale Majeure :**
-- **Le remapping dynamique de broches fonctionne à nouveau** - Les utilisateurs peuvent changer les broches GPIO via l'interface Web sans recompilation
-- **Aucun conflit de préprocesseur** - Résolu en utilisant des variables runtime en minuscules (`i2c_sda`, `rgb_led_pin_r`, etc.)
-- **Architecture à deux couches** - Defines en MAJUSCULES dans `board_config.h`, variables en minuscules dans `main.cpp`
-- **Tous les handlers fonctionnels** - I2C, LED RGB, Buzzer, DHT, Lumière, Distance, Capteurs de mouvement
+**Correction Critique :**
+- ✅ **Erreur BUTTON_BOOT CORRIGÉE** - ReferenceError sur la page Input Devices enfin résolu
+- ✅ **Cause Racine Identifiée** - Les constantes GPIO étaient injectées au mauvais endroit (web_interface.h au lieu de main.cpp)
+- ✅ **Toutes les Constantes Boutons Fonctionnent** - BUTTON_BOOT, BUTTON_1, BUTTON_2 maintenant disponibles en JavaScript
 
-**Innovation Clé :**
+**Correction Technique :**
 ```cpp
-// board_config.h (valeur par défaut compile-time)
-#define I2C_SDA 15
-
-// main.cpp (variable runtime - modifiable via interface Web)
-int i2c_sda = I2C_SDA;
+// src/main.cpp:5397-5405 - Ajouté à handleJavaScriptRoute()
+// Button pins (MANQUANTS dans v3.28.0/3.28.1)
+pinVars += ";const BUTTON_BOOT=";
+pinVars += String(BUTTON_BOOT);
+pinVars += ";const BUTTON_1=";
+pinVars += String(BUTTON_1);
+pinVars += ";const BUTTON_2=";
+pinVars += String(BUTTON_2);
+// TFT MISO pin
+pinVars += ";const TFT_MISO_PIN=";
+pinVars += String(TFT_MISO);
 ```
 
-**Avantages :**
-- ✅ Flexibilité matérielle restaurée - Testez différentes configurations de broches sans recompilation
-- ✅ Convention de nommage claire - MAJUSCULES = compile-time, minuscules = runtime
-- ✅ Aucun problème de préprocesseur - Des noms différents préviennent les conflits d'expansion de macros
-- ✅ Toutes les fonctionnalités préservées - Aucune fonctionnalité perdue depuis v3.23.x
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.28.2.
+
+## Précédent : version 3.28.1
+
+**Intégration MISO & Corrections Carte SD :**
+- ✅ **Affichage MISO Corrigé** - Plus de "MISO: undefined" dans l'interface web
+- ✅ **Carte SD sur ESP32-S3 Fonctionne** - Sélection bus SPI corrigée (HSPI vs FSPI)
+- ✅ **Synchronisation Configuration MISO** - Les changements dans l'UI web persistent correctement
+- ⚠️ **BUTTON_BOOT** - PAS réellement corrigé malgré la documentation (corrigé en v3.28.2)
+
+**Voir :** [docs/RELEASE_NOTES_3.28.1_FR.md](docs/RELEASE_NOTES_3.28.1_FR.md) pour les détails.
+
+## Précédent : version 3.25.0
+
+**Remapping Dynamique des Broches Restauré :**
+- **Le remapping dynamique de broches fonctionne à nouveau** - Changez les broches GPIO via l'interface Web sans recompilation
+- **Architecture à deux couches** - Defines en MAJUSCULES dans `board_config.h`, variables en minuscules dans `main.cpp`
+- **Tous les handlers fonctionnels** - I2C, LED RGB, Buzzer, DHT, Lumière, Distance, Capteurs de mouvement
 
 **Voir :** [docs/RELEASE_NOTES_3.25.0_FR.md](docs/RELEASE_NOTES_3.25.0_FR.md) pour les détails techniques complets.
 
