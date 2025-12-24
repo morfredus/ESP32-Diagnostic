@@ -1,3 +1,125 @@
+## [Version 3.28.3] - 2025-12-24
+
+### 🐛 Corrections de Bugs
+
+**Patch de Maintenance :** Correction de l'initialisation de l'encodeur rotatif + Ajout de l'API de monitoring des boutons
+
+### Corrigé
+
+#### 1. Encodeur Rotatif Ne Fonctionnant Qu'Après Reset ✅
+
+**Problème :**
+- L'encodeur rotatif ne répondait pas aux rotations ou aux pressions après le démarrage
+- Ne fonctionnait qu'après avoir navigué vers la page "Dispositifs d'Entrée" et cliqué sur "Test"
+- Rendait l'encodeur rotatif inutilisable pour une utilisation normale
+
+**Cause Racine :**
+- `initRotaryEncoder()` n'était JAMAIS appelée pendant le démarrage dans `setup()`
+- La fonction n'était appelée que dans `testRotaryEncoder()` qui est déclenchée manuellement via l'interface web
+- Les broches GPIO n'étaient pas configurées et les interruptions n'étaient pas attachées au démarrage
+
+**Solution :**
+```cpp
+// src/main.cpp:5757-5765 - Ajouté dans setup()
+// Initialize rotary encoder on startup (v3.28.3 fix)
+Serial.println("Initialisation de l'encodeur rotatif...");
+initRotaryEncoder();
+if (rotaryAvailable) {
+  Serial.printf("Encodeur rotatif OK: CLK=%d, DT=%d, SW=%d\r\n",
+                rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
+} else {
+  Serial.println("Encodeur rotatif: non disponible ou configuration invalide");
+}
+```
+
+**Impact :**
+- ✅ L'encodeur rotatif s'initialise maintenant automatiquement au démarrage
+- ✅ La détection de rotation fonctionne immédiatement sans test manuel
+- ✅ Les pressions de bouton sont détectées dès la mise sous tension
+- ✅ Suivi de position en temps réel disponible via `/api/rotary-position`
+
+#### 2. Monitoring des Boutons Non Fonctionnel ✅
+
+**Problème :**
+- Les boutons "Monitor Button" dans l'interface web ne faisaient rien
+- Aucun moyen de voir l'état en temps réel des boutons (pressé/relâché)
+- Les fonctions JavaScript existaient mais les endpoints API backend manquaient
+
+**Cause Racine :**
+- Le code frontend référençait les fonctions de monitoring (`toggleBootButtonMonitoring()`, etc.)
+- MAIS aucun endpoint API backend n'existait pour lire l'état des boutons en temps réel
+- Route `/api/button-states` manquante
+
+**Solution :**
+```cpp
+// src/main.cpp:3182-3196 - Ajout des fonctions de lecture d'état des boutons
+int getButtonBootState() {
+  if (buttonBootPin < 0 || buttonBootPin > 48) return -1;
+  return digitalRead(buttonBootPin);
+}
+
+int getButton1State() {
+  if (button1Pin < 0 || button1Pin > 48) return -1;
+  return digitalRead(button1Pin);
+}
+
+int getButton2State() {
+  if (button2Pin < 0 || button2Pin > 48) return -1;
+  return digitalRead(button2Pin);
+}
+
+// src/main.cpp:4375-4393 - Ajout du gestionnaire HTTP
+void handleButtonStates() {
+  int bootState = getButtonBootState();
+  int button1State = getButton1State();
+  int button2State = getButton2State();
+
+  // LOW = pressé (pull-up), HIGH = relâché
+  sendJsonResponse(200, {
+    jsonBoolField("boot_pressed", bootState == LOW && bootState != -1),
+    jsonBoolField("boot_available", bootState != -1),
+    jsonBoolField("button1_pressed", button1State == LOW && button1State != -1),
+    jsonBoolField("button1_available", button1State != -1),
+    jsonBoolField("button2_pressed", button2State == LOW && button2State != -1),
+    jsonBoolField("button2_available", button2State != -1),
+    jsonNumberField("boot_pin", buttonBootPin),
+    jsonNumberField("button1_pin", button1Pin),
+    jsonNumberField("button2_pin", button2Pin)
+  });
+}
+
+// src/main.cpp:5758-5759 - Enregistrement de la route
+server.on("/api/button-states", handleButtonStates);
+```
+
+**Impact :**
+- ✅ Nouveau endpoint API `/api/button-states` retourne l'état en temps réel des boutons
+- ✅ Retourne du JSON avec l'état pressé pour BOOT, Bouton 1 et Bouton 2
+- ✅ Inclut les numéros de broches et le statut de disponibilité
+- ✅ Le monitoring frontend peut maintenant interroger cet endpoint pour des mises à jour en direct
+
+**Fichiers Modifiés :**
+- `src/main.cpp` :
+  - Lignes 3182-3196 : Ajout des fonctions de lecture d'état des boutons
+  - Lignes 4375-4393 : Ajout du gestionnaire HTTP `handleButtonStates()`
+  - Lignes 5757-5765 : Initialisation de l'encodeur rotatif dans `setup()`
+  - Ligne 5759 : Enregistrement de la route `/api/button-states`
+- `platformio.ini` : Version 3.28.2 → 3.28.3
+
+**Tests :**
+1. **Encodeur Rotatif :**
+   - Allumer l'ESP32
+   - Tourner l'encodeur immédiatement - la position devrait changer ✅
+   - Presser le bouton de l'encodeur - devrait être enregistré ✅
+   - Naviguer vers "Dispositifs d'Entrée" - encodeur déjà fonctionnel ✅
+
+2. **Monitoring des Boutons :**
+   - Naviguer vers la page "Dispositifs d'Entrée"
+   - Presser le bouton BOOT (GPIO 0) - retour LED devrait fonctionner ✅
+   - Vérifier l'endpoint `/api/button-states` - devrait retourner les états actuels ✅
+
+---
+
 ## [Version 3.28.2] - 2025-12-24
 
 ### 🐛 Correction Critique
