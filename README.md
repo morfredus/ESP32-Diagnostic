@@ -1,31 +1,49 @@
-# ESP32 Diagnostic Suite (v3.25.1)
+# ESP32 Diagnostic Suite (v3.28.2)
 
-> **Note**: v3.25.1 is a patch release (maintenance/documentation alignment). v3.25.0 restored dynamic GPIO pin remapping via Web UI with improved architecture that prevents preprocessor conflicts. The system uses lowercase runtime variables (`i2c_sda`) initialized from UPPERCASE compile-time defines (`I2C_SDA`) in `board_config.h`.
+> **Note**: v3.28.2 is an emergency patch that FINALLY fixes the BUTTON_BOOT JavaScript error. Versions 3.28.0 and 3.28.1 claimed to fix this issue but the fix was incomplete. This version also includes all fixes from 3.28.1 (MISO backend integration and SD card on ESP32-S3). ✅
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## ✨ Version 3.25.0 Highlights - Dynamic GPIO Pin Remapping Restored
+## ✨ Version 3.28.2 Highlights - BUTTON_BOOT Error REALLY Fixed
 
-**Major Architectural Improvement:**
-- **Dynamic pin remapping works again** - Users can change GPIO pins via Web UI without recompilation
-- **No preprocessor conflicts** - Solved by using lowercase runtime variables (`i2c_sda`, `rgb_led_pin_r`, etc.)
-- **Two-layer architecture** - UPPERCASE defines in `board_config.h`, lowercase variables in `main.cpp`
-- **All handlers functional** - I2C, RGB LED, Buzzer, DHT, Light, Distance, Motion sensors
+**Critical Fix:**
+- ✅ **BUTTON_BOOT Error FIXED** - ReferenceError on Input Devices page finally resolved
+- ✅ **Root Cause Identified** - GPIO constants were injected in wrong location (web_interface.h instead of main.cpp)
+- ✅ **All Button Constants Working** - BUTTON_BOOT, BUTTON_1, BUTTON_2 now properly available in JavaScript
 
-**Key Innovation:**
+**Technical Fix:**
 ```cpp
-// board_config.h (compile-time default)
-#define I2C_SDA 15
-
-// main.cpp (runtime variable - modifiable via Web UI)
-int i2c_sda = I2C_SDA;
+// src/main.cpp:5397-5405 - Added to handleJavaScriptRoute()
+// Button pins (MISSING in v3.28.0/3.28.1)
+pinVars += ";const BUTTON_BOOT=";
+pinVars += String(BUTTON_BOOT);
+pinVars += ";const BUTTON_1=";
+pinVars += String(BUTTON_1);
+pinVars += ";const BUTTON_2=";
+pinVars += String(BUTTON_2);
+// TFT MISO pin
+pinVars += ";const TFT_MISO_PIN=";
+pinVars += String(TFT_MISO);
 ```
 
-**Benefits:**
-- ✅ Hardware flexibility restored - Test different pin configurations without recompilation
-- ✅ Clean naming convention - UPPERCASE = compile-time, lowercase = runtime
-- ✅ No preprocessor issues - Different names prevent macro expansion conflicts
-- ✅ All functionality preserved - No features lost from v3.23.x
+**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.2 details.
+
+## Previous: Version 3.28.1
+
+**MISO Integration & SD Card Fixes:**
+- ✅ **MISO Display Fixed** - No more "MISO: undefined" in web interface
+- ✅ **SD Card on ESP32-S3 Works** - Fixed SPI bus selection (HSPI vs FSPI)
+- ✅ **MISO Configuration Sync** - Changes in web UI now persist correctly
+- ⚠️ **BUTTON_BOOT** - NOT actually fixed despite documentation (fixed in v3.28.2)
+
+**See:** [docs/RELEASE_NOTES_3.28.1.md](docs/RELEASE_NOTES_3.28.1.md) for details.
+
+## Previous: Version 3.25.0
+
+**Dynamic GPIO Pin Remapping Restored:**
+- **Dynamic pin remapping works again** - Users can change GPIO pins via Web UI without recompilation
+- **Two-layer architecture** - UPPERCASE defines in `board_config.h`, lowercase variables in `main.cpp`
+- **All handlers functional** - I2C, RGB LED, Buzzer, DHT, Light, Distance, Motion sensors
 
 **See:** [docs/RELEASE_NOTES_3.25.0.md](docs/RELEASE_NOTES_3.25.0.md) for complete technical details.
 
