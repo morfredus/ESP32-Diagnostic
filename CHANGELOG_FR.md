@@ -1,8 +1,63 @@
+## [Version 3.28.2] - 2025-12-24
+
+### 🐛 Correction Critique
+
+**Patch d'Urgence :** Correction de l'erreur JavaScript BUTTON_BOOT qui n'était PAS réellement corrigée dans 3.28.0/3.28.1
+
+### Corrigé
+
+#### Erreur JavaScript ReferenceError BUTTON_BOOT ✅ (VRAIMENT CORRIGÉ MAINTENANT)
+
+**Problème :**
+- L'erreur `ReferenceError: BUTTON_BOOT is not defined` se produisait toujours sur la page Input Devices
+- Malgré les tentatives de correction en v3.28.0, l'erreur persistait
+- Cause racine mal identifiée dans les versions précédentes
+
+**Cause Racine :**
+- Les constantes GPIO (BUTTON_BOOT, BUTTON_1, BUTTON_2, TFT_MISO_PIN) étaient injectées dans `web_interface.h` mais PAS dans `main.cpp:handleJavaScriptRoute()`
+- Le JavaScript réel servi au navigateur provient de `handleJavaScriptRoute()`, pas de `web_interface.h:generateJavaScript()`
+- `generateJavaScript()` n'est utilisé que pour calculer la taille du JavaScript pour les statistiques
+- Par conséquent, les constantes injectées dans `web_interface.h` n'étaient jamais réellement envoyées au navigateur
+
+**Solution :**
+```cpp
+// src/main.cpp:5397-5405 - Ajouté à handleJavaScriptRoute()
+// Button pins
+pinVars += ";const BUTTON_BOOT=";
+pinVars += String(BUTTON_BOOT);
+pinVars += ";const BUTTON_1=";
+pinVars += String(BUTTON_1);
+pinVars += ";const BUTTON_2=";
+pinVars += String(BUTTON_2);
+// TFT MISO pin
+pinVars += ";const TFT_MISO_PIN=";
+pinVars += String(TFT_MISO);
+```
+
+**Impact :**
+- ✅ La page Input Devices se charge maintenant SANS erreurs JavaScript
+- ✅ BUTTON_BOOT s'affiche correctement en lecture seule GPIO 0
+- ✅ BUTTON_1 et BUTTON_2 fonctionnent correctement
+- ✅ Toutes les constantes GPIO sont maintenant correctement injectées AVANT l'exécution des fonctions JavaScript
+
+**Fichiers Modifiés :**
+- `src/main.cpp` (lignes 5397-5415) : Ajout des constantes boutons et TFT MISO à pinVars
+- `platformio.ini` : Version 3.28.1 → 3.28.2
+
+**Tests :**
+- Naviguer vers la page "Input Devices" - doit se charger sans erreurs ✅
+- BUTTON_BOOT doit afficher "GPIO 0 (non configurable)" ✅
+- La console du navigateur ne doit afficher aucune ReferenceError ✅
+
+---
+
 ## [Version 3.28.1] - 2025-12-24
 
 ### 🐛 Corrections Critiques
 
-**Version Corrective:** Intégration backend MISO corrigée + Carte SD fonctionnelle sur ESP32-S3
+**Version Corrective :** Intégration backend MISO corrigée + Carte SD fonctionnelle sur ESP32-S3
+
+**NOTE :** L'erreur BUTTON_BOOT n'était PAS entièrement corrigée dans cette version malgré la documentation affirmant le contraire. Voir v3.28.2 pour la vraie correction.
 
 ### Corrigé
 - **Intégration Backend MISO TFT**:
