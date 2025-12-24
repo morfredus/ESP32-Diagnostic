@@ -1,52 +1,71 @@
-# ESP32 Diagnostic Suite (v3.28.1)
+# ESP32 Diagnostic Suite (v3.28.2)
 
-> **Note** : v3.28.1 est une version corrective critique qui résout tous les problèmes de v3.28.0 : intégration backend MISO, carte SD sur ESP32-S3, et synchronisation de configuration MISO. Tous les bugs signalés sont maintenant corrigés. ✅
+> **Note** : v3.28.2 est un patch d'urgence qui corrige ENFIN l'erreur JavaScript BUTTON_BOOT. Les versions 3.28.0 et 3.28.1 prétendaient corriger ce problème mais la correction était incomplète. Cette version inclut également toutes les corrections de la v3.28.1 (intégration backend MISO et carte SD sur ESP32-S3). ✅
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## ✨ Nouveautés de la version 3.28.1 - Corrections Critiques de Bugs
+## ✨ Nouveautés de la version 3.28.2 - Erreur BUTTON_BOOT VRAIMENT Corrigée
 
-**Tous les Problèmes Résolus :**
+**Correction Critique :**
+- ✅ **Erreur BUTTON_BOOT CORRIGÉE** - ReferenceError sur la page Input Devices enfin résolu
+- ✅ **Cause Racine Identifiée** - Les constantes GPIO étaient injectées au mauvais endroit (web_interface.h au lieu de main.cpp)
+- ✅ **Toutes les Constantes Boutons Fonctionnent** - BUTTON_BOOT, BUTTON_1, BUTTON_2 maintenant disponibles en JavaScript
+
+**Correction Technique :**
+```cpp
+// src/main.cpp:5397-5405 - Ajouté à handleJavaScriptRoute()
+// Button pins (MANQUANTS dans v3.28.0/3.28.1)
+pinVars += ";const BUTTON_BOOT=";
+pinVars += String(BUTTON_BOOT);
+pinVars += ";const BUTTON_1=";
+pinVars += String(BUTTON_1);
+pinVars += ";const BUTTON_2=";
+pinVars += String(BUTTON_2);
+// TFT MISO pin
+pinVars += ";const TFT_MISO_PIN=";
+pinVars += String(TFT_MISO);
+```
+
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.28.2.
+
+## Précédent : version 3.28.1
+
+**Intégration MISO & Corrections Carte SD :**
 - ✅ **Affichage MISO Corrigé** - Plus de "MISO: undefined" dans l'interface web
 - ✅ **Carte SD sur ESP32-S3 Fonctionne** - Sélection bus SPI corrigée (HSPI vs FSPI)
 - ✅ **Synchronisation Configuration MISO** - Les changements dans l'UI web persistent correctement
-- ✅ **Aucune Erreur JavaScript** - BUTTON_BOOT et toutes les constantes GPIO correctement injectées
+- ⚠️ **BUTTON_BOOT** - PAS réellement corrigé malgré la documentation (corrigé en v3.28.2)
 
-**Points Techniques :**
-```cpp
-// Corrigé : variable tftMISO maintenant correctement initialisée
-int tftMISO = TFT_MISO;  // Manquait dans 3.28.0
-
-// Corrigé : Bus SPI conditionnel pour ESP32-S3
-#if defined(CONFIG_IDF_TARGET_ESP32)
-  sdSPI = new SPIClass(HSPI);  // ESP32 classique
-#else
-  sdSPI = new SPIClass(FSPI);  // ESP32-S2/S3
-#endif
-```
-
-**Voir :** [docs/RELEASE_NOTES_3.28.1_FR.md](docs/RELEASE_NOTES_3.28.1_FR.md) pour les détails techniques complets.
-
-## Précédent : version 3.28.0
-
-**Corrections JavaScript & Endpoints Test Carte SD :**
-- Correction `ReferenceError: BUTTON_BOOT is not defined` par injection de toutes les constantes GPIO
-- Ajout broche MISO TFT à l'interface web (affichage + configuration)
-- Ajout avertissement partage GPIO 13 (TFT + SD partagent la ligne MISO)
-- Ajout 3 nouveaux endpoints test carte SD : `/api/sd-test-read`, `/api/sd-test-write`, `/api/sd-format`
-- BUTTON_BOOT rendu lecture seule (non-configurable) selon les spécifications
-
-**Voir :** [docs/RELEASE_NOTES_3.28.0_FR.md](docs/RELEASE_NOTES_3.28.0_FR.md) pour les détails.
+**Voir :** [docs/RELEASE_NOTES_3.28.1_FR.md](docs/RELEASE_NOTES_3.28.1_FR.md) pour les détails.
 
 ## Précédent : version 3.25.0
 
 **Remapping Dynamique des Broches Restauré :**
-- **Le remapping dynamique de broches fonctionne à nouveau** - Les utilisateurs peuvent changer les broches GPIO via l'interface Web sans recompilation
-- **Aucun conflit de préprocesseur** - Résolu en utilisant des variables runtime en minuscules (`i2c_sda`, `rgb_led_pin_r`, etc.)
+- **Le remapping dynamique de broches fonctionne à nouveau** - Changez les broches GPIO via l'interface Web sans recompilation
 - **Architecture à deux couches** - Defines en MAJUSCULES dans `board_config.h`, variables en minuscules dans `main.cpp`
 - **Tous les handlers fonctionnels** - I2C, LED RGB, Buzzer, DHT, Lumière, Distance, Capteurs de mouvement
 
 **Voir :** [docs/RELEASE_NOTES_3.25.0_FR.md](docs/RELEASE_NOTES_3.25.0_FR.md) pour les détails techniques complets.
+
+## Précédent : version 3.22.1 - Corrections de mapping (Classic)
+
+**Corrections de mapping pour ESP32 Classic** — Harmonisation avec `board_config.h` :
+- Boutons : BTN1=2, BTN2=5 (pull-up interne)
+- LED RGB : R=13, V=26, B=33
+- Capteurs : DHT=15, HC-SR04 TRIG=12 / ECHO=35, PWM=4, Buzzer=19
+**Rappel ESP32-S3** — Remapping GPIO maintenu : V=41 (ancien 45), B=42 (ancien 47), R=21
+**Documentation** : Voir [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING_CHANGES_FR.md](docs/PIN_MAPPING_CHANGES_FR.md)
+- **Impact** : ESP32-S3 nécessite recâblage matériel, ESP32 Classic inchangé
+- **Sécurité** : Configuration optimisée pour éviter les conflits avec les broches de strapping et USB
+
+## Précédent : version 3.22.0 - Indicateur d'état Wi-Fi NeoPixel
+
+**Rétroaction d'état de connectivité Wi-Fi en temps réel via LED RGB NeoPixel/WS2812 :**
+- **Jaune (connexion en cours)** pendant la tentative de connexion Wi-Fi au démarrage
+- **Battement vert (0, 50, 0) pulsation chaque 1 seconde** quand Wi-Fi connecté
+- **Battement rouge (50, 0, 0) pulsation chaque 1 seconde** quand Wi-Fi déconnecté
+- **Flash violet (255, 0, 255)** lors de la confirmation de l'appui long du bouton BOOT
+- **Battement non bloquant** géré dans la boucle principale - mises à jour chaque 1 seconde
 - **Isolation des tests** - le battement se met en pause lors des appels `/api/neopixel-test` et `/api/neopixel-pattern`, reprise automatique après
 
 ## Précédent : version 3.21.0
@@ -184,6 +203,7 @@ int tftMISO = TFT_MISO;  // Manquait dans 3.28.0
 ## Documentation
 | Sujet | Anglais | Français |
 |-------|---------|----------|
+| Wiki (accueil) | [home.md](docs/home.md) | [home_FR.md](docs/home_FR.md) |
 | Vue d'ensemble | [OVERVIEW.md](docs/OVERVIEW.md) | [OVERVIEW_FR.md](docs/OVERVIEW_FR.md) |
 | Matrice des fonctionnalités | [FEATURE_MATRIX.md](docs/FEATURE_MATRIX.md) | [FEATURE_MATRIX_FR.md](docs/FEATURE_MATRIX_FR.md) |
 | Modules de diagnostic | [DIAGNOSTIC_MODULES.md](docs/DIAGNOSTIC_MODULES.md) | [DIAGNOSTIC_MODULES_FR.md](docs/DIAGNOSTIC_MODULES_FR.md) |
