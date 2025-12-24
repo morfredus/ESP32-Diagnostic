@@ -1,43 +1,52 @@
-# ESP32 Diagnostic Suite (v3.25.1)
+# ESP32 Diagnostic Suite (v3.28.1)
 
-> **Note**: v3.25.1 is a patch release (maintenance/documentation alignment). v3.25.0 restored dynamic GPIO pin remapping via Web UI with improved architecture that prevents preprocessor conflicts. The system uses lowercase runtime variables (`i2c_sda`) initialized from UPPERCASE compile-time defines (`I2C_SDA`) in `board_config.h`.
+> **Note**: v3.28.1 is a critical patch release that resolves all issues from v3.28.0: MISO backend integration, SD card on ESP32-S3, and MISO configuration sync. All reported bugs are now fixed. ✅
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## ✨ Version 3.25.0 Highlights - Dynamic GPIO Pin Remapping Restored
+## ✨ Version 3.28.1 Highlights - Critical Bug Fixes
 
-**Major Architectural Improvement:**
+**All Issues Resolved:**
+- ✅ **MISO Display Fixed** - No more "MISO: undefined" in web interface
+- ✅ **SD Card on ESP32-S3 Works** - Fixed SPI bus selection (HSPI vs FSPI)
+- ✅ **MISO Configuration Sync** - Changes in web UI now persist correctly
+- ✅ **No JavaScript Errors** - BUTTON_BOOT and all GPIO constants properly injected
+
+**Technical Highlights:**
+```cpp
+// Fixed: tftMISO variable now properly initialized
+int tftMISO = TFT_MISO;  // Was missing in 3.28.0
+
+// Fixed: Conditional SPI bus for ESP32-S3
+#if defined(CONFIG_IDF_TARGET_ESP32)
+  sdSPI = new SPIClass(HSPI);  // ESP32 classic
+#else
+  sdSPI = new SPIClass(FSPI);  // ESP32-S2/S3
+#endif
+```
+
+**See:** [docs/RELEASE_NOTES_3.28.1.md](docs/RELEASE_NOTES_3.28.1.md) for complete technical details.
+
+## Previous: Version 3.28.0
+
+**JavaScript Fixes & SD Card Test Endpoints:**
+- Fixed `ReferenceError: BUTTON_BOOT is not defined` by injecting all GPIO constants
+- Added TFT MISO pin to web interface (display + configuration)
+- Added GPIO 13 sharing warning (TFT + SD share MISO line)
+- Added 3 new SD card test endpoints: `/api/sd-test-read`, `/api/sd-test-write`, `/api/sd-format`
+- BUTTON_BOOT made read-only (non-configurable) per specifications
+
+**See:** [docs/RELEASE_NOTES_3.28.0.md](docs/RELEASE_NOTES_3.28.0.md) for details.
+
+## Previous: Version 3.25.0
+
+**Dynamic GPIO Pin Remapping Restored:**
 - **Dynamic pin remapping works again** - Users can change GPIO pins via Web UI without recompilation
 - **No preprocessor conflicts** - Solved by using lowercase runtime variables (`i2c_sda`, `rgb_led_pin_r`, etc.)
 - **Two-layer architecture** - UPPERCASE defines in `board_config.h`, lowercase variables in `main.cpp`
 - **All handlers functional** - I2C, RGB LED, Buzzer, DHT, Light, Distance, Motion sensors
 
-**Key Innovation:**
-```cpp
-// board_config.h (compile-time default)
-#define I2C_SDA 15
-
-// main.cpp (runtime variable - modifiable via Web UI)
-int i2c_sda = I2C_SDA;
-```
-
-**Benefits:**
-- ✅ Hardware flexibility restored - Test different pin configurations without recompilation
-- ✅ Clean naming convention - UPPERCASE = compile-time, lowercase = runtime
-- ✅ No preprocessor issues - Different names prevent macro expansion conflicts
-- ✅ All functionality preserved - No features lost from v3.23.x
-
 **See:** [docs/RELEASE_NOTES_3.25.0.md](docs/RELEASE_NOTES_3.25.0.md) for complete technical details.
-
-## Previous: Version 3.22.1
-
-**Real-time Wi-Fi connectivity feedback via NeoPixel/WS2812 RGB LED:**
-- **Yellow (connection in progress)** during Wi-Fi connection attempt at startup
-- **Green heartbeat (0, 50, 0) pulsing every 1 second** when Wi-Fi connected
-- **Red heartbeat (50, 0, 0) pulsing every 1 second** when Wi-Fi disconnected
-- **Violet flash (255, 0, 255)** on BOOT button long press confirmation
-- **Non-blocking heartbeat** managed in main loop - updates every 1 second
-- **Test isolation** - heartbeat pauses during `/api/neopixel-test` and `/api/neopixel-pattern` calls, automatically resumes after
 
 ## Previous: version 3.21.0
 
@@ -174,7 +183,6 @@ int i2c_sda = I2C_SDA;
 ## Documentation
 | Topic | English | French |
 |-------|---------|--------|
-| Wiki (home) | [home.md](docs/home.md) | [home_FR.md](docs/home_FR.md) |
 | Overview | [OVERVIEW.md](docs/OVERVIEW.md) | [OVERVIEW_FR.md](docs/OVERVIEW_FR.md) |
 | Feature Matrix | [FEATURE_MATRIX.md](docs/FEATURE_MATRIX.md) | [FEATURE_MATRIX_FR.md](docs/FEATURE_MATRIX_FR.md) |
 | Diagnostic Modules | [DIAGNOSTIC_MODULES.md](docs/DIAGNOSTIC_MODULES.md) | [DIAGNOSTIC_MODULES_FR.md](docs/DIAGNOSTIC_MODULES_FR.md) |
