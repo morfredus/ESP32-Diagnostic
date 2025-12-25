@@ -1,6 +1,6 @@
-# Mapping des pins — Référence rapide (v3.28.2)
+# Mapping des pins — Référence rapide (v3.28.5)
 
-> **AVERTISSEMENT** : Ce document reflète le mapping de pins EXACT depuis `include/board_config.h` version v3.28.2. Assurez-vous que votre câblage correspond à ces GPIOs avant de mettre sous tension. Un câblage incorrect peut endommager votre ESP32 ou vos périphériques. Lisez ce document entièrement avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le mapping de pins EXACT depuis `include/board_config.h` version v3.28.5. Assurez-vous que votre câblage correspond à ces GPIOs avant de mettre sous tension. Un câblage incorrect peut endommager votre ESP32 ou vos périphériques. Lisez ce document entièrement avant de flasher.
 
 - **Cartes supportées :**
   - ESP32-S3-DevKitC-1 N16R8 (16Mo Flash, 8Mo PSRAM) — `esp32s3_n16r8`
@@ -134,6 +134,20 @@ pio run -e esp32devkitc --target upload
 - **Courant :** ~60mA par LED en blanc complet
 
 ## Historique des versions
+
+- **v3.28.5 (2025-12-24) :** ✅ **Corrections du monitoring des dispositifs d'entrée**
+  - Correction bouton encodeur bloqué sur "Pressed" - lecture d'état GPIO réel
+  - Correction monitoring boutons (BOOT/Bouton1/Bouton2) - accès direct aux constantes
+  - Aucun changement de pin mapping depuis v3.28.2
+
+- **v3.28.4 (2025-12-24) :** Corrections endpoint API monitoring boutons
+  - Ajout `/api/button-state` (singulier) pour requêtes boutons individuels
+  - Aucun changement de pin mapping
+
+- **v3.28.3 (2025-12-24) :** Initialisation encodeur rotatif et API monitoring boutons
+  - L'encodeur rotatif s'initialise maintenant dans setup()
+  - Ajout endpoint `/api/button-states`
+  - Aucun changement de pin mapping
 
 - **v3.28.2 (2025-12-24) :** ✅ **Documentation entièrement synchronisée avec `board_config.h`**
   - **CORRECTIONS CRITIQUES :** Corrigé 11+ erreurs d'assignation GPIO depuis documentation v3.22.1 :
