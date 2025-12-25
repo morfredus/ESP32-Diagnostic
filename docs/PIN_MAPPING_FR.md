@@ -1,6 +1,6 @@
-# Mapping des pins — Référence rapide (v3.29.0)
+# Mapping des pins — Référence rapide (v3.29.1)
 
-> **AVERTISSEMENT** : Ce document reflète le mapping de pins EXACT depuis `include/board_config.h` version v3.29.0. Assurez-vous que votre câblage correspond à ces GPIOs avant de mettre sous tension. Un câblage incorrect peut endommager votre ESP32 ou vos périphériques. Lisez ce document entièrement avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le mapping de pins EXACT depuis `include/board_config.h` version v3.29.1. Assurez-vous que votre câblage correspond à ces GPIOs avant de mettre sous tension. Un câblage incorrect peut endommager votre ESP32 ou vos périphériques. Lisez ce document entièrement avant de flasher.
 
 - **Cartes supportées :**
   - ESP32-S3-DevKitC-1 N16R8 (16Mo Flash, 8Mo PSRAM) — `esp32s3_n16r8`
@@ -135,7 +135,7 @@ pio run -e esp32devkitc --target upload
 
 ## Historique des versions
 
-- **v3.29.0 (2025-12-24) :** ✅ **Corrections du monitoring des dispositifs d'entrée**
+- **v3.29.1 (2025-12-24) :** ✅ **Corrections du monitoring des dispositifs d'entrée**
   - Correction bouton encodeur bloqué sur "Pressed" - lecture d'état GPIO réel
   - Correction monitoring boutons (BOOT/Bouton1/Bouton2) - accès direct aux constantes
   - Aucun changement de pin mapping depuis v3.28.2

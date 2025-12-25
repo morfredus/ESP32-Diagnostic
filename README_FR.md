@@ -1,10 +1,30 @@
-# ESP32 Diagnostic Suite (v3.29.0)
+# ESP32 Diagnostic Suite (v3.29.1)
 
-> **Note** : v3.29.0 active la fonctionnalité carte SD complète + restructure la page Mémoire. La détection, tests lecture/écriture et formatage de carte SD sont maintenant pleinement opérationnels. ✅
+> **Note** : v3.29.1 corrige les bugs d'affichage de la page Mémoire (valeurs undefined/NaN). Tous les détails mémoire s'affichent maintenant correctement. ✅
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## ✨ Nouveautés de la version 3.29.0 - Carte SD Entièrement Activée
+## ✨ Nouveautés de la version 3.29.1 - Corrections Page Mémoire
+
+**Corrections de Bugs :**
+1. ✅ **API Page Mémoire** - Ajout des champs manquants (Flash type/speed, SRAM/PSRAM used) à `/api/memory-details`
+2. ✅ **Affichage Mémoire** - Correction des valeurs "undefined" et "NaN" dans la page Mémoire
+
+**Changements Techniques :**
+```cpp
+// src/main.cpp:4744-4766 - Amélioration handleMemoryDetails()
+json = "{\"flash\":{\"real\":" + String(detailedMemory.flashSizeReal) +
+       ",\"type\":\"" + getFlashType() + "\"" +        // AJOUTÉ
+       ",\"speed\":\"" + getFlashSpeed() + "\"},";     // AJOUTÉ
+json += "\"sram\":{\"total\":" + String(detailedMemory.sramTotal) +
+        ",\"free\":" + String(detailedMemory.sramFree) +
+        ",\"used\":" + String(detailedMemory.sramUsed) + "},";  // AJOUTÉ
+json += "\"psram\":{...,\"used\":" + String(detailedMemory.psramUsed) + "}";  // AJOUTÉ
+```
+
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.29.1.
+
+## Précédent : version 3.29.0
 
 **Nouvelles Fonctionnalités :**
 1. ✅ **Fonctionnalité Carte SD Activée** - Détection, tests lecture/écriture, formatage fonctionnent

@@ -1,13 +1,13 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.29.0)
+# ESP32 Diagnostic Suite – Feature Matrix (v3.29.1)
 
-> WARNING: This document reflects firmware v3.29.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Previous documentation (v3.22.1) contained CRITICAL errors. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
+> WARNING: This document reflects firmware v3.29.1 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Previous documentation (v3.22.1) contained CRITICAL errors. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
-This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.29.0 with three distinct build environments.
+This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.29.1 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.
 
-> **Important:** Current release 3.29.0 (PlatformIO) ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+> **Important:** Current release 3.29.1 (PlatformIO) ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
 
-**✨ New in v3.29.0:** Input device monitoring fixes - rotary encoder button state reads real GPIO, button monitoring uses direct constant access.
+**✨ New in v3.29.1:** Input device monitoring fixes - rotary encoder button state reads real GPIO, button monitoring uses direct constant access.
 
 **✨ New in v3.28.4:** Button monitoring API endpoint corrections - added `/api/button-state` (singular) for individual button queries.
 

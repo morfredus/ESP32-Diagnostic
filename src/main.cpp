@@ -4745,14 +4745,21 @@ void handleMemoryDetails() {
   collectDetailedMemory();
 
   String json;
-  json.reserve(450);  // Reserve memory to avoid reallocations
-  json = "{\"flash\":{\"real\":" + String(detailedMemory.flashSizeReal) + ",\"chip\":" + String(detailedMemory.flashSizeChip) + "},";
+  json.reserve(550);  // Reserve memory to avoid reallocations (increased from 450)
+  json = "{\"flash\":{\"real\":" + String(detailedMemory.flashSizeReal) +
+         ",\"chip\":" + String(detailedMemory.flashSizeChip) +
+         ",\"type\":\"" + getFlashType() + "\"" +
+         ",\"speed\":\"" + getFlashSpeed() + "\"},";
   json += "\"psram\":{\"available\":" + String(detailedMemory.psramAvailable ? "true" : "false") +
           ",\"configured\":" + String(detailedMemory.psramConfigured ? "true" : "false") +
           ",\"supported\":" + String(detailedMemory.psramBoardSupported ? "true" : "false") +
           ",\"type\":\"" + String(detailedMemory.psramType ? detailedMemory.psramType : Texts::unknown.str()) + "\"" +
-          ",\"total\":" + String(detailedMemory.psramTotal) + ",\"free\":" + String(detailedMemory.psramFree) + "},";
-  json += "\"sram\":{\"total\":" + String(detailedMemory.sramTotal) + ",\"free\":" + String(detailedMemory.sramFree) + "},";
+          ",\"total\":" + String(detailedMemory.psramTotal) +
+          ",\"free\":" + String(detailedMemory.psramFree) +
+          ",\"used\":" + String(detailedMemory.psramUsed) + "},";
+  json += "\"sram\":{\"total\":" + String(detailedMemory.sramTotal) +
+          ",\"free\":" + String(detailedMemory.sramFree) +
+          ",\"used\":" + String(detailedMemory.sramUsed) + "},";
   json += "\"fragmentation\":" + String(detailedMemory.fragmentationPercent, 1) + ",\"status\":\"" + detailedMemory.memoryStatus + "\"}";
 
   server.send(200, "application/json", json);

@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Web Interface Guide (v3.29.0)
+# ESP32 Diagnostic Suite – Web Interface Guide (v3.29.1)
 
-> WARNING: v3.29.0 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: v3.29.1 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 The built-in web dashboard is the primary control surface for technicians. This guide covers the layout, interaction patterns, and
 customisation hooks available in version 3.16.0. This release introduces real-time WiFi connection monitoring, dynamic display configuration, and enhanced network diagnostics capabilities.

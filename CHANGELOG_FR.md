@@ -1,3 +1,63 @@
+## [Version 3.29.1] - 2025-12-25
+
+### 🐛 Corrections de Bugs
+
+**Patch de Correction :** Correction des champs manquants dans l'API Page Mémoire causant affichage undefined/NaN
+
+### Corrigé
+
+#### 1. API Page Mémoire - Champs Manquants ✅
+
+**Problème :**
+- La page Mémoire affichait "undefined" pour Type Flash et Vitesse Flash
+- La page Mémoire affichait "NaN KB" pour SRAM Utilisée
+- La page Mémoire affichait "NaN MB" pour PSRAM Utilisée
+- L'API backend `/api/memory-details` était manquante de champs requis
+
+**Cause Racine :**
+- `/api/memory-details` retournait seulement `flash.real` et `flash.chip`, mais pas `flash.type` ou `flash.speed`
+- `/api/memory-details` retournait seulement `sram.total` et `sram.free`, mais pas `sram.used`
+- `/api/memory-details` retournait seulement `psram.total` et `psram.free`, mais pas `psram.used`
+- Le frontend `buildMemory()` attendait les mêmes champs que `/api/overview` qui a tous les champs
+
+**Solution :**
+```cpp
+// src/main.cpp:4744-4766 - Amélioration handleMemoryDetails()
+void handleMemoryDetails() {
+  collectDetailedMemory();
+
+  String json;
+  json.reserve(550);  // Augmenté de 450
+
+  // Ajout de flash.type et flash.speed
+  json = "{\"flash\":{\"real\":" + String(detailedMemory.flashSizeReal) +
+         ",\"chip\":" + String(detailedMemory.flashSizeChip) +
+         ",\"type\":\"" + getFlashType() + "\"" +      // AJOUTÉ
+         ",\"speed\":\"" + getFlashSpeed() + "\"},";   // AJOUTÉ
+
+  // Ajout de sram.used
+  json += "\"sram\":{\"total\":" + String(detailedMemory.sramTotal) +
+          ",\"free\":" + String(detailedMemory.sramFree) +
+          ",\"used\":" + String(detailedMemory.sramUsed) + "},";  // AJOUTÉ
+
+  // Ajout de psram.used
+  json += "\"psram\":{...,\"used\":" + String(detailedMemory.psramUsed) + "}";  // AJOUTÉ
+}
+```
+
+**Impact :**
+- ✅ Type Flash s'affiche maintenant correctement (ex: "Quad SPI")
+- ✅ Vitesse Flash s'affiche maintenant correctement (ex: "80 MHz")
+- ✅ SRAM Utilisée s'affiche maintenant correctement (ex: "45.23 KB")
+- ✅ PSRAM Utilisée s'affiche maintenant correctement (ex: "2.15 MB")
+- ✅ Tous les détails mémoire correspondent exactement à la page Overview
+
+### Fichiers Modifiés
+
+- `src/main.cpp` : Amélioration de `handleMemoryDetails()` pour inclure tous les champs requis (8 lignes ajoutées)
+
+---
+
 ## [Version 3.29.0] - 2025-12-25
 
 ### ✨ Nouvelles Fonctionnalités

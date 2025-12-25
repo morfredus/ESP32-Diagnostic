@@ -1,6 +1,6 @@
-# Pin Mapping – Quick Reference (v3.29.0)
+# Pin Mapping – Quick Reference (v3.29.1)
 
-> WARNING: This document reflects the EXACT pin mapping from `include/board_config.h` as of v3.29.0. Ensure your wiring matches these GPIOs before powering on. Incorrect wiring may damage your ESP32 or peripherals. Read this entire document before flashing.
+> WARNING: This document reflects the EXACT pin mapping from `include/board_config.h` as of v3.29.1. Ensure your wiring matches these GPIOs before powering on. Incorrect wiring may damage your ESP32 or peripherals. Read this entire document before flashing.
 
 ## Supported Environments
 
@@ -255,7 +255,7 @@ pio run -e esp32devkitc --target upload
 
 ## Version History
 
-- **v3.29.0 (2025-12-24):** ✅ **Input device monitoring fixes**
+- **v3.29.1 (2025-12-24):** ✅ **Input device monitoring fixes**
   - Fixed rotary encoder button stuck "Pressed" - now reads real GPIO state
   - Fixed button monitoring (BOOT/Button1/Button2) - direct constant access
   - No pin mapping changes from v3.28.2

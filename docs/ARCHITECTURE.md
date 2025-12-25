@@ -1,6 +1,6 @@
-# Firmware Architecture (EN) – v3.29.0
+# Firmware Architecture (EN) – v3.29.1
 
-> WARNING: v3.29.0 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: v3.29.1 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 ## High-level overview
 The firmware is a PlatformIO project with the main code in `src/main.cpp` that orchestrates diagnostics, serves a web interface, and exposes REST endpoints. Supporting headers in `include/` encapsulate translations, HTML templates, and configuration helpers.

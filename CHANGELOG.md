@@ -1,3 +1,63 @@
+## [Version 3.29.1] - 2025-12-25
+
+### 🐛 Bug Fixes
+
+**Patch Release:** Fixed Memory page API missing fields causing undefined/NaN display
+
+### Fixed
+
+#### 1. Memory Page API - Missing Fields ✅
+
+**Problem:**
+- Memory page displayed "undefined" for Flash Type and Flash Speed
+- Memory page displayed "NaN KB" for SRAM Used
+- Memory page displayed "NaN MB" for PSRAM Used
+- Backend API `/api/memory-details` was missing required fields
+
+**Root Cause:**
+- `/api/memory-details` only returned `flash.real` and `flash.chip`, but not `flash.type` or `flash.speed`
+- `/api/memory-details` only returned `sram.total` and `sram.free`, but not `sram.used`
+- `/api/memory-details` only returned `psram.total` and `psram.free`, but not `psram.used`
+- Frontend `buildMemory()` expected same fields as `/api/overview` which has all fields
+
+**Solution:**
+```cpp
+// src/main.cpp:4744-4766 - Enhanced handleMemoryDetails()
+void handleMemoryDetails() {
+  collectDetailedMemory();
+
+  String json;
+  json.reserve(550);  // Increased from 450
+
+  // Added flash.type and flash.speed
+  json = "{\"flash\":{\"real\":" + String(detailedMemory.flashSizeReal) +
+         ",\"chip\":" + String(detailedMemory.flashSizeChip) +
+         ",\"type\":\"" + getFlashType() + "\"" +      // ADDED
+         ",\"speed\":\"" + getFlashSpeed() + "\"},";   // ADDED
+
+  // Added sram.used
+  json += "\"sram\":{\"total\":" + String(detailedMemory.sramTotal) +
+          ",\"free\":" + String(detailedMemory.sramFree) +
+          ",\"used\":" + String(detailedMemory.sramUsed) + "},";  // ADDED
+
+  // Added psram.used
+  json += "\"psram\":{...,\"used\":" + String(detailedMemory.psramUsed) + "}";  // ADDED
+}
+```
+
+**Impact:**
+- ✅ Flash Type now displays correctly (e.g., "Quad SPI")
+- ✅ Flash Speed now displays correctly (e.g., "80 MHz")
+- ✅ SRAM Used now displays correctly (e.g., "45.23 KB")
+- ✅ PSRAM Used now displays correctly (e.g., "2.15 MB")
+- ✅ All memory details match Overview page exactly
+
+### Files Modified
+
+- `src/main.cpp`: Enhanced `handleMemoryDetails()` to include all required fields (8 lines added)
+
+---
+
 ## [Version 3.29.0] - 2025-12-25
 
 ### ✨ New Features
