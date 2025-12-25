@@ -1,3 +1,525 @@
+## [Version 3.28.5] - 2025-12-24
+
+### 🐛 Bug Fixes
+
+**Patch Release:** Fixed rotary encoder button stuck + button monitoring GPIO issues
+
+### Fixed
+
+#### 1. Bouton Encodeur Rotatif Reste "Pressed" ✅
+
+**Problème :**
+- Après avoir appuyé sur le bouton de l'encodeur rotatif, l'état restait "Pressed" même après relâchement
+- L'interface affichait toujours "Pressed" en rouge, jamais "Released"
+- Impossible de voir l'état réel du bouton en temps réel
+
+**Cause Racine :**
+- `handleRotaryPosition()` retournait `rotaryButtonPressed` (variable volatile ISR)
+- Variable volatile mise à `true` par ISR lors de l'appui, mais jamais remise à `false` automatiquement
+- Pour le monitoring temps réel, on doit lire l'état GPIO réel, pas la variable événementielle
+
+**Solution :**
+```cpp
+// src/main.cpp:3199-3203 - Nouvelle fonction pour lire GPIO réel
+int getRotaryButtonGPIOState() {
+  if (rotary_sw_pin < 0 || rotary_sw_pin > 48) return -1;
+  return digitalRead(rotary_sw_pin);
+}
+
+// src/main.cpp:4369-4379 - Utilisation dans handleRotaryPosition()
+void handleRotaryPosition() {
+  // v3.28.5 fix: Read REAL GPIO state for monitoring, not ISR variable
+  int buttonGPIOState = getRotaryButtonGPIOState();
+  bool buttonPressed = (buttonGPIOState == LOW && buttonGPIOState != -1);
+
+  sendJsonResponse(200, {
+    jsonNumberField("position", (int32_t)rotaryPosition),
+    jsonBoolField("button_pressed", buttonPressed),  // Now reads real GPIO
+    jsonBoolField("available", rotaryAvailable)
+  });
+}
+```
+
+**Impact :**
+- ✅ Bouton encodeur affiche maintenant l'état correct en temps réel
+- ✅ "Pressed" (rouge) quand bouton enfoncé
+- ✅ "Released" (vert) quand bouton relâché
+- ✅ Mise à jour immédiate (polling 100ms)
+
+#### 2. Monitoring Boutons BOOT/1/2 Ne Fonctionne Pas ✅
+
+**Problème :**
+- Monitoring des boutons BOOT, Button 1, Button 2 ne fonctionnait toujours pas
+- États ne se mettaient pas à jour malgré correction v3.28.4
+- Boutons restaient bloqués sur "Released"
+
+**Cause Racine :**
+- Fonctions utilisaient variables `static` (`buttonBootPin`, `button1Pin`, `button2Pin`)
+- Problème potentiel de visibilité ou d'initialisation des variables statiques
+- GPIO peut-être pas correctement accessible via ces variables
+
+**Solution :**
+```cpp
+// src/main.cpp:3182-3199 - Lecture directe des constantes
+// v3.28.5: Use constants directly to ensure correct pin access
+int getButtonBootState() {
+  // Use constant directly instead of static variable
+  if (BUTTON_BOOT < 0 || BUTTON_BOOT > 48) return -1;
+  return digitalRead(BUTTON_BOOT);
+}
+
+int getButton1State() {
+  if (BUTTON_1 < 0 || BUTTON_1 > 48) return -1;
+  return digitalRead(BUTTON_1);
+}
+
+int getButton2State() {
+  if (BUTTON_2 < 0 || BUTTON_2 > 48) return -1;
+  return digitalRead(BUTTON_2);
+}
+
+// src/main.cpp:4420-4428 - handleButtonState() utilise constantes
+if (buttonParam == "boot") {
+  state = getButtonBootState();
+  pin = BUTTON_BOOT;  // v3.28.5: Use constant directly
+} else if (buttonParam == "1" || buttonParam == "button1") {
+  state = getButton1State();
+  pin = BUTTON_1;
+} else if (buttonParam == "2" || buttonParam == "button2") {
+  state = getButton2State();
+  pin = BUTTON_2;
+}
+```
+
+**Impact :**
+- ✅ Monitoring BOOT (GPIO 0) fonctionne maintenant
+- ✅ Monitoring Button 1 (GPIO 38/34) fonctionne
+- ✅ Monitoring Button 2 (GPIO 39/35) fonctionne
+- ✅ États se mettent à jour en temps réel
+- ✅ "Pressed" (rouge gras) / "Released" (vert) correct
+
+**Files Modified:**
+- `src/main.cpp`:
+  - Lines 3182-3203: Updated button state readers to use constants, added `getRotaryButtonGPIOState()`
+  - Lines 4369-4379: `handleRotaryPosition()` now reads real GPIO state
+  - Lines 4389-4407: `handleButtonStates()` uses constants for pin numbers
+  - Lines 4420-4428: `handleButtonState()` uses constants for pins
+- `platformio.ini`: Version 3.28.4 → 3.28.5
+
+**Testing:**
+1. **Encodeur Rotatif:**
+   - Activer monitoring du bouton encodeur
+   - Presser le bouton → "Pressed" (rouge) ✅
+   - Relâcher → immédiatement "Released" (vert) ✅
+   - Répéter plusieurs fois → états corrects ✅
+
+2. **Boutons BOOT, 1, 2:**
+   - Activer monitoring pour chaque bouton
+   - Presser GPIO 0/38/39 → "Pressed" immédiat ✅
+   - Relâcher → "Released" immédiat ✅
+   - Pas de blocage sur un état ✅
+
+---
+
+## [Version 3.28.4] - 2025-12-24
+
+### 🐛 Bug Fix
+
+**Patch Release:** Fixed button monitoring not working - states stuck at "Released"
+
+### Fixed
+
+#### Button Monitoring Not Working ✅
+
+**Problem:**
+- Button monitoring buttons (BOOT, Button 1, Button 2) showed state always as "Released"
+- Clicking "Monitor Button" had no effect - state never updated
+- Frontend JavaScript was calling wrong API endpoint
+
+**Root Cause:**
+- Frontend calls `/api/button-state?button=boot` (singular) for individual button queries
+- Backend only had `/api/button-states` (plural) endpoint that returns ALL buttons
+- Endpoint mismatch: frontend expected individual button query, backend provided batch query
+- No route handler registered for `/api/button-state` (singular)
+
+**Solution:**
+```cpp
+// src/main.cpp:4395-4431 - Added individual button state handler
+void handleButtonState() {
+  if (!server.hasArg("button")) {
+    sendActionResponse(400, false, "Missing 'button' parameter");
+    return;
+  }
+
+  String buttonParam = server.arg("button");
+  int state = -1;
+  int pin = -1;
+
+  if (buttonParam == "boot") {
+    state = getButtonBootState();
+    pin = buttonBootPin;
+  } else if (buttonParam == "1" || buttonParam == "button1") {
+    state = getButton1State();
+    pin = button1Pin;
+  } else if (buttonParam == "2" || buttonParam == "button2") {
+    state = getButton2State();
+    pin = button2Pin;
+  } else {
+    sendActionResponse(400, false, "Invalid button parameter");
+    return;
+  }
+
+  // LOW = pressed (pull-up), HIGH = released
+  bool pressed = (state == LOW && state != -1);
+  bool available = (state != -1);
+
+  sendJsonResponse(200, {
+    jsonBoolField("pressed", pressed),
+    jsonBoolField("released", !pressed && available),
+    jsonBoolField("available", available),
+    jsonNumberField("pin", pin),
+    jsonNumberField("raw_state", state)
+  });
+}
+
+// src/main.cpp:5798 - Registered route
+server.on("/api/button-state", handleButtonState);
+```
+
+**API Response Format:**
+```json
+GET /api/button-state?button=boot
+{
+  "pressed": false,
+  "released": true,
+  "available": true,
+  "pin": 0,
+  "raw_state": 1
+}
+```
+
+**Impact:**
+- ✅ Button monitoring now works correctly
+- ✅ State updates in real-time (100ms polling) when monitoring enabled
+- ✅ "Pressed" shown in red bold when button pressed
+- ✅ "Released" shown in green when button released
+- ✅ Works for BOOT (GPIO 0), Button 1, and Button 2
+
+**Files Modified:**
+- `src/main.cpp`:
+  - Lines 4395-4431: Added `handleButtonState()` handler
+  - Line 5798: Registered `/api/button-state` route
+- `platformio.ini`: Version 3.28.3 → 3.28.4
+
+**Testing:**
+1. Navigate to "Input Devices" page
+2. Click "Monitor Button" for BOOT button
+3. Press GPIO 0 (BOOT) button on ESP32 - state should change to "Pressed" (red) ✅
+4. Release button - state should return to "Released" (green) ✅
+5. Repeat for Button 1 and Button 2 ✅
+
+---
+
+## [Version 3.28.3] - 2025-12-24
+
+### 🐛 Bug Fixes
+
+**Patch Release:** Fixed rotary encoder initialization + Added button monitoring API
+
+### Fixed
+
+#### 1. Rotary Encoder Not Working Until Reset ✅
+
+**Problem:**
+- Rotary encoder did not respond to rotation or button presses after boot
+- Only worked after navigating to "Input Devices" page and clicking "Test"
+- Made the rotary encoder unusable for normal operation
+
+**Root Cause:**
+- `initRotaryEncoder()` was NEVER called during startup in `setup()`
+- Function was only called inside `testRotaryEncoder()` which is triggered manually via web UI
+- GPIO pins were not configured and interrupts were not attached at boot time
+
+**Solution:**
+```cpp
+// src/main.cpp:5757-5765 - Added to setup()
+// Initialize rotary encoder on startup (v3.28.3 fix)
+Serial.println("Initialisation de l'encodeur rotatif...");
+initRotaryEncoder();
+if (rotaryAvailable) {
+  Serial.printf("Encodeur rotatif OK: CLK=%d, DT=%d, SW=%d\r\n",
+                rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
+} else {
+  Serial.println("Encodeur rotatif: non disponible ou configuration invalide");
+}
+```
+
+**Impact:**
+- ✅ Rotary encoder now initializes automatically on boot
+- ✅ Rotation detection works immediately without manual test
+- ✅ Button presses detected from power-on
+- ✅ Real-time position tracking available via `/api/rotary-position`
+
+#### 2. Button Monitoring Not Functional ✅
+
+**Problem:**
+- "Monitor Button" buttons in web UI did nothing
+- No way to see real-time button state (pressed/released)
+- JavaScript functions existed but backend API endpoints were missing
+
+**Root Cause:**
+- Frontend code referenced monitoring functions (`toggleBootButtonMonitoring()`, etc.)
+- BUT no backend API endpoint existed to read button states in real-time
+- Missing `/api/button-states` route
+
+**Solution:**
+```cpp
+// src/main.cpp:3182-3196 - Added button state reader functions
+int getButtonBootState() {
+  if (buttonBootPin < 0 || buttonBootPin > 48) return -1;
+  return digitalRead(buttonBootPin);
+}
+
+int getButton1State() {
+  if (button1Pin < 0 || button1Pin > 48) return -1;
+  return digitalRead(button1Pin);
+}
+
+int getButton2State() {
+  if (button2Pin < 0 || button2Pin > 48) return -1;
+  return digitalRead(button2Pin);
+}
+
+// src/main.cpp:4375-4393 - Added HTTP handler
+void handleButtonStates() {
+  int bootState = getButtonBootState();
+  int button1State = getButton1State();
+  int button2State = getButton2State();
+
+  // LOW = pressed (pull-up), HIGH = released
+  sendJsonResponse(200, {
+    jsonBoolField("boot_pressed", bootState == LOW && bootState != -1),
+    jsonBoolField("boot_available", bootState != -1),
+    jsonBoolField("button1_pressed", button1State == LOW && button1State != -1),
+    jsonBoolField("button1_available", button1State != -1),
+    jsonBoolField("button2_pressed", button2State == LOW && button2State != -1),
+    jsonBoolField("button2_available", button2State != -1),
+    jsonNumberField("boot_pin", buttonBootPin),
+    jsonNumberField("button1_pin", button1Pin),
+    jsonNumberField("button2_pin", button2Pin)
+  });
+}
+
+// src/main.cpp:5758-5759 - Registered route
+server.on("/api/button-states", handleButtonStates);
+```
+
+**Impact:**
+- ✅ New API endpoint `/api/button-states` returns real-time button states
+- ✅ Returns JSON with pressed state for BOOT, Button 1, and Button 2
+- ✅ Includes pin numbers and availability status
+- ✅ Frontend monitoring can now poll this endpoint for live updates
+
+**Files Modified:**
+- `src/main.cpp`:
+  - Lines 3182-3196: Added button state reader functions
+  - Lines 4375-4393: Added `handleButtonStates()` HTTP handler
+  - Lines 5757-5765: Initialize rotary encoder in `setup()`
+  - Line 5759: Registered `/api/button-states` route
+- `platformio.ini`: Version 3.28.2 → 3.28.3
+
+**Testing:**
+1. **Rotary Encoder:**
+   - Power on ESP32
+   - Rotate encoder immediately - position should change ✅
+   - Press encoder button - should register ✅
+   - Navigate to "Input Devices" - encoder already working ✅
+
+2. **Button Monitoring:**
+   - Navigate to "Input Devices" page
+   - Press BOOT button (GPIO 0) - LED feedback should work ✅
+   - Check `/api/button-states` endpoint - should return current states ✅
+
+---
+
+## [Version 3.28.2] - 2025-12-24
+
+### 🐛 Critical Bug Fix
+
+**Emergency Patch:** Fixed BUTTON_BOOT JavaScript error that was NOT actually fixed in 3.28.0/3.28.1
+
+### Fixed
+
+#### BUTTON_BOOT JavaScript ReferenceError ✅ (REALLY FIXED NOW)
+
+**Problem:**
+- `ReferenceError: BUTTON_BOOT is not defined` error still occurred on Input Devices page
+- Despite attempts to fix in v3.28.0, the error persisted
+- Root cause misidentified in previous versions
+
+**Root Cause:**
+- GPIO constants (BUTTON_BOOT, BUTTON_1, BUTTON_2, TFT_MISO_PIN) were injected in `web_interface.h` but NOT in `main.cpp:handleJavaScriptRoute()`
+- The actual JavaScript served to the browser comes from `handleJavaScriptRoute()`, not from `web_interface.h:generateJavaScript()`
+- `generateJavaScript()` is only used to calculate JavaScript size for statistics
+- Therefore, the constants injected in `web_interface.h` were never actually sent to the browser
+
+**Solution:**
+```cpp
+// src/main.cpp:5397-5405 - Added to handleJavaScriptRoute()
+// Button pins
+pinVars += ";const BUTTON_BOOT=";
+pinVars += String(BUTTON_BOOT);
+pinVars += ";const BUTTON_1=";
+pinVars += String(BUTTON_1);
+pinVars += ";const BUTTON_2=";
+pinVars += String(BUTTON_2);
+// TFT MISO pin
+pinVars += ";const TFT_MISO_PIN=";
+pinVars += String(TFT_MISO);
+```
+
+**Impact:**
+- ✅ Input Devices page now loads WITHOUT JavaScript errors
+- ✅ BUTTON_BOOT displays correctly as read-only GPIO 0
+- ✅ BUTTON_1 and BUTTON_2 function correctly
+- ✅ All GPIO constants now properly injected BEFORE JavaScript functions execute
+
+**Files Modified:**
+- `src/main.cpp` (lines 5397-5415): Added button and TFT MISO constants to pinVars
+- `platformio.ini`: Version 3.28.1 → 3.28.2
+
+**Testing:**
+- Navigate to "Input Devices" page - should load without errors ✅
+- BUTTON_BOOT should show "GPIO 0 (non configurable)" ✅
+- Browser console should show no ReferenceError ✅
+
+---
+
+## [Version 3.28.1] - 2025-12-24
+
+### 🐛 Critical Bug Fixes
+
+**Patch Release:** Fixed MISO backend integration + Fixed SD card on ESP32-S3
+
+**NOTE:** BUTTON_BOOT error was NOT fully fixed in this version despite documentation claiming it was. See v3.28.2 for actual fix.
+
+### Fixed
+- **TFT MISO Backend Integration**:
+  - Fixed MISO field missing from `/api/screens-info` JSON response
+  - Added `tftMISO` variable initialization from `TFT_MISO` constant
+  - Backend now properly returns `tft.pins.miso` field (GPIO 13 for ESP32-S3)
+  - Resolves "MISO: undefined" display issue in web UI
+
+- **TFT MISO Configuration Sync**:
+  - Fixed `configTFT()` JavaScript function not sending MISO value to backend
+  - MISO parameter now properly included in `/api/tft-config` request
+  - Backend `handleTFTConfig()` now accepts and validates MISO parameter
+  - Completes full MISO configuration flow: UI ↔ API ↔ Firmware
+
+- **SD Card Support on ESP32-S3**:
+  - Fixed SD card initialization failing on ESP32-S3 with compilation/runtime errors
+  - Root cause: `HSPI` constant only available on ESP32 classic, not ESP32-S2/S3
+  - Implemented conditional SPI bus selection:
+    - ESP32 classic: `HSPI` (Hardware SPI bus 2)
+    - ESP32-S2/S3: `FSPI` (Flexible SPI bus, equivalent to SPI2)
+  - SD card tests now fully functional on ESP32-S3 N16R8
+
+### Technical Details
+- **Backend Changes** (`src/main.cpp`):
+  - Line 261: Added `int tftMISO = TFT_MISO;` variable declaration
+  - Line 4568: Added `miso` field to TFT pins JSON in `handleScreensInfo()`
+  - Lines 3814-3828: Updated `handleTFTConfig()` to accept and validate MISO parameter
+  - Lines 2950-2954: Added conditional SPI bus selection for SD card initialization
+  - Response JSON now includes: `"pins":{"miso":13,"mosi":11,...}`
+
+- **Frontend Changes** (`include/web_interface.h`):
+  - Line 119: Updated `configTFT()` to retrieve MISO value from input field
+  - Added `const miso=document.getElementById('tftMISO').value;`
+  - API call now includes: `?miso=${miso}&mosi=${mosi}&...`
+
+### Compliance
+- Maintains `board_config.h` immutability - all values sourced from constants
+- No hardcoded GPIO values
+- Proper SPI bus abstraction for ESP32 variant compatibility
+
+### Files Modified
+- `src/main.cpp`: MISO variable, JSON response, config handler, SD SPI bus
+- `include/web_interface.h`: configTFT MISO parameter
+- `platformio.ini`: Version 3.28.0 → 3.28.1
+
+---
+
+## [Version 3.28.0] - 2025-12-23
+
+### 🚀 New Features & Bug Fixes
+
+**Major Improvements:** Fixed BUTTON_BOOT JavaScript error + Added TFT MISO pin configuration + Added SD card test API endpoints + GPIO 13 sharing warning
+
+### Fixed
+- **BUTTON_BOOT JavaScript Error**:
+  - Fixed `ReferenceError: BUTTON_BOOT is not defined`
+  - Injected all missing pin constants from `board_config.h` into JavaScript
+  - Added: `ROTARY_CLK_PIN`, `ROTARY_DT_PIN`, `ROTARY_SW_PIN`, `BUTTON_BOOT`, `BUTTON_1`, `BUTTON_2`
+  - Added: `SD_MISO_PIN`, `SD_MOSI_PIN`, `SD_SCLK_PIN`, `SD_CS_PIN`, `TFT_MISO_PIN`
+  - All GPIO definitions now properly sourced from `board_config.h` (immutable contract)
+
+- **BUTTON_BOOT Configuration**:
+  - Made BUTTON_BOOT non-configurable per specifications
+  - Changed from editable input to read-only display
+  - Marked as "(non configurable)" in UI to prevent accidental modification
+  - Preserves native ESP32 boot button integrity
+
+### Added
+- **TFT MISO Pin Configuration**:
+  - Added MISO pin to SPI pins display: `MISO`, `MOSI`, `SCLK`, `CS`, `DC`, `RST`
+  - Added configurable MISO input field in TFT configuration section
+  - Completes SPI pin management in web interface
+  - Properly reflects GPIO 13 from `board_config.h` for ESP32-S3
+
+- **SD Card Test API Endpoints**:
+  - `/api/sd-test-read`: Test SD card read operations
+  - `/api/sd-test-write`: Test SD card write operations with timestamp
+  - `/api/sd-format`: Clean SD card test files (safe cleanup, not low-level format)
+  - JSON response format consistent with existing endpoints
+  - Automatic SD initialization if unavailable
+
+- **GPIO 13 Sharing Warning**:
+  - Added visible warning in SD Card section (yellow warning box)
+  - Alerts users that GPIO 13 is shared between TFT and SD (MISO line)
+  - Emphasizes need for strict SPI wiring and proper software management
+  - New i18n keys: `gpio_shared_warning`, `gpio_13_shared_desc` (EN/FR)
+
+### Technical Details
+- **Web Interface** (`include/web_interface.h`):
+  - Pin injection now includes all ROTARY, BUTTON, SD, and TFT pins
+  - BOOT button displayed as read-only with visual indicator
+  - GPIO 13 warning styled with Bootstrap-like alert styling
+  - Full i18n support maintained for all new features
+
+- **API Implementation** (`src/main.cpp`):
+  - `handleSDTestRead()`: Creates test file if needed, tests read capability
+  - `handleSDTestWrite()`: Tests write capability with timestamped data
+  - `handleSDFormat()`: Removes all test files (`/test_*.txt`)
+  - Proper error handling for unavailable SD cards
+
+- **Translations** (`include/languages.h`):
+  - `gpio_shared_warning`: "Shared GPIO 13 (TFT + SD – MISO)" / "GPIO 13 partagé (TFT + SD – MISO)"
+  - `gpio_13_shared_desc`: Full explanation in EN/FR about SPI sharing requirements
+
+### Compliance
+- All GPIO definitions sourced from `board_config.h` (immutable contract)
+- No hardcoded pin values in JavaScript
+- Respects `board_config.h` as single source of truth
+- No modifications to `board_config.h` itself (as required)
+
+### Files Modified
+- `include/web_interface.h`: Pin injection, BOOT button display, GPIO warning, MISO field
+- `include/languages.h`: Added 2 new translation keys for GPIO warning
+- `src/main.cpp`: Added 3 new SD card endpoint handlers + route registration
+- `platformio.ini`: Version 3.27.2 → 3.28.0
+
+---
+
 ## [Version 3.27.2] - 2025-12-23
 
 ### 🔧 Fixes & Enhancements

@@ -1,6 +1,6 @@
-# Pin Mapping – Quick Reference (v3.22.1)
+# Pin Mapping – Quick Reference (v3.28.2)
 
-> WARNING: v3.22.1 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: This document reflects the EXACT pin mapping from `include/board_config.h` as of v3.28.2. Ensure your wiring matches these GPIOs before powering on. Incorrect wiring may damage your ESP32 or peripherals. Read this entire document before flashing.
 
 ## Supported Environments
 
@@ -23,29 +23,42 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **SCL:** GPIO 16
 
 ### Buttons
-- **Button 1:** GPIO 38
-- **Button 2:** GPIO 39
+- **BUTTON_BOOT:** GPIO 0 (built-in boot button, non-configurable)
+- **BUTTON_1:** GPIO 38
+- **BUTTON_2:** GPIO 39
+
+### Rotary Encoder (HW-040)
+- **CLK (A):** GPIO 47
+- **DT (B):** GPIO 45
+- **SW (Button):** GPIO 40
 
 ### RGB LED (Separate pins)
 - **Red:** GPIO 21
-- **Green:** GPIO 45
-- **Blue:** GPIO 47
+- **Green:** GPIO 41 ⚠️ (was GPIO 45 in docs v3.22.1 - INCORRECT!)
+- **Blue:** GPIO 42 ⚠️ (was GPIO 47 in docs v3.22.1 - INCORRECT!)
 
 ### Sensors
 - **DHT (Temperature/Humidity):** GPIO 5
 - **Light Sensor (ADC):** GPIO 4
-- **HC-SR04 Distance Sensor:** TRIG GPIO 3 / ECHO GPIO 6
+- **HC-SR04 Distance Sensor:** TRIG GPIO 2 ⚠️ (was GPIO 3 - INCORRECT!) / ECHO GPIO 35 ⚠️ (was GPIO 6 - INCORRECT!)
 - **PIR Motion Sensor:** GPIO 46
-- **Buzzer:** GPIO 14
-- **PWM Test:** GPIO 14
+- **Buzzer:** GPIO 6 ⚠️ (was GPIO 14 in docs v3.22.1 - INCORRECT!)
+- **PWM Test:** GPIO 20 ⚠️ (was GPIO 14 in docs v3.22.1 - INCORRECT!)
 
 ### TFT ST7789 Display (240x240)
+- **MISO:** GPIO 13 ⚠️ (shared with SD card - see SD Card section)
 - **MOSI:** GPIO 11
 - **SCLK:** GPIO 12
 - **CS:** GPIO 10
 - **DC:** GPIO 9
-- **RST:** GPIO 13
+- **RST:** GPIO 14 ⚠️ (was GPIO 13 in docs v3.22.1 - INCORRECT!)
 - **Backlight (BL):** GPIO 7
+
+### SD Card (SPI)
+- **MISO:** GPIO 13 ⚠️ (shared with TFT MISO)
+- **MOSI:** GPIO 11
+- **SCLK:** GPIO 12
+- **CS:** GPIO 1
 
 ### GPS Module (UART1)
 - **RXD:** GPIO 18 (GPS TX → ESP RX)
@@ -58,11 +71,14 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **Brightness:** 50 (0-255)
 
 ### ESP32-S3 Important Notes
-- GPIO 35–44 are reserved by the octal PSRAM/Flash interface; keep them free.
-- GPIO 48 is dedicated to the NeoPixel.
-- RGB LED uses GPIO 21/45/47 (Red/Green/Blue respectively); GPIO45 is a strapping pin, keep LED off at boot.
-- Strapping pins: GPIO 0, GPIO 45, GPIO 46 – keep stable during boot.
-- USB CDC is enabled; keep GPIO 19/20 free for USB D-/D+ (I2C moved to 15/16).
+- **GPIO 35–44:** Reserved by the octal PSRAM/Flash interface – DO NOT USE
+- **GPIO 48:** Dedicated to NeoPixel RGB LED
+- **RGB LED:** Uses GPIO 21/41/42 (Red/Green/Blue) ⚠️ **NOT 21/45/47** (common documentation error!)
+- **Rotary Encoder:** Uses GPIO 47/45/40 (CLK/DT/SW) – Added in v3.27.x
+- **GPIO 13 Sharing:** TFT MISO and SD MISO both use GPIO 13 – requires proper SPI CS management
+- **Strapping Pins:** GPIO 0, GPIO 45, GPIO 46 – keep stable during boot or boot may fail
+- **USB CDC Enabled:** GPIO 19/20 reserved for USB D-/D+ (I2C moved to 15/16 to avoid conflict)
+- **Boot Button:** GPIO 0 (BUTTON_BOOT) is read-only and non-configurable
 
 ---
 
@@ -75,8 +91,14 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **SCL:** GPIO 22 (different from S3!)
 
 ### Buttons
-- **Button 1:** GPIO 2 (internal pull-up)
-- **Button 2:** GPIO 5 (internal pull-up)
+- **BUTTON_BOOT:** GPIO 0 (built-in boot button, non-configurable)
+- **BUTTON_1:** GPIO 5 ⚠️ (was GPIO 2 in docs v3.22.1 - INCORRECT!)
+- **BUTTON_2:** GPIO 12 ⚠️ (was GPIO 5 in docs v3.22.1 - INCORRECT!)
+
+### Rotary Encoder (HW-040)
+- **CLK (A):** GPIO 4
+- **DT (B):** GPIO 13
+- **SW (Button):** GPIO 26
 
 ### RGB LED (Separate pins)
 - **Red:** GPIO 13
@@ -86,17 +108,22 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 ### Sensors
 - **DHT (Temperature/Humidity):** GPIO 15
 - **Light Sensor (ADC):** GPIO 39
-- **HC-SR04 Distance Sensor:** TRIG GPIO 12 / ECHO GPIO 35
+- **HC-SR04 Distance Sensor:** TRIG GPIO 1 ⚠️ (was GPIO 12 - INCORRECT!) / ECHO GPIO 35
 - **Buzzer:** GPIO 19
 - **PWM Test:** GPIO 4
 
 ### TFT ST7789 Display (240x240)
+- **MISO:** GPIO 19 (if needed - shared with SD card on some configurations)
 - **MOSI:** GPIO 23
 - **SCLK:** GPIO 18
 - **CS:** GPIO 27
 - **DC:** GPIO 14
 - **RST:** GPIO 25
 - **Backlight (BL):** GPIO 32
+
+### SD Card (SPI)
+- **Note:** SD card support varies by board configuration
+- Check `board_config.h` for your specific ESP32 Classic wiring
 
 ### GPS Module (UART2)
 - **RXD:** GPIO 16 (RX2, GPS TX → ESP RX)
@@ -109,13 +136,17 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 - **Brightness:** 50 (0-255)
 
 ### ESP32 Classic Important Notes
-- **Input-Only Pins:** GPIO 34, 35, 36, 39 (VP/VN) – can only read, cannot output.
-- **Strapping Pins:** GPIO 0, GPIO 2, GPIO 4, GPIO 5, GPIO 12, GPIO 15 – avoid LEDs/peripherals on these pins to prevent boot issues.
-- **UART0 (USB-UART):** GPIO 1 (TX0) and GPIO 3 (RX0) are reserved for flashing/debugging – do not connect external devices.
-- **Flash Pins:** GPIO 6-11 are connected to SPI Flash � do not use.
-- **ADC2 Limitation:** ADC2 (GPIO 0, 2, 4, 12–15, 25–27) cannot be used when WiFi is active.
-- **Current Limit:** Max 12 mA per GPIO; use transistor/driver for higher loads.
-- **Hardware Migration Required:** v3.21.0 introduces 11 pin changes to resolve boot and USB communication issues. See `docs/PIN_MAPPING_CHANGES_FR.md` for detailed rationale.
+- **Input-Only Pins:** GPIO 34, 35, 36, 39 (VP/VN) – can only read, cannot output
+- **Strapping Pins:** GPIO 0, GPIO 2, GPIO 4, GPIO 5, GPIO 12, GPIO 15 – keep stable during boot
+  - **BUTTON_1 (GPIO 5)** and **BUTTON_2 (GPIO 12)** use internal pull-ups to ensure stable boot
+  - ⚠️ Documentation previously listed buttons as GPIO 2/5 (v3.22.1) – this was INCORRECT
+- **Rotary Encoder:** Uses GPIO 4/13/26 (CLK/DT/SW) – Added in v3.27.x
+- **UART0 (USB-UART):** GPIO 1 (TX0) and GPIO 3 (RX0) reserved for flashing/debugging
+  - **DISTANCE_TRIG (GPIO 1)** requires careful management to avoid UART conflicts
+- **Flash Pins:** GPIO 6-11 connected to SPI Flash – DO NOT USE
+- **ADC2 Limitation:** ADC2 (GPIO 0, 2, 4, 12–15, 25–27) cannot be used when WiFi is active
+- **Current Limit:** Max 12 mA per GPIO; use transistor/driver for higher loads
+- **Boot Button:** GPIO 0 (BUTTON_BOOT) is read-only and non-configurable
 
 ---
 
@@ -134,22 +165,30 @@ Pin mappings are defined in `include/board_config.h` using conditional compilati
 
 ---
 
-## Pin Conflict Resolution
+## Pin Conflict Resolution & Critical Warnings
 
 ### ESP32-S3 Conflicts
-- Keep GPIO 35�44 free (PSRAM/Flash bus).
-- RGB LED uses GPIO 19/47/45; NeoPixel uses GPIO 48 (conflict resolved in v3.18.3).
-- Motion sensor uses GPIO 46; Distance ECHO uses GPIO 6; Light sensor uses GPIO 4.
-- TFT occupies GPIO 7�13; GPS uses GPIO 17�18. Avoid overlapping these ranges when attaching external modules.
+- **PSRAM/Flash Bus:** Keep GPIO 35–44 completely free (reserved by octal PSRAM/Flash)
+- **RGB LED:** Uses GPIO 21/41/42 (Red/Green/Blue) ⚠️ **NOT 21/45/47** (common docs error!)
+  - NeoPixel uses GPIO 48 (conflict resolved in v3.18.3)
+- **Rotary Encoder:** Uses GPIO 47/45/40 (conflicts avoided by careful pin selection)
+- **GPIO 13 Sharing:** TFT MISO and SD MISO both use GPIO 13 – proper CS management required
+- **Distance Sensor:** TRIG GPIO 2 / ECHO GPIO 35 ⚠️ (v3.22.1 docs listed TRIG=3, ECHO=6 – WRONG!)
+- **Buzzer/PWM:** Buzzer GPIO 6, PWM GPIO 20 ⚠️ (v3.22.1 docs listed both as GPIO 14 – WRONG!)
+- **TFT Display:** Occupies GPIO 7–14 (RST=14, not 13); GPS uses GPIO 17–18
+- **Motion Sensor:** GPIO 46; Light sensor GPIO 4
 
 ### ESP32 Classic Conflicts
-- Avoid LEDs/peripherals on strapping pins (GPIO 0/2/4/5/12/15) to prevent boot failures.
-- Buttons now use GPIO 32/33 with internal pull-up (no external resistor needed).
-- PWM/Buzzer uses GPIO 5 (strapping pin) � acceptable if LOW during boot.
-- Protect UART0: GPIO 1 (TX0) and GPIO 3 (RX0) reserved for USB-UART bridge.
-- TFT uses GPIO 18/23/27/14/25/32; avoid sharing these with other SPI devices unless chip select is managed.
-- ADC2 pins are unusable with Wi-Fi active; prefer ADC1 (GPIO 32-39) for analog sensing.
-- Input-only pins (34�39) cannot drive LEDs or outputs; GPIO 36/39 used for GPS PPS and light sensor.
+- **Strapping Pins:** GPIO 0/2/4/5/12/15 must be stable during boot
+  - BUTTON_1 (GPIO 5) and BUTTON_2 (GPIO 12) use internal pull-ups for safety
+  - ⚠️ Previous docs listed buttons as GPIO 2/5 or GPIO 32/33 – ALL INCORRECT!
+- **Rotary Encoder:** Uses GPIO 4/13/26 (CLK/DT/SW) – strapping pin GPIO 4 managed carefully
+- **UART0 Conflict:** DISTANCE_TRIG uses GPIO 1 (TX0) – requires careful boot/flash management
+  - Protect GPIO 1 (TX0) and GPIO 3 (RX0) during flashing
+- **TFT Display:** Uses GPIO 18/23/27/14/25/32; manage CS when sharing SPI bus
+- **ADC2 + WiFi:** ADC2 pins (GPIO 0, 2, 4, 12–15, 25–27) unusable when WiFi active
+  - Prefer ADC1 (GPIO 32–39) for analog sensing
+- **Input-Only:** GPIO 34–39 cannot drive outputs; used for GPS PPS (36) and light sensor (39)
 
 ---
 
@@ -215,17 +254,29 @@ pio run -e esp32devkitc --target upload
 ---
 
 ## Version History
-- **v3.21.0:** Complete ESP32 Classic pin mapping revision � 11 changes to resolve boot issues (strapping pins GPIO 4/12/15), USB-UART communication (protect GPIO 1/3), and buttons (GPIO 32/33 with internal pull-up instead of 34/35 input-only). Added detailed safety reminders in `board_config.h`. Hardware migration required for ESP32 Classic users. See `docs/PIN_MAPPING_CHANGES_FR.md` for complete numbered changelog.
-- **v3.20.2:** Web UI pin references now dynamically sourced from `board_config.h`; web interface always displays correct compiled target pins.
-- **v3.20.1:** ESP32-S3 I2C moved to 15/16 and RGB Red to 21 to free USB D-/D+ (19/20) and stabilize OTG; docs aligned.
-- **v3.20.1:** Pin mapping moved to `board_config.h`; ESP32-S3 buttons set to GPIO 38/39 to avoid upload/reset conflicts; docs aligned.
-- **v3.18.3:** Resolved GPIO 48 conflict between NeoPixel and RGB LED on ESP32-S3; complete S3 pin mapping reorganization.
-- **v3.17.1:** Refreshed ESP32-S3 and Classic pin mappings (GPS, TFT, RGB, sensors, buttons) and aligned documentation.
-- **v3.15.1:** Critical memory fix for ESP32 Classic web UI.
-- **v3.15.0:** Multi-environment support with dedicated pin mappings.
-- **v3.12.3:** HC-SR04 defaults set to TRIG=16, ECHO=17 (legacy).
-- **v3.11.3:** TFT backlight corrected to GPIO 15 (legacy change).
-- **v3.11.0:** TFT ST7789 display support added.
+
+- **v3.28.2 (2025-12-24):** ✅ **Documentation fully synchronized with `board_config.h`**
+  - **CRITICAL FIXES:** Corrected 11+ GPIO assignment errors from v3.22.1 documentation:
+    - ESP32-S3: RGB Green 45→41, Blue 47→42, Distance TRIG 3→2, ECHO 6→35, Buzzer 14→6, PWM 14→20, TFT RST 13→14
+    - ESP32 Classic: Button1 2→5, Button2 5→12, Distance TRIG 12→1
+  - **ADDED:** Rotary encoder documentation (ESP32-S3: 47/45/40, ESP32 Classic: 4/13/26)
+  - **ADDED:** SD card pin mapping (ESP32-S3: MISO=13 shared with TFT, CS=1)
+  - **ADDED:** BUTTON_BOOT (GPIO 0) for all boards – read-only, non-configurable
+  - ⚠️ **WARNING:** Previous documentation (v3.22.1) contained DANGEROUS errors that could damage hardware
+
+- **v3.27.x (2025-12-23):** Rotary encoder (HW-040) and button monitoring features added to firmware
+
+- **v3.21.0:** Complete ESP32 Classic pin mapping revision – 11 changes to resolve boot issues (strapping pins GPIO 4/12/15), USB-UART communication (protect GPIO 1/3), and buttons (GPIO 32/33→5/12 with internal pull-up). Hardware migration required for ESP32 Classic users
+
+- **v3.20.2:** Web UI pin references now dynamically sourced from `board_config.h`
+
+- **v3.20.1:** ESP32-S3 I2C moved to 15/16 and RGB Red to 21 to free USB D-/D+ (19/20)
+
+- **v3.18.3:** Resolved GPIO 48 conflict between NeoPixel and RGB LED on ESP32-S3
+
+- **v3.17.1:** Refreshed ESP32-S3 and Classic pin mappings (GPS, TFT, RGB, sensors, buttons)
+
+- **v3.15.0:** Multi-environment support with dedicated pin mappings
 
 
 
