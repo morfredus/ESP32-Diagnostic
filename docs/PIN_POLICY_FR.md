@@ -1,6 +1,7 @@
-# Politique de Mapping des GPIO
+# Politique de Mapping des GPIO (v3.30.0)
 
-**Suite de Diagnostic ESP32 - Version 3.25.0**
+**Suite de Diagnostic ESP32 - Version 3.30.0**
+> **AVERTISSEMENT** : Ce document reflète la politique de mapping GPIO pour le firmware v3.30.0. Toutes les assignations sont synchronisées avec `include/board_config.h`. Voir aussi [RELEASE_NOTES_3.30.0_FR.md].
 
 ---
 

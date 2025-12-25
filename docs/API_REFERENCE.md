@@ -1,9 +1,9 @@
 
-# ESP32 Diagnostic Suite – REST API Reference (v3.29.0)
+# ESP32 Diagnostic Suite – REST API Reference (v3.30.0)
 
-> NEW in v3.29.0: Dynamic TFT controller selection (ILI9341 or ST7789) and resolution configuration in `config.h`. See README and CONFIG.md.
+> NEW in v3.30.0: Dynamic TFT controller selection (ILI9341 or ST7789) from the web UI, resolution configuration in `config.h` without recompiling, and full GPIO mapping synchronization. See [RELEASE_NOTES_3.30.0.md](RELEASE_NOTES_3.30.0.md).
 
-> WARNING: v3.29.0 adds dynamic TFT controller selection (ILI9341/ST7789) and resolution in `config.h`. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: This document reflects firmware v3.30.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 The REST API mirrors the web dashboard controls and exposes diagnostics data for automation. All endpoints are served over HTTP on
 the same port as the dashboard. Authentication is sessionless; secure deployments should restrict access at the network level.
@@ -23,7 +23,7 @@ the same port as the dashboard. Authentication is sessionless; secure deployment
 Returns firmware metadata and build hashes.
 ```json
 {
-  "version": "3.8.0",
+  "version": "3.30.0",
   "git_commit": "abc1234",
   "build_time": "2024-05-10T09:15:00Z"
 }
@@ -103,7 +103,7 @@ Attaches operator notes to the latest report.
 | `503` | Hardware busy | Module is initialising hardware; retry after a few seconds. |
 
 ## Automation tips
-- Use `GET /api/version` during CI to verify that the deployed unit is running firmware 3.8.0.
+- Use `GET /api/version` during CI to verify that the deployed unit is running firmware 3.30.0.
 - Combine `/api/run` with `/api/status` polling to monitor long test suites, then download the report in JSON for further parsing.
 - Store operator notes via `/api/notes` after each run to keep audit trails within the device exports.
 

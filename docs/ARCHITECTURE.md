@@ -1,6 +1,6 @@
-# Firmware Architecture (EN) – v3.28.5
+# Firmware Architecture (EN) – v3.30.0
 
-> WARNING: v3.28.5 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: This document reflects firmware v3.30.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 ## High-level overview
 The firmware is a PlatformIO project with the main code in `src/main.cpp` that orchestrates diagnostics, serves a web interface, and exposes REST endpoints. Supporting headers in `include/` encapsulate translations, HTML templates, and configuration helpers.
@@ -34,7 +34,7 @@ ESP32-Diagnostic/
 - **BLE manager** � detects chip capabilities, configures the GATT service, and exposes status updates to the web UI.
 - **Diagnostics engine** � performs hardware tests (GPIO, ADC, touch, OLED, benchmarks) and formats results for the dashboard and exports.
 - **Export subsystem** � assembles TXT/JSON/CSV payloads for download and prints.
-- Release 3.8.0 introduces the Wi-Fi splash layer and shared BLE scan helpers, keeping the scheduler identical whether the board uses Bluedroid or NimBLE.
+- Release 3.30.0 retains dynamic TFT controller selection, full GPIO mapping synchronization, and multi-environment support. See [RELEASE_NOTES_3.30.0.md](RELEASE_NOTES_3.30.0.md) for details.
 
 ## Front-end structure
 - HTML templates define each tab with semantic sections.

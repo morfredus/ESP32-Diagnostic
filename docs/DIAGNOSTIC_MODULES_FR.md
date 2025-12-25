@@ -1,6 +1,6 @@
-﻿# ESP32 Diagnostic Suite – Modules de diagnostic (v3.28.5)
+﻿# ESP32 Diagnostic Suite – Modules de diagnostic (v3.30.0)
 
-> **AVERTISSEMENT** : v3.28.5 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 Ce guide détaille chaque module de diagnostic automatisé livré avec la version 3.15.0. Il décrit l'ordre d'exécution, les métriques
 collectées et les clés d'exportation à surveiller lors de l'analyse des rapports.
@@ -24,7 +24,7 @@ bord web, la REST API et le logger série.
 | Module | Description | Métriques clés | Clés d'export |
 |--------|-------------|----------------|--------------|
 | Pré-vérifications | Confirme les métadonnées build, uptime, raison du reset, fréquence CPU. | Version firmware, raison reset, heap libre, PSRAM détectée. | `env.version`, `env.reset_reason`, `env.heap_free`. |
-| Connectivité | Recense les points d'accès, alimente l'écran OLED de démarrage, vérifie l'association Wi-Fi et **Note :** BLE supprimé dans version PlatformIO. | Nombre d'AP, RSSI par AP, temps d'association, fenêtre de scan BLE. | `wifi.networks[]`, `wifi.association_ms`, `ble.found_devices`. |
+| Connectivité | Recense les points d'accès, alimente l'écran OLED de démarrage, vérifie l'association Wi-Fi et **Note :** BLE supprimé dans la version PlatformIO (v3.30.0). | Nombre d'AP, RSSI par AP, temps d'association, fenêtre de scan BLE. | `wifi.networks[]`, `wifi.association_ms`, `ble.found_devices`. |
 | Débit réseau | Mesure latence et taille de réponse HTTP selon les cibles configurées. | Ping min/moy/max, statut HTTP, débit (kB/s). | `net.ping`, `net.http.status`, `net.http.kbps`. |
 | Mémoire & stockage | Effectue stress tests du tas et validation CRC de la flash. | Marque haute du tas, taille PSRAM, statut CRC flash. | `memory.heap_max`, `memory.psram`, `storage.flash_crc`. |
 | Balayage GPIO | Pulse les sorties digitales, échantillonne les entrées analogiques, valide les pull-ups (routine tactile retirée). | Liste de broches ok/erreur, moyenne/variance ADC, synthèse PWM via les tests matériels. | `gpio.list`, `hardware_tests.pwm`. |
@@ -56,3 +56,4 @@ Veiller à respecter le contrat PASS/WARN/FAIL et à publier des clés d'export 
 - [Matrice des fonctionnalités](FEATURE_MATRIX_FR.md) – compatibilité matérielle et périphériques optionnels.
 - [Référence REST API](API_REFERENCE_FR.md) – schémas de payload pour automatiser l'exécution.
 - [Dépannage](TROUBLESHOOTING_FR.md) – étapes de récupération lorsqu'un module reste indisponible.
+- [Nouveautés v3.30.0](RELEASE_NOTES_3.30.0_FR.md)
