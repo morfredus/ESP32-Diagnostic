@@ -2942,23 +2942,34 @@ bool initSD() {
     sdTestResult = String(Texts::configuration_invalid);
     sdAvailable = false;
     Serial.println("SD: Configuration invalide");
+    Serial.printf("  Pins: MISO=%d, MOSI=%d, SCLK=%d, CS=%d\r\n",
+                  sd_miso_pin, sd_mosi_pin, sd_sclk_pin, sd_cs_pin);
     return false;
   }
+
+  Serial.printf("SD: Configuration pins: MISO=%d, MOSI=%d, SCLK=%d, CS=%d\r\n",
+                sd_miso_pin, sd_mosi_pin, sd_sclk_pin, sd_cs_pin);
 
   // Configuration SPI
   if (sdSPI == nullptr) {
 #if defined(CONFIG_IDF_TARGET_ESP32)
     sdSPI = new SPIClass(HSPI);  // ESP32 classic uses HSPI
+    Serial.println("SD: Using HSPI (ESP32 Classic)");
 #else
     sdSPI = new SPIClass(FSPI);  // ESP32-S2/S3 use FSPI (SPI2)
+    Serial.println("SD: Using FSPI (ESP32-S2/S3)");
 #endif
   }
+
+  Serial.println("SD: Initialisation du bus SPI...");
   sdSPI->begin(sd_sclk_pin, sd_miso_pin, sd_mosi_pin, sd_cs_pin);
 
+  Serial.println("SD: Tentative de detection de la carte...");
   if (!SD.begin(sd_cs_pin, *sdSPI)) {
     sdTestResult = String(Texts::not_detected);
     sdAvailable = false;
-    Serial.println("SD: Carte non detectee");
+    Serial.println("SD: Carte non detectee ou erreur de communication");
+    Serial.println("SD: Verifiez le cablage et la presence d'une carte SD");
     return false;
   }
 
@@ -5718,6 +5729,17 @@ void setup() {
   
   // Initialize environmental sensors (AHT20 + BMP280)
   initEnvironmentalSensors();
+
+  // Initialize SD Card (v3.29.0 fix)
+  Serial.println("Initialisation de la carte SD...");
+  if (initSD()) {
+    Serial.printf("Carte SD OK: Type=%s, Taille=%llu MB\r\n",
+                  sdCardTypeStr.c_str(), sdCardSize);
+  } else {
+    Serial.println("Carte SD: non disponible ou non detectee");
+    Serial.printf("  Pins SPI: MISO=%d, MOSI=%d, SCLK=%d, CS=%d\r\n",
+                  sd_miso_pin, sd_mosi_pin, sd_sclk_pin, sd_cs_pin);
+  }
 
   // ========== ROUTES SERVEUR ==========
   server.on("/", handleRoot);
