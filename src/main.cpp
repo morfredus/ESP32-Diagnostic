@@ -3179,6 +3179,31 @@ void resetRotaryPosition() {
   rotaryPosition = 0;
 }
 
+// ========== BUTTON STATE READERS (v3.28.3/v3.28.5) ==========
+// Read REAL GPIO state for monitoring (not volatile ISR variables)
+// v3.28.5: Use constants directly to ensure correct pin access
+int getButtonBootState() {
+  // Use constant directly instead of static variable
+  if (BUTTON_BOOT < 0 || BUTTON_BOOT > 48) return -1;
+  return digitalRead(BUTTON_BOOT);
+}
+
+int getButton1State() {
+  if (BUTTON_1 < 0 || BUTTON_1 > 48) return -1;
+  return digitalRead(BUTTON_1);
+}
+
+int getButton2State() {
+  if (BUTTON_2 < 0 || BUTTON_2 > 48) return -1;
+  return digitalRead(BUTTON_2);
+}
+
+// v3.28.5 - Read REAL GPIO state of rotary button for monitoring
+int getRotaryButtonGPIOState() {
+  if (rotary_sw_pin < 0 || rotary_sw_pin > 48) return -1;
+  return digitalRead(rotary_sw_pin);
+}
+
 // ========== TEST STRESS MÉMOIRE ==========
 void memoryStressTest() {
   Serial.println("\r\n=== STRESS TEST MEMOIRE ===");
@@ -4344,9 +4369,13 @@ void handleRotaryTest() {
 }
 
 void handleRotaryPosition() {
+  // v3.28.5 fix: Read REAL GPIO state for monitoring, not ISR variable
+  int buttonGPIOState = getRotaryButtonGPIOState();
+  bool buttonPressed = (buttonGPIOState == LOW && buttonGPIOState != -1);
+
   sendJsonResponse(200, {
     jsonNumberField("position", (int32_t)rotaryPosition),
-    jsonBoolField("button_pressed", rotaryButtonPressed),
+    jsonBoolField("button_pressed", buttonPressed),
     jsonBoolField("available", rotaryAvailable)
   });
 }
@@ -4354,6 +4383,66 @@ void handleRotaryPosition() {
 void handleRotaryReset() {
   resetRotaryPosition();
   sendActionResponse(200, true, "Position reset");
+}
+
+// ========== BUTTON STATE HANDLERS (v3.28.3) ==========
+// v3.28.5: Use constants directly for pins
+void handleButtonStates() {
+  int bootState = getButtonBootState();
+  int button1State = getButton1State();
+  int button2State = getButton2State();
+
+  // LOW = pressed (pull-up), HIGH = released
+  sendJsonResponse(200, {
+    jsonBoolField("boot_pressed", bootState == LOW && bootState != -1),
+    jsonBoolField("boot_available", bootState != -1),
+    jsonBoolField("button1_pressed", button1State == LOW && button1State != -1),
+    jsonBoolField("button1_available", button1State != -1),
+    jsonBoolField("button2_pressed", button2State == LOW && button2State != -1),
+    jsonBoolField("button2_available", button2State != -1),
+    jsonNumberField("boot_pin", BUTTON_BOOT),  // v3.28.5: Use constants
+    jsonNumberField("button1_pin", BUTTON_1),
+    jsonNumberField("button2_pin", BUTTON_2)
+  });
+}
+
+// Individual button state (v3.28.4 fix - frontend expects this endpoint)
+// v3.28.5: Use constants directly for pins
+void handleButtonState() {
+  if (!server.hasArg("button")) {
+    sendActionResponse(400, false, "Missing 'button' parameter");
+    return;
+  }
+
+  String buttonParam = server.arg("button");
+  int state = -1;
+  int pin = -1;
+
+  if (buttonParam == "boot") {
+    state = getButtonBootState();
+    pin = BUTTON_BOOT;  // v3.28.5: Use constant directly
+  } else if (buttonParam == "1" || buttonParam == "button1") {
+    state = getButton1State();
+    pin = BUTTON_1;
+  } else if (buttonParam == "2" || buttonParam == "button2") {
+    state = getButton2State();
+    pin = BUTTON_2;
+  } else {
+    sendActionResponse(400, false, "Invalid button parameter (must be 'boot', '1', or '2')");
+    return;
+  }
+
+  // LOW = pressed (pull-up), HIGH = released
+  bool pressed = (state == LOW && state != -1);
+  bool available = (state != -1);
+
+  sendJsonResponse(200, {
+    jsonBoolField("pressed", pressed),
+    jsonBoolField("released", !pressed && available),
+    jsonBoolField("available", available),
+    jsonNumberField("pin", pin),
+    jsonNumberField("raw_state", state)
+  });
 }
 
 // GPS Handlers
@@ -5719,6 +5808,10 @@ void setup() {
   server.on("/api/rotary-position", handleRotaryPosition);
   server.on("/api/rotary-reset", handleRotaryReset);
 
+  // Buttons (v3.28.3)
+  server.on("/api/button-states", handleButtonStates);
+  server.on("/api/button-state", handleButtonState);  // v3.28.4 - individual button query
+
   // GPS Module
   server.on("/api/gps", handleGPSData);
   server.on("/api/gps-test", handleGPSTest);
@@ -5753,6 +5846,16 @@ void setup() {
   initButtons();
   Serial.printf("Boutons actifs: BTN1=%d, BTN2=%d\r\n", button1Pin, button2Pin);
 #endif
+
+  // Initialize rotary encoder on startup (v3.28.3 fix)
+  Serial.println("Initialisation de l'encodeur rotatif...");
+  initRotaryEncoder();
+  if (rotaryAvailable) {
+    Serial.printf("Encodeur rotatif OK: CLK=%d, DT=%d, SW=%d\r\n",
+                  rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
+  } else {
+    Serial.println("Encodeur rotatif: non disponible ou configuration invalide");
+  }
 }
 
 // ========== LOOP ==========

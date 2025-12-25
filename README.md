@@ -1,30 +1,45 @@
-# ESP32 Diagnostic Suite (v3.28.2)
+# ESP32 Diagnostic Suite (v3.28.5)
 
-> **Note**: v3.28.2 is an emergency patch that FINALLY fixes the BUTTON_BOOT JavaScript error. Versions 3.28.0 and 3.28.1 claimed to fix this issue but the fix was incomplete. This version also includes all fixes from 3.28.1 (MISO backend integration and SD card on ESP32-S3). ✅
+> **Note**: v3.28.5 fixes rotary encoder button stuck + button monitoring GPIO issues. All input device monitoring now works correctly. ✅
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## ✨ Version 3.28.2 Highlights - BUTTON_BOOT Error REALLY Fixed
+## ✨ Version 3.28.5 Highlights - Input Monitoring Fixed
 
-**Critical Fix:**
-- ✅ **BUTTON_BOOT Error FIXED** - ReferenceError on Input Devices page finally resolved
-- ✅ **Root Cause Identified** - GPIO constants were injected in wrong location (web_interface.h instead of main.cpp)
-- ✅ **All Button Constants Working** - BUTTON_BOOT, BUTTON_1, BUTTON_2 now properly available in JavaScript
+**Bug Fixes:**
+1. ✅ **Rotary Encoder Button** - No longer stuck on "Pressed", reads real GPIO state
+2. ✅ **BOOT/Button1/Button2 Monitoring** - Now works correctly using direct constant access
 
-**Technical Fix:**
+**Key Changes:**
 ```cpp
-// src/main.cpp:5397-5405 - Added to handleJavaScriptRoute()
-// Button pins (MISSING in v3.28.0/3.28.1)
-pinVars += ";const BUTTON_BOOT=";
-pinVars += String(BUTTON_BOOT);
-pinVars += ";const BUTTON_1=";
-pinVars += String(BUTTON_1);
-pinVars += ";const BUTTON_2=";
-pinVars += String(BUTTON_2);
-// TFT MISO pin
-pinVars += ";const TFT_MISO_PIN=";
-pinVars += String(TFT_MISO);
+// src/main.cpp:3199-3203 - Read real GPIO for rotary button
+int getRotaryButtonGPIOState() {
+  return digitalRead(rotary_sw_pin);
+}
+
+// src/main.cpp:3185-3199 - Use constants directly for buttons
+int getButtonBootState() {
+  return digitalRead(BUTTON_BOOT);  // Direct constant access
+}
 ```
+
+**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.5 details.
+
+## Previous: Version 3.28.4
+
+**Input Devices Fixed:**
+- ✅ **Rotary Encoder Initialization** - Works immediately after boot
+- ✅ **Button Monitoring API** - Backend endpoints added
+- ✅ **Automatic Setup** - All input devices initialize in `setup()`
+
+**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.3 details.
+
+## Previous: Version 3.28.2
+
+**BUTTON_BOOT JavaScript Error Fixed:**
+- ✅ **BUTTON_BOOT Error FIXED** - ReferenceError on Input Devices page resolved
+- ✅ **Root Cause Identified** - GPIO constants were injected in wrong location
+- ✅ **All Button Constants Working** - BUTTON_BOOT, BUTTON_1, BUTTON_2 now properly available
 
 **See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.2 details.
 

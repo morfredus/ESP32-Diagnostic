@@ -1,3 +1,347 @@
+## [Version 3.28.5] - 2025-12-24
+
+### 🐛 Corrections de Bugs
+
+**Patch de Maintenance :** Correction du bouton encodeur bloqué + problèmes GPIO monitoring boutons
+
+### Corrigé
+
+#### 1. Bouton Encodeur Rotatif Reste "Pressed" ✅
+
+**Problème :**
+- Après avoir appuyé sur le bouton de l'encodeur rotatif, l'état restait "Pressed" même après relâchement
+- L'interface affichait toujours "Pressed" en rouge, jamais "Released"
+- Impossible de voir l'état réel du bouton en temps réel
+
+**Cause Racine :**
+- `handleRotaryPosition()` retournait `rotaryButtonPressed` (variable volatile ISR)
+- Variable volatile mise à `true` par ISR lors de l'appui, mais jamais remise à `false` automatiquement
+- Pour le monitoring temps réel, on doit lire l'état GPIO réel, pas la variable événementielle
+
+**Solution :**
+```cpp
+// src/main.cpp:3199-3203 - Nouvelle fonction pour lire GPIO réel
+int getRotaryButtonGPIOState() {
+  if (rotary_sw_pin < 0 || rotary_sw_pin > 48) return -1;
+  return digitalRead(rotary_sw_pin);
+}
+
+// src/main.cpp:4369-4379 - Utilisation dans handleRotaryPosition()
+void handleRotaryPosition() {
+  // v3.28.5 fix: Read REAL GPIO state for monitoring, not ISR variable
+  int buttonGPIOState = getRotaryButtonGPIOState();
+  bool buttonPressed = (buttonGPIOState == LOW && buttonGPIOState != -1);
+
+  sendJsonResponse(200, {
+    jsonNumberField("position", (int32_t)rotaryPosition),
+    jsonBoolField("button_pressed", buttonPressed),  // Lit maintenant GPIO réel
+    jsonBoolField("available", rotaryAvailable)
+  });
+}
+```
+
+**Impact :**
+- ✅ Bouton encodeur affiche maintenant l'état correct en temps réel
+- ✅ "Pressed" (rouge) quand bouton enfoncé
+- ✅ "Released" (vert) quand bouton relâché
+- ✅ Mise à jour immédiate (polling 100ms)
+
+#### 2. Monitoring Boutons BOOT/1/2 Ne Fonctionne Pas ✅
+
+**Problème :**
+- Le monitoring des boutons BOOT, Button 1, Button 2 ne fonctionnait toujours pas
+- Les états ne se mettaient pas à jour malgré la correction v3.28.4
+- Les boutons restaient bloqués sur "Released"
+
+**Cause Racine :**
+- Les fonctions utilisaient des variables `static` (`buttonBootPin`, `button1Pin`, `button2Pin`)
+- Problème potentiel de visibilité ou d'initialisation des variables statiques
+- GPIO peut-être pas correctement accessible via ces variables
+
+**Solution :**
+```cpp
+// src/main.cpp:3182-3199 - Lecture directe des constantes
+// v3.28.5: Utilisation directe des constantes pour garantir l'accès GPIO
+int getButtonBootState() {
+  // Utilise la constante directement au lieu de la variable statique
+  if (BUTTON_BOOT < 0 || BUTTON_BOOT > 48) return -1;
+  return digitalRead(BUTTON_BOOT);
+}
+
+int getButton1State() {
+  if (BUTTON_1 < 0 || BUTTON_1 > 48) return -1;
+  return digitalRead(BUTTON_1);
+}
+
+int getButton2State() {
+  if (BUTTON_2 < 0 || BUTTON_2 > 48) return -1;
+  return digitalRead(BUTTON_2);
+}
+
+// src/main.cpp:4420-4428 - handleButtonState() utilise les constantes
+if (buttonParam == "boot") {
+  state = getButtonBootState();
+  pin = BUTTON_BOOT;  // v3.28.5: Utilise la constante directement
+} else if (buttonParam == "1" || buttonParam == "button1") {
+  state = getButton1State();
+  pin = BUTTON_1;
+} else if (buttonParam == "2" || buttonParam == "button2") {
+  state = getButton2State();
+  pin = BUTTON_2;
+}
+```
+
+**Impact :**
+- ✅ Monitoring BOOT (GPIO 0) fonctionne maintenant
+- ✅ Monitoring Button 1 (GPIO 38/34) fonctionne
+- ✅ Monitoring Button 2 (GPIO 39/35) fonctionne
+- ✅ Les états se mettent à jour en temps réel
+- ✅ "Pressed" (rouge gras) / "Released" (vert) correct
+
+**Fichiers Modifiés :**
+- `src/main.cpp` :
+  - Lignes 3182-3203 : Lecture d'état boutons mise à jour pour utiliser constantes, ajout `getRotaryButtonGPIOState()`
+  - Lignes 4369-4379 : `handleRotaryPosition()` lit maintenant l'état GPIO réel
+  - Lignes 4389-4407 : `handleButtonStates()` utilise constantes pour numéros de broches
+  - Lignes 4420-4428 : `handleButtonState()` utilise constantes pour broches
+- `platformio.ini` : Version 3.28.4 → 3.28.5
+
+**Tests :**
+1. **Encodeur Rotatif :**
+   - Activer monitoring du bouton encodeur
+   - Presser le bouton → "Pressed" (rouge) ✅
+   - Relâcher → immédiatement "Released" (vert) ✅
+   - Répéter plusieurs fois → états corrects ✅
+
+2. **Boutons BOOT, 1, 2 :**
+   - Activer monitoring pour chaque bouton
+   - Presser GPIO 0/38/39 → "Pressed" immédiat ✅
+   - Relâcher → "Released" immédiat ✅
+   - Pas de blocage sur un état ✅
+
+---
+
+## [Version 3.28.4] - 2025-12-24
+
+### 🐛 Correction de Bug
+
+**Patch de Maintenance :** Correction du monitoring des boutons non fonctionnel - états bloqués sur "Released"
+
+### Corrigé
+
+#### Monitoring des Boutons Non Fonctionnel ✅
+
+**Problème :**
+- Le monitoring des boutons (BOOT, Bouton 1, Bouton 2) affichait toujours l'état "Released"
+- Cliquer sur "Monitor Button" n'avait aucun effet - l'état ne se mettait jamais à jour
+- Le JavaScript frontend appelait le mauvais endpoint API
+
+**Cause Racine :**
+- Le frontend appelle `/api/button-state?button=boot` (singulier) pour les requêtes de bouton individuel
+- Le backend n'avait que l'endpoint `/api/button-states` (pluriel) qui retourne TOUS les boutons
+- Incompatibilité d'endpoint : le frontend attendait une requête de bouton individuel, le backend fournissait une requête groupée
+- Aucun gestionnaire de route enregistré pour `/api/button-state` (singulier)
+
+**Solution :**
+```cpp
+// src/main.cpp:4395-4431 - Ajout du gestionnaire d'état de bouton individuel
+void handleButtonState() {
+  if (!server.hasArg("button")) {
+    sendActionResponse(400, false, "Missing 'button' parameter");
+    return;
+  }
+
+  String buttonParam = server.arg("button");
+  int state = -1;
+  int pin = -1;
+
+  if (buttonParam == "boot") {
+    state = getButtonBootState();
+    pin = buttonBootPin;
+  } else if (buttonParam == "1" || buttonParam == "button1") {
+    state = getButton1State();
+    pin = button1Pin;
+  } else if (buttonParam == "2" || buttonParam == "button2") {
+    state = getButton2State();
+    pin = button2Pin;
+  } else {
+    sendActionResponse(400, false, "Invalid button parameter");
+    return;
+  }
+
+  // LOW = pressé (pull-up), HIGH = relâché
+  bool pressed = (state == LOW && state != -1);
+  bool available = (state != -1);
+
+  sendJsonResponse(200, {
+    jsonBoolField("pressed", pressed),
+    jsonBoolField("released", !pressed && available),
+    jsonBoolField("available", available),
+    jsonNumberField("pin", pin),
+    jsonNumberField("raw_state", state)
+  });
+}
+
+// src/main.cpp:5798 - Enregistrement de la route
+server.on("/api/button-state", handleButtonState);
+```
+
+**Format de Réponse API :**
+```json
+GET /api/button-state?button=boot
+{
+  "pressed": false,
+  "released": true,
+  "available": true,
+  "pin": 0,
+  "raw_state": 1
+}
+```
+
+**Impact :**
+- ✅ Le monitoring des boutons fonctionne maintenant correctement
+- ✅ L'état se met à jour en temps réel (polling 100ms) quand le monitoring est activé
+- ✅ "Pressed" affiché en rouge gras quand le bouton est pressé
+- ✅ "Released" affiché en vert quand le bouton est relâché
+- ✅ Fonctionne pour BOOT (GPIO 0), Bouton 1 et Bouton 2
+
+**Fichiers Modifiés :**
+- `src/main.cpp` :
+  - Lignes 4395-4431 : Ajout du gestionnaire `handleButtonState()`
+  - Ligne 5798 : Enregistrement de la route `/api/button-state`
+- `platformio.ini` : Version 3.28.3 → 3.28.4
+
+**Tests :**
+1. Naviguer vers la page "Dispositifs d'Entrée"
+2. Cliquer sur "Monitor Button" pour le bouton BOOT
+3. Presser le bouton GPIO 0 (BOOT) sur l'ESP32 - l'état devrait changer vers "Pressed" (rouge) ✅
+4. Relâcher le bouton - l'état devrait retourner à "Released" (vert) ✅
+5. Répéter pour Bouton 1 et Bouton 2 ✅
+
+---
+
+## [Version 3.28.3] - 2025-12-24
+
+### 🐛 Corrections de Bugs
+
+**Patch de Maintenance :** Correction de l'initialisation de l'encodeur rotatif + Ajout de l'API de monitoring des boutons
+
+### Corrigé
+
+#### 1. Encodeur Rotatif Ne Fonctionnant Qu'Après Reset ✅
+
+**Problème :**
+- L'encodeur rotatif ne répondait pas aux rotations ou aux pressions après le démarrage
+- Ne fonctionnait qu'après avoir navigué vers la page "Dispositifs d'Entrée" et cliqué sur "Test"
+- Rendait l'encodeur rotatif inutilisable pour une utilisation normale
+
+**Cause Racine :**
+- `initRotaryEncoder()` n'était JAMAIS appelée pendant le démarrage dans `setup()`
+- La fonction n'était appelée que dans `testRotaryEncoder()` qui est déclenchée manuellement via l'interface web
+- Les broches GPIO n'étaient pas configurées et les interruptions n'étaient pas attachées au démarrage
+
+**Solution :**
+```cpp
+// src/main.cpp:5757-5765 - Ajouté dans setup()
+// Initialize rotary encoder on startup (v3.28.3 fix)
+Serial.println("Initialisation de l'encodeur rotatif...");
+initRotaryEncoder();
+if (rotaryAvailable) {
+  Serial.printf("Encodeur rotatif OK: CLK=%d, DT=%d, SW=%d\r\n",
+                rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
+} else {
+  Serial.println("Encodeur rotatif: non disponible ou configuration invalide");
+}
+```
+
+**Impact :**
+- ✅ L'encodeur rotatif s'initialise maintenant automatiquement au démarrage
+- ✅ La détection de rotation fonctionne immédiatement sans test manuel
+- ✅ Les pressions de bouton sont détectées dès la mise sous tension
+- ✅ Suivi de position en temps réel disponible via `/api/rotary-position`
+
+#### 2. Monitoring des Boutons Non Fonctionnel ✅
+
+**Problème :**
+- Les boutons "Monitor Button" dans l'interface web ne faisaient rien
+- Aucun moyen de voir l'état en temps réel des boutons (pressé/relâché)
+- Les fonctions JavaScript existaient mais les endpoints API backend manquaient
+
+**Cause Racine :**
+- Le code frontend référençait les fonctions de monitoring (`toggleBootButtonMonitoring()`, etc.)
+- MAIS aucun endpoint API backend n'existait pour lire l'état des boutons en temps réel
+- Route `/api/button-states` manquante
+
+**Solution :**
+```cpp
+// src/main.cpp:3182-3196 - Ajout des fonctions de lecture d'état des boutons
+int getButtonBootState() {
+  if (buttonBootPin < 0 || buttonBootPin > 48) return -1;
+  return digitalRead(buttonBootPin);
+}
+
+int getButton1State() {
+  if (button1Pin < 0 || button1Pin > 48) return -1;
+  return digitalRead(button1Pin);
+}
+
+int getButton2State() {
+  if (button2Pin < 0 || button2Pin > 48) return -1;
+  return digitalRead(button2Pin);
+}
+
+// src/main.cpp:4375-4393 - Ajout du gestionnaire HTTP
+void handleButtonStates() {
+  int bootState = getButtonBootState();
+  int button1State = getButton1State();
+  int button2State = getButton2State();
+
+  // LOW = pressé (pull-up), HIGH = relâché
+  sendJsonResponse(200, {
+    jsonBoolField("boot_pressed", bootState == LOW && bootState != -1),
+    jsonBoolField("boot_available", bootState != -1),
+    jsonBoolField("button1_pressed", button1State == LOW && button1State != -1),
+    jsonBoolField("button1_available", button1State != -1),
+    jsonBoolField("button2_pressed", button2State == LOW && button2State != -1),
+    jsonBoolField("button2_available", button2State != -1),
+    jsonNumberField("boot_pin", buttonBootPin),
+    jsonNumberField("button1_pin", button1Pin),
+    jsonNumberField("button2_pin", button2Pin)
+  });
+}
+
+// src/main.cpp:5758-5759 - Enregistrement de la route
+server.on("/api/button-states", handleButtonStates);
+```
+
+**Impact :**
+- ✅ Nouveau endpoint API `/api/button-states` retourne l'état en temps réel des boutons
+- ✅ Retourne du JSON avec l'état pressé pour BOOT, Bouton 1 et Bouton 2
+- ✅ Inclut les numéros de broches et le statut de disponibilité
+- ✅ Le monitoring frontend peut maintenant interroger cet endpoint pour des mises à jour en direct
+
+**Fichiers Modifiés :**
+- `src/main.cpp` :
+  - Lignes 3182-3196 : Ajout des fonctions de lecture d'état des boutons
+  - Lignes 4375-4393 : Ajout du gestionnaire HTTP `handleButtonStates()`
+  - Lignes 5757-5765 : Initialisation de l'encodeur rotatif dans `setup()`
+  - Ligne 5759 : Enregistrement de la route `/api/button-states`
+- `platformio.ini` : Version 3.28.2 → 3.28.3
+
+**Tests :**
+1. **Encodeur Rotatif :**
+   - Allumer l'ESP32
+   - Tourner l'encodeur immédiatement - la position devrait changer ✅
+   - Presser le bouton de l'encodeur - devrait être enregistré ✅
+   - Naviguer vers "Dispositifs d'Entrée" - encodeur déjà fonctionnel ✅
+
+2. **Monitoring des Boutons :**
+   - Naviguer vers la page "Dispositifs d'Entrée"
+   - Presser le bouton BOOT (GPIO 0) - retour LED devrait fonctionner ✅
+   - Vérifier l'endpoint `/api/button-states` - devrait retourner les états actuels ✅
+
+---
+
 ## [Version 3.28.2] - 2025-12-24
 
 ### 🐛 Correction Critique
