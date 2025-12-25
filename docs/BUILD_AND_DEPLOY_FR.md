@@ -1,13 +1,13 @@
 ﻿
-# ESP32 Diagnostic Suite – Compilation & Déploiement (v3.29.0)
+# ESP32 Diagnostic Suite – Compilation & Déploiement (v3.30.0)
 
-> NOUVEAUTÉ v3.29.0 : Sélection dynamique du contrôleur TFT (ILI9341 ou ST7789) et configuration de la résolution dans `config.h`. Voir README et CONFIG_FR.md.
+> NOUVEAUTÉ v3.30.0 : Sélection dynamique du contrôleur TFT (ILI9341 ou ST7789) depuis l'interface web, configuration de la résolution dans `config.h` sans recompilation, synchronisation complète des mappings GPIO. Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md).
 
-> **AVERTISSEMENT** : v3.29.0 permet le choix du contrôleur TFT (ILI9341/ST7789) et la résolution dans `config.h`. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
-Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.16.0.
+Ce document décrit les toolchains supportées et la checklist recommandée pour livrer le firmware 3.30.0.
 
-> **Important :** La version 3.12.0 a été migrée depuis Arduino IDE vers **PlatformIO**. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé**.
+> **Important :** Depuis la v3.12.0, le projet a migré d'Arduino IDE vers **PlatformIO**. L'ancienne version Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est **archivée**. Le support Bluetooth/BLE a été **supprimé**.
 
 ## Environnements de Build
 
@@ -83,8 +83,8 @@ Chaque environnement possède des mappings de broches dédiés dans `include/con
 
 Voir [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) pour la référence complète.
 
-## Nouveautés v3.17.1
-Pin mapping par défaut actualisé pour ESP32-S3 et ESP32 Classic (GPS, TFT, LED RGB, capteurs, boutons) et documentation synchronisée ; version portée à 3.17.1.
+## Nouveautés v3.30.0
+Sélection dynamique du contrôleur TFT depuis l'interface web, configuration de la résolution dans `config.h` sans recompilation, synchronisation complète des mappings GPIO, documentation harmonisée. Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md).
 
 ## Nouveautés v3.16.0
 Configuration dynamique des écrans OLED et TFT via interface web, incluant résolution et pin mapping. Surveillance réseau avec journalisation des IP clients. Voir CHANGELOG_FR.md pour détails.
@@ -131,3 +131,4 @@ Configuration dynamique des écrans OLED et TFT via interface web, incluant rés
 - [Guide d'installation](INSTALL_FR.md)
 - [Guide de configuration](CONFIG_FR.md)
 - [Notes de version](../CHANGELOG_FR.md)
+- [Nouveautés v3.30.0](RELEASE_NOTES_3.30.0_FR.md)

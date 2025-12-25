@@ -1,6 +1,13 @@
-# ESP32 Diagnostic Suite – Overview (v3.28.5)
+# ESP32 Diagnostic Suite – Overview (v3.30.0)
+## Latest Update: v3.30.0
 
-> WARNING: v3.28.5 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+**New in v3.30.0:** Dynamic TFT driver selection from Web UI! Switch between ILI9341 and ST7789 displays without recompiling. Full GPIO mapping/code/documentation synchronization. See [RELEASE_NOTES_3.30.0.md](RELEASE_NOTES_3.30.0.md) for details.
+
+---
+
+
+
+> WARNING: This document reflects firmware v3.30.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 The ESP32 Diagnostic Suite delivers a production-ready toolkit for validating ESP32-based boards before deployment. Version 3.15.1 includes **critical memory optimizations for ESP32 Classic** and multi-environment support with three distinct build configurations optimized for different ESP32 hardware variants.
 
 ## Mission statement
@@ -18,7 +25,7 @@ The ESP32 Diagnostic Suite delivers a production-ready toolkit for validating ES
 | Localisation | Runtime FR/EN switching at both the firmware (serial output) and interface levels. |
 | Extensibility | Modular test registry, event bus for user-defined callbacks, and optional OLED/NeoPixel helpers. |
 
-## New in v3.29.0: Dynamic TFT Controller Selection
+## New in v3.30.0: Dynamic TFT Controller Selection
 
 - You can now select the TFT controller (`ILI9341` or `ST7789`) and resolution directly in `include/config.h`:
 ```cpp

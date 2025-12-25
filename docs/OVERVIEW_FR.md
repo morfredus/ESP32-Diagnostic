@@ -1,10 +1,17 @@
-﻿# ESP32 Diagnostic Suite – Vue d'ensemble (v3.28.5)
+﻿# ESP32 Diagnostic Suite – Vue d'ensemble (v3.30.0)
 
-> **AVERTISSEMENT** : v3.28.5 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
-La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version 3.15.1 inclut des **optimisations mémoire critiques pour ESP32 Classic** et le support multi-environnements avec trois configurations de build distinctes optimisées pour différentes variantes matérielles ESP32.
+La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version **3.30.0** inclut la sélection dynamique du contrôleur TFT, la synchronisation complète des mappings GPIO, et le support multi-environnements avec trois configurations de build distinctes optimisées pour différentes variantes matérielles ESP32.
 
 ## Mission
+## Dernière Mise à Jour : v3.30.0
+
+**Nouveau en v3.30.0 :** Sélection dynamique du contrôleur TFT (ILI9341 ou ST7789) depuis l'interface Web et configuration de la résolution dans `config.h` sans recompilation. Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md) pour les détails.
+
+---
+
+
 - Proposer une méthodologie homogène pour qualifier les cartes ESP32-S3 et ESP32 avec plusieurs variantes matérielles.
 - Supporter trois cartes spécifiques avec environnements dédiés : **ESP32-S3 N16R8** (principale), **ESP32-S3 N8R8**, et **ESP32 Classic DevKitC**.
 - Mappings de broches spécifiques au matériel via compilation conditionnelle pour placement périphérique optimal.
@@ -19,31 +26,14 @@ La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production
 | Localisation | Bascule FR/EN à l'exécution côté firmware (sortie série) et interface web. |
 | Extensibilité | Registre modulaire de tests, bus d'événements pour callbacks personnalisés et helpers OLED/NeoPixel optionnels. |
 
-## Nouveauté v3.29.0 : Sélection dynamique du contrôleur TFT
+## Nouveautés v3.30.0
 
-- Vous pouvez désormais choisir le contrôleur TFT (`ILI9341` ou `ST7789`) et la résolution directement dans `include/config.h` :
-```cpp
-#define TFT_CONTROLLER      "ST7789" // ou "ILI9341"
-#define TFT_WIDTH           240
-#define TFT_HEIGHT          320
-```
-- L'affichage est identique quel que soit le contrôleur.
+- Sélection dynamique du contrôleur TFT (`ILI9341` ou `ST7789`) et configuration de la résolution dans `config.h` ou via l'interface web.
+- Synchronisation complète des mappings GPIO avec le code source (`board_config.h`).
+- Corrections et harmonisation des avertissements et de la documentation sur tous les modules.
 - Voir la documentation et le changelog pour plus de détails.
 
-## Focus de la version 3.15.1
 
-**Correction mémoire critique** : La version 3.15.1 résout les échecs de chargement de l'interface web sur cartes ESP32 Classic en implémentant le streaming PROGMEM par morceaux pour le contenu JavaScript, réduisant le pic d'allocation heap de ~50Ko.
-
-## Focus de la version 3.15.0 (Support multi-environnements)
-- **Support multi-environnements :** Trois environnements de build PlatformIO (`esp32s3_n16r8`, `esp32s3_n8r8`, `esp32devkitc`) avec configurations de broches spécifiques au matériel.
-- **Compilation conditionnelle :** Chemins de code spécifiques à la cible utilisant les defines `TARGET_ESP32_S3` et `TARGET_ESP32_CLASSIC`.
-- **Déploiement flexible :** Base de code unique supporte ESP32-S3 (Flash 16Mo/8Mo avec PSRAM) et ESP32 Classic (Flash 4Mo, sans PSRAM).
-- **Documentation complète :** Référence pin mapping, guides de build et détails de configuration mis à jour pour les trois cibles.
-- **Support écran TFT ST7789 :** Support complet des écrans TFT 240x240 avec écran de démarrage et statut WiFi/IP en temps réel (v3.11.0+).
-- **Double affichage :** Fonctionnement simultané OLED et TFT pour visualisation diagnostique améliorée.
-- **Stabilité améliorée :** Résolution des problèmes de chargement JavaScript, erreurs de compilation FPSTR(), et optimisation mémoire avec livraison en streaming.
-- **Validation configuration :** Finalisation du mapping des pins pour ESP32-S3 DevKitC-1 N16R8 avec rétro-éclairage TFT sur GPIO 15.
-- **Optimisation PlatformIO :** Configuration PSRAM améliorée avec stabilité et performance accrues.
 
 ## Carte du wiki
 Consultez cette carte pour accéder directement à la bonne rubrique :

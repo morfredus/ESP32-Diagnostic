@@ -1,28 +1,42 @@
 
-# ESP32 Diagnostic Suite (v3.29.0)
+# ESP32 Suite de Diagnostic (v3.30.0)
 
-> **Note** : v3.29.0 ajoute la prise en charge dynamique des écrans TFT ILI9341 et ST7789. Sélectionnez le contrôleur et la résolution dans `config.h`.
+> **Note** : v3.30.0 ajoute **le changement de driver TFT en temps réel** depuis l'interface Web ! Basculez entre les écrans ILI9341 et ST7789 sans recompilation.
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
 
-## ✨ Nouveautés de la version 3.29.0 - Sélection dynamique du contrôleur TFT
+## ✨ Nouveautés version 3.30.0 - Changement de Driver TFT en Runtime
 
-**Nouvelles fonctionnalités :**
-- Sélection dynamique du contrôleur TFT (`ILI9341` ou `ST7789`) via `TFT_CONTROLLER` dans `config.h`.
-- La résolution est également configurable dans `config.h`.
-- L'affichage est identique quel que soit le contrôleur.
-- Documentation et guides mis à jour.
+**Nouvelles Fonctionnalités :**
+- **Changement dynamique de driver TFT** depuis l'interface Web - Aucune recompilation nécessaire !
+- Basculez entre les drivers `ILI9341` et `ST7789` à la volée
+- Les deux drivers chargés simultanément pour un changement instantané
+- Nouveau sélecteur de driver dans la section de configuration TFT
+- Aucun redémarrage requis pour changer de driver
 
-**Comment faire ?**
-Modifiez `include/config.h` :
+**Comment utiliser :**
+1. Ouvrez l'interface Web et naviguez vers la section écran TFT
+2. Sélectionnez le driver désiré dans le nouveau menu déroulant "Driver" (ILI9341 ou ST7789)
+3. Cliquez sur "Appliquer" - le driver change immédiatement !
+4. Testez votre écran avec les boutons de test intégrés
+
+**Driver par défaut au démarrage :**
+Éditez `include/config.h` :
 ```cpp
-#define TFT_CONTROLLER      "ST7789" // ou "ILI9341"
-#define TFT_WIDTH           240
-#define TFT_HEIGHT          320
+#define TFT_USE_ILI9341  // ou TFT_USE_ST7789
 ```
 
-**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.29.0.
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour tous les détails de la version 3.30.0.
+
+## Précédent : Version 3.29.0
+
+**Sélection Dynamique du Contrôleur TFT :**
+- Sélection dynamique du contrôleur TFT (`ILI9341` ou `ST7789`) via `config.h`
+- Résolution configurable dans `config.h`
+- Affichage identique quel que soit le contrôleur
+
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour tous les détails de la version 3.29.0.
 
 ## Précédent : version 3.28.4
 

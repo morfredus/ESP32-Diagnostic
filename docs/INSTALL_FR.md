@@ -1,10 +1,10 @@
-﻿# Guide d'installation (FR)
+﻿# Guide d'installation (v3.30.0)
 
-> **AVERTISSEMENT** : v3.28.5 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : Ce guide reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 Suivez ces étapes pour déployer ESP32 Diagnostic Suite sur votre carte.
 
-> **Version 3.12.0 :** Cette version a été migrée depuis Arduino IDE vers **PlatformIO dans Visual Studio Code**. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé** car il n'est pas correctement géré sous la configuration de plateforme PlatformIO.
+> **Nouveauté v3.30.0 :** Synchronisation complète des mappings GPIO, documentation et code. Voir aussi [RELEASE_NOTES_3.30.0_FR.md]. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé** car il n'est pas correctement géré sous la configuration de plateforme PlatformIO.
 
 ## 1. Prérequis
 

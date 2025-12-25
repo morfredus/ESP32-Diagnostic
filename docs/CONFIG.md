@@ -1,16 +1,40 @@
-## TFT Controller and Resolution Selection (v3.29.0)
+## TFT Dynamic Driver Selection (v3.30.0)
 
-You can now select the TFT controller (`ILI9341` or `ST7789`) and set the resolution directly in `include/config.h`:
+**NEW:** You can now switch between TFT controllers (`ILI9341` or `ST7789`) dynamically from the Web UI without recompiling!
+
+### Runtime Driver Switching (Web UI)
+
+1. **Access Web Interface** → Navigate to TFT Screen section
+2. **Select Driver** → Choose from dropdown: ILI9341 or ST7789
+3. **Apply** → Driver switches instantly (no reboot required)
+4. **Test** → Use built-in display tests immediately
+
+### Default Driver at Boot
+
+Set the default driver in `include/config.h`:
 ```cpp
-#define TFT_CONTROLLER      "ST7789" // or "ILI9341"
-#define TFT_WIDTH           240
-#define TFT_HEIGHT          320
-```
-The display output is identical regardless of the controller.
-See the changelog for details.
-# Configuration (EN) – v3.28.5
+// v3.30.0: Both drivers loaded simultaneously
+// #define TFT_USE_ILI9341  
+#define TFT_USE_ST7789  // Default driver at boot
 
-> WARNING: v3.28.5 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+#define TFT_WIDTH   240
+#define TFT_HEIGHT  320
+```
+
+**Note:** The `#define` only sets the initial driver. You can change it anytime from the Web UI.
+
+### Benefits
+
+- ⚡ **No Recompilation**: Test different drivers without reflashing
+- 🔄 **Instant Switching**: Change drivers on-the-fly
+- 🧪 **Easy Testing**: Quickly identify compatibility issues
+- 📦 **Single Firmware**: One build supports both display types
+
+See [RELEASE_NOTES_3.30.0.md](RELEASE_NOTES_3.30.0.md) for complete details.
+
+# Configuration (EN) – v3.30.0
+
+> WARNING: This document reflects firmware v3.30.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 ## Build Environment Selection
 
@@ -60,7 +84,7 @@ const char* WIFI_PASS_2 = "BackupPassword";
 - French is the default language.
 - Use `/api/set-language?lang=en` or the UI toggle to switch to English.
 - Translation strings live in `languages.h` inside the `Translations` structure. Add new languages by extending this file and exposing them in the UI.
-- Release 3.8.0 keeps the shared catalog in sync while adding the Wi-Fi splash and NimBLE safeguards with no extra configuration required.
+- Release 3.30.0 retains dynamic TFT controller selection, full GPIO mapping synchronization, and multi-environment support. See [RELEASE_NOTES_3.30.0.md](RELEASE_NOTES_3.30.0.md) for details.
 
 ## Display configuration
 
@@ -116,7 +140,7 @@ const char* WIFI_PASS_2 = "BackupPassword";
 
 ## Advanced options
 - **PSRAM:** Automatically enabled for ESP32-S3 N16R8 and N8R8 builds via `platformio.ini` configuration.
-- **BLE support:** Not available in this PlatformIO version. BLE functionality has been removed.
+- **BLE support:** Not available in this PlatformIO version (v3.30.0). BLE functionality has been removed.
 - **Debugging:** Open the Serial Monitor to observe Wi-Fi connection retries (mirrored on OLED if present), diagnostic progress, and sensor readings. Poll `/api/memory-details` for precise fragmentation metrics.
 - **Multi-board support:** Select the appropriate environment in PlatformIO (`esp32s3_n16r8`, `esp32s3_n8r8`, or `esp32devkitc`) before building.
 

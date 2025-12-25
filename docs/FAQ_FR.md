@@ -1,8 +1,8 @@
-﻿# ESP32 Diagnostic Suite – FAQ (v3.29.0)
+﻿# ESP32 Diagnostic Suite – FAQ (v3.30.0)
 
-> NOUVEAUTÉ v3.29.0 : Sélection dynamique du contrôleur TFT (ILI9341 ou ST7789) et configuration de la résolution dans `config.h`. Voir README_FR.md et CONFIG_FR.md.
+> NOUVEAUTÉ v3.30.0 : Synchronisation complète des mappings GPIO, documentation et code. Voir README_FR.md, CONFIG_FR.md et RELEASE_NOTES_3.30.0_FR.md.
 
-> **AVERTISSEMENT** : v3.28.5 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 ## Généralités
 **Q : Quelles cartes sont officiellement supportées ?**
@@ -12,6 +12,7 @@ R : Trois cartes sont officiellement supportées dans cette version :
 - ESP32-DevKitC (4Mo Flash, sans PSRAM)
 
 Voir [FEATURE_MATRIX_FR.md](FEATURE_MATRIX_FR.md) pour la comparaison détaillée des capacités.
+Consultez aussi [Nouveautés v3.30.0](RELEASE_NOTES_3.30.0_FR.md).
 
 **Q : Puis-je lancer les diagnostics sans Wi-Fi ?**
 R : Oui. La suite fonctionne en mode hotspot hors ligne ou via commandes série USB. Les modules réseau sont simplement ignorés.
