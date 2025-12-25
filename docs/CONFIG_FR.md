@@ -13,9 +13,9 @@
 
 Définir le driver par défaut dans `include/config.h` :
 ```cpp
-// v3.30.0 : Les deux drivers chargés simultanément
-#define TFT_USE_ILI9341  // Driver par défaut au démarrage
-// #define TFT_USE_ST7789
+// v3.30.0: Both drivers loaded simultaneously
+// #define TFT_USE_ILI9341  
+#define TFT_USE_ST7789  // Default driver at boot
 
 #define TFT_WIDTH   240
 #define TFT_HEIGHT  320
@@ -34,7 +34,7 @@ Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md) pour tous les dét
 
 # Configuration (FR) — v3.30.0
 
-> **AVERTISSEMENT** : v3.28.5 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 ## Sélection de l'Environnement de Build
 
@@ -84,7 +84,7 @@ const char* WIFI_PASS_2 = "SecoursMotDePasse";
 - Le français est la langue par défaut.
 - Utilisez `/api/set-language?lang=en` ou le sélecteur FR/EN dans l'interface pour basculer en anglais.
 - Les chaînes de traduction résident dans `languages.h` au sein de la structure `Translations`. Ajoutez une langue en étendant cette structure et en l'exposant dans l'interface.
-- La version 3.9.0 conserve le catalogue partagé synchronisé tout en ajoutant l'écran Wi-Fi et les garde-fous NimBLE sans configuration supplémentaire.
+- La version 3.30.0 conserve la sélection dynamique du contrôleur TFT, la synchronisation complète des mappings GPIO, et le support multi-environnements. Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md) pour les nouveautés.
 
 ## Configuration des affichages
 
@@ -140,7 +140,7 @@ const char* WIFI_PASS_2 = "SecoursMotDePasse";
 
 ## Options avancées
 - Activez la PSRAM dans le menu carte de l'Arduino IDE pour les ESP32-S3 afin d'accéder aux diagnostics mémoire étendus.
-- **Support BLE :** Non disponible dans cette version PlatformIO. La fonctionnalité BLE a été supprimée.
+- **Support BLE :** Non disponible dans cette version PlatformIO (v3.30.0). La fonctionnalité BLE a été supprimée.
 - **Support multi-cartes :** Sélectionner l'environnement approprié dans PlatformIO (`esp32s3_n16r8`, `esp32s3_n8r8`, ou `esp32devkitc`) avant compilation.
 - Pour le debug, suivez le moniteur série : les retraits Wi-Fi (également reflétés sur l'écran OLED), les états BLE et la progression des tests y sont journalisés, puis interrogez `/api/memory-details` pour obtenir les métriques de fragmentation détaillées.
 - NimBLE est sélectionné automatiquement sur les cartes ESP32-S3 et les cibles USB ; en 3.8.0, les résultats de scan sont validés avant exposition, évitant toute manipulation manuelle.

@@ -1,29 +1,26 @@
-# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.28.5)
+
 # ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.30.0)
 
-> NOUVEAUTÉ v3.30.0 : Sélection dynamique du contrôleur TFT (ILI9341 ou ST7789) et configuration de la résolution dans `config.h`.
-| Test TFT | ✅ | ✅ | ✅ | ESP32 classique. 4Mo Flash, sans PSRAM. Pas de restriction GPIO 35-48. |
-| Test TFT | ✅ | ✅ | ✅ | ESP32 classique. 4Mo Flash, sans PSRAM. Pas de restriction GPIO 35-48. Prend en charge ST7789 (SPI, 240x240/240x320) et ILI9341 (SPI, 240x320) – configurable dans `config.h`. |
-> **AVERTISSEMENT** : Ce document reflète le firmware v3.28.5 avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. La documentation précédente (v3.22.1) contenait des erreurs CRITIQUES. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
-Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.28.5 et ses trois environnements de build.
+> **NOUVEAUTÉ v3.30.0 :** Sélection dynamique du contrôleur TFT (ILI9341 ou ST7789) et configuration de la résolution dans `config.h`. Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md).
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
+
+
+Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version **3.30.0** et ses trois environnements de build.
 Elle aide à planifier les campagnes de validation et à vérifier si des périphériques optionnels nécessitent un câblage supplémentaire.
 
-> **Important :** La version 3.28.5 (PlatformIO) n'active pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
 
+> **Important :** La version 3.30.0 (PlatformIO) n'active pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
+
+
+**✨ Nouveau en v3.30.0 :** Sélection dynamique du contrôleur TFT (ILI9341 ou ST7789) depuis l'interface web, configuration de la résolution dans `config.h` sans recompilation, corrections et synchronisation complète des mappings GPIO avec le code source.
 **✨ Nouveau en v3.28.5 :** Corrections monitoring dispositifs d'entrée - état bouton encodeur lit GPIO réel, monitoring boutons utilise accès direct aux constantes.
-
 **✨ Nouveau en v3.28.4 :** Corrections endpoint API monitoring boutons - ajout `/api/button-state` (singulier) pour requêtes boutons individuels.
-
 **✨ Nouveau en v3.28.3 :** Auto-initialisation encodeur rotatif dans setup(), endpoints API backend monitoring boutons.
-
 **✨ Nouveau en v3.28.x :** Support encodeur rotatif (HW-040) avec monitoring temps réel. Endpoints API test carte SD. Configuration broche TFT MISO via interface web. Avertissement partage GPIO 13 (TFT/SD MISO).
-
 **✨ Nouveau en v3.27.x :** Monitoring boutons matériels (BUTTON_BOOT, BUTTON_1, BUTTON_2) avec mises à jour état temps réel.
-
 **✨ Nouveau en v3.22.0 :** MQTT Publisher pour publication en temps réel des métriques système (mémoire, WiFi, capteurs) vers Home Assistant, NodeRED, InfluxDB et autres brokers MQTT. Non-bloquant avec auto-reconnexion. **Désactivé par défaut.**
-
-**⚠️ Mis à jour en v3.28.2 :** Documentation entièrement synchronisée avec `board_config.h`. Toutes erreurs GPIO corrigées (11+ corrections critiques depuis v3.22.1).
+**⚠️ Documentation synchronisée avec `board_config.h`.**
 
 ## Légende
 - ✅ – Pris en charge nativement par le firmware.

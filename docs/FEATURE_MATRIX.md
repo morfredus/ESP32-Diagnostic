@@ -1,29 +1,24 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.28.5)
+# ESP32 Diagnostic Suite – Feature Matrix (v3.30.0)
 # ESP32 Diagnostic Suite – Feature Matrix (v3.30.0)
 
 > NEW in v3.30.0: Dynamic TFT controller selection (ILI9341 or ST7789) and resolution configuration in `config.h`.
 | TFT test | ? | ? | ? | 4MB Flash, **no PSRAM**. Different pin mapping (see PIN_MAPPING.md). No GPIO 35-48 restrictions. |
 | TFT test | ? | ? | ? | 4MB Flash, **no PSRAM**. Different pin mapping (see PIN_MAPPING.md). No GPIO 35-48 restrictions. Supports ST7789 (SPI, 240x240/240x320) and ILI9341 (SPI, 240x320) – configurable in `config.h`. |
-> WARNING: This document reflects firmware v3.28.5 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Previous documentation (v3.22.1) contained CRITICAL errors. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
+> WARNING: This document reflects firmware v3.30.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
-This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.28.5 with three distinct build environments.
+This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.30.0 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.
 
-> **Important:** Current release 3.28.5 (PlatformIO) ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+> **Important:** Current release 3.30.0 (PlatformIO) ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
 
+**✨ New in v3.30.0:** Dynamic TFT controller selection (ILI9341 or ST7789) and resolution configuration in `config.h` or via the web interface. Full GPIO mapping synchronization with the codebase. All warnings and documentation harmonized. See changelog for details.
 **✨ New in v3.28.5:** Input device monitoring fixes - rotary encoder button state reads real GPIO, button monitoring uses direct constant access.
-
 **✨ New in v3.28.4:** Button monitoring API endpoint corrections - added `/api/button-state` (singular) for individual button queries.
-
 **✨ New in v3.28.3:** Rotary encoder auto-initialization in setup(), button monitoring API backend endpoints.
-
 **✨ New in v3.28.x:** Rotary encoder (HW-040) support with real-time monitoring. SD card testing API endpoints. TFT MISO pin configuration via web interface. GPIO 13 sharing warning (TFT/SD MISO).
-
 **✨ New in v3.27.x:** Hardware button monitoring (BUTTON_BOOT, BUTTON_1, BUTTON_2) with real-time state updates.
-
 **✨ New in v3.22.0:** MQTT Publisher for real-time system metrics publishing (memory, WiFi, sensors) to Home Assistant, NodeRED, InfluxDB and other MQTT brokers. Non-blocking with auto-reconnect. **Disabled by default.**
-
-**⚠️ Updated in v3.28.2:** Documentation fully synchronized with `board_config.h`. All GPIO errors corrected (11+ critical fixes from v3.22.1).
+**⚠️ Documentation synchronized with `board_config.h`.**
 
 ## Legend
 - ? � Supported out of the box by the firmware.

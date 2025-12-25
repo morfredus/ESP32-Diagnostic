@@ -1,6 +1,6 @@
-﻿# Contribuer (FR) – v3.28.5
+﻿# Contribuer (FR) – v3.30.0
 
-> **AVERTISSEMENT** : v3.28.5 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 Les contributions qui améliorent la fiabilité du diagnostic et l'expérience utilisateur sont les bienvenues.
 
@@ -16,7 +16,7 @@ Les contributions qui améliorent la fiabilité du diagnostic et l'expérience u
 - Gardez la documentation anglaise et française alignée.
 - Mentionnez la version du firmware vérifiée lors de la mise à jour d'un guide.
 - Utilisez un ton technique et concis sans promettre de fonctionnalités non implémentées.
-- Rappelez la version 3.9.0 lors des travaux de maintenance afin de garder synchronisés l'écran Wi-Fi, les migration PlatformIO, le duo de changelog bilingue et `DIAGNOSTIC_VERSION`.
+- Rappelez la version 3.30.0 lors des travaux de maintenance afin de garder synchronisés l'écran Wi-Fi, la migration PlatformIO, le duo de changelog bilingue et `DIAGNOSTIC_VERSION`. Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md).
 
 ## Signalement d'anomalies
 Déclarez vos anomalies via [GitHub Issues](https://github.com/morfredus/ESP32-Diagnostic/issues/new/choose) et incluez :
