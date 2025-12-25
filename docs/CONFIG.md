@@ -1,14 +1,38 @@
-## TFT Controller and Resolution Selection (v3.29.0)
+## TFT Dynamic Driver Selection (v3.30.0)
 
-You can now select the TFT controller (`ILI9341` or `ST7789`) and set the resolution directly in `include/config.h`:
+**NEW:** You can now switch between TFT controllers (`ILI9341` or `ST7789`) dynamically from the Web UI without recompiling!
+
+### Runtime Driver Switching (Web UI)
+
+1. **Access Web Interface** → Navigate to TFT Screen section
+2. **Select Driver** → Choose from dropdown: ILI9341 or ST7789
+3. **Apply** → Driver switches instantly (no reboot required)
+4. **Test** → Use built-in display tests immediately
+
+### Default Driver at Boot
+
+Set the default driver in `include/config.h`:
 ```cpp
-#define TFT_CONTROLLER      "ST7789" // or "ILI9341"
-#define TFT_WIDTH           240
-#define TFT_HEIGHT          320
+// v3.30.0: Both drivers loaded simultaneously
+#define TFT_USE_ILI9341  // Default driver at boot
+// #define TFT_USE_ST7789
+
+#define TFT_WIDTH   240
+#define TFT_HEIGHT  320
 ```
-The display output is identical regardless of the controller.
-See the changelog for details.
-# Configuration (EN) – v3.28.5
+
+**Note:** The `#define` only sets the initial driver. You can change it anytime from the Web UI.
+
+### Benefits
+
+- ⚡ **No Recompilation**: Test different drivers without reflashing
+- 🔄 **Instant Switching**: Change drivers on-the-fly
+- 🧪 **Easy Testing**: Quickly identify compatibility issues
+- 📦 **Single Firmware**: One build supports both display types
+
+See [RELEASE_NOTES_3.30.0.md](RELEASE_NOTES_3.30.0.md) for complete details.
+
+# Configuration (EN) – v3.30.0
 
 > WARNING: v3.28.5 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
