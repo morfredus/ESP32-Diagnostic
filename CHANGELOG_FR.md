@@ -1,3 +1,149 @@
+## [Version 3.29.0] - 2025-12-25
+
+### ✨ Nouvelles Fonctionnalités
+
+**Version Mineure :** Fonctionnalité carte SD entièrement activée + Page Mémoire restructurée
+
+### Ajouté
+
+#### 1. Fonctionnalité Carte SD Activée ✅
+
+**Problème :**
+- La gestion de la carte SD était complètement non fonctionnelle malgré le code existant
+- L'interface affichait :
+  - "not tested" pour Test SD
+  - "Not available" pour Read Test, Write Test, Format Card
+  - "Not detected" pour Refresh
+- Tout le code SD existait mais n'était jamais initialisé
+
+**Cause Racine :**
+- La fonction `initSD()` n'était jamais appelée dans `setup()`
+- L'initialisation de la carte SD était complètement dormante
+- Toutes les routes API enregistrées mais matériel SD jamais activé au démarrage
+
+**Solution :**
+```cpp
+// src/main.cpp:5722-5731 - Initialisation SD ajoutée à setup()
+// Initialize SD Card (v3.29.0 fix)
+Serial.println("Initialisation de la carte SD...");
+if (initSD()) {
+  Serial.printf("Carte SD OK: Type=%s, Taille=%llu MB\r\n",
+                sdCardTypeStr.c_str(), sdCardSize);
+} else {
+  Serial.println("Carte SD: non disponible ou non detectee");
+  Serial.printf("  Pins SPI: MISO=%d, MOSI=%d, SCLK=%d, CS=%d\r\n",
+                sd_miso_pin, sd_mosi_pin, sd_sclk_pin, sd_cs_pin);
+}
+```
+
+**Impact :**
+- ✅ Détection de la carte SD fonctionne maintenant au démarrage
+- ✅ Bouton Test SD affiche le statut réel de la carte (type, taille, espace libre)
+- ✅ Read Test effectue une vraie opération de lecture 10KB
+- ✅ Write Test effectue une vraie opération écriture+vérification 10KB
+- ✅ Format Card formate correctement le système de fichiers FAT de la carte SD
+- ✅ Bouton Refresh re-détecte la carte après insertion/retrait
+- ✅ Entièrement fonctionnel sur ESP32 Classic (HSPI) et ESP32-S3 (FSPI)
+
+#### 2. Journalisation Améliorée de l'Initialisation SD ✅
+
+**Amélioration :**
+- Ajout de journalisation debug complète tout au long du processus d'initialisation SD
+- Affichage détaillé de la configuration des pins dans le Moniteur Série
+- Identification du type de bus SPI (HSPI vs FSPI)
+- Progression d'initialisation étape par étape
+- Messages d'erreur clairs pour le dépannage
+
+**Modifications :**
+```cpp
+// src/main.cpp:2938-2974 - Fonction initSD() améliorée
+Serial.println("\r\n=== INIT SD CARD ===");
+Serial.printf("SD: Configuration pins: MISO=%d, MOSI=%d, SCLK=%d, CS=%d\r\n",
+              sd_miso_pin, sd_mosi_pin, sd_sclk_pin, sd_cs_pin);
+
+#if defined(CONFIG_IDF_TARGET_ESP32)
+  sdSPI = new SPIClass(HSPI);  // ESP32 classic utilise HSPI
+  Serial.println("SD: Using HSPI (ESP32 Classic)");
+#else
+  sdSPI = new SPIClass(FSPI);  // ESP32-S2/S3 utilisent FSPI (SPI2)
+  Serial.println("SD: Using FSPI (ESP32-S2/S3)");
+#endif
+```
+
+**Impact :**
+- ✅ Dépannage facile via Moniteur Série (115200 bauds)
+- ✅ Identification claire des problèmes de configuration des pins
+- ✅ Confirmation du bus SPI spécifique au matériel
+- ✅ Contexte d'erreur détaillé pour échec d'initialisation
+
+#### 3. Page Mémoire Restructurée ✅
+
+**Amélioration :**
+- Ajout d'un panneau d'informations mémoire détaillées en haut de la page Mémoire
+- Plus complet que la section mémoire de la page Overview
+- Magnifique design de carte avec dégradé et toutes les métriques mémoire
+- Test de Stress Mémoire déplacé de la page Tests Matériels vers la page Mémoire
+
+**Modifications :**
+```javascript
+// include/web_interface.h:99 - buildMemory() maintenant async
+async function buildMemory(){
+  const memResp=await fetch('/api/memory-details').catch(()=>null);
+  const memData=memResp?await memResp.json().catch(()=>null):null;
+
+  // Panneau d'informations mémoire détaillées
+  if(memData){
+    h+='<div class="card" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);...">';
+    h+='<h3>Détails Mémoire</h3>';
+    // Flash: Taille, Utilisée, Libre, Utilisation %
+    // SRAM: Totale, Utilisée, Libre, Utilisation %
+    // PSRAM: Totale, Utilisée, Libre, Utilisation % (si disponible)
+  }
+
+  // Section Carte SD (existante)
+  // Test de Stress Mémoire (déplacé depuis Tests Matériels)
+}
+```
+
+**Impact :**
+- ✅ La page Mémoire affiche maintenant des détails mémoire complets en haut
+- ✅ Infos Flash, SRAM, PSRAM toutes au même endroit
+- ✅ Regroupement logique : Test de Stress Mémoire avec infos mémoire
+- ✅ Expérience utilisateur et organisation de la page améliorées
+- ✅ La page Overview reste complète et non affectée
+
+### Fichiers Modifiés
+
+- `src/main.cpp` : Ajout de l'appel `initSD()` dans `setup()`, journalisation SD améliorée (24 insertions, 1 suppression)
+- `include/web_interface.h` : `buildMemory()` rendu async, UI de la page Mémoire restructurée (6 modifications)
+
+### Détails Techniques
+
+**Configuration SPI Carte SD :**
+- ESP32 Classic : Bus HSPI
+- ESP32-S2/S3 : Bus FSPI (SPI2)
+- Le mapping des pins suit strictement `include/board_config.h`
+- Ne jamais modifier la configuration des pins
+
+**Opérations Supportées :**
+- Détection : Auto-détection du type de carte (SD, SDHC, SDXC, MMC)
+- Read Test : Mesure de performance de lecture 10KB
+- Write Test : Écriture + vérification 10KB
+- Format : Formatage du système de fichiers FAT16/FAT32
+- Refresh : Re-montage après insertion/retrait de carte
+
+### Changements Incompatibles
+
+Aucun. C'est une activation de fonctionnalité rétrocompatible.
+
+### Limitations Connues
+
+- La carte SD nécessite du matériel physique (slot SD sur la carte ESP32)
+- Taille maximale de carte dépend des limites FAT32 (jusqu'à 2TB en pratique)
+- Mode SPI uniquement (plus lent que SDIO mais plus compatible)
+
+---
+
 ## [Version 3.28.5] - 2025-12-24
 
 ### 🐛 Corrections de Bugs

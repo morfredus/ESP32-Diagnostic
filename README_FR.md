@@ -1,10 +1,34 @@
-# ESP32 Diagnostic Suite (v3.28.5)
+# ESP32 Diagnostic Suite (v3.29.0)
 
-> **Note** : v3.28.5 corrige le bouton encodeur bloqué + problèmes GPIO monitoring boutons. Tout le monitoring des dispositifs d'entrée fonctionne correctement maintenant. ✅
+> **Note** : v3.29.0 active la fonctionnalité carte SD complète + restructure la page Mémoire. La détection, tests lecture/écriture et formatage de carte SD sont maintenant pleinement opérationnels. ✅
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## ✨ Nouveautés de la version 3.28.5 - Monitoring Entrées Corrigé
+## ✨ Nouveautés de la version 3.29.0 - Carte SD Entièrement Activée
+
+**Nouvelles Fonctionnalités :**
+1. ✅ **Fonctionnalité Carte SD Activée** - Détection, tests lecture/écriture, formatage fonctionnent
+2. ✅ **Journalisation SD Améliorée** - Configuration des pins et identification du bus SPI détaillées
+3. ✅ **Page Mémoire Restructurée** - Panneau d'infos mémoire détaillé + Test de Stress Mémoire déplacé ici
+
+**Changements Clés :**
+```cpp
+// src/main.cpp:5722-5731 - Initialisation SD maintenant appelée dans setup()
+Serial.println("Initialisation de la carte SD...");
+if (initSD()) {
+  Serial.printf("Carte SD OK: Type=%s, Taille=%llu MB\r\n",
+                sdCardTypeStr.c_str(), sdCardSize);
+}
+```
+
+**Impact :**
+- Boutons Test SD, Read Test, Write Test, Format Card, Refresh tous fonctionnels
+- Fonctionne sur ESP32 Classic (HSPI) et ESP32-S3 (FSPI)
+- La page Mémoire affiche des détails Flash/SRAM/PSRAM complets en haut
+
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.29.0.
+
+## Précédent : version 3.28.5
 
 **Corrections de Bugs :**
 1. ✅ **Bouton Encodeur Rotatif** - Plus bloqué sur "Pressed", lit l'état GPIO réel
@@ -238,6 +262,7 @@ int getButtonBootState() {
 ## Capacités principales
 - Interface multilingue avec bascule FR/EN en temps réel sans rechargement.
 - Diagnostics matériels automatisés couvrant GPIO, ADC, pads tactiles, PWM, I2C, SPI, PSRAM, flash et scan Wi-Fi.
+- **Gestion carte SD** avec détection, tests lecture/écriture, formatage et rafraîchissement (mode SPI, supporte SD/SDHC/SDXC/MMC).
 - **Support écran TFT ST7789** avec écran de démarrage et état WiFi/IP en temps réel (résolution 240x240).
 - Batterie de tests OLED 0,96" I2C avec déclenchement pas-à-pas et animations prévisualisées.
 - **Support double affichage** : fonctionnement simultané OLED et TFT pour diagnostics améliorés.

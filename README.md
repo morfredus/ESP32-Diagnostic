@@ -1,10 +1,34 @@
-# ESP32 Diagnostic Suite (v3.28.5)
+# ESP32 Diagnostic Suite (v3.29.0)
 
-> **Note**: v3.28.5 fixes rotary encoder button stuck + button monitoring GPIO issues. All input device monitoring now works correctly. ✅
+> **Note**: v3.29.0 enables full SD Card functionality + restructures Memory page. SD card detection, read/write tests, and formatting now fully operational. ✅
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## ✨ Version 3.28.5 Highlights - Input Monitoring Fixed
+## ✨ Version 3.29.0 Highlights - SD Card Fully Enabled
+
+**New Features:**
+1. ✅ **SD Card Functionality Enabled** - Detection, read/write tests, formatting all work
+2. ✅ **Enhanced SD Logging** - Detailed pin configuration and SPI bus identification
+3. ✅ **Memory Page Restructured** - Detailed memory info panel + Memory Stress Test moved here
+
+**Key Changes:**
+```cpp
+// src/main.cpp:5722-5731 - SD initialization now called in setup()
+Serial.println("Initialisation de la carte SD...");
+if (initSD()) {
+  Serial.printf("Carte SD OK: Type=%s, Taille=%llu MB\r\n",
+                sdCardTypeStr.c_str(), sdCardSize);
+}
+```
+
+**Impact:**
+- Test SD, Read Test, Write Test, Format Card, Refresh buttons all functional
+- Works on ESP32 Classic (HSPI) and ESP32-S3 (FSPI)
+- Memory page shows comprehensive Flash/SRAM/PSRAM details at top
+
+**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.29.0 details.
+
+## Previous: Version 3.28.5
 
 **Bug Fixes:**
 1. ✅ **Rotary Encoder Button** - No longer stuck on "Pressed", reads real GPIO state
@@ -227,6 +251,7 @@ int getButtonBootState() {
 ## Main Capabilities
 - Multilingual interface with real-time FR/EN toggle without reload.
 - Automated hardware diagnostics covering GPIO, ADC, touch pads, PWM, I2C, SPI, PSRAM, flash, and Wi-Fi scan.
+- **SD Card management** with detection, read/write tests, formatting, and refresh capabilities (SPI mode, supports SD/SDHC/SDXC/MMC).
 - **TFT ST7789 screen support** with boot screen and real-time WiFi/IP status (240x240 resolution).
 - 0.96" I2C OLED test battery with step-by-step trigger and previewed animations.
 - **Dual display support**: simultaneous OLED and TFT operation for enhanced diagnostics.
