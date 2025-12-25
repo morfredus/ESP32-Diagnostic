@@ -268,6 +268,14 @@ int tftBL = TFT_BL;
 int tftWidth = TFT_WIDTH;
 int tftHeight = TFT_HEIGHT;
 int tftRotation = TFT_ROTATION;
+// v3.30.0: Current TFT driver type (runtime switchable)
+#if defined(TFT_USE_ILI9341)
+String tftDriver = "ILI9341";
+#elif defined(TFT_USE_ST7789)
+String tftDriver = "ST7789";
+#else
+String tftDriver = "ILI9341";  // Default
+#endif
 #endif
 Adafruit_NeoPixel *strip = nullptr;
 
@@ -512,22 +520,22 @@ static void onButtonBootLongPress() {
   
 #if ENABLE_TFT_DISPLAY
   if (tftAvailable) {
-    tft.fillScreen(TFT_BLACK);
-    tft.setTextSize(2);
-    tft.setTextColor(TFT_WHITE);
-    tft.setCursor(10, 80);
-    tft.println("Redemarrage...");
+    tft->fillScreen(TFT_BLACK);
+    tft->setTextSize(2);
+    tft->setTextColor(TFT_WHITE);
+    tft->setCursor(10, 80);
+    tft->println("Redemarrage...");
     
     // Barre de progression
     int barX = 20;
     int barY = 120;
     int barW = tftWidth - 40;
     int barH = 20;
-    tft.drawRect(barX, barY, barW, barH, TFT_WHITE);
+    tft->drawRect(barX, barY, barW, barH, TFT_WHITE);
     
     for (int i = 0; i <= 100; i += 10) {
       int fillW = (barW - 4) * i / 100;
-      tft.fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_GREEN);
+      tft->fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_GREEN);
       delay(50);
     }
     delay(300);
@@ -593,25 +601,25 @@ static void maintainButtons() {
           if (now - lastProgressUpdate > 50) {
             lastProgressUpdate = now;
             
-            tft.fillScreen(TFT_BLACK);
-            tft.setTextSize(2);
-            tft.setTextColor(TFT_YELLOW);
-            tft.setCursor(10, 60);
-            tft.println("Maintenir pour");
-            tft.setCursor(10, 85);
-            tft.println("redemarrer...");
+            tft->fillScreen(TFT_BLACK);
+            tft->setTextSize(2);
+            tft->setTextColor(TFT_YELLOW);
+            tft->setCursor(10, 60);
+            tft->println("Maintenir pour");
+            tft->setCursor(10, 85);
+            tft->println("redemarrer...");
             
             // Barre de progression
             int barX = 20;
             int barY = 130;
             int barW = tftWidth - 40;
             int barH = 20;
-            tft.drawRect(barX, barY, barW, barH, TFT_WHITE);
+            tft->drawRect(barX, barY, barW, barH, TFT_WHITE);
             
             int progress = (pressDuration * 100) / longPressMs;
             if (progress > 100) progress = 100;
             int fillW = (barW - 4) * progress / 100;
-            tft.fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_CYAN);
+            tft->fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_CYAN);
           }
         }
 #endif
@@ -623,11 +631,11 @@ static void maintainButtons() {
         // Appui court ou relâché avant 2s → nettoyer l'écran
 #if ENABLE_TFT_DISPLAY
         if (tftAvailable) {
-          tft.fillScreen(TFT_BLACK);
-          tft.setTextSize(1);
-          tft.setTextColor(TFT_GREEN);
-          tft.setCursor(10, 10);
-          tft.println(PROJECT_NAME);
+          tft->fillScreen(TFT_BLACK);
+          tft->setTextSize(1);
+          tft->setTextColor(TFT_GREEN);
+          tft->setCursor(10, 10);
+          tft->println(PROJECT_NAME);
         }
 #endif
       }
@@ -2266,11 +2274,11 @@ void tftStepColors() {
   const char* names[] = {"RED", "GREEN", "BLUE", "YELLOW", "CYAN", "MAGENTA", "WHITE"};
   
   for (int i = 0; i < 7; i++) {
-    tft.fillScreen(colors[i]);
-    tft.setTextColor(TFT_BLACK);
-    tft.setTextSize(2);
-    tft.setCursor(60, 110);
-    tft.print(names[i]);
+    tft->fillScreen(colors[i]);
+    tft->setTextColor(TFT_BLACK);
+    tft->setTextSize(2);
+    tft->setCursor(60, 110);
+    tft->print(names[i]);
     delay(500);
   }
 #endif
@@ -2280,19 +2288,19 @@ void tftStepShapes() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
   // Rectangles
-  tft.drawRect(20, 20, 80, 60, TFT_RED);
-  tft.fillRect(140, 20, 80, 60, TFT_GREEN);
+  tft->drawRect(20, 20, 80, 60, TFT_RED);
+  tft->fillRect(140, 20, 80, 60, TFT_GREEN);
   
   // Circles
-  tft.drawCircle(60, 140, 30, TFT_BLUE);
-  tft.fillCircle(180, 140, 30, TFT_YELLOW);
+  tft->drawCircle(60, 140, 30, TFT_BLUE);
+  tft->fillCircle(180, 140, 30, TFT_YELLOW);
   
   // Triangles
-  tft.drawTriangle(60, 180, 40, 220, 80, 220, TFT_CYAN);
-  tft.fillTriangle(180, 180, 160, 220, 200, 220, TFT_MAGENTA);
+  tft->drawTriangle(60, 180, 40, 220, 80, 220, TFT_CYAN);
+  tft->fillTriangle(180, 180, 160, 220, 200, 220, TFT_MAGENTA);
   
   delay(1500);
 #endif
@@ -2302,25 +2310,25 @@ void tftStepText() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
-  tft.setTextColor(TFT_WHITE);
-  tft.setTextSize(1);
-  tft.setCursor(10, 10);
-  tft.println("Text Size 1");
+  tft->setTextColor(TFT_WHITE);
+  tft->setTextSize(1);
+  tft->setCursor(10, 10);
+  tft->println("Text Size 1");
   
-  tft.setTextSize(2);
-  tft.setCursor(10, 40);
-  tft.println("Size 2");
+  tft->setTextSize(2);
+  tft->setCursor(10, 40);
+  tft->println("Size 2");
   
-  tft.setTextSize(3);
-  tft.setCursor(10, 80);
-  tft.println("Size 3");
+  tft->setTextSize(3);
+  tft->setCursor(10, 80);
+  tft->println("Size 3");
   
-  tft.setTextColor(TFT_CYAN);
-  tft.setTextSize(2);
-  tft.setCursor(10, 140);
-  tft.println("Colored Text");
+  tft->setTextColor(TFT_CYAN);
+  tft->setTextSize(2);
+  tft->setCursor(10, 140);
+  tft->println("Colored Text");
   
   delay(1500);
 #endif
@@ -2330,28 +2338,28 @@ void tftStepLines() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
   // Horizontal lines
   for (int y = 0; y < TFT_HEIGHT; y += 10) {
-    tft.drawFastHLine(0, y, TFT_WIDTH, TFT_CYAN);
+    tft->drawFastHLine(0, y, TFT_WIDTH, TFT_CYAN);
   }
   delay(700);
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
   // Vertical lines
   for (int x = 0; x < TFT_WIDTH; x += 10) {
-    tft.drawFastVLine(x, 0, TFT_HEIGHT, TFT_MAGENTA);
+    tft->drawFastVLine(x, 0, TFT_HEIGHT, TFT_MAGENTA);
   }
   delay(700);
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
   // Diagonal lines
   for (int i = 0; i < TFT_WIDTH; i += 20) {
-    tft.drawLine(0, 0, i, TFT_HEIGHT - 1, TFT_YELLOW);
-    tft.drawLine(TFT_WIDTH - 1, 0, i, TFT_HEIGHT - 1, TFT_GREEN);
+    tft->drawLine(0, 0, i, TFT_HEIGHT - 1, TFT_YELLOW);
+    tft->drawLine(TFT_WIDTH - 1, 0, i, TFT_HEIGHT - 1, TFT_GREEN);
   }
   delay(700);
 #endif
@@ -2361,15 +2369,15 @@ void tftStepAnimation() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
   // Moving square
   int squareSize = 30;
   for (int x = 0; x <= TFT_WIDTH - squareSize; x += 5) {
-    tft.fillRect(x, (TFT_HEIGHT - squareSize) / 2, squareSize, squareSize, TFT_BLUE);
+    tft->fillRect(x, (TFT_HEIGHT - squareSize) / 2, squareSize, squareSize, TFT_BLUE);
     delay(20);
     if (x + squareSize < TFT_WIDTH) {
-      tft.fillRect(x, (TFT_HEIGHT - squareSize) / 2, squareSize, squareSize, TFT_BLACK);
+      tft->fillRect(x, (TFT_HEIGHT - squareSize) / 2, squareSize, squareSize, TFT_BLACK);
     }
     yield();
   }
@@ -2382,30 +2390,30 @@ void tftStepProgressBar() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
-  tft.setTextColor(TFT_WHITE);
-  tft.setTextSize(2);
-  tft.setCursor(60, 40);
-  tft.print("Loading...");
+  tft->setTextColor(TFT_WHITE);
+  tft->setTextSize(2);
+  tft->setCursor(60, 40);
+  tft->print("Loading...");
   
   int barX = 30;
   int barY = 100;
   int barWidth = 180;
   int barHeight = 30;
   
-  tft.drawRect(barX, barY, barWidth, barHeight, TFT_WHITE);
+  tft->drawRect(barX, barY, barWidth, barHeight, TFT_WHITE);
   
   for (int i = 0; i <= 100; i += 5) {
     int fillWidth = (barWidth - 4) * i / 100;
-    tft.fillRect(barX + 2, barY + 2, fillWidth, barHeight - 4, TFT_GREEN);
+    tft->fillRect(barX + 2, barY + 2, fillWidth, barHeight - 4, TFT_GREEN);
     
-    tft.fillRect(40, 150, 160, 20, TFT_BLACK);
-    tft.setTextColor(TFT_CYAN);
-    tft.setTextSize(2);
-    tft.setCursor(90, 155);
-    tft.print(i);
-    tft.print("%");
+    tft->fillRect(40, 150, 160, 20, TFT_BLACK);
+    tft->setTextColor(TFT_CYAN);
+    tft->setTextSize(2);
+    tft->setCursor(90, 155);
+    tft->print(i);
+    tft->print("%");
     
     delay(30);
     yield();
@@ -2419,21 +2427,21 @@ void tftStepFinal() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
-  tft.setTextColor(TFT_GREEN);
-  tft.setTextSize(3);
-  tft.setCursor(40, 80);
-  tft.println("TEST");
-  tft.setCursor(20, 120);
-  tft.println("COMPLETE!");
+  tft->setTextColor(TFT_GREEN);
+  tft->setTextSize(3);
+  tft->setCursor(40, 80);
+  tft->println("TEST");
+  tft->setCursor(20, 120);
+  tft->println("COMPLETE!");
   
   // Success indicator
-  tft.fillCircle(120, 180, 20, TFT_GREEN);
-  tft.setTextColor(TFT_BLACK);
-  tft.setTextSize(3);
-  tft.setCursor(108, 172);
-  tft.print("OK");
+  tft->fillCircle(120, 180, 20, TFT_GREEN);
+  tft->setTextColor(TFT_BLACK);
+  tft->setTextSize(3);
+  tft->setCursor(108, 172);
+  tft->print("OK");
   
   delay(2000);
 #endif
@@ -3836,7 +3844,50 @@ void handleTFTBoot() {
 
 void handleTFTConfig() {
 #if ENABLE_TFT_DISPLAY
-  // Check for required parameters
+  // v3.30.0: Support for dynamic driver switching
+  // Check if driver parameter is provided (driver switch request)
+  if (server.hasArg("driver")) {
+    String newDriver = server.arg("driver");
+    newDriver.toUpperCase();
+
+    // Validate driver type
+    if (newDriver != "ILI9341" && newDriver != "ST7789") {
+      sendOperationError(400, "Invalid driver type. Must be ILI9341 or ST7789");
+      return;
+    }
+
+    // Get optional display parameters for reinit
+    int newWidth = server.hasArg("width") ? server.arg("width").toInt() : tftWidth;
+    int newHeight = server.hasArg("height") ? server.arg("height").toInt() : tftHeight;
+    int newRotation = server.hasArg("rotation") ? server.arg("rotation").toInt() : tftRotation;
+
+    // Determine driver type enum
+    TFT_DriverType driverType = (newDriver == "ILI9341") ? TFT_DRIVER_ILI9341 : TFT_DRIVER_ST7789;
+
+    // Switch to new driver
+    bool success = switchTFTDriver(driverType, newWidth, newHeight, newRotation);
+
+    if (success) {
+      // Update global variables
+      tftDriver = newDriver;
+      tftWidth = newWidth;
+      tftHeight = newHeight;
+      tftRotation = newRotation;
+
+      String message = "TFT driver switched to " + tftDriver + " successfully";
+      sendOperationSuccess(message, {
+        jsonStringField("driver", tftDriver),
+        jsonNumberField("width", tftWidth),
+        jsonNumberField("height", tftHeight),
+        jsonNumberField("rotation", tftRotation)
+      });
+    } else {
+      sendOperationError(500, "Failed to switch TFT driver");
+    }
+    return;
+  }
+
+  // Original pin configuration (no driver change)
   if (server.hasArg("mosi") && server.hasArg("sclk") && server.hasArg("cs") &&
       server.hasArg("dc") && server.hasArg("rst")) {
 
@@ -3871,10 +3922,8 @@ void handleTFTConfig() {
       tftHeight = newHeight;
       tftRotation = newRotation;
 
-      // Reinitialize TFT with new settings
-      tftAvailable = false;
-      // Note: Complete reinitialization would require SPI reconfiguration
-      // For now, we just store the values for next reboot
+      // Note: Pin configuration changes require reboot for hardware reconfiguration
+      // Driver can be switched dynamically without reboot
 
       String message = "TFT config updated: MISO:" + String(tftMISO) + " MOSI:" + String(tftMOSI) +
                        " SCLK:" + String(tftSCLK) + " CS:" + String(tftCS) + " DC:" + String(tftDC) +
@@ -3891,7 +3940,8 @@ void handleTFTConfig() {
         jsonNumberField("bl", tftBL),
         jsonNumberField("width", tftWidth),
         jsonNumberField("height", tftHeight),
-        jsonNumberField("rotation", tftRotation)
+        jsonNumberField("rotation", tftRotation),
+        jsonStringField("driver", tftDriver)
       });
       return;
     }
@@ -4649,17 +4699,18 @@ void handleLedsInfo() {
 
 void handleScreensInfo() {
   String json;
-  json.reserve(800);
+  json.reserve(900);  // Increased for driver field
   json = "{";
   json += "\"oled\":{\"available\":" + String(oledAvailable ? "true" : "false") +
           ",\"status\":\"" + oledTestResult + "\",";
   json += "\"pins\":{\"sda\":" + String(i2c_sda) + ",\"scl\":" + String(i2c_scl) + "},";
   json += "\"rotation\":" + String(oledRotation) + ",";
   json += "\"width\":" + String(oledWidth) + ",\"height\":" + String(oledHeight) + "}";
-  
+
   #if ENABLE_TFT_DISPLAY
   json += ",\"tft\":{\"available\":true,";
   json += "\"status\":\"" + String(tftTestResult.length() > 0 ? tftTestResult : "Ready") + "\",";
+  json += "\"driver\":\"" + tftDriver + "\",";  // v3.30.0: Current TFT driver
   json += "\"width\":" + String(tftWidth) + ",\"height\":" + String(tftHeight) + ",";
   json += "\"rotation\":" + String(tftRotation) + ",";
   json += "\"pins\":{\"miso\":" + String(tftMISO) + ",\"mosi\":" + String(tftMOSI) + ",\"sclk\":" + String(tftSCLK) +
@@ -4668,7 +4719,7 @@ void handleScreensInfo() {
   #else
   json += ",\"tft\":{\"available\":false,\"status\":\"Not enabled\"}";
   #endif
-  
+
   json += "}";
   server.send(200, "application/json", json);
 }

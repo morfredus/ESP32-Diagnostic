@@ -1,3 +1,56 @@
+## [Version 3.30.0] - 2025-12-25
+
+### ✨ New Features
+
+**Dynamic TFT Driver Selection from Web UI (Runtime Switching)**
+
+- **Runtime TFT Driver Switching**: Switch between ILI9341 and ST7789 TFT drivers dynamically from the Web UI without recompilation
+- **No Reboot Required**: Change the active TFT driver instantly without rebooting the ESP32
+- **Web UI Integration**: New driver selector dropdown in the TFT configuration section
+- **Dual Driver Support**: Both ILI9341 and ST7789 drivers are now loaded simultaneously and can be switched on-the-fly
+- **Backward Compatibility**: Default driver selection from `config.h` is preserved for initial boot
+
+### 🔧 Technical Changes
+
+**Backend Architecture**
+- `include/tft_display.h`: Complete refactoring to support runtime driver switching
+  - New enum `TFT_DriverType` for driver identification
+  - Dynamic driver initialization with `initTFT(driverType, width, height, rotation)`
+  - New `switchTFTDriver()` function for on-the-fly driver changes
+  - Proper driver deinitialization with `deinitTFT()`
+  - Generic `Adafruit_GFX*` pointer for unified driver access
+
+**API Enhancements**
+- `src/main.cpp`:
+  - `handleTFTConfig()`: New `driver` parameter for dynamic driver switching
+  - `handleScreensInfo()`: Now returns current active driver type
+  - New global variable `tftDriver` (String) to track active driver
+
+**Web Interface**
+- `include/web_interface.h`:
+  - New driver selector dropdown in TFT configuration section
+  - `configTFT()` function updated to send driver parameter
+  - Driver selection persisted and displayed in UI
+
+**Configuration**
+- `include/config.h`: Updated comments to reflect dynamic driver support
+- `platformio.ini`: Version bumped to 3.30.0
+
+### 📝 Migration Notes
+
+- **No breaking changes**: Existing configurations continue to work as before
+- **New capability**: Users can now test different TFT drivers without reflashing firmware
+- **Default behavior**: The driver specified in `config.h` (`TFT_USE_ILI9341` or `TFT_USE_ST7789`) is used at boot
+
+### 🎯 Use Cases
+
+- **Hardware Testing**: Quickly test compatibility with different TFT controllers
+- **Display Swapping**: Change TFT screens without recompiling and reflashing
+- **Prototyping**: Evaluate different display controllers in real-time
+- **Troubleshooting**: Switch drivers to identify hardware/software issues
+
+---
+
 ## [Version 3.29.0] - 2025-12-25
 
 ### ✨ Nouveautés

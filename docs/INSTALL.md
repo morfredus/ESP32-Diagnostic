@@ -1,18 +1,18 @@
-# Installation Guide (EN)
+# Installation Guide (v3.30.0)
 
-> WARNING: v3.28.5 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: This guide reflects firmware v3.30.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 Follow the steps below to deploy the ESP32 Diagnostic Suite on your board.
 
-> **Release 3.8.0:** This version has been migrated from Arduino IDE to **PlatformIO in Visual Studio Code**. The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository is now **archived**. Bluetooth/BLE support has been **removed** as it is not properly supported under the PlatformIO platform configuration.
+> NEW in v3.30.0: Full GPIO mapping/code/documentation synchronization. See also [RELEASE_NOTES_3.30.0.md]. The original Arduino IDE version [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) repository is now **archived**. Bluetooth/BLE support has been **removed** as it is not properly supported under the PlatformIO platform configuration.
 
 ## 1. Prerequisites
 
 ### Hardware
 - **Supported boards (v3.21.0):**
-  - **ESP32-S3-DevKitC-1 N16R8** (16MB Flash, 8MB PSRAM) � Primary target, environment: `esp32s3_n16r8`
-  - **ESP32-S3-DevKitC-1 N8R8** (8MB Flash, 8MB PSRAM) � Environment: `esp32s3_n8r8`
-  - **ESP32-DevKitC Classic** (4MB Flash, no PSRAM) � Environment: `esp32devkitc`
+  - **ESP32-S3-DevKitC-1 N16R8** (16MB Flash, 8MB PSRAM) - Primary target, environment: `esp32s3_n16r8`
+  - **ESP32-S3-DevKitC-1 N8R8** (8MB Flash, 8MB PSRAM) - Environment: `esp32s3_n8r8`
+  - **ESP32-DevKitC Classic** (4MB Flash, no PSRAM) - Environment: `esp32devkitc`
 - USB cable with data capability.
 - Optional: NeoPixel/WS2812B LED strip, 0.96" OLED screen, TFT ST7789 display, sensors (DHT, HC-SR04, etc.).
 
@@ -50,9 +50,9 @@ Detailed configuration notes are available in [CONFIG.md](CONFIG.md).
 ## 5. Compile and upload
 1. In Visual Studio Code, open the PlatformIO sidebar.
 2. Select your target environment from `platformio.ini`:
-   - **esp32s3_n16r8** (default) � ESP32-S3 with 16MB Flash, 8MB PSRAM
-   - **esp32s3_n8r8** � ESP32-S3 with 8MB Flash, 8MB PSRAM
-   - **esp32devkitc** � Classic ESP32 with 4MB Flash, no PSRAM
+   - **esp32s3_n16r8** (default) - ESP32-S3 with 16MB Flash, 8MB PSRAM
+   - **esp32s3_n8r8** - ESP32-S3 with 8MB Flash, 8MB PSRAM
+   - **esp32devkitc** - Classic ESP32 with 4MB Flash, no PSRAM
 3. Click **Build** to compile, then **Upload** to flash the firmware.
 4. Open the **Serial Monitor** (115200 baud) to view the boot sequence.
 

@@ -1,9 +1,9 @@
 ﻿
-# ESP32 Diagnostic Suite – Référence REST API (v3.29.0)
+# ESP32 Diagnostic Suite – Référence REST API (v3.30.0)
 
-> **NOUVEAUTÉ v3.29.0** : Sélection dynamique du contrôleur TFT (ILI9341 ou ST7789) et configuration de la résolution dans `config.h`. Voir README et CONFIG_FR.md.
+> **NOUVEAUTÉ v3.30.0** : Sélection dynamique du contrôleur TFT (ILI9341 ou ST7789) depuis l'interface web, configuration de la résolution dans `config.h` sans recompilation, synchronisation complète des mappings GPIO. Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md).
 
-> **AVERTISSEMENT** : v3.29.0 permet le choix du contrôleur TFT (ILI9341/ST7789) et la résolution dans `config.h`. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 La REST API reflète les commandes du tableau de bord et expose les données de diagnostic pour l'automatisation. Tous les endpoints
 sont servis en HTTP sur le même port que l'interface web. L'authentification est stateless ; sécurisez l'accès au niveau réseau
@@ -24,7 +24,7 @@ dans les environnements sensibles.
 Retourne les métadonnées firmware et hash de build.
 ```json
 {
-  "version": "3.8.0",
+  "version": "3.30.0",
   "git_commit": "abc1234",
   "build_time": "2024-05-10T09:15:00Z"
 }
@@ -104,7 +104,7 @@ Associe des notes opérateur au dernier rapport.
 | `503` | Matériel occupé | Le module initialise le matériel ; réessayer après quelques secondes. |
 
 ## Automatisation
-- Utiliser `GET /api/version` en CI pour vérifier que l'unité déployée tourne bien en 3.8.0.
+- Utiliser `GET /api/version` en CI pour vérifier que l'unité déployée tourne bien en 3.30.0.
 - Combiner `/api/run` et `/api/status` pour surveiller les longs tests, puis télécharger le rapport JSON pour analyse.
 - Enregistrer les notes opérateur via `/api/notes` afin de conserver une trace d'audit dans les exports.
 
