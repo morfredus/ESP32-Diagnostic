@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Security Guidelines (v3.22.1)
+# ESP32 Diagnostic Suite – Security Guidelines (v3.28.5)
 
-> WARNING: v3.22.1 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: v3.28.5 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 Although the ESP32 Diagnostic Suite is typically used in controlled lab environments, following these security guidelines reduces
 exposure when testing pre-production hardware across all supported build environments (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic).
