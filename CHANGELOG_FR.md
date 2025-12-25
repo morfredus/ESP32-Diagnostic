@@ -1,3 +1,56 @@
+## [Version 3.30.0] - 2025-12-25
+
+### ✨ Nouvelles Fonctionnalités
+
+**Sélection Dynamique du Driver TFT depuis l'Interface Web (Changement en Runtime)**
+
+- **Changement de Driver TFT en Runtime**: Basculez entre les drivers ILI9341 et ST7789 dynamiquement depuis l'interface Web sans recompilation
+- **Aucun Redémarrage Requis**: Changez le driver TFT actif instantanément sans redémarrer l'ESP32
+- **Intégration Interface Web**: Nouveau sélecteur de driver dans la section de configuration TFT
+- **Support Dual Driver**: Les deux drivers ILI9341 et ST7789 sont chargés simultanément et peuvent être échangés à la volée
+- **Rétrocompatibilité**: La sélection du driver par défaut depuis `config.h` est préservée au démarrage
+
+### 🔧 Modifications Techniques
+
+**Architecture Backend**
+- `include/tft_display.h`: Refactorisation complète pour supporter le changement de driver en runtime
+  - Nouvel enum `TFT_DriverType` pour l'identification des drivers
+  - Initialisation dynamique avec `initTFT(driverType, width, height, rotation)`
+  - Nouvelle fonction `switchTFTDriver()` pour changer de driver à la volée
+  - Désinitialisation propre avec `deinitTFT()`
+  - Pointeur générique `Adafruit_GFX*` pour un accès unifié aux drivers
+
+**Améliorations API**
+- `src/main.cpp`:
+  - `handleTFTConfig()`: Nouveau paramètre `driver` pour le changement dynamique
+  - `handleScreensInfo()`: Retourne maintenant le type de driver actif
+  - Nouvelle variable globale `tftDriver` (String) pour suivre le driver actif
+
+**Interface Web**
+- `include/web_interface.h`:
+  - Nouveau sélecteur de driver dans la section de configuration TFT
+  - Fonction `configTFT()` mise à jour pour envoyer le paramètre driver
+  - Sélection du driver persistée et affichée dans l'UI
+
+**Configuration**
+- `include/config.h`: Commentaires mis à jour pour refléter le support dynamique des drivers
+- `platformio.ini`: Version passée à 3.30.0
+
+### 📝 Notes de Migration
+
+- **Aucun changement cassant**: Les configurations existantes continuent de fonctionner comme avant
+- **Nouvelle capacité**: Les utilisateurs peuvent maintenant tester différents drivers TFT sans reflasher le firmware
+- **Comportement par défaut**: Le driver spécifié dans `config.h` (`TFT_USE_ILI9341` ou `TFT_USE_ST7789`) est utilisé au démarrage
+
+### 🎯 Cas d'Usage
+
+- **Tests Matériels**: Testez rapidement la compatibilité avec différents contrôleurs TFT
+- **Échange d'Écrans**: Changez d'écran TFT sans recompiler et reflasher
+- **Prototypage**: Évaluez différents contrôleurs d'affichage en temps réel
+- **Dépannage**: Changez de driver pour identifier les problèmes matériels/logiciels
+
+---
+
 ## [Version 3.29.0] - 2025-12-25
 
 ### ✨ Nouveautés

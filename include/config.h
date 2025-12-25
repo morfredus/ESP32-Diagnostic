@@ -38,21 +38,15 @@
 // --- TFT Common ---
 #define ENABLE_TFT_DISPLAY  true
 
-
-// Choix du contrôleur d'écran : décommentez UNE seule ligne
-#define TFT_USE_ILI9341
+// v3.30.0: Dynamic TFT driver selection
+// Both ILI9341 and ST7789 drivers are now supported simultaneously
+// Default driver selection (can be changed dynamically via Web UI)
+#define TFT_USE_ILI9341  // Default driver at boot
 // #define TFT_USE_ST7789
 
-#if defined(TFT_USE_ILI9341)
-	#define TFT_WIDTH  240
-	#define TFT_HEIGHT 320
-#elif defined(TFT_USE_ST7789)
-	#define TFT_WIDTH  240
-	#define TFT_HEIGHT 320
-#else
-	#error "Vous devez définir TFT_USE_ILI9341 ou TFT_USE_ST7789 dans config.h !"
-#endif
-
+// TFT display resolution (adjustable per driver via Web UI)
+#define TFT_WIDTH   240
+#define TFT_HEIGHT  320
 #define TFT_ROTATION        2
 #define TFT_BACKLIGHT_PWM   255
 
