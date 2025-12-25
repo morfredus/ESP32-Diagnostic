@@ -1,15 +1,19 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.22.1)
+# ESP32 Diagnostic Suite – Feature Matrix (v3.28.2)
 
-> WARNING: v3.22.1 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: This document reflects firmware v3.28.2 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Previous documentation (v3.22.1) contained CRITICAL errors. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
-This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.22.1 with three distinct build environments.
+This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.28.2 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.
 
-> **Important:** Current release 3.22.1 (PlatformIO) still ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+> **Important:** Current release 3.28.2 (PlatformIO) ships without BLE; for BLE diagnostics, use the archived [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) Arduino IDE version.
+
+**✨ New in v3.28.x:** Rotary encoder (HW-040) support with real-time monitoring. SD card testing API endpoints. TFT MISO pin configuration via web interface. GPIO 13 sharing warning (TFT/SD MISO).
+
+**✨ New in v3.27.x:** Hardware button monitoring (BUTTON_BOOT, BUTTON_1, BUTTON_2) with real-time state updates.
 
 **✨ New in v3.22.0:** MQTT Publisher for real-time system metrics publishing (memory, WiFi, sensors) to Home Assistant, NodeRED, InfluxDB and other MQTT brokers. Non-blocking with auto-reconnect. **Disabled by default.**
 
-**?? Updated in v3.21.0:** Complete ESP32 Classic pin mapping revision � 11 changes to resolve boot and USB communication issues. **Hardware migration required for ESP32 Classic.** See `PIN_MAPPING_CHANGES_FR.md` for details. ESP32-S3 unchanged.
+**⚠️ Updated in v3.28.2:** Documentation fully synchronized with `board_config.h`. All GPIO errors corrected (11+ critical fixes from v3.22.1).
 
 ## Legend
 - ? � Supported out of the box by the firmware.
@@ -26,14 +30,16 @@ Use it to plan validation campaigns and to verify whether optional peripherals r
 ## Peripheral bus coverage
 | Bus / Peripheral | Default pins | Supported boards | Notes |
 |------------------|--------------|------------------|-------|
-| I2C primary bus | **ESP32-S3:** SDA 21, SCL 20<br>**ESP32 Classic:** SDA 21, SCL 22 | All supported boards | Used for OLED, sensor packs, EEPROM. Pins vary by target. |
+| I2C primary bus | **ESP32-S3:** SDA 15, SCL 16 ⚠️ (was 21/20 in v3.22.1 – WRONG!)<br>**ESP32 Classic:** SDA 21, SCL 22 | All supported boards | Used for OLED, sensor packs, EEPROM. Pins vary by target. |
 | I2C secondary bus | Disabled by default | ESP32, ESP32-S3 | Enable via `ENABLE_SECONDARY_I2C` flag in `config.h`. |
 | SPI test bus | **Varies by target** (see PIN_MAPPING.md) | ESP32, ESP32-S3 | Validates external flash/SD adaptors. |
-| UART loopback | TX0/RX0 & optional UART1/UART2 | All | Requires jumper wire TX?RX on chosen UART. |
-| TFT ST7789 display | **ESP32-S3:** MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7<br>**ESP32 Classic (v3.21.0+):** MOSI=23, SCLK=18, CS=27, DC=14, RST=25, BL=32 | All supported boards | 240x240 display. Pins hardware-specific. |
-| RGB LED (separate) | **ESP32-S3:** R=21, G=45, B=47<br>**ESP32 Classic (v3.21.0+):** R=13, G=14, B=25 | All | Individual RGB control pins. Classic: moved away from strapping pins (12/15). |
-| **NeoPixel Wi-Fi indicator** | **ESP32-S3:** GPIO 48<br>**ESP32 Classic:** GPIO 2 | All supported boards | Single RGB LED showing Wi-Fi status: yellow (connecting), green pulsing (connected), red pulsing (disconnected), violet flash (reboot). New in v3.21.1. |
-| Buttons | **ESP32-S3:** BTN1=38, BTN2=39<br>**ESP32 Classic (v3.21.0+):** BTN1=32, BTN2=33 | All supported boards | Classic: GPIO 32/33 with internal pull-up (previously 34/35 input-only). |
+| UART loopback | TX0/RX0 & optional UART1/UART2 | All | Requires jumper wire TX↔RX on chosen UART. |
+| TFT ST7789 display | **ESP32-S3:** MISO=13 ⚠️ (shared with SD), MOSI=11, SCLK=12, CS=10, DC=9, RST=14 ⚠️ (was 13 – WRONG!), BL=7<br>**ESP32 Classic:** MISO=19, MOSI=23, SCLK=18, CS=27, DC=14, RST=25, BL=32 | All supported boards | 240x240 display. GPIO 13 shared with SD card on ESP32-S3. |
+| SD Card (SPI) | **ESP32-S3:** MISO=13 ⚠️ (shared with TFT), MOSI=11, SCLK=12, CS=1<br>**ESP32 Classic:** Varies by configuration | ESP32-S3 (full), ESP32 Classic (varies) | Added v3.28.0. GPIO 13 sharing requires proper CS management. |
+| RGB LED (separate) | **ESP32-S3:** R=21, G=41 ⚠️ (was 45 – WRONG!), B=42 ⚠️ (was 47 – WRONG!)<br>**ESP32 Classic:** R=13, G=26, B=33 | All | Individual RGB control pins. S3: GPIO 41/42 NOT 45/47! |
+| **NeoPixel Wi-Fi indicator** | **ESP32-S3:** GPIO 48<br>**ESP32 Classic:** -1 (disabled) | ESP32-S3 only | Single RGB LED showing Wi-Fi status: yellow (connecting), green pulsing (connected), red pulsing (disconnected), violet flash (reboot). |
+| Buttons | **ESP32-S3:** BOOT=0 (read-only), BTN1=38, BTN2=39<br>**ESP32 Classic:** BOOT=0 (read-only), BTN1=5 ⚠️ (was 32 in v3.22.1 – WRONG!), BTN2=12 ⚠️ (was 33 – WRONG!) | All supported boards | BUTTON_BOOT non-configurable. S3: internal pull-ups. Classic: GPIO 5/12 with internal pull-ups. |
+| Rotary Encoder (HW-040) | **ESP32-S3:** CLK=47, DT=45, SW=40<br>**ESP32 Classic:** CLK=4, DT=13, SW=26 | All supported boards | Added v3.27.x. Real-time position and button monitoring via web interface. |
 
 ## Optional module checklist
 | Module | Firmware flag | Default state | Description |
