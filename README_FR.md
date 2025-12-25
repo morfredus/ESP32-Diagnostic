@@ -1,43 +1,76 @@
-# ESP32 Diagnostic Suite (v3.25.1)
+# ESP32 Diagnostic Suite (v3.28.5)
 
-> **Note** : v3.25.1 est une version de maintenance (alignement documentation/processus). v3.25.0 a restauré le remapping dynamique des broches GPIO via l'interface Web avec une architecture améliorée qui prévient les conflits de préprocesseur. Le système utilise des variables runtime en minuscules (`i2c_sda`) initialisées à partir de defines compile-time en MAJUSCULES (`I2C_SDA`) dans `board_config.h`.
+> **Note** : v3.28.5 corrige le bouton encodeur bloqué + problèmes GPIO monitoring boutons. Tout le monitoring des dispositifs d'entrée fonctionne correctement maintenant. ✅
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## ✨ Nouveautés de la version 3.25.0 - Remapping Dynamique des Broches Restauré
+## ✨ Nouveautés de la version 3.28.5 - Monitoring Entrées Corrigé
 
-**Amélioration Architecturale Majeure :**
-- **Le remapping dynamique de broches fonctionne à nouveau** - Les utilisateurs peuvent changer les broches GPIO via l'interface Web sans recompilation
-- **Aucun conflit de préprocesseur** - Résolu en utilisant des variables runtime en minuscules (`i2c_sda`, `rgb_led_pin_r`, etc.)
-- **Architecture à deux couches** - Defines en MAJUSCULES dans `board_config.h`, variables en minuscules dans `main.cpp`
-- **Tous les handlers fonctionnels** - I2C, LED RGB, Buzzer, DHT, Lumière, Distance, Capteurs de mouvement
+**Corrections de Bugs :**
+1. ✅ **Bouton Encodeur Rotatif** - Plus bloqué sur "Pressed", lit l'état GPIO réel
+2. ✅ **Monitoring BOOT/Bouton1/Bouton2** - Fonctionne maintenant avec accès direct aux constantes
 
-**Innovation Clé :**
+**Changements Clés :**
 ```cpp
-// board_config.h (valeur par défaut compile-time)
-#define I2C_SDA 15
+// src/main.cpp:3199-3203 - Lecture GPIO réel pour bouton encodeur
+int getRotaryButtonGPIOState() {
+  return digitalRead(rotary_sw_pin);
+}
 
-// main.cpp (variable runtime - modifiable via interface Web)
-int i2c_sda = I2C_SDA;
+// src/main.cpp:3185-3199 - Utilisation directe des constantes pour boutons
+int getButtonBootState() {
+  return digitalRead(BUTTON_BOOT);  // Accès direct à la constante
+}
 ```
 
-**Avantages :**
-- ✅ Flexibilité matérielle restaurée - Testez différentes configurations de broches sans recompilation
-- ✅ Convention de nommage claire - MAJUSCULES = compile-time, minuscules = runtime
-- ✅ Aucun problème de préprocesseur - Des noms différents préviennent les conflits d'expansion de macros
-- ✅ Toutes les fonctionnalités préservées - Aucune fonctionnalité perdue depuis v3.23.x
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.28.5.
+
+## Précédent : version 3.28.4
+
+**Dispositifs d'Entrée Corrigés :**
+- ✅ **Initialisation Encodeur Rotatif** - Fonctionne immédiatement après démarrage
+- ✅ **API Monitoring Boutons** - Endpoints backend ajoutés
+- ✅ **Configuration Automatique** - Tous les dispositifs d'entrée s'initialisent dans `setup()`
+
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.28.3.
+
+## Précédent : version 3.28.2
+
+**Erreur JavaScript BUTTON_BOOT Corrigée :**
+- ✅ **Erreur BUTTON_BOOT CORRIGÉE** - ReferenceError sur la page Input Devices résolu
+- ✅ **Cause Racine Identifiée** - Les constantes GPIO étaient injectées au mauvais endroit
+- ✅ **Toutes les Constantes Boutons Fonctionnent** - BUTTON_BOOT, BUTTON_1, BUTTON_2 maintenant disponibles
+
+**Voir :** [CHANGELOG_FR.md](CHANGELOG_FR.md) pour les détails complets de la version 3.28.2.
+
+## Précédent : version 3.28.1
+
+**Intégration MISO & Corrections Carte SD :**
+- ✅ **Affichage MISO Corrigé** - Plus de "MISO: undefined" dans l'interface web
+- ✅ **Carte SD sur ESP32-S3 Fonctionne** - Sélection bus SPI corrigée (HSPI vs FSPI)
+- ✅ **Synchronisation Configuration MISO** - Les changements dans l'UI web persistent correctement
+- ⚠️ **BUTTON_BOOT** - PAS réellement corrigé malgré la documentation (corrigé en v3.28.2)
+
+**Voir :** [docs/RELEASE_NOTES_3.28.1_FR.md](docs/RELEASE_NOTES_3.28.1_FR.md) pour les détails.
+
+## Précédent : version 3.25.0
+
+**Remapping Dynamique des Broches Restauré :**
+- **Le remapping dynamique de broches fonctionne à nouveau** - Changez les broches GPIO via l'interface Web sans recompilation
+- **Architecture à deux couches** - Defines en MAJUSCULES dans `board_config.h`, variables en minuscules dans `main.cpp`
+- **Tous les handlers fonctionnels** - I2C, LED RGB, Buzzer, DHT, Lumière, Distance, Capteurs de mouvement
 
 **Voir :** [docs/RELEASE_NOTES_3.25.0_FR.md](docs/RELEASE_NOTES_3.25.0_FR.md) pour les détails techniques complets.
 
 ## Précédent : version 3.22.1 - Corrections de mapping (Classic)
 
-**Corrections de mapping pour ESP32 Classic** — Harmonisation avec `board_config.h` :
-- Boutons : BTN1=2, BTN2=5 (pull-up interne)
+**Corrections de mapping pour ESP32 Classic** — ⚠️ **NOTE HISTORIQUE** : Documentation v3.22.1 contenait erreurs. Valeurs actuelles `board_config.h` :
+- Boutons : BTN1=5, BTN2=12 (pull-up interne) ⚠️ (docs v3.22.1 indiquaient 2/5 - FAUX !)
 - LED RGB : R=13, V=26, B=33
-- Capteurs : DHT=15, HC-SR04 TRIG=12 / ECHO=35, PWM=4, Buzzer=19
-**Rappel ESP32-S3** — Remapping GPIO maintenu : V=41 (ancien 45), B=42 (ancien 47), R=21
-**Documentation** : Voir [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING_CHANGES_FR.md](docs/PIN_MAPPING_CHANGES_FR.md)
-- **Impact** : ESP32-S3 nécessite recâblage matériel, ESP32 Classic inchangé
+- Capteurs : DHT=15, HC-SR04 TRIG=1 ⚠️ (docs v3.22.1 indiquaient 12 - FAUX !) / ECHO=35, PWM=4, Buzzer=19
+**Rappel ESP32-S3** — Remapping GPIO confirmé : V=41 (docs obsolètes indiquaient 45), B=42 (docs obsolètes indiquaient 47), R=21
+**Documentation** : Voir [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) pour valeurs EXACTES actuelles
+- **Impact** : Corrections documentation uniquement, synchronisation avec `board_config.h`
 - **Sécurité** : Configuration optimisée pour éviter les conflits avec les broches de strapping et USB
 
 ## Précédent : version 3.22.0 - Indicateur d'état Wi-Fi NeoPixel
@@ -54,7 +87,7 @@ int i2c_sda = I2C_SDA;
 
 **Révision complète du pin mapping ESP32 Classic** - Migration matérielle requise :
 - **11 modifications de pins** pour résoudre les problèmes de boot (broches de strapping GPIO 4/12/15) et de communication USB-UART (protection GPIO 1/3)
-- **Boutons améliorés** : GPIO 32/33 avec pull-up interne (au lieu de 34/35 input-only)
+- **Boutons améliorés** : GPIO 5/12 avec pull-up interne ⚠️ (docs indiquaient 32/33 ou 34/35 - TOUS FAUX !)
 - **LED RGB sécurisées** : Éloignées des broches de strapping (12→13, 15→25)
 - **Stabilité GPS** : PPS déplacé de GPIO 4 (strapping) vers GPIO 36 (input-only dédié)
 - **Documentation détaillée** : Voir `docs/PIN_MAPPING_CHANGES_FR.md` pour la liste numérotée des changements avec explications techniques
@@ -89,8 +122,8 @@ int i2c_sda = I2C_SDA;
 ## Nouveautés de la version 3.20.1
 1. **Stabilité USB/OTG (ESP32-S3)** : Les lignes USB D-/D+ sont libérées en déplaçant les défauts hors GPIO19/20.
    - I2C par défaut : SDA=15, SCL=16
-   - LED RGB : Rouge=21, Vert=45, Bleu=47 (Rouge quitte GPIO19)
-   - OTG stabilisé ; rappel : GPIO45 est une broche de strapping, LED laissée éteinte au boot.
+   - LED RGB : Rouge=21, Vert=41, Bleu=42 ⚠️ (docs indiquaient 45/47 - FAUX ! board_config.h utilise 41/42)
+   - OTG stabilisé ; note : GPIO41/42 choisis pour éviter conflits broches strapping.
 
 ## Nouveautés de la version 3.20.0
 1. **Gestion Avancée des Boutons** : Fonctionnalités de boutons améliorées avec retour visuel et contrôles interactifs

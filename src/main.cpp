@@ -258,6 +258,7 @@ int LED_COUNT = DEFAULT_NEOPIXEL_COUNT;
 
 // TFT pins (modifiables via web)
 #if ENABLE_TFT_DISPLAY
+int tftMISO = TFT_MISO;
 int tftMOSI = TFT_MOSI;
 int tftSCLK = TFT_SCLK;
 int tftCS = TFT_CS;
@@ -2946,7 +2947,11 @@ bool initSD() {
 
   // Configuration SPI
   if (sdSPI == nullptr) {
-    sdSPI = new SPIClass(HSPI);
+#if defined(CONFIG_IDF_TARGET_ESP32)
+    sdSPI = new SPIClass(HSPI);  // ESP32 classic uses HSPI
+#else
+    sdSPI = new SPIClass(FSPI);  // ESP32-S2/S3 use FSPI (SPI2)
+#endif
   }
   sdSPI->begin(sd_sclk_pin, sd_miso_pin, sd_mosi_pin, sd_cs_pin);
 
@@ -3172,6 +3177,31 @@ bool getRotaryButtonState() {
 
 void resetRotaryPosition() {
   rotaryPosition = 0;
+}
+
+// ========== BUTTON STATE READERS (v3.28.3/v3.28.5) ==========
+// Read REAL GPIO state for monitoring (not volatile ISR variables)
+// v3.28.5: Use constants directly to ensure correct pin access
+int getButtonBootState() {
+  // Use constant directly instead of static variable
+  if (BUTTON_BOOT < 0 || BUTTON_BOOT > 48) return -1;
+  return digitalRead(BUTTON_BOOT);
+}
+
+int getButton1State() {
+  if (BUTTON_1 < 0 || BUTTON_1 > 48) return -1;
+  return digitalRead(BUTTON_1);
+}
+
+int getButton2State() {
+  if (BUTTON_2 < 0 || BUTTON_2 > 48) return -1;
+  return digitalRead(BUTTON_2);
+}
+
+// v3.28.5 - Read REAL GPIO state of rotary button for monitoring
+int getRotaryButtonGPIOState() {
+  if (rotary_sw_pin < 0 || rotary_sw_pin > 48) return -1;
+  return digitalRead(rotary_sw_pin);
 }
 
 // ========== TEST STRESS MÉMOIRE ==========
@@ -3807,15 +3837,16 @@ void handleTFTBoot() {
 void handleTFTConfig() {
 #if ENABLE_TFT_DISPLAY
   // Check for required parameters
-  if (server.hasArg("mosi") && server.hasArg("sclk") && server.hasArg("cs") && 
+  if (server.hasArg("mosi") && server.hasArg("sclk") && server.hasArg("cs") &&
       server.hasArg("dc") && server.hasArg("rst")) {
-    
+
+    int newMISO = server.hasArg("miso") ? server.arg("miso").toInt() : tftMISO;
     int newMOSI = server.arg("mosi").toInt();
     int newSCLK = server.arg("sclk").toInt();
     int newCS = server.arg("cs").toInt();
     int newDC = server.arg("dc").toInt();
     int newRST = server.arg("rst").toInt();
-    
+
     // Optional parameters
     int newBL = server.hasArg("bl") ? server.arg("bl").toInt() : tftBL;
     int newWidth = server.hasArg("width") ? server.arg("width").toInt() : tftWidth;
@@ -3823,12 +3854,13 @@ void handleTFTConfig() {
     int newRotation = server.hasArg("rotation") ? server.arg("rotation").toInt() : tftRotation;
 
     // Validate pin ranges
-    if (newMOSI >= 0 && newMOSI <= 48 && newSCLK >= 0 && newSCLK <= 48 &&
-        newCS >= 0 && newCS <= 48 && newDC >= 0 && newDC <= 48 && 
-        newRST >= -1 && newRST <= 48 && newBL >= -1 && newBL <= 48 &&
-        newRotation >= 0 && newRotation <= 3) {
-      
+    if (newMISO >= -1 && newMISO <= 48 && newMOSI >= 0 && newMOSI <= 48 &&
+        newSCLK >= 0 && newSCLK <= 48 && newCS >= 0 && newCS <= 48 &&
+        newDC >= 0 && newDC <= 48 && newRST >= -1 && newRST <= 48 &&
+        newBL >= -1 && newBL <= 48 && newRotation >= 0 && newRotation <= 3) {
+
       // Update configuration
+      tftMISO = newMISO;
       tftMOSI = newMOSI;
       tftSCLK = newSCLK;
       tftCS = newCS;
@@ -3843,12 +3875,14 @@ void handleTFTConfig() {
       tftAvailable = false;
       // Note: Complete reinitialization would require SPI reconfiguration
       // For now, we just store the values for next reboot
-      
-      String message = "TFT config updated: MOSI:" + String(tftMOSI) + " SCLK:" + String(tftSCLK) + 
-                       " CS:" + String(tftCS) + " DC:" + String(tftDC) + " RST:" + String(tftRST) +
-                       " Res:" + String(tftWidth) + "x" + String(tftHeight) + " Rot:" + String(tftRotation);
-      
+
+      String message = "TFT config updated: MISO:" + String(tftMISO) + " MOSI:" + String(tftMOSI) +
+                       " SCLK:" + String(tftSCLK) + " CS:" + String(tftCS) + " DC:" + String(tftDC) +
+                       " RST:" + String(tftRST) + " Res:" + String(tftWidth) + "x" + String(tftHeight) +
+                       " Rot:" + String(tftRotation);
+
       sendOperationSuccess(message, {
+        jsonNumberField("miso", tftMISO),
         jsonNumberField("mosi", tftMOSI),
         jsonNumberField("sclk", tftSCLK),
         jsonNumberField("cs", tftCS),
@@ -4182,6 +4216,114 @@ void handleSDInfo() {
   });
 }
 
+void handleSDTestRead() {
+  if (!sdAvailable) {
+    initSD();
+  }
+
+  if (!sdAvailable) {
+    sendJsonResponse(200, {
+      jsonBoolField("success", false),
+      jsonStringField("result", String(Texts::not_available))
+    });
+    return;
+  }
+
+  // Test lecture
+  const char* testFile = "/test_read.txt";
+
+  // Créer un fichier de test si nécessaire
+  if (!SD.exists(testFile)) {
+    File file = SD.open(testFile, FILE_WRITE);
+    if (file) {
+      file.println("ESP32 Read Test Data");
+      file.close();
+    }
+  }
+
+  // Lecture
+  File file = SD.open(testFile);
+  if (!file) {
+    sendJsonResponse(200, {
+      jsonBoolField("success", false),
+      jsonStringField("result", "Read test failed: Cannot open file")
+    });
+    return;
+  }
+
+  String readData = file.readStringUntil('\n');
+  file.close();
+
+  sendJsonResponse(200, {
+    jsonBoolField("success", true),
+    jsonStringField("result", "Read test OK - " + String(readData.length()) + " bytes read")
+  });
+}
+
+void handleSDTestWrite() {
+  if (!sdAvailable) {
+    initSD();
+  }
+
+  if (!sdAvailable) {
+    sendJsonResponse(200, {
+      jsonBoolField("success", false),
+      jsonStringField("result", String(Texts::not_available))
+    });
+    return;
+  }
+
+  // Test écriture
+  const char* testFile = "/test_write.txt";
+  const char* testData = "ESP32 Write Test - ";
+
+  File file = SD.open(testFile, FILE_WRITE);
+  if (!file) {
+    sendJsonResponse(200, {
+      jsonBoolField("success", false),
+      jsonStringField("result", "Write test failed: Cannot create file")
+    });
+    return;
+  }
+
+  file.print(testData);
+  file.println(millis());
+  file.close();
+
+  sendJsonResponse(200, {
+    jsonBoolField("success", true),
+    jsonStringField("result", "Write test OK - File created successfully")
+  });
+}
+
+void handleSDFormat() {
+  if (!sdAvailable) {
+    initSD();
+  }
+
+  if (!sdAvailable) {
+    sendJsonResponse(200, {
+      jsonBoolField("success", false),
+      jsonStringField("result", String(Texts::not_available))
+    });
+    return;
+  }
+
+  // Nettoyer tous les fichiers de test
+  SD.remove("/test_esp32.txt");
+  SD.remove("/test_read.txt");
+  SD.remove("/test_write.txt");
+
+  // Note: Full SD card formatting requires low-level access
+  // This is a basic cleanup of test files
+  // For full format, would need SD_MMC.format() or similar
+
+  sendJsonResponse(200, {
+    jsonBoolField("success", true),
+    jsonStringField("result", "Test files cleaned - SD card ready")
+  });
+}
+
 // ========== ROTARY ENCODER HANDLERS ==========
 void handleRotaryConfig() {
   if (server.hasArg("clk") && server.hasArg("dt") && server.hasArg("sw")) {
@@ -4227,9 +4369,13 @@ void handleRotaryTest() {
 }
 
 void handleRotaryPosition() {
+  // v3.28.5 fix: Read REAL GPIO state for monitoring, not ISR variable
+  int buttonGPIOState = getRotaryButtonGPIOState();
+  bool buttonPressed = (buttonGPIOState == LOW && buttonGPIOState != -1);
+
   sendJsonResponse(200, {
     jsonNumberField("position", (int32_t)rotaryPosition),
-    jsonBoolField("button_pressed", rotaryButtonPressed),
+    jsonBoolField("button_pressed", buttonPressed),
     jsonBoolField("available", rotaryAvailable)
   });
 }
@@ -4237,6 +4383,66 @@ void handleRotaryPosition() {
 void handleRotaryReset() {
   resetRotaryPosition();
   sendActionResponse(200, true, "Position reset");
+}
+
+// ========== BUTTON STATE HANDLERS (v3.28.3) ==========
+// v3.28.5: Use constants directly for pins
+void handleButtonStates() {
+  int bootState = getButtonBootState();
+  int button1State = getButton1State();
+  int button2State = getButton2State();
+
+  // LOW = pressed (pull-up), HIGH = released
+  sendJsonResponse(200, {
+    jsonBoolField("boot_pressed", bootState == LOW && bootState != -1),
+    jsonBoolField("boot_available", bootState != -1),
+    jsonBoolField("button1_pressed", button1State == LOW && button1State != -1),
+    jsonBoolField("button1_available", button1State != -1),
+    jsonBoolField("button2_pressed", button2State == LOW && button2State != -1),
+    jsonBoolField("button2_available", button2State != -1),
+    jsonNumberField("boot_pin", BUTTON_BOOT),  // v3.28.5: Use constants
+    jsonNumberField("button1_pin", BUTTON_1),
+    jsonNumberField("button2_pin", BUTTON_2)
+  });
+}
+
+// Individual button state (v3.28.4 fix - frontend expects this endpoint)
+// v3.28.5: Use constants directly for pins
+void handleButtonState() {
+  if (!server.hasArg("button")) {
+    sendActionResponse(400, false, "Missing 'button' parameter");
+    return;
+  }
+
+  String buttonParam = server.arg("button");
+  int state = -1;
+  int pin = -1;
+
+  if (buttonParam == "boot") {
+    state = getButtonBootState();
+    pin = BUTTON_BOOT;  // v3.28.5: Use constant directly
+  } else if (buttonParam == "1" || buttonParam == "button1") {
+    state = getButton1State();
+    pin = BUTTON_1;
+  } else if (buttonParam == "2" || buttonParam == "button2") {
+    state = getButton2State();
+    pin = BUTTON_2;
+  } else {
+    sendActionResponse(400, false, "Invalid button parameter (must be 'boot', '1', or '2')");
+    return;
+  }
+
+  // LOW = pressed (pull-up), HIGH = released
+  bool pressed = (state == LOW && state != -1);
+  bool available = (state != -1);
+
+  sendJsonResponse(200, {
+    jsonBoolField("pressed", pressed),
+    jsonBoolField("released", !pressed && available),
+    jsonBoolField("available", available),
+    jsonNumberField("pin", pin),
+    jsonNumberField("raw_state", state)
+  });
 }
 
 // GPS Handlers
@@ -4456,8 +4662,8 @@ void handleScreensInfo() {
   json += "\"status\":\"" + String(tftTestResult.length() > 0 ? tftTestResult : "Ready") + "\",";
   json += "\"width\":" + String(tftWidth) + ",\"height\":" + String(tftHeight) + ",";
   json += "\"rotation\":" + String(tftRotation) + ",";
-  json += "\"pins\":{\"mosi\":" + String(tftMOSI) + ",\"sclk\":" + String(tftSCLK) + 
-          ",\"cs\":" + String(tftCS) + ",\"dc\":" + String(tftDC) + ",\"rst\":" + String(tftRST) + 
+  json += "\"pins\":{\"miso\":" + String(tftMISO) + ",\"mosi\":" + String(tftMOSI) + ",\"sclk\":" + String(tftSCLK) +
+          ",\"cs\":" + String(tftCS) + ",\"dc\":" + String(tftDC) + ",\"rst\":" + String(tftRST) +
           ",\"bl\":" + String(tftBL) + "}}";
   #else
   json += ",\"tft\":{\"available\":false,\"status\":\"Not enabled\"}";
@@ -5276,7 +5482,17 @@ void handleJavaScriptRoute() {
   pinVars += String(rotary_dt_pin);
   pinVars += ";const ROTARY_SW_PIN=";
   pinVars += String(rotary_sw_pin);
-  pinVars += ";console.log('GPIO Pins from board_config:',{SD_MISO:SD_MISO_PIN,SD_MOSI:SD_MOSI_PIN,SD_SCLK:SD_SCLK_PIN,SD_CS:SD_CS_PIN,ROTARY_CLK:ROTARY_CLK_PIN,ROTARY_DT:ROTARY_DT_PIN,ROTARY_SW:ROTARY_SW_PIN});";
+  // Button pins
+  pinVars += ";const BUTTON_BOOT=";
+  pinVars += String(BUTTON_BOOT);
+  pinVars += ";const BUTTON_1=";
+  pinVars += String(BUTTON_1);
+  pinVars += ";const BUTTON_2=";
+  pinVars += String(BUTTON_2);
+  // TFT MISO pin
+  pinVars += ";const TFT_MISO_PIN=";
+  pinVars += String(TFT_MISO);
+  pinVars += ";console.log('GPIO Pins from board_config:',{SD_MISO:SD_MISO_PIN,SD_MOSI:SD_MOSI_PIN,SD_SCLK:SD_SCLK_PIN,SD_CS:SD_CS_PIN,ROTARY_CLK:ROTARY_CLK_PIN,ROTARY_DT:ROTARY_DT_PIN,ROTARY_SW:ROTARY_SW_PIN,BUTTON_BOOT:BUTTON_BOOT,BUTTON_1:BUTTON_1,BUTTON_2:BUTTON_2,TFT_MISO:TFT_MISO_PIN});";
 
   Serial.printf("Sending pin variables: %d bytes\n", pinVars.length());
   Serial.printf("  RGB_R=%d, RGB_G=%d, RGB_B=%d\n", rgb_led_pin_r, rgb_led_pin_g, rgb_led_pin_b);
@@ -5284,6 +5500,8 @@ void handleJavaScriptRoute() {
   Serial.printf("  DIST_TRIG=%d, DIST_ECHO=%d\n", distance_trig_pin, distance_echo_pin);
   Serial.printf("  SD_MISO=%d, SD_MOSI=%d, SD_SCLK=%d, SD_CS=%d\n", sd_miso_pin, sd_mosi_pin, sd_sclk_pin, sd_cs_pin);
   Serial.printf("  ROTARY_CLK=%d, ROTARY_DT=%d, ROTARY_SW=%d\n", rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
+  Serial.printf("  BUTTON_BOOT=%d, BUTTON_1=%d, BUTTON_2=%d\n", BUTTON_BOOT, BUTTON_1, BUTTON_2);
+  Serial.printf("  TFT_MISO=%d\n", TFT_MISO);
   server.sendContent(pinVars);
 
   // Send translations
@@ -5580,12 +5798,19 @@ void setup() {
   server.on("/api/sd-config", handleSDConfig);
   server.on("/api/sd-test", handleSDTest);
   server.on("/api/sd-info", handleSDInfo);
+  server.on("/api/sd-test-read", handleSDTestRead);
+  server.on("/api/sd-test-write", handleSDTestWrite);
+  server.on("/api/sd-format", handleSDFormat);
 
   // Rotary Encoder
   server.on("/api/rotary-config", handleRotaryConfig);
   server.on("/api/rotary-test", handleRotaryTest);
   server.on("/api/rotary-position", handleRotaryPosition);
   server.on("/api/rotary-reset", handleRotaryReset);
+
+  // Buttons (v3.28.3)
+  server.on("/api/button-states", handleButtonStates);
+  server.on("/api/button-state", handleButtonState);  // v3.28.4 - individual button query
 
   // GPS Module
   server.on("/api/gps", handleGPSData);
@@ -5621,6 +5846,16 @@ void setup() {
   initButtons();
   Serial.printf("Boutons actifs: BTN1=%d, BTN2=%d\r\n", button1Pin, button2Pin);
 #endif
+
+  // Initialize rotary encoder on startup (v3.28.3 fix)
+  Serial.println("Initialisation de l'encodeur rotatif...");
+  initRotaryEncoder();
+  if (rotaryAvailable) {
+    Serial.printf("Encodeur rotatif OK: CLK=%d, DT=%d, SW=%d\r\n",
+                  rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
+  } else {
+    Serial.println("Encodeur rotatif: non disponible ou configuration invalide");
+  }
 }
 
 // ========== LOOP ==========

@@ -63,9 +63,9 @@ const char* WIFI_PASS_2 = "BackupPassword";
 - **Pins vary by environment** (configured in `include/config.h`):
 
 **ESP32-S3 (esp32s3_n16r8 / esp32s3_n8r8):**
-  - MOSI: GPIO 11, SCLK: GPIO 12
+  - MISO: GPIO 13 (shared with SD card), MOSI: GPIO 11, SCLK: GPIO 12
   - CS: GPIO 10, DC: GPIO 9
-  - RST: GPIO 13, BL: GPIO 7
+  - RST: GPIO 14 ⚠️ (was GPIO 13 in old docs - INCORRECT!), BL: GPIO 7
 
 **ESP32 Classic (esp32devkitc):**
   - MOSI: GPIO 23, SCLK: GPIO 18
@@ -86,8 +86,8 @@ const char* WIFI_PASS_2 = "BackupPassword";
 - Default actions:
   - BTN1: short press plays a brief buzzer tone for user feedback.
   - BTN2: short press cycles RGB LED colors (red ? green ? blue ? white).
-- ESP32-S3 default pins: BTN1=38, BTN2=39 to avoid boot/reset conflicts.
-- ESP32 Classic (v3.21.0+): BTN1=32, BTN2=33 with internal pull-up (no external resistor needed). Previously GPIO 34/35 (input-only without pull-up).
+- ESP32-S3 default pins: BUTTON_BOOT=0 (read-only), BTN1=38, BTN2=39 to avoid boot/reset conflicts.
+- ESP32 Classic: BUTTON_BOOT=0 (read-only), BTN1=5, BTN2=12 with internal pull-up ⚠️ (old docs stated 32/33 or 34/35 - ALL INCORRECT!).
 
 
 ### Distance Sensor (HC-SR04)
@@ -95,8 +95,9 @@ const char* WIFI_PASS_2 = "BackupPassword";
 - TRIG is an output pin; ECHO is an input pin.
 - Power the sensor at 5V and protect the ECHO line with a resistor divider (5V to 3.3V) before the ESP32 input.
 - ESP32-S3 with Octal PSRAM/Flash (e.g., DevKitC-1 N16R8): avoid using GPIO 35..48 for TRIG/ECHO because these pins are reserved by the OPI memory interface. The firmware will flag this configuration as invalid.
-- Defaults: TRIG = GPIO 3, ECHO = GPIO 6.
-- Suggested alternative on ESP32-S3 if the secondary I2C bus is disabled: TRIG = GPIO 26 (output), ECHO = GPIO 25 (input).
+- Defaults ESP32-S3: TRIG = GPIO 2 ⚠️ (old docs said 3 - WRONG!), ECHO = GPIO 35 ⚠️ (old docs said 6 - WRONG!).
+- Defaults ESP32 Classic: TRIG = GPIO 1, ECHO = GPIO 35.
+- See `docs/PIN_MAPPING.md` for current GPIO assignments from `board_config.h`.
 
 ## Bluetooth� naming rules
 - Names must be 3�31 characters, ASCII alphanumeric plus hyphen or underscore.

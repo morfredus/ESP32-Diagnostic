@@ -1,31 +1,64 @@
-# ESP32 Diagnostic Suite (v3.25.1)
+# ESP32 Diagnostic Suite (v3.28.5)
 
-> **Note**: v3.25.1 is a patch release (maintenance/documentation alignment). v3.25.0 restored dynamic GPIO pin remapping via Web UI with improved architecture that prevents preprocessor conflicts. The system uses lowercase runtime variables (`i2c_sda`) initialized from UPPERCASE compile-time defines (`I2C_SDA`) in `board_config.h`.
+> **Note**: v3.28.5 fixes rotary encoder button stuck + button monitoring GPIO issues. All input device monitoring now works correctly. ✅
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
-## ✨ Version 3.25.0 Highlights - Dynamic GPIO Pin Remapping Restored
+## ✨ Version 3.28.5 Highlights - Input Monitoring Fixed
 
-**Major Architectural Improvement:**
-- **Dynamic pin remapping works again** - Users can change GPIO pins via Web UI without recompilation
-- **No preprocessor conflicts** - Solved by using lowercase runtime variables (`i2c_sda`, `rgb_led_pin_r`, etc.)
-- **Two-layer architecture** - UPPERCASE defines in `board_config.h`, lowercase variables in `main.cpp`
-- **All handlers functional** - I2C, RGB LED, Buzzer, DHT, Light, Distance, Motion sensors
+**Bug Fixes:**
+1. ✅ **Rotary Encoder Button** - No longer stuck on "Pressed", reads real GPIO state
+2. ✅ **BOOT/Button1/Button2 Monitoring** - Now works correctly using direct constant access
 
-**Key Innovation:**
+**Key Changes:**
 ```cpp
-// board_config.h (compile-time default)
-#define I2C_SDA 15
+// src/main.cpp:3199-3203 - Read real GPIO for rotary button
+int getRotaryButtonGPIOState() {
+  return digitalRead(rotary_sw_pin);
+}
 
-// main.cpp (runtime variable - modifiable via Web UI)
-int i2c_sda = I2C_SDA;
+// src/main.cpp:3185-3199 - Use constants directly for buttons
+int getButtonBootState() {
+  return digitalRead(BUTTON_BOOT);  // Direct constant access
+}
 ```
 
-**Benefits:**
-- ✅ Hardware flexibility restored - Test different pin configurations without recompilation
-- ✅ Clean naming convention - UPPERCASE = compile-time, lowercase = runtime
-- ✅ No preprocessor issues - Different names prevent macro expansion conflicts
-- ✅ All functionality preserved - No features lost from v3.23.x
+**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.5 details.
+
+## Previous: Version 3.28.4
+
+**Input Devices Fixed:**
+- ✅ **Rotary Encoder Initialization** - Works immediately after boot
+- ✅ **Button Monitoring API** - Backend endpoints added
+- ✅ **Automatic Setup** - All input devices initialize in `setup()`
+
+**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.3 details.
+
+## Previous: Version 3.28.2
+
+**BUTTON_BOOT JavaScript Error Fixed:**
+- ✅ **BUTTON_BOOT Error FIXED** - ReferenceError on Input Devices page resolved
+- ✅ **Root Cause Identified** - GPIO constants were injected in wrong location
+- ✅ **All Button Constants Working** - BUTTON_BOOT, BUTTON_1, BUTTON_2 now properly available
+
+**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.28.2 details.
+
+## Previous: Version 3.28.1
+
+**MISO Integration & SD Card Fixes:**
+- ✅ **MISO Display Fixed** - No more "MISO: undefined" in web interface
+- ✅ **SD Card on ESP32-S3 Works** - Fixed SPI bus selection (HSPI vs FSPI)
+- ✅ **MISO Configuration Sync** - Changes in web UI now persist correctly
+- ⚠️ **BUTTON_BOOT** - NOT actually fixed despite documentation (fixed in v3.28.2)
+
+**See:** [docs/RELEASE_NOTES_3.28.1.md](docs/RELEASE_NOTES_3.28.1.md) for details.
+
+## Previous: Version 3.25.0
+
+**Dynamic GPIO Pin Remapping Restored:**
+- **Dynamic pin remapping works again** - Users can change GPIO pins via Web UI without recompilation
+- **Two-layer architecture** - UPPERCASE defines in `board_config.h`, lowercase variables in `main.cpp`
+- **All handlers functional** - I2C, RGB LED, Buzzer, DHT, Light, Distance, Motion sensors
 
 **See:** [docs/RELEASE_NOTES_3.25.0.md](docs/RELEASE_NOTES_3.25.0.md) for complete technical details.
 
@@ -43,8 +76,8 @@ int i2c_sda = I2C_SDA;
 
 **Complete ESP32 Classic Pin Mapping Revision** - Hardware migration required:
 - **11 pin changes** to resolve boot issues (strapping pins GPIO 4/12/15) and USB-UART communication (protect GPIO 1/3)
-- **Improved buttons**: GPIO 32/33 with internal pull-up (instead of 34/35 input-only)
-- **Safe RGB LEDs**: Moved away from strapping pins (12?13, 15?25)
+- **Improved buttons**: GPIO 5/12 with internal pull-up ⚠️ (docs previously stated 32/33 or 34/35 - both INCORRECT!)
+- **Safe RGB LEDs**: Moved away from strapping pins (12→13, 15→25)
 - **GPS stability**: PPS moved from GPIO 4 (strapping) to GPIO 36 (dedicated input-only)
 - **Detailed documentation**: See `docs/PIN_MAPPING_CHANGES_FR.md` for numbered list of changes with technical explanations
 - **Impact**: ESP32-S3 unchanged, ESP32 Classic requires hardware rewiring
@@ -78,8 +111,8 @@ int i2c_sda = I2C_SDA;
 ## Version 3.20.1 Features
 1. **USB/OTG Stability (ESP32-S3)**: USB D-/D+ lines freed by moving defaults away from GPIO19/20.
    - Default I2C: SDA=15, SCL=16
-   - RGB LED: Red=21, Green=45, Blue=47 (Red moved from GPIO19)
-   - OTG stabilized; reminder: GPIO45 is a strapping pin, LED left off at boot.
+   - RGB LED: Red=21, Green=41, Blue=42 ⚠️ (docs stated 45/47 - INCORRECT! board_config.h uses 41/42)
+   - OTG stabilized; note: GPIO41/42 chosen to avoid strapping pin conflicts.
 
 ## Version 3.20.0 Features
 1. **Advanced Button Handling**: Enhanced button features with visual feedback and interactive controls
@@ -125,7 +158,7 @@ int i2c_sda = I2C_SDA;
 3. **Web Interface Enhancements**: GPS module section in Wireless page, environmental sensors in Sensors page.
 
 ## Version 3.17.1 Features
-1. **Refreshed Pin Mapping (ESP32-S3 & Classic)**: Defaults adjusted in `include/config.h` to align GPS, TFT, RGB LED, and sensors with DevKitC-1 routing while preserving buttons. ESP32-S3: GPS RX=18/TX=17/PPS=8; TFT MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7; RGB LED R=47/G=48/B=45; BTN1=1, BTN2=2; PWM/Buzzer=14; DHT=5; Motion=4; Light=19; HC-SR04 TRIG=3/ECHO=6. ESP32 Classic: GPS RX=16/TX=17/PPS=4; TFT MOSI=23, SCLK=18, CS=19, DC=27, RST=26, BL=13; RGB LED R=12/G=14/B=15; BTN1=34, BTN2=35; PWM/Buzzer=5; DHT=25; Motion=36; Light=2; HC-SR04 TRIG=32/ECHO=33.
+1. **Refreshed Pin Mapping (ESP32-S3 & Classic)**: ⚠️ **HISTORICAL NOTE**: This version's GPIO assignments have been revised. Current values in `board_config.h` differ from this version's documentation. See PIN_MAPPING.md for current GPIOs. ESP32-S3 current: RGB LED R=21/G=41/B=42 (NOT 47/48/45), HC-SR04 TRIG=2/ECHO=35 (NOT 3/6), Buzzer=6/PWM=20 (NOT both 14), TFT RST=14 (NOT 13). ESP32 Classic current: Buttons BTN1=5/BTN2=12 (NOT 34/35), HC-SR04 TRIG=1 (NOT 32).
 2. **Docs + Version**: Mapping guides (EN/FR), README, feature matrices, usage guides, and build notes aligned with new defaults; `PROJECT_VERSION` bumped to `3.17.1`.
 
 ## Version 3.17.0 Features
