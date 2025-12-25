@@ -41,8 +41,8 @@
 // v3.30.0: Dynamic TFT driver selection
 // Both ILI9341 and ST7789 drivers are now supported simultaneously
 // Default driver selection (can be changed dynamically via Web UI)
-#define TFT_USE_ILI9341  // Default driver at boot
-// #define TFT_USE_ST7789
+// #define TFT_USE_ILI9341  // Default driver at boot
+#define TFT_USE_ST7789
 
 // TFT display resolution (adjustable per driver via Web UI)
 #define TFT_WIDTH   240
