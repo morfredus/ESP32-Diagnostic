@@ -5,6 +5,13 @@
 La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version 3.15.1 inclut des **optimisations mémoire critiques pour ESP32 Classic** et le support multi-environnements avec trois configurations de build distinctes optimisées pour différentes variantes matérielles ESP32.
 
 ## Mission
+## Dernière Mise à Jour : v3.30.0
+
+**Nouveau en v3.30.0 :** Sélection dynamique du driver TFT depuis l'interface Web ! Basculez entre les écrans ILI9341 et ST7789 sans recompiler. Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md) pour les détails.
+
+---
+
+
 - Proposer une méthodologie homogène pour qualifier les cartes ESP32-S3 et ESP32 avec plusieurs variantes matérielles.
 - Supporter trois cartes spécifiques avec environnements dédiés : **ESP32-S3 N16R8** (principale), **ESP32-S3 N8R8**, et **ESP32 Classic DevKitC**.
 - Mappings de broches spécifiques au matériel via compilation conditionnelle pour placement périphérique optimal.
@@ -19,7 +26,7 @@ La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production
 | Localisation | Bascule FR/EN à l'exécution côté firmware (sortie série) et interface web. |
 | Extensibilité | Registre modulaire de tests, bus d'événements pour callbacks personnalisés et helpers OLED/NeoPixel optionnels. |
 
-## Nouveauté v3.29.0 : Sélection dynamique du contrôleur TFT
+## Nouveauté v3.30.0 : Sélection dynamique du contrôleur TFT
 
 - Vous pouvez désormais choisir le contrôleur TFT (`ILI9341` ou `ST7789`) et la résolution directement dans `include/config.h` :
 ```cpp
