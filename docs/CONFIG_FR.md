@@ -1,14 +1,38 @@
-﻿## Sélection du contrôleur TFT et de la résolution (v3.29.0)
+## Sélection Dynamique du Driver TFT (v3.30.0)
 
-Vous pouvez désormais choisir le contrôleur TFT (`ILI9341` ou `ST7789`) et la résolution directement dans `include/config.h` :
+**NOUVEAU :** Vous pouvez maintenant basculer entre les contrôleurs TFT (`ILI9341` ou `ST7789`) dynamiquement depuis l'interface Web sans recompiler !
+
+### Changement de Driver en Temps Réel (Interface Web)
+
+1. **Accéder à l'Interface Web** → Naviguer vers la section Écran TFT
+2. **Sélectionner le Driver** → Choisir dans le menu déroulant : ILI9341 ou ST7789
+3. **Appliquer** → Le driver change instantanément (pas de redémarrage requis)
+4. **Tester** → Utiliser les tests d'affichage intégrés immédiatement
+
+### Driver par Défaut au Démarrage
+
+Définir le driver par défaut dans `include/config.h` :
 ```cpp
-#define TFT_CONTROLLER      "ST7789" // ou "ILI9341"
-#define TFT_WIDTH           240
-#define TFT_HEIGHT          320
+// v3.30.0 : Les deux drivers chargés simultanément
+#define TFT_USE_ILI9341  // Driver par défaut au démarrage
+// #define TFT_USE_ST7789
+
+#define TFT_WIDTH   240
+#define TFT_HEIGHT  320
 ```
-L'affichage est identique quel que soit le contrôleur.
-Voir le changelog pour plus de détails.
-# Configuration (FR) — v3.28.5
+
+**Note :** Le `#define` définit uniquement le driver initial. Vous pouvez le changer à tout moment depuis l'interface Web.
+
+### Avantages
+
+- ⚡ **Pas de Recompilation** : Testez différents drivers sans reflasher
+- 🔄 **Changement Instantané** : Changez de driver à la volée
+- 🧪 **Tests Faciles** : Identifiez rapidement les problèmes de compatibilité
+- 📦 **Firmware Unique** : Une seule compilation supporte les deux types d'écran
+
+Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md) pour tous les détails.
+
+# Configuration (FR) — v3.30.0
 
 > **AVERTISSEMENT** : v3.28.5 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
