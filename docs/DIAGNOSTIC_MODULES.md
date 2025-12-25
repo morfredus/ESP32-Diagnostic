@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Diagnostic Modules (v3.28.5)
+# ESP32 Diagnostic Suite – Diagnostic Modules (v3.29.0)
 
-> WARNING: v3.28.5 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: v3.29.0 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 This guide dives into each automated diagnostic module shipped with version 3.15.0. Use it to understand the execution order,
 metrics collected, and interpretation guidelines when reviewing reports.

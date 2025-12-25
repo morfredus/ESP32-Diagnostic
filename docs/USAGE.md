@@ -1,6 +1,6 @@
-# Usage Guide (EN) – v3.28.5
+# Usage Guide (EN) – v3.29.0
 
-> WARNING: v3.28.5 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: v3.29.0 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 **Multi-environment support:** Version 3.17.1 refreshes default pin mappings for ESP32-S3 and ESP32 Classic while keeping the three hardware-specific build environments and the ESP32 Classic memory optimizations. Before first use, ensure you've selected and flashed the correct environment for your board (see [BUILD_AND_DEPLOY.md](BUILD_AND_DEPLOY.md)).
 

@@ -1,6 +1,6 @@
-# Troubleshooting (EN) – v3.28.5
+# Troubleshooting (EN) – v3.29.0
 
-> WARNING: v3.28.5 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
+> WARNING: v3.29.0 fixes ESP32 Classic pin mapping duplicates and retains ESP32-S3 GPIO remapping. Ensure your wiring and target match the documented pins. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) and [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) before flashing.
 
 **Multi-environment support:** This release supports three build environments (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic) with hardware-specific pin mappings. Ensure you've selected and flashed the correct environment for your board before troubleshooting.
 

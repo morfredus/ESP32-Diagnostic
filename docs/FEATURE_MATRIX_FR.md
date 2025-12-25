@@ -1,13 +1,13 @@
-# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.28.5)
+# ESP32 Diagnostic Suite – Matrice des fonctionnalités (v3.29.0)
 
-> **AVERTISSEMENT** : Ce document reflète le firmware v3.28.5 avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. La documentation précédente (v3.22.1) contenait des erreurs CRITIQUES. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware v3.29.0 avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. La documentation précédente (v3.22.1) contenait des erreurs CRITIQUES. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
-Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.28.5 et ses trois environnements de build.
+Cette matrice résume la couverture des diagnostics pour les cartes Espressif supportées par la version 3.29.0 et ses trois environnements de build.
 Elle aide à planifier les campagnes de validation et à vérifier si des périphériques optionnels nécessitent un câblage supplémentaire.
 
-> **Important :** La version 3.28.5 (PlatformIO) n'active pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
+> **Important :** La version 3.29.0 (PlatformIO) n'active pas le Bluetooth/BLE. Pour les diagnostics BLE, utilisez la version Arduino IDE archivée [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE).
 
-**✨ Nouveau en v3.28.5 :** Corrections monitoring dispositifs d'entrée - état bouton encodeur lit GPIO réel, monitoring boutons utilise accès direct aux constantes.
+**✨ Nouveau en v3.29.0 :** Corrections monitoring dispositifs d'entrée - état bouton encodeur lit GPIO réel, monitoring boutons utilise accès direct aux constantes.
 
 **✨ Nouveau en v3.28.4 :** Corrections endpoint API monitoring boutons - ajout `/api/button-state` (singulier) pour requêtes boutons individuels.
 

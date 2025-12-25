@@ -1,6 +1,6 @@
-﻿# Architecture du firmware (FR) – v3.28.5
+﻿# Architecture du firmware (FR) – v3.29.0
 
-> **AVERTISSEMENT** : v3.28.5 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : v3.29.0 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
 ## Vue d'ensemble
 Le firmware est un projet PlatformIO avec le code principal dans `src/main.cpp` qui orchestre les diagnostics, sert l'interface web et expose des endpoints REST. Les en-têtes dans `include/` regroupent les traductions, les modèles HTML et les utilitaires de configuration.
