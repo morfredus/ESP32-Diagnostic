@@ -1,6 +1,6 @@
-﻿# ESP32 Diagnostic Suite – Référence REST API (v3.22.1)
+﻿# ESP32 Diagnostic Suite – Référence REST API (v3.28.5)
 
-> **AVERTISSEMENT** : v3.22.1 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : v3.28.5 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
 La REST API reflète les commandes du tableau de bord et expose les données de diagnostic pour l'automatisation. Tous les endpoints
 sont servis en HTTP sur le même port que l'interface web. L'authentification est stateless ; sécurisez l'accès au niveau réseau
