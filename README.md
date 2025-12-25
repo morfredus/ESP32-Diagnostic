@@ -1,26 +1,40 @@
 
-# ESP32 Diagnostic Suite (v3.29.0)
+# ESP32 Diagnostic Suite (v3.30.0)
 
-> **Note**: v3.29.0 adds dynamic support for both ILI9341 and ST7789 TFT displays. Select your controller and resolution in `config.h`.
+> **Note**: v3.30.0 adds **runtime TFT driver switching** from the Web UI! Switch between ILI9341 and ST7789 displays without recompiling.
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
 
-## ✨ Version 3.29.0 Highlights - Dynamic TFT Controller
+## ✨ Version 3.30.0 Highlights - Runtime TFT Driver Switching
 
 **New Features:**
-- Dynamic selection of TFT controller (`ILI9341` or `ST7789`) via `TFT_CONTROLLER` in `config.h`.
-- Resolution is now also configurable in `config.h`.
-- Display output is identical regardless of controller.
-- Documentation and guides updated accordingly.
+- **Dynamic TFT driver switching** from Web UI - No recompilation needed!
+- Switch between `ILI9341` and `ST7789` drivers on-the-fly
+- Both drivers loaded simultaneously for instant switching
+- New driver selector in TFT configuration section
+- No reboot required for driver changes
 
 **How to use:**
+1. Open the Web UI and navigate to the TFT screen section
+2. Select your desired driver from the new "Driver" dropdown (ILI9341 or ST7789)
+3. Click "Apply Config" - the driver switches immediately!
+4. Test your display with the built-in test buttons
+
+**Default driver at boot:**
 Edit `include/config.h`:
 ```cpp
-#define TFT_CONTROLLER      "ST7789" // or "ILI9341"
-#define TFT_WIDTH           240
-#define TFT_HEIGHT          320
+#define TFT_USE_ILI9341  // or TFT_USE_ST7789
 ```
+
+**See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.30.0 details.
+
+## Previous: Version 3.29.0
+
+**Dynamic TFT Controller Selection:**
+- Dynamic selection of TFT controller (`ILI9341` or `ST7789`) via `config.h`
+- Resolution configurable in `config.h`
+- Display output identical regardless of controller
 
 **See:** [CHANGELOG.md](CHANGELOG.md) for full version 3.29.0 details.
 
