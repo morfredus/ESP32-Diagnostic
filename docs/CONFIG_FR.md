@@ -63,9 +63,9 @@ const char* WIFI_PASS_2 = "SecoursMotDePasse";
 - **Les broches varient selon l'environnement** (configurées dans `include/config.h`) :
 
 **ESP32-S3 (esp32s3_n16r8 / esp32s3_n8r8) :**
-  - MOSI : GPIO 11, SCLK : GPIO 12
+  - MISO : GPIO 13 (partagé avec carte SD), MOSI : GPIO 11, SCLK : GPIO 12
   - CS : GPIO 10, DC : GPIO 9
-  - RST : GPIO 13, BL : GPIO 7
+  - RST : GPIO 14 ⚠️ (était GPIO 13 dans anciennes docs - FAUX !), BL : GPIO 7
 
 **ESP32 Classic (esp32devkitc) :**
   - MOSI : GPIO 23, SCLK : GPIO 18
@@ -86,8 +86,8 @@ const char* WIFI_PASS_2 = "SecoursMotDePasse";
 - Actions par défaut :
   - BTN1 : appui court → bip bref du buzzer (feedback utilisateur).
   - BTN2 : appui court → cycle des couleurs de la LED RGB (rouge → vert → bleu → blanc).
-- ESP32-S3 : BTN1=38, BTN2=39 pour éviter les conflits d’upload/reset.
-- ESP32 Classic (v3.21.0+) : BTN1=32, BTN2=33 avec pull-up interne (pas de résistance externe nécessaire). Anciennement GPIO 34/35 (input-only sans pull-up).
+- ESP32-S3 : BUTTON_BOOT=0 (lecture seule), BTN1=38, BTN2=39 pour éviter les conflits d'upload/reset.
+- ESP32 Classic : BUTTON_BOOT=0 (lecture seule), BTN1=5, BTN2=12 avec pull-up interne ⚠️ (anciennes docs indiquaient 32/33 ou 34/35 - TOUS FAUX !).
 
 
 ### Capteur de distance (HC-SR04)
@@ -95,8 +95,9 @@ const char* WIFI_PASS_2 = "SecoursMotDePasse";
 - TRIG est une broche de sortie ; ECHO est une broche d'entrée.
 - Alimentez le capteur en 5V et protégez la ligne ECHO avec un pont diviseur (5V vers 3,3V) avant l'entrée ESP32.
 - ESP32‑S3 avec mémoire Octal PSRAM/Flash (ex. DevKitC‑1 N16R8) : évitez d'utiliser les GPIO 35..48 pour TRIG/ECHO car ces broches sont réservées par l'interface OPI. Le firmware signalera cette configuration comme invalide.
-- Défauts : TRIG = GPIO 3, ECHO = GPIO 6.
-- Cartographie alternative sur ESP32-S3 si le bus I2C secondaire est inactif : TRIG = GPIO 26 (sortie), ECHO = GPIO 25 (entrée).
+- Défauts ESP32-S3 : TRIG = GPIO 2 ⚠️ (anciennes docs indiquaient 3 - FAUX !), ECHO = GPIO 35 ⚠️ (anciennes docs indiquaient 6 - FAUX !).
+- Défauts ESP32 Classic : TRIG = GPIO 1, ECHO = GPIO 35.
+- Voir `docs/PIN_MAPPING_FR.md` pour assignations GPIO actuelles depuis `board_config.h`.
 
 ## Règles de nommage Bluetooth®
 - Les noms doivent comporter 3 à 31 caractères ASCII alphanumériques (+ tiret ou underscore).

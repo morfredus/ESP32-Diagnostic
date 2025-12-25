@@ -64,13 +64,13 @@ int getButtonBootState() {
 
 ## Précédent : version 3.22.1 - Corrections de mapping (Classic)
 
-**Corrections de mapping pour ESP32 Classic** — Harmonisation avec `board_config.h` :
-- Boutons : BTN1=2, BTN2=5 (pull-up interne)
+**Corrections de mapping pour ESP32 Classic** — ⚠️ **NOTE HISTORIQUE** : Documentation v3.22.1 contenait erreurs. Valeurs actuelles `board_config.h` :
+- Boutons : BTN1=5, BTN2=12 (pull-up interne) ⚠️ (docs v3.22.1 indiquaient 2/5 - FAUX !)
 - LED RGB : R=13, V=26, B=33
-- Capteurs : DHT=15, HC-SR04 TRIG=12 / ECHO=35, PWM=4, Buzzer=19
-**Rappel ESP32-S3** — Remapping GPIO maintenu : V=41 (ancien 45), B=42 (ancien 47), R=21
-**Documentation** : Voir [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING_CHANGES_FR.md](docs/PIN_MAPPING_CHANGES_FR.md)
-- **Impact** : ESP32-S3 nécessite recâblage matériel, ESP32 Classic inchangé
+- Capteurs : DHT=15, HC-SR04 TRIG=1 ⚠️ (docs v3.22.1 indiquaient 12 - FAUX !) / ECHO=35, PWM=4, Buzzer=19
+**Rappel ESP32-S3** — Remapping GPIO confirmé : V=41 (docs obsolètes indiquaient 45), B=42 (docs obsolètes indiquaient 47), R=21
+**Documentation** : Voir [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) pour valeurs EXACTES actuelles
+- **Impact** : Corrections documentation uniquement, synchronisation avec `board_config.h`
 - **Sécurité** : Configuration optimisée pour éviter les conflits avec les broches de strapping et USB
 
 ## Précédent : version 3.22.0 - Indicateur d'état Wi-Fi NeoPixel
@@ -87,7 +87,7 @@ int getButtonBootState() {
 
 **Révision complète du pin mapping ESP32 Classic** - Migration matérielle requise :
 - **11 modifications de pins** pour résoudre les problèmes de boot (broches de strapping GPIO 4/12/15) et de communication USB-UART (protection GPIO 1/3)
-- **Boutons améliorés** : GPIO 32/33 avec pull-up interne (au lieu de 34/35 input-only)
+- **Boutons améliorés** : GPIO 5/12 avec pull-up interne ⚠️ (docs indiquaient 32/33 ou 34/35 - TOUS FAUX !)
 - **LED RGB sécurisées** : Éloignées des broches de strapping (12→13, 15→25)
 - **Stabilité GPS** : PPS déplacé de GPIO 4 (strapping) vers GPIO 36 (input-only dédié)
 - **Documentation détaillée** : Voir `docs/PIN_MAPPING_CHANGES_FR.md` pour la liste numérotée des changements avec explications techniques
@@ -122,8 +122,8 @@ int getButtonBootState() {
 ## Nouveautés de la version 3.20.1
 1. **Stabilité USB/OTG (ESP32-S3)** : Les lignes USB D-/D+ sont libérées en déplaçant les défauts hors GPIO19/20.
    - I2C par défaut : SDA=15, SCL=16
-   - LED RGB : Rouge=21, Vert=45, Bleu=47 (Rouge quitte GPIO19)
-   - OTG stabilisé ; rappel : GPIO45 est une broche de strapping, LED laissée éteinte au boot.
+   - LED RGB : Rouge=21, Vert=41, Bleu=42 ⚠️ (docs indiquaient 45/47 - FAUX ! board_config.h utilise 41/42)
+   - OTG stabilisé ; note : GPIO41/42 choisis pour éviter conflits broches strapping.
 
 ## Nouveautés de la version 3.20.0
 1. **Gestion Avancée des Boutons** : Fonctionnalités de boutons améliorées avec retour visuel et contrôles interactifs

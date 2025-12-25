@@ -76,8 +76,8 @@ int getButtonBootState() {
 
 **Complete ESP32 Classic Pin Mapping Revision** - Hardware migration required:
 - **11 pin changes** to resolve boot issues (strapping pins GPIO 4/12/15) and USB-UART communication (protect GPIO 1/3)
-- **Improved buttons**: GPIO 32/33 with internal pull-up (instead of 34/35 input-only)
-- **Safe RGB LEDs**: Moved away from strapping pins (12?13, 15?25)
+- **Improved buttons**: GPIO 5/12 with internal pull-up ⚠️ (docs previously stated 32/33 or 34/35 - both INCORRECT!)
+- **Safe RGB LEDs**: Moved away from strapping pins (12→13, 15→25)
 - **GPS stability**: PPS moved from GPIO 4 (strapping) to GPIO 36 (dedicated input-only)
 - **Detailed documentation**: See `docs/PIN_MAPPING_CHANGES_FR.md` for numbered list of changes with technical explanations
 - **Impact**: ESP32-S3 unchanged, ESP32 Classic requires hardware rewiring
@@ -111,8 +111,8 @@ int getButtonBootState() {
 ## Version 3.20.1 Features
 1. **USB/OTG Stability (ESP32-S3)**: USB D-/D+ lines freed by moving defaults away from GPIO19/20.
    - Default I2C: SDA=15, SCL=16
-   - RGB LED: Red=21, Green=45, Blue=47 (Red moved from GPIO19)
-   - OTG stabilized; reminder: GPIO45 is a strapping pin, LED left off at boot.
+   - RGB LED: Red=21, Green=41, Blue=42 ⚠️ (docs stated 45/47 - INCORRECT! board_config.h uses 41/42)
+   - OTG stabilized; note: GPIO41/42 chosen to avoid strapping pin conflicts.
 
 ## Version 3.20.0 Features
 1. **Advanced Button Handling**: Enhanced button features with visual feedback and interactive controls
@@ -158,7 +158,7 @@ int getButtonBootState() {
 3. **Web Interface Enhancements**: GPS module section in Wireless page, environmental sensors in Sensors page.
 
 ## Version 3.17.1 Features
-1. **Refreshed Pin Mapping (ESP32-S3 & Classic)**: Defaults adjusted in `include/config.h` to align GPS, TFT, RGB LED, and sensors with DevKitC-1 routing while preserving buttons. ESP32-S3: GPS RX=18/TX=17/PPS=8; TFT MOSI=11, SCLK=12, CS=10, DC=9, RST=13, BL=7; RGB LED R=47/G=48/B=45; BTN1=1, BTN2=2; PWM/Buzzer=14; DHT=5; Motion=4; Light=19; HC-SR04 TRIG=3/ECHO=6. ESP32 Classic: GPS RX=16/TX=17/PPS=4; TFT MOSI=23, SCLK=18, CS=19, DC=27, RST=26, BL=13; RGB LED R=12/G=14/B=15; BTN1=34, BTN2=35; PWM/Buzzer=5; DHT=25; Motion=36; Light=2; HC-SR04 TRIG=32/ECHO=33.
+1. **Refreshed Pin Mapping (ESP32-S3 & Classic)**: ⚠️ **HISTORICAL NOTE**: This version's GPIO assignments have been revised. Current values in `board_config.h` differ from this version's documentation. See PIN_MAPPING.md for current GPIOs. ESP32-S3 current: RGB LED R=21/G=41/B=42 (NOT 47/48/45), HC-SR04 TRIG=2/ECHO=35 (NOT 3/6), Buzzer=6/PWM=20 (NOT both 14), TFT RST=14 (NOT 13). ESP32 Classic current: Buttons BTN1=5/BTN2=12 (NOT 34/35), HC-SR04 TRIG=1 (NOT 32).
 2. **Docs + Version**: Mapping guides (EN/FR), README, feature matrices, usage guides, and build notes aligned with new defaults; `PROJECT_VERSION` bumped to `3.17.1`.
 
 ## Version 3.17.0 Features

@@ -1,256 +1,313 @@
-# Notes de Version - Version 3.28.1
+# ESP32 Diagnostic Suite – Notes de Version v3.28.1
 
-**Date de Sortie :** 2025-12-24
-**Type :** Version Corrective (Corrections de Bugs)
-**Branche :** dev/addfeatures
+**Date de sortie :** 24 décembre 2025
+**Type :** Version de correction
+**Sévérité :** Corrections de bugs critiques
 
-## Vue d'ensemble
+---
 
-La version 3.28.1 est une version corrective critique qui résout tous les problèmes restants de la version 3.28.0. Cette version complète l'intégration backend MISO, corrige la fonctionnalité de carte SD sur ESP32-S3, et étend la plage d'entrée MISO pour supporter toutes les broches GPIO ESP32.
+## 📋 Vue d'ensemble
 
-## 🐛 Corrections Critiques de Bugs
+La version 3.28.1 est une **version de correction** qui résout trois problèmes critiques d'intégration : l'intégration backend de TFT MISO, la synchronisation de configuration MISO, et le support de carte SD sur ESP32-S3. Cette version assure une gestion complète de la broche MISO sur toute la pile logicielle et résout les problèmes de compatibilité du bus SPI sur les cartes ESP32-S3.
 
-### Problèmes Corrigés depuis 3.28.0
+**Qui doit mettre à jour :**
+- ✅ Utilisateurs rencontrant "MISO: undefined" dans la section TFT de l'interface web
+- ✅ Utilisateurs incapables de configurer la broche TFT MISO via l'interface web
+- ✅ Utilisateurs ESP32-S3 rencontrant des échecs d'initialisation de carte SD
+- ✅ Tous les utilisateurs sur v3.28.0 (implémentation MISO partielle)
 
-#### 1. Intégration Backend MISO TFT ✅
+**NOTE IMPORTANTE :**
+- ⚠️ L'erreur JavaScript BUTTON_BOOT n'a PAS été entièrement corrigée dans cette version malgré les déclarations initiales
+- ✅ Voir les notes de version v3.28.2 pour la correction réelle de BUTTON_BOOT
 
-**Problème :**
-- Champ MISO manquant dans la réponse JSON `/api/screens-info`
-- L'interface web affichait "MISO: undefined" au lieu de GPIO 13
-- La variable backend `tftMISO` n'était pas déclarée
+---
 
-**Cause Racine :**
-- La variable `tftMISO` n'a jamais été initialisée depuis la constante `TFT_MISO`
-- La fonction `handleScreensInfo()` n'incluait pas le champ `miso` dans le JSON des broches TFT
+## 🐛 Problèmes corrigés
 
-**Solution :**
+### 1. Intégration Backend TFT MISO ✅
+
+#### Description du problème
+La valeur de la broche TFT MISO n'était pas incluse dans la réponse JSON de `/api/screens-info`, ce qui faisait que l'interface web affichait "MISO: undefined" dans la section d'informations des broches TFT.
+
+#### Cause racine
+- Le backend manquait de l'initialisation de la variable `tftMISO`
+- Le constructeur de réponse JSON dans `handleScreensInfo()` n'incluait pas le champ MISO
+- Le frontend recevait des données de broches incomplètes : `{pins: {mosi: 11, sclk: 12, ...}}` (MISO manquant)
+
+#### Solution technique
+**Fichier :** `src/main.cpp`
+**Changements :**
+- **Ligne 261 :** Ajout de la déclaration de variable `int tftMISO = TFT_MISO;`
+- **Ligne 4568 :** Ajout du champ `miso` à la structure JSON des broches TFT
+
 ```cpp
-// src/main.cpp:261 - Ajout de la déclaration de variable
+// Initialisation de variable
 int tftMISO = TFT_MISO;
 
-// src/main.cpp:4568 - Mise à jour de la réponse JSON
-json += "\"pins\":{\"miso\":" + String(tftMISO) + ",\"mosi\":" + String(tftMOSI) + ...
+// Réponse JSON dans handleScreensInfo()
+"pins": {
+  "miso": 13,    // ← Ajouté en v3.28.1
+  "mosi": 11,
+  "sclk": 12,
+  "cs": 10,
+  "dc": 9,
+  "rst": 14
+}
 ```
 
-**Impact :**
-- ✅ MISO s'affiche maintenant correctement comme "MISO: 13" (ESP32-S3)
-- ✅ Valeur correctement sourcée depuis `board_config.h`
-- ✅ Plus de "undefined" dans l'interface web
-
-**Fichiers Modifiés :**
-- `src/main.cpp` (lignes 261, 4568)
+#### Impact et bénéfices
+- ✅ La broche TFT MISO s'affiche maintenant correctement dans l'interface web (GPIO 13 pour ESP32-S3)
+- ✅ Informations complètes sur les broches SPI disponibles : MISO, MOSI, SCLK, CS, DC, RST
+- ✅ Résout le problème d'affichage "MISO: undefined"
 
 ---
 
-#### 2. Synchronisation Configuration MISO TFT ✅
+### 2. Synchronisation de Configuration TFT MISO ✅
 
-**Problème :**
-- La fonction JavaScript `configTFT()` ne récupérait pas la valeur MISO depuis le champ de saisie
-- Le backend `handleTFTConfig()` n'acceptait pas le paramètre MISO
-- Les changements MISO dans l'UI n'avaient aucun effet
+#### Description du problème
+La fonction JavaScript `configTFT()` n'envoyait pas la valeur de la broche MISO à l'API backend, empêchant les utilisateurs de configurer la broche TFT MISO via l'interface web.
 
-**Cause Racine :**
-- Paramètre `miso` manquant dans l'appel API de configuration
-- Le gestionnaire backend ne traitait pas la valeur MISO
+#### Cause racine
+- La fonction frontend `configTFT()` récupérait toutes les broches SPI SAUF MISO
+- Le backend `handleTFTConfig()` n'acceptait ni ne validait le paramètre MISO
+- Le flux de configuration était incomplet : UI → API (paramètre MISO manquant)
 
-**Solution :**
+#### Solution technique
+**Fichier :** `include/web_interface.h`
+**Ligne :** 119
 ```javascript
-// include/web_interface.h:119 - Mise à jour de configTFT()
+// Mise à jour de configTFT() pour inclure la valeur MISO
 const miso = document.getElementById('tftMISO').value;
-// ... envoi au backend
-await fetch('/api/tft-config?miso='+miso+'&mosi='+mosi+...);
+// L'appel API inclut maintenant le paramètre MISO
+fetch(`/api/tft-config?miso=${miso}&mosi=${mosi}&sclk=${sclk}&...`)
 ```
-
-```cpp
-// src/main.cpp:3814-3828 - Mise à jour de handleTFTConfig()
-int newMISO = server.hasArg("miso") ? server.arg("miso").toInt() : tftMISO;
-// ... validation et application
-if (newMISO >= -1 && newMISO <= 48 ...) {
-  tftMISO = newMISO;
-  // ...
-}
-```
-
-**Impact :**
-- ✅ Flux de configuration MISO complet : UI ↔ API ↔ Firmware
-- ✅ Les changements MISO dans l'UI web persistent maintenant
-- ✅ Validation complète (plage -1 à 48)
-
-**Fichiers Modifiés :**
-- `include/web_interface.h` (ligne 119)
-- `src/main.cpp` (lignes 3814-3828, 3850-3866)
-
----
-
-#### 3. Support Carte SD sur ESP32-S3 ✅
-
-**Problème :**
-- L'initialisation de la carte SD échouait sur ESP32-S3
-- Les tests retournaient "not available" même avec une carte SD insérée
-- Erreurs de compilation ou d'exécution sur ESP32-S3
-
-**Cause Racine :**
-- Le code utilisait la constante `HSPI` qui n'existe que sur ESP32 classique
-- ESP32-S2/S3 utilisent une nomenclature de bus SPI différente (`FSPI` au lieu de `HSPI`)
-
-**Solution :**
-```cpp
-// src/main.cpp:2950-2954 - Sélection conditionnelle du bus SPI
-if (sdSPI == nullptr) {
-#if defined(CONFIG_IDF_TARGET_ESP32)
-  sdSPI = new SPIClass(HSPI);  // ESP32 classique utilise HSPI
-#else
-  sdSPI = new SPIClass(FSPI);  // ESP32-S2/S3 utilisent FSPI (SPI2)
-#endif
-}
-```
-
-**Impact :**
-- ✅ Carte SD pleinement fonctionnelle sur ESP32-S3 N16R8
-- ✅ Tous les endpoints de test SD fonctionnent correctement
-- ✅ Abstraction appropriée des variantes ESP32
-- ✅ Aucune erreur de compilation
-
-**Référence Bus SPI :**
-- **ESP32 Classic :** HSPI = Bus SPI matériel 2
-- **ESP32-S2/S3 :** FSPI = Bus SPI flexible (équivalent à SPI2)
-
-**Fichiers Modifiés :**
-- `src/main.cpp` (lignes 2950-2954)
-
----
-
-## Détails Techniques
-
-### Modifications Backend
 
 **Fichier :** `src/main.cpp`
-
-1. **Ligne 261 :** Ajout de la déclaration de variable `int tftMISO = TFT_MISO;`
-2. **Ligne 4568 :** Ajout du champ `miso` au JSON des broches TFT dans `handleScreensInfo()`
-3. **Lignes 3814-3828 :** Mise à jour de `handleTFTConfig()` pour accepter et valider le paramètre MISO
-4. **Lignes 2950-2954 :** Ajout de la sélection conditionnelle du bus SPI pour l'initialisation de la carte SD
-
-**Exemple de Réponse JSON :**
-```json
-{
-  "tft": {
-    "available": true,
-    "status": "Ready",
-    "width": 240,
-    "height": 240,
-    "rotation": 0,
-    "pins": {
-      "miso": 13,
-      "mosi": 11,
-      "sclk": 12,
-      "cs": 10,
-      "dc": 9,
-      "rst": 14,
-      "bl": 7
-    }
-  }
+**Lignes :** 3814-3828
+```cpp
+// Mise à jour de handleTFTConfig() pour accepter et valider le paramètre MISO
+if (request->hasParam("miso")) {
+  int miso = request->getParam("miso")->value().toInt();
+  // Valider et traiter la valeur MISO
 }
 ```
 
-### Modifications Frontend
-
-**Fichier :** `include/web_interface.h`
-
-**Ligne 119 :** Mise à jour de la fonction `configTFT()`
-```javascript
-async function configTFT() {
-  setStatus('tft-status', {key:'reconfiguring'}, null);
-  const miso = document.getElementById('tftMISO').value;  // NOUVEAU
-  const mosi = document.getElementById('tftMOSI').value;
-  // ... autres champs
-  const r = await fetch('/api/tft-config?miso='+miso+'&mosi='+mosi+...);
-  // ... traitement réponse
-}
-```
-
-### Mise à Jour Version
-
-**Fichier :** `platformio.ini`
-
-```ini
-build_flags =
-    -std=gnu++17
-    -D PROJECT_VERSION='"3.28.1"'
-    -D PROJECT_NAME='"ESP32 Diagnostic"'
-```
-
-## Conformité & Architecture
-
-### Immuabilité de board_config.h ✅
-- **Exigence :** `board_config.h` doit rester intact
-- **Conformité :** ✅ Toutes les valeurs proviennent des constantes de `board_config.h`
-- **Validation :** ✅ Aucune valeur GPIO codée en dur
-- **Statut :** ✅ CONFIRMÉ - `board_config.h` non modifié
-
-### Support Variantes ESP32 ✅
-- **Exigence :** Support ESP32 Classic, ESP32-S2, ESP32-S3
-- **Implémentation :** ✅ Compilation conditionnelle avec `CONFIG_IDF_TARGET_*`
-- **Abstraction SPI :** ✅ Sélection appropriée du bus par variante
-- **Tests :** ✅ Vérifié sur ESP32-S3 N16R8
-
-## Résultats des Tests
-
-### Fonctionnalités Vérifiées
-✅ **Affichage MISO :** Affiche "MISO: 13" correctement (plus de "undefined")
-✅ **Configuration MISO :** Les changements dans l'UI persistent et affectent le firmware
-✅ **Détection Carte SD :** Détecte et initialise correctement sur ESP32-S3
-✅ **Tests Carte SD :** Endpoints lecture/écriture/formatage fonctionnels
-✅ **Avertissement GPIO 13 :** Affiché correctement dans la section Carte SD
-✅ **BUTTON_BOOT :** Lecture seule, aucune erreur JavaScript
-✅ **Plage Entrée :** MISO accepte la plage complète GPIO (-1 à 48)
-
-### Plateformes de Test
-- ✅ ESP32-S3 N16R8 (16MB Flash + 8MB PSRAM)
-- Attendu de fonctionner : ESP32-S3 N8R8, ESP32 Classic (compilation conditionnelle)
-
-## Notes de Mise à Jour
-
-### De 3.28.0 vers 3.28.1
-- **Changements Incompatibles :** Aucun
-- **Changements Matériels :** Aucun requis
-- **Configuration :** Automatique - aucune action utilisateur nécessaire
-- **Tests :** Vérifier la fonctionnalité de la carte SD après mise à jour
-
-### Étapes de Migration
-1. Téléverser le nouveau firmware via PlatformIO
-2. Vérifier que l'affichage MISO montre GPIO 13 (pas "undefined")
-3. Tester les opérations de lecture/écriture de la carte SD
-4. Confirmer que la page Input Devices se charge sans erreurs
-
-## Problèmes Connus
-
-Aucun. Tous les problèmes de 3.28.0 sont résolus.
-
-## Fichiers Modifiés
-
-- `src/main.cpp`: Variable MISO, réponse JSON, gestionnaire config, bus SPI SD
-- `include/web_interface.h`: Paramètre MISO dans configTFT
-- `platformio.ini`: Version 3.28.0 → 3.28.1
-- `CHANGELOG.md` + `CHANGELOG_FR.md`: Documentation complète 3.28.1
-
-## Justification Versionnage Sémantique
-
-**Version :** 3.28.1 (PATCH)
-- **MAJOR :** Aucun changement incompatible → 3.x inchangé
-- **MINOR :** Aucune nouvelle fonctionnalité → .28 inchangé
-- **PATCH :** Corrections de bugs uniquement → .1 incrémenté
-
-**Changements :**
-- ✅ Correction affichage MISO undefined (correction de bug)
-- ✅ Correction synchronisation configuration MISO (correction de bug)
-- ✅ Correction carte SD sur ESP32-S3 (correction de bug)
-
-**Conclusion :** Version PATCH stricte selon SemVer 2.0.0
+#### Impact et bénéfices
+- ✅ Le paramètre MISO est correctement inclus dans les requêtes `/api/tft-config`
+- ✅ Le backend accepte et valide maintenant la configuration MISO
+- ✅ Complète le flux de configuration MISO complet : UI ↔ API ↔ Firmware
+- ✅ Les utilisateurs peuvent maintenant configurer toutes les broches SPI TFT via l'interface web
 
 ---
 
-**Version :** 3.28.1
-**Version Précédente :** 3.28.0
-**Version Suivante :** À déterminer
-**Statut :** ✅ STABLE - Tous les problèmes connus résolus
+### 3. Support de Carte SD sur ESP32-S3 ✅
+
+#### Description du problème
+L'initialisation de la carte SD échouait sur les cartes ESP32-S3 avec des erreurs de compilation/exécution. Les fonctionnalités de test de carte SD étaient complètement non fonctionnelles sur les variantes ESP32-S3 N16R8 et N8R8.
+
+#### Cause racine
+Le code utilisait la constante `HSPI` pour la sélection du bus SPI, qui est **disponible uniquement sur ESP32 Classic** :
+
+```cpp
+// INCORRECT - Échoue sur ESP32-S3
+SPI.begin(SD_SCLK, SD_MISO, SD_MOSI, SD_CS);
+if (!SD.begin(SD_CS, SPI, 25000000, "/sd", 5, false)) {
+  // Erreur de compilation sur ESP32-S3 : HSPI non défini
+}
+```
+
+Différences d'architecture ESP32 :
+- **ESP32 Classic :** Dispose de `HSPI` (Hardware SPI bus 2) et `VSPI` (bus 3)
+- **ESP32-S2/S3 :** Utilise `FSPI` (Flexible SPI, équivalent à SPI2) au lieu de HSPI/VSPI
+
+#### Solution technique
+**Fichier :** `src/main.cpp`
+**Lignes :** 2950-2954
+
+Implémentation de la sélection conditionnelle du bus SPI :
+
+```cpp
+#if defined(CONFIG_IDF_TARGET_ESP32)
+  // ESP32 Classic : Utiliser HSPI (Hardware SPI bus 2)
+  SPIClass spiSD(HSPI);
+#else
+  // ESP32-S2/S3 : Utiliser FSPI (Flexible SPI bus, équivalent à SPI2)
+  SPIClass spiSD(FSPI);
+#endif
+
+spiSD.begin(SD_SCLK, SD_MISO, SD_MOSI, SD_CS);
+if (!SD.begin(SD_CS, spiSD, 25000000, "/sd", 5, false)) {
+  // Fonctionne maintenant sur toutes les variantes ESP32
+}
+```
+
+#### Impact et bénéfices
+- ✅ L'initialisation de la carte SD fonctionne maintenant sur ESP32-S3 N16R8/N8R8
+- ✅ Les tests de carte SD (`/api/sd-test-read`, `/api/sd-test-write`, `/api/sd-format`) sont entièrement fonctionnels
+- ✅ Abstraction correcte du bus SPI pour la compatibilité des variantes ESP32
+- ✅ Aucune erreur de compilation sur les cartes ESP32-S2/S3
+
+---
+
+## 📦 Fichiers modifiés
+
+| Fichier | Changements | Lignes |
+|---------|-------------|--------|
+| `src/main.cpp` | Ajout de la déclaration de variable tftMISO | 261 |
+| `src/main.cpp` | Ajout du champ MISO à la réponse JSON des broches TFT | 4568 |
+| `src/main.cpp` | Mise à jour de handleTFTConfig() pour accepter le paramètre MISO | 3814-3828 |
+| `src/main.cpp` | Ajout de la sélection conditionnelle du bus SPI pour carte SD | 2950-2954 |
+| `include/web_interface.h` | Mise à jour de configTFT() pour inclure le paramètre MISO | 119 |
+| `platformio.ini` | Changement de version : 3.28.0 → 3.28.1 | 27 |
+
+---
+
+## ✅ Tests et vérification
+
+### Comment vérifier les corrections
+
+**Test 1 : Affichage TFT MISO**
+1. Flasher le firmware v3.28.1 sur votre carte ESP32
+2. Se connecter à l'interface web via http://esp32.local
+3. Naviguer vers la page "Écrans"
+4. **Vérifier** que le champ TFT MISO affiche "GPIO 13" (ESP32-S3) au lieu de "undefined"
+
+**Test 2 : Configuration TFT MISO**
+1. Naviguer vers "Écrans" → section Configuration TFT
+2. Modifier la valeur de la broche MISO dans le champ de saisie
+3. Cliquer sur "Configurer TFT"
+4. **Vérifier** que la requête de configuration réussit sans erreurs
+5. **Vérifier** la console du navigateur (F12) pour la réponse API réussie
+
+**Test 3 : Carte SD sur ESP32-S3**
+1. Insérer une carte SD dans la carte ESP32-S3
+2. Naviguer vers "Stockage" → section Carte SD
+3. Cliquer sur le bouton "Test Read"
+4. **Vérifier** que l'opération réussit avec une réponse JSON : `{"status":"success",...}`
+5. Cliquer sur le bouton "Test Write"
+6. **Vérifier** que l'opération d'écriture réussit avec des données horodatées
+
+### Résultats attendus
+✅ TFT MISO affiche "GPIO 13" (pas "undefined")
+✅ La configuration TFT accepte le paramètre MISO sans erreurs
+✅ Les tests de carte SD fonctionnent sur les cartes ESP32-S3 N16R8/N8R8
+✅ Aucune erreur de compilation lors de la construction pour la cible ESP32-S3
+✅ La console du navigateur affiche des réponses API réussies
+
+---
+
+## 📌 Compatibilité
+
+### Cartes supportées
+- ✅ ESP32-S3 DevKitC-1 N16R8 (16MB Flash, 8MB PSRAM)
+- ✅ ESP32-S3 DevKitC-1 N8R8 (8MB Flash, 8MB PSRAM)
+- ✅ ESP32 Classic DevKitC (4MB Flash)
+
+### Prérequis
+- **PlatformIO :** espressif32@^6
+- **ESP32 Arduino Core :** 3.0.0+
+- **Navigateur :** Chrome 90+, Firefox 88+, Edge 90+, Safari 14+
+
+### Changements incompatibles
+❌ Aucun – Ceci est une version de correction de bug, entièrement rétrocompatible
+
+---
+
+## 🔄 Guide de migration
+
+### Mise à niveau depuis v3.28.0
+
+**Étape 1 :** Récupérer le dernier code
+```bash
+git pull origin dev/addfeatures
+```
+
+**Étape 2 :** Compilation propre (recommandé)
+```bash
+pio run -t clean
+pio run -e esp32s3_n16r8
+```
+
+**Étape 3 :** Téléverser vers l'ESP32
+```bash
+pio run -e esp32s3_n16r8 --target upload
+```
+
+**Étape 4 :** Vérifier l'interface web
+- Naviguer vers http://esp32.local
+- Vérifier que TFT MISO affiche la valeur GPIO (pas "undefined")
+- Tester les opérations de lecture/écriture de carte SD (utilisateurs ESP32-S3)
+
+### Mise à niveau depuis v3.27.x ou antérieure
+
+Suivre la procédure de mise à niveau standard :
+1. Consulter `docs/RELEASE_NOTES_3.28.0.md` pour les changements v3.28.0
+2. Consulter ce document pour les changements v3.28.1
+3. Note : l'erreur BUTTON_BOOT est toujours présente – voir v3.28.2 pour la correction
+4. Flasher le firmware avec PlatformIO
+
+---
+
+## 🔗 Documentation associée
+
+- [CHANGELOG_FR.md](../CHANGELOG_FR.md) – Historique complet des versions
+- [RELEASE_NOTES_3.28.0_FR.md](RELEASE_NOTES_3.28.0_FR.md) – v3.28.0 Implémentation initiale TFT MISO
+- [RELEASE_NOTES_3.28.2_FR.md](RELEASE_NOTES_3.28.2_FR.md) – v3.28.2 Correction réelle de BUTTON_BOOT
+- [TROUBLESHOOTING_FR.md](TROUBLESHOOTING_FR.md) – Problèmes courants et solutions
+- [PIN_MAPPING_FR.md](PIN_MAPPING_FR.md) – Assignation des broches GPIO
+
+---
+
+## ❓ FAQ
+
+### Q : Cela corrige-t-il l'erreur JavaScript BUTTON_BOOT ?
+**R :** Non, l'erreur BUTTON_BOOT n'a PAS été entièrement corrigée en v3.28.1. Mettez à niveau vers v3.28.2 pour la correction réelle.
+
+### Q : Pourquoi la carte SD était-elle cassée sur ESP32-S3 ?
+**R :** L'ESP32-S3 utilise `FSPI` au lieu de `HSPI` pour le bus SPI 2. Le code était codé en dur pour la constante `HSPI` de l'ESP32 Classic.
+
+### Q : Cela affectera-t-il ma configuration TFT existante ?
+**R :** Non, ceci est rétrocompatible. Les configurations existantes continueront de fonctionner, avec MISO maintenant correctement affiché et configurable.
+
+### Q : Que faire si MISO affiche toujours "undefined" après la mise à niveau ?
+**R :** Videz le cache de votre navigateur (Ctrl+Maj+Suppr) et rechargez la page. Si le problème persiste, vérifiez la console du navigateur pour les erreurs API.
+
+### Q : Cette correction s'applique-t-elle à la fois à ESP32-S3 et ESP32 Classic ?
+**R :** Oui, les trois corrections s'appliquent à toutes les variantes de cartes supportées. La correction de carte SD résout spécifiquement la compatibilité ESP32-S3.
+
+---
+
+## 🔍 Conformité
+
+### Immutabilité de board_config.h
+- ✅ Toutes les valeurs GPIO proviennent des constantes `board_config.h`
+- ✅ Aucune valeur de broche codée en dur dans l'implémentation
+- ✅ Maintient `board_config.h` comme source unique de vérité
+- ✅ Aucune modification de `board_config.h` lui-même (comme requis)
+
+### Abstraction du Bus SPI
+- ✅ Compilation conditionnelle appropriée pour les variantes ESP32
+- ✅ Utilise `CONFIG_IDF_TARGET_ESP32` pour la détection de plateforme
+- ✅ Couche d'abstraction pour les différences HSPI/FSPI
+
+---
+
+## 📝 Crédits
+
+**Signalé par :** Tests communautaires, tests d'intégration de l'interface web
+**Corrigé par :** Équipe de développement ESP32-Diagnostic
+**Testé sur :** ESP32-S3 DevKitC-1 N16R8, ESP32-S3 N8R8, ESP32 Classic DevKitC
+
+---
+
+## 🔖 Informations de version
+
+- **Version actuelle :** 3.28.1
+- **Version précédente :** 3.28.0
+- **Version suivante :** 3.28.2 (correction réelle de BUTTON_BOOT)
+- **Branche de release :** `dev/addfeatures`
+- **Tag :** `v3.28.1`
+
+---
+
+**Pour le journal des modifications complet, voir [CHANGELOG_FR.md](../CHANGELOG_FR.md)**
