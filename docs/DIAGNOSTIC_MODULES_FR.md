@@ -1,6 +1,6 @@
-﻿# ESP32 Diagnostic Suite – Modules de diagnostic (v3.22.1)
+﻿# ESP32 Diagnostic Suite – Modules de diagnostic (v3.28.5)
 
-> **AVERTISSEMENT** : v3.22.1 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
+> **AVERTISSEMENT** : v3.28.5 corrige des doublons de mapping pour ESP32 Classic et conserve le remapping GPIO pour ESP32-S3. Assurez-vous que votre câblage et la cible compilée correspondent aux broches documentées. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) et [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) avant de flasher.
 
 Ce guide détaille chaque module de diagnostic automatisé livré avec la version 3.15.0. Il décrit l'ordre d'exécution, les métriques
 collectées et les clés d'exportation à surveiller lors de l'analyse des rapports.
