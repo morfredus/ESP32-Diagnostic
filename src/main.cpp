@@ -268,6 +268,14 @@ int tftBL = TFT_BL;
 int tftWidth = TFT_WIDTH;
 int tftHeight = TFT_HEIGHT;
 int tftRotation = TFT_ROTATION;
+// v3.30.0: Current TFT driver type (runtime switchable)
+#if defined(TFT_USE_ILI9341)
+String tftDriver = "ILI9341";
+#elif defined(TFT_USE_ST7789)
+String tftDriver = "ST7789";
+#else
+String tftDriver = "ILI9341";  // Default
+#endif
 #endif
 Adafruit_NeoPixel *strip = nullptr;
 
@@ -3836,7 +3844,50 @@ void handleTFTBoot() {
 
 void handleTFTConfig() {
 #if ENABLE_TFT_DISPLAY
-  // Check for required parameters
+  // v3.30.0: Support for dynamic driver switching
+  // Check if driver parameter is provided (driver switch request)
+  if (server.hasArg("driver")) {
+    String newDriver = server.arg("driver");
+    newDriver.toUpperCase();
+
+    // Validate driver type
+    if (newDriver != "ILI9341" && newDriver != "ST7789") {
+      sendOperationError(400, "Invalid driver type. Must be ILI9341 or ST7789");
+      return;
+    }
+
+    // Get optional display parameters for reinit
+    int newWidth = server.hasArg("width") ? server.arg("width").toInt() : tftWidth;
+    int newHeight = server.hasArg("height") ? server.arg("height").toInt() : tftHeight;
+    int newRotation = server.hasArg("rotation") ? server.arg("rotation").toInt() : tftRotation;
+
+    // Determine driver type enum
+    TFT_DriverType driverType = (newDriver == "ILI9341") ? TFT_DRIVER_ILI9341 : TFT_DRIVER_ST7789;
+
+    // Switch to new driver
+    bool success = switchTFTDriver(driverType, newWidth, newHeight, newRotation);
+
+    if (success) {
+      // Update global variables
+      tftDriver = newDriver;
+      tftWidth = newWidth;
+      tftHeight = newHeight;
+      tftRotation = newRotation;
+
+      String message = "TFT driver switched to " + tftDriver + " successfully";
+      sendOperationSuccess(message, {
+        jsonStringField("driver", tftDriver),
+        jsonNumberField("width", tftWidth),
+        jsonNumberField("height", tftHeight),
+        jsonNumberField("rotation", tftRotation)
+      });
+    } else {
+      sendOperationError(500, "Failed to switch TFT driver");
+    }
+    return;
+  }
+
+  // Original pin configuration (no driver change)
   if (server.hasArg("mosi") && server.hasArg("sclk") && server.hasArg("cs") &&
       server.hasArg("dc") && server.hasArg("rst")) {
 
@@ -3871,10 +3922,8 @@ void handleTFTConfig() {
       tftHeight = newHeight;
       tftRotation = newRotation;
 
-      // Reinitialize TFT with new settings
-      tftAvailable = false;
-      // Note: Complete reinitialization would require SPI reconfiguration
-      // For now, we just store the values for next reboot
+      // Note: Pin configuration changes require reboot for hardware reconfiguration
+      // Driver can be switched dynamically without reboot
 
       String message = "TFT config updated: MISO:" + String(tftMISO) + " MOSI:" + String(tftMOSI) +
                        " SCLK:" + String(tftSCLK) + " CS:" + String(tftCS) + " DC:" + String(tftDC) +
@@ -3891,7 +3940,8 @@ void handleTFTConfig() {
         jsonNumberField("bl", tftBL),
         jsonNumberField("width", tftWidth),
         jsonNumberField("height", tftHeight),
-        jsonNumberField("rotation", tftRotation)
+        jsonNumberField("rotation", tftRotation),
+        jsonStringField("driver", tftDriver)
       });
       return;
     }
@@ -4649,17 +4699,18 @@ void handleLedsInfo() {
 
 void handleScreensInfo() {
   String json;
-  json.reserve(800);
+  json.reserve(900);  // Increased for driver field
   json = "{";
   json += "\"oled\":{\"available\":" + String(oledAvailable ? "true" : "false") +
           ",\"status\":\"" + oledTestResult + "\",";
   json += "\"pins\":{\"sda\":" + String(i2c_sda) + ",\"scl\":" + String(i2c_scl) + "},";
   json += "\"rotation\":" + String(oledRotation) + ",";
   json += "\"width\":" + String(oledWidth) + ",\"height\":" + String(oledHeight) + "}";
-  
+
   #if ENABLE_TFT_DISPLAY
   json += ",\"tft\":{\"available\":true,";
   json += "\"status\":\"" + String(tftTestResult.length() > 0 ? tftTestResult : "Ready") + "\",";
+  json += "\"driver\":\"" + tftDriver + "\",";  // v3.30.0: Current TFT driver
   json += "\"width\":" + String(tftWidth) + ",\"height\":" + String(tftHeight) + ",";
   json += "\"rotation\":" + String(tftRotation) + ",";
   json += "\"pins\":{\"miso\":" + String(tftMISO) + ",\"mosi\":" + String(tftMOSI) + ",\"sclk\":" + String(tftSCLK) +
@@ -4668,7 +4719,7 @@ void handleScreensInfo() {
   #else
   json += ",\"tft\":{\"available\":false,\"status\":\"Not enabled\"}";
   #endif
-  
+
   json += "}";
   server.send(200, "application/json", json);
 }
