@@ -520,22 +520,22 @@ static void onButtonBootLongPress() {
   
 #if ENABLE_TFT_DISPLAY
   if (tftAvailable) {
-    tft.fillScreen(TFT_BLACK);
-    tft.setTextSize(2);
-    tft.setTextColor(TFT_WHITE);
-    tft.setCursor(10, 80);
-    tft.println("Redemarrage...");
+    tft->fillScreen(TFT_BLACK);
+    tft->setTextSize(2);
+    tft->setTextColor(TFT_WHITE);
+    tft->setCursor(10, 80);
+    tft->println("Redemarrage...");
     
     // Barre de progression
     int barX = 20;
     int barY = 120;
     int barW = tftWidth - 40;
     int barH = 20;
-    tft.drawRect(barX, barY, barW, barH, TFT_WHITE);
+    tft->drawRect(barX, barY, barW, barH, TFT_WHITE);
     
     for (int i = 0; i <= 100; i += 10) {
       int fillW = (barW - 4) * i / 100;
-      tft.fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_GREEN);
+      tft->fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_GREEN);
       delay(50);
     }
     delay(300);
@@ -601,25 +601,25 @@ static void maintainButtons() {
           if (now - lastProgressUpdate > 50) {
             lastProgressUpdate = now;
             
-            tft.fillScreen(TFT_BLACK);
-            tft.setTextSize(2);
-            tft.setTextColor(TFT_YELLOW);
-            tft.setCursor(10, 60);
-            tft.println("Maintenir pour");
-            tft.setCursor(10, 85);
-            tft.println("redemarrer...");
+            tft->fillScreen(TFT_BLACK);
+            tft->setTextSize(2);
+            tft->setTextColor(TFT_YELLOW);
+            tft->setCursor(10, 60);
+            tft->println("Maintenir pour");
+            tft->setCursor(10, 85);
+            tft->println("redemarrer...");
             
             // Barre de progression
             int barX = 20;
             int barY = 130;
             int barW = tftWidth - 40;
             int barH = 20;
-            tft.drawRect(barX, barY, barW, barH, TFT_WHITE);
+            tft->drawRect(barX, barY, barW, barH, TFT_WHITE);
             
             int progress = (pressDuration * 100) / longPressMs;
             if (progress > 100) progress = 100;
             int fillW = (barW - 4) * progress / 100;
-            tft.fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_CYAN);
+            tft->fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_CYAN);
           }
         }
 #endif
@@ -631,11 +631,11 @@ static void maintainButtons() {
         // Appui court ou relâché avant 2s → nettoyer l'écran
 #if ENABLE_TFT_DISPLAY
         if (tftAvailable) {
-          tft.fillScreen(TFT_BLACK);
-          tft.setTextSize(1);
-          tft.setTextColor(TFT_GREEN);
-          tft.setCursor(10, 10);
-          tft.println(PROJECT_NAME);
+          tft->fillScreen(TFT_BLACK);
+          tft->setTextSize(1);
+          tft->setTextColor(TFT_GREEN);
+          tft->setCursor(10, 10);
+          tft->println(PROJECT_NAME);
         }
 #endif
       }
@@ -2274,11 +2274,11 @@ void tftStepColors() {
   const char* names[] = {"RED", "GREEN", "BLUE", "YELLOW", "CYAN", "MAGENTA", "WHITE"};
   
   for (int i = 0; i < 7; i++) {
-    tft.fillScreen(colors[i]);
-    tft.setTextColor(TFT_BLACK);
-    tft.setTextSize(2);
-    tft.setCursor(60, 110);
-    tft.print(names[i]);
+    tft->fillScreen(colors[i]);
+    tft->setTextColor(TFT_BLACK);
+    tft->setTextSize(2);
+    tft->setCursor(60, 110);
+    tft->print(names[i]);
     delay(500);
   }
 #endif
@@ -2288,19 +2288,19 @@ void tftStepShapes() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
   // Rectangles
-  tft.drawRect(20, 20, 80, 60, TFT_RED);
-  tft.fillRect(140, 20, 80, 60, TFT_GREEN);
+  tft->drawRect(20, 20, 80, 60, TFT_RED);
+  tft->fillRect(140, 20, 80, 60, TFT_GREEN);
   
   // Circles
-  tft.drawCircle(60, 140, 30, TFT_BLUE);
-  tft.fillCircle(180, 140, 30, TFT_YELLOW);
+  tft->drawCircle(60, 140, 30, TFT_BLUE);
+  tft->fillCircle(180, 140, 30, TFT_YELLOW);
   
   // Triangles
-  tft.drawTriangle(60, 180, 40, 220, 80, 220, TFT_CYAN);
-  tft.fillTriangle(180, 180, 160, 220, 200, 220, TFT_MAGENTA);
+  tft->drawTriangle(60, 180, 40, 220, 80, 220, TFT_CYAN);
+  tft->fillTriangle(180, 180, 160, 220, 200, 220, TFT_MAGENTA);
   
   delay(1500);
 #endif
@@ -2310,25 +2310,25 @@ void tftStepText() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
-  tft.setTextColor(TFT_WHITE);
-  tft.setTextSize(1);
-  tft.setCursor(10, 10);
-  tft.println("Text Size 1");
+  tft->setTextColor(TFT_WHITE);
+  tft->setTextSize(1);
+  tft->setCursor(10, 10);
+  tft->println("Text Size 1");
   
-  tft.setTextSize(2);
-  tft.setCursor(10, 40);
-  tft.println("Size 2");
+  tft->setTextSize(2);
+  tft->setCursor(10, 40);
+  tft->println("Size 2");
   
-  tft.setTextSize(3);
-  tft.setCursor(10, 80);
-  tft.println("Size 3");
+  tft->setTextSize(3);
+  tft->setCursor(10, 80);
+  tft->println("Size 3");
   
-  tft.setTextColor(TFT_CYAN);
-  tft.setTextSize(2);
-  tft.setCursor(10, 140);
-  tft.println("Colored Text");
+  tft->setTextColor(TFT_CYAN);
+  tft->setTextSize(2);
+  tft->setCursor(10, 140);
+  tft->println("Colored Text");
   
   delay(1500);
 #endif
@@ -2338,28 +2338,28 @@ void tftStepLines() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
   // Horizontal lines
   for (int y = 0; y < TFT_HEIGHT; y += 10) {
-    tft.drawFastHLine(0, y, TFT_WIDTH, TFT_CYAN);
+    tft->drawFastHLine(0, y, TFT_WIDTH, TFT_CYAN);
   }
   delay(700);
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
   // Vertical lines
   for (int x = 0; x < TFT_WIDTH; x += 10) {
-    tft.drawFastVLine(x, 0, TFT_HEIGHT, TFT_MAGENTA);
+    tft->drawFastVLine(x, 0, TFT_HEIGHT, TFT_MAGENTA);
   }
   delay(700);
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
   // Diagonal lines
   for (int i = 0; i < TFT_WIDTH; i += 20) {
-    tft.drawLine(0, 0, i, TFT_HEIGHT - 1, TFT_YELLOW);
-    tft.drawLine(TFT_WIDTH - 1, 0, i, TFT_HEIGHT - 1, TFT_GREEN);
+    tft->drawLine(0, 0, i, TFT_HEIGHT - 1, TFT_YELLOW);
+    tft->drawLine(TFT_WIDTH - 1, 0, i, TFT_HEIGHT - 1, TFT_GREEN);
   }
   delay(700);
 #endif
@@ -2369,15 +2369,15 @@ void tftStepAnimation() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
   // Moving square
   int squareSize = 30;
   for (int x = 0; x <= TFT_WIDTH - squareSize; x += 5) {
-    tft.fillRect(x, (TFT_HEIGHT - squareSize) / 2, squareSize, squareSize, TFT_BLUE);
+    tft->fillRect(x, (TFT_HEIGHT - squareSize) / 2, squareSize, squareSize, TFT_BLUE);
     delay(20);
     if (x + squareSize < TFT_WIDTH) {
-      tft.fillRect(x, (TFT_HEIGHT - squareSize) / 2, squareSize, squareSize, TFT_BLACK);
+      tft->fillRect(x, (TFT_HEIGHT - squareSize) / 2, squareSize, squareSize, TFT_BLACK);
     }
     yield();
   }
@@ -2390,30 +2390,30 @@ void tftStepProgressBar() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
-  tft.setTextColor(TFT_WHITE);
-  tft.setTextSize(2);
-  tft.setCursor(60, 40);
-  tft.print("Loading...");
+  tft->setTextColor(TFT_WHITE);
+  tft->setTextSize(2);
+  tft->setCursor(60, 40);
+  tft->print("Loading...");
   
   int barX = 30;
   int barY = 100;
   int barWidth = 180;
   int barHeight = 30;
   
-  tft.drawRect(barX, barY, barWidth, barHeight, TFT_WHITE);
+  tft->drawRect(barX, barY, barWidth, barHeight, TFT_WHITE);
   
   for (int i = 0; i <= 100; i += 5) {
     int fillWidth = (barWidth - 4) * i / 100;
-    tft.fillRect(barX + 2, barY + 2, fillWidth, barHeight - 4, TFT_GREEN);
+    tft->fillRect(barX + 2, barY + 2, fillWidth, barHeight - 4, TFT_GREEN);
     
-    tft.fillRect(40, 150, 160, 20, TFT_BLACK);
-    tft.setTextColor(TFT_CYAN);
-    tft.setTextSize(2);
-    tft.setCursor(90, 155);
-    tft.print(i);
-    tft.print("%");
+    tft->fillRect(40, 150, 160, 20, TFT_BLACK);
+    tft->setTextColor(TFT_CYAN);
+    tft->setTextSize(2);
+    tft->setCursor(90, 155);
+    tft->print(i);
+    tft->print("%");
     
     delay(30);
     yield();
@@ -2427,21 +2427,21 @@ void tftStepFinal() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) return;
   
-  tft.fillScreen(TFT_BLACK);
+  tft->fillScreen(TFT_BLACK);
   
-  tft.setTextColor(TFT_GREEN);
-  tft.setTextSize(3);
-  tft.setCursor(40, 80);
-  tft.println("TEST");
-  tft.setCursor(20, 120);
-  tft.println("COMPLETE!");
+  tft->setTextColor(TFT_GREEN);
+  tft->setTextSize(3);
+  tft->setCursor(40, 80);
+  tft->println("TEST");
+  tft->setCursor(20, 120);
+  tft->println("COMPLETE!");
   
   // Success indicator
-  tft.fillCircle(120, 180, 20, TFT_GREEN);
-  tft.setTextColor(TFT_BLACK);
-  tft.setTextSize(3);
-  tft.setCursor(108, 172);
-  tft.print("OK");
+  tft->fillCircle(120, 180, 20, TFT_GREEN);
+  tft->setTextColor(TFT_BLACK);
+  tft->setTextSize(3);
+  tft->setCursor(108, 172);
+  tft->print("OK");
   
   delay(2000);
 #endif
