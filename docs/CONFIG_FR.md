@@ -14,8 +14,8 @@
 Définir le driver par défaut dans `include/config.h` :
 ```cpp
 // v3.30.0: Both drivers loaded simultaneously
-// #define TFT_USE_ILI9341  
-#define TFT_USE_ST7789  // Default driver at boot
+#define TFT_USE_ST7789 // Uncomment to use ST7789 as default driver at boot
+// #define TFT_USE_ILI9341  // Uncomment to use ILI9341 as default driver at boot
 
 #define TFT_WIDTH   240
 #define TFT_HEIGHT  320

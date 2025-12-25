@@ -115,8 +115,8 @@ Edit `include/config.h`:
 ```cpp
 // v3.30.0: Dynamic TFT driver selection
 // Both drivers supported simultaneously
-#define TFT_USE_ILI9341  // Default at boot
-// #define TFT_USE_ST7789
+#define TFT_USE_ST7789 // Uncomment to use ST7789 as default driver at boot
+// #define TFT_USE_ILI9341  // Uncomment to use ILI9341 as default driver at boot
 
 #define TFT_WIDTH   240
 #define TFT_HEIGHT  320
