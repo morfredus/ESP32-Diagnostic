@@ -1,3 +1,53 @@
+## [Version 3.31.1] - 2025-12-27
+
+### 🎨 Améliorations de l'Interface
+
+**Amélioration de la Visibilité de l'Indicateur "Bientôt disponible"**
+
+Cette version corrective améliore la présentation visuelle de l'indicateur "Bientôt disponible" dans la section Carte SD de l'onglet Mémoire.
+
+#### 🎯 Améliorations
+
+- **Typographie Améliorée**: Augmentation de la taille de police à 1.3em pour une meilleure lisibilité
+- **Emphase Visuelle**: Ajout du poids de police gras pour une présence visuelle plus forte
+- **Disposition Centrée**: Le texte est maintenant centré dans son conteneur pour un meilleur équilibre visuel
+- **Contraste Amélioré**: Augmentation de l'opacité à 1.0 pour une visibilité maximale
+- **Meilleur Espacement**: Ajout de 15px de marge et 10px de padding pour une meilleure séparation visuelle
+
+#### 📝 Détails Techniques
+
+- **Fichiers Modifiés**:
+  - `web_src/styles.css` - Amélioration du style de la classe `.coming`
+  - `include/web_interface.h` - Mise à jour avec le CSS minifié
+
+- **Modifications CSS**:
+  ```css
+  .coming {
+      color: #f5a623;
+      font-size: 1.3em;        /* Nouveau: texte plus grand */
+      font-weight: bold;        /* Nouveau: emphase */
+      font-style: italic;
+      text-align: center;       /* Nouveau: centré */
+      opacity: 1;               /* Modifié: de 0.85 */
+      margin: 15px 0;           /* Nouveau: espacement */
+      padding: 10px;            /* Nouveau: espacement */
+  }
+  ```
+
+#### 🌍 Internationalisation
+
+- Aucune modification des clés i18n
+- Clé de traduction existante `coming_soon` maintenue:
+  - Anglais: "Coming Soon"
+  - Français: "Bientôt disponible"
+
+### 🔄 Contrôle de Version
+
+- **Version incrémentée**: `3.31.0` → `3.31.1` dans `platformio.ini`
+- Ceci est une incrémentation de version **PATCH** selon SEMVER (petite amélioration UI, rétrocompatible)
+
+---
+
 ## [Version 3.31.0] - 2025-12-27
 
 ### ✨ Nouvelles Fonctionnalités
