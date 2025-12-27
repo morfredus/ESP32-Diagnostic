@@ -2,6 +2,24 @@
 
 This directory contains the **readable, maintainable source code** for the ESP32 Diagnostic web interface.
 
+## 👋 For Beginners
+
+If you're new to this project or web development for embedded systems, **don't worry!** This guide will walk you through everything step-by-step.
+
+**Key Concept:** The ESP32 has limited memory, so we store a compressed ("minified") version of the web interface in the firmware. However, minified code is hard to read and edit. This system lets you:
+1. **Edit** clean, readable code (in this directory)
+2. **Run a script** to automatically compress it
+3. **Compile** and upload to ESP32 as usual
+
+**What You Can Modify:**
+- `styles.css` - All visual styling (colors, fonts, layout, spacing, etc.)
+- `app.js` - Full-featured JavaScript for ESP32-S3 (all interactive features)
+- `app-lite.js` - Lightweight JavaScript for ESP32 Classic (basic features only)
+- `template.html` - HTML structure reference (documentation only - actual HTML is generated in C++)
+
+**What You CANNOT Directly Modify:**
+- `include/web_interface.h` - This is auto-generated. Never edit it manually!
+
 ## 📁 Directory Structure
 
 ```
@@ -145,55 +163,180 @@ pio run --target upload
 | JavaScript (Full) | ~115 KB | ~94 KB | ~18% |
 | JavaScript (Lite) | ~3.8 KB | ~2.8 KB | ~28% |
 
-## 🛠️ Tools
+## 🛠️ Python Tools Documentation
 
-### extract_web_sources.py
+The `tools/` directory contains Python scripts that automate the web interface development workflow. Here's everything you need to know about each tool.
 
-Extracts and beautifies code from `web_interface.h`.
+### 📦 Python Dependencies
+
+All tools require Python 3.6 or newer. Install dependencies once:
+
+```bash
+pip install rcssmin rjsmin jsbeautifier cssbeautifier
+```
+
+**Package Details:**
+- `rcssmin` - Fast CSS minification library
+- `rjsmin` - Fast JavaScript minification library
+- `jsbeautifier` - JavaScript beautification/formatting
+- `cssbeautifier` - CSS beautification/formatting
+
+### 🔽 extract_web_sources.py
+
+**Purpose:** Extracts minified code from `web_interface.h` and converts it back to readable format.
+
+**When to use:**
+- You want to recover the latest code from firmware
+- Starting fresh after someone else made changes
+- Synchronizing local files with firmware version
 
 **Usage:**
 ```bash
 python tools/extract_web_sources.py
 ```
 
-**Features:**
-- Extracts minified CSS and JavaScript
-- Beautifies code for readability
-- Preserves comments and structure
-- Creates backup of original files
+**What it does:**
+1. Reads `include/web_interface.h`
+2. Extracts minified CSS from the `<style>` section
+3. Extracts minified JavaScript from `DIAGNOSTIC_JS_STATIC` constant
+4. Extracts minified JavaScript from `DIAGNOSTIC_JS_STATIC_LITE` constant
+5. Beautifies (formats) each extracted code block
+6. Writes to `web_src/styles.css`, `web_src/app.js`, `web_src/app-lite.js`
 
-### minify_web.py
+**Output Location:**
+- `web_src/styles.css` - Beautified CSS
+- `web_src/app.js` - Beautified JavaScript (full version)
+- `web_src/app-lite.js` - Beautified JavaScript (lite version)
 
-Minifies source files and updates `web_interface.h`.
+**Python Dependencies:**
+- `jsbeautifier` - For formatting JavaScript
+- `cssbeautifier` - For formatting CSS
+
+**Note:** This script creates backups before overwriting existing files.
+
+### 🔼 minify_web.py
+
+**Purpose:** Minifies readable source code and updates the firmware header file.
+
+**When to use:**
+- **Every time** you modify any file in `web_src/`
+- Before compiling and uploading to ESP32
 
 **Usage:**
 ```bash
 python tools/minify_web.py
 ```
 
-**Features:**
-- Minifies CSS using rcssmin
-- Minifies JavaScript using rjsmin
-- Preserves web_interface.h structure
-- Shows compression statistics
+**What it does:**
+1. Reads source files from `web_src/`:
+   - `styles.css`
+   - `app.js`
+   - `app-lite.js`
+2. Minifies each file (removes whitespace, comments, etc.)
+3. Escapes special characters for C++ strings
+4. Injects minified code into `include/web_interface.h`
+5. Shows compression statistics
 
-### validate_html.py
+**Output Location:**
+- `include/web_interface.h` - Updated with minified code
 
-Validates the HTML template structure.
+**How Firmware Integration Works:**
+- **CSS**: Injected between `html += "<style>";` and `html += "</style>";` tags
+- **JavaScript (Full)**: Injected into `DIAGNOSTIC_JS_STATIC` R"JS()JS" constant
+- **JavaScript (Lite)**: Injected into `DIAGNOSTIC_JS_STATIC_LITE` R"JS()JS" constant
+
+**Python Dependencies:**
+- `rcssmin` - For minifying CSS
+- `rjsmin` - For minifying JavaScript
+
+**Example Output:**
+```
+============================================================
+ESP32 Diagnostic - Web Assets Minifier
+============================================================
+
+1. Reading source files...
+   - CSS: web_src/styles.css
+   - JS (Full): web_src/app.js
+   - JS (Lite): web_src/app-lite.js
+
+2. Minifying CSS...
+    Original: 13325 bytes
+    Minified: 9843 bytes
+    Saved: 3482 bytes (26.1%)
+
+3. Injecting CSS into web_interface.h...
+
+4. Processing JavaScript (Full)...
+    Original: 115415 bytes
+    Minified: 94462 bytes
+    Saved: 20953 bytes (18.2%)
+
+5. Processing JavaScript (Lite)...
+    Original: 3819 bytes
+    Minified: 2753 bytes
+    Saved: 1066 bytes (27.9%)
+
+6. Writing updated web_interface.h...
+
+============================================================
+✅ Web interface header updated successfully!
+============================================================
+```
+
+### ✅ validate_html.py
+
+**Purpose:** Validates the HTML template structure for correctness.
+
+**When to use:**
+- After updating `template.html`
+- To check for HTML errors before implementation
+- To verify translation attributes are correct
 
 **Usage:**
 ```bash
 python tools/validate_html.py
 ```
 
-**Features:**
-- Validates HTML structure and syntax
-- Checks for duplicate IDs
-- Reports missing required elements
-- Analyzes translation attributes
-- Shows HTML statistics
+**What it does:**
+1. Reads `web_src/template.html`
+2. Validates HTML structure and tag matching
+3. Checks for duplicate element IDs
+4. Reports missing required elements
+5. Analyzes translation attributes (data-i18n)
+6. Shows HTML statistics
 
-**Note:** This validates the documentation template, not the dynamically generated HTML.
+**Python Dependencies:**
+- Built-in `html.parser` module (no extra installation needed)
+
+**Note:** This validates the documentation template only. The actual HTML is generated dynamically in C++ code (`generateHTML()` function in `web_interface.h`).
+
+**Example Output:**
+```
+======================================================================
+ESP32 Diagnostic - HTML Template Validator
+======================================================================
+
+Reading template: web_src/template.html
+Validating HTML structure...
+Checking required elements...
+Checking translation attributes...
+  Found 150 translation keys
+  Unique keys: 145
+
+HTML Statistics:
+  Total size: 7317 bytes
+  Lines: 202
+  Total tags: 85
+  Unique tags: 15
+
+======================================================================
+Validation Results
+======================================================================
+
+✅ HTML template is valid!
+======================================================================
+```
 
 ## 📝 Best Practices
 

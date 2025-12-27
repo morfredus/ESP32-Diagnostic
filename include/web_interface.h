@@ -351,9 +351,10 @@ String generateHTML() {
   html += "border-radius:10px;font-size:.95em;transition:all .3s;font-family:inherit;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.12),inset 0 2px 4px rgba(0,0,0,.08)}input:focus,textarea:focus,select:focus{outline:none;";
   html += "border-color:#06b6d4;box-shadow:0 6px 24px rgba(6,182,212,.3),0 0 0 4px rgba(6,182,212,.15);transform:translateY(-2px)}.update-indicator{position:fixed;top:68px;right:24px;padding:12px 20px;background:linear-gradient(135deg,#06b6d4,#0891b2);";
   html += "color:#fff;border-radius:10px;font-weight:700;opacity:0;transition:all .4s;z-index:1001;box-shadow:0 12px 40px rgba(6,182,212,.5),0 6px 20px rgba(0,0,0,.3)}.update-indicator.show{opacity:1;transform:translateY(0)}";
-  html += ".coming{color:#f5a623;font-style:italic;opacity:0.85}@media(max-width:768px){body{padding-top:105px}.header h1{font-size:.9em}.header .chip-type{display:block;margin-left:0;margin-top:2px;font-size:.85em}";
-  html += ".info-grid{grid-template-columns:1fr}.nav{gap:3px}.nav-btn{padding:4px 10px;font-size:.8em}.content{padding:16px}.update-indicator{top:115px;right:16px}.lang-switch{display:flex;margin-left:0;margin-top:2px;";
-  html += "justify-content:center}}@media print{body{padding-top:0;background:#fff}.header{position:relative;box-shadow:none}.nav,.btn,.update-indicator{display:none}.container,.section,.card{box-shadow:none}}";
+  html += ".coming{color:#f5a623;font-size:1.3em;font-weight:bold;font-style:italic;text-align:center;opacity:1;margin:15px 0;padding:10px}@media(max-width:768px){body{padding-top:105px}.header h1{font-size:.9em}";
+  html += ".header .chip-type{display:block;margin-left:0;margin-top:2px;font-size:.85em}.info-grid{grid-template-columns:1fr}.nav{gap:3px}.nav-btn{padding:4px 10px;font-size:.8em}.content{padding:16px}.update-indicator{top:115px;";
+  html += "right:16px}.lang-switch{display:flex;margin-left:0;margin-top:2px;justify-content:center}}@media print{body{padding-top:0;background:#fff}.header{position:relative;box-shadow:none}.nav,.btn,.update-indicator{display:none}";
+  html += ".container,.section,.card{box-shadow:none}}";
   html += "</style>";
   html += "</head><body>";
   html += "<div class='update-indicator' id='updateIndicator' data-i18n='updating'>";

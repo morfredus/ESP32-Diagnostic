@@ -1,3 +1,53 @@
+## [Version 3.31.1] - 2025-12-27
+
+### 🎨 UI Enhancements
+
+**Improved "Coming Soon" Indicator Visibility**
+
+This patch release enhances the visual presentation of the "Coming Soon" indicator in the SD Card section of the Memory tab.
+
+#### 🎯 Improvements
+
+- **Enhanced Typography**: Increased font size to 1.3em for better readability
+- **Visual Emphasis**: Added bold font weight for stronger visual presence
+- **Centered Layout**: Text is now centered within its container for better visual balance
+- **Improved Contrast**: Increased opacity to 1.0 for maximum visibility
+- **Better Spacing**: Added 15px margin and 10px padding for improved visual separation
+
+#### 📝 Technical Details
+
+- **Modified Files**:
+  - `web_src/styles.css` - Enhanced `.coming` class styling
+  - `include/web_interface.h` - Updated with minified CSS
+
+- **CSS Changes**:
+  ```css
+  .coming {
+      color: #f5a623;
+      font-size: 1.3em;        /* New: larger text */
+      font-weight: bold;        /* New: emphasized */
+      font-style: italic;
+      text-align: center;       /* New: centered */
+      opacity: 1;               /* Changed: from 0.85 */
+      margin: 15px 0;           /* New: spacing */
+      padding: 10px;            /* New: spacing */
+  }
+  ```
+
+#### 🌍 Internationalization
+
+- No changes to i18n keys
+- Existing translation key `coming_soon` maintained:
+  - English: "Coming Soon"
+  - French: "Bientôt disponible"
+
+### 🔄 Version Control
+
+- **Version bumped**: `3.31.0` → `3.31.1` in `platformio.ini`
+- This is a **PATCH** version increment per SEMVER (small UI enhancement, backward compatible)
+
+---
+
 ## [Version 3.31.0] - 2025-12-27
 
 ### ✨ New Features
