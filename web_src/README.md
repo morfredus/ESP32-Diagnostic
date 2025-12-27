@@ -7,6 +7,7 @@ This directory contains the **readable, maintainable source code** for the ESP32
 ```
 web_src/
 ├── README.md           # This file
+├── template.html       # HTML template (reference/documentation)
 ├── styles.css          # Readable CSS (13 KB)
 ├── app.js              # Readable JavaScript - Full version (115 KB)
 └── app-lite.js         # Readable JavaScript - Lite version for ESP32 Classic (3.8 KB)
@@ -21,6 +22,21 @@ However, minified code is extremely difficult to read and maintain. This directo
 1. **Readable source files** - Easy to edit and understand
 2. **Automatic minification** - Scripts to convert readable code to minified code
 3. **Version control friendly** - Track changes in human-readable format
+
+### 📝 Note on HTML
+
+The HTML structure is **generated dynamically** in C++ code (`generateHTML()` function in `web_interface.h`) because it includes:
+- Dynamic language selection
+- Real-time system information
+- IP addresses and network data
+- Device-specific configuration
+
+The `template.html` file serves as:
+- **Documentation** of the HTML structure
+- **Reference** for developers
+- **Validation** of HTML correctness
+
+CSS and JavaScript are fully extracted and minified, while HTML remains dynamically generated but documented.
 
 ## 🔄 Workflow
 
@@ -160,6 +176,24 @@ python tools/minify_web.py
 - Minifies JavaScript using rjsmin
 - Preserves web_interface.h structure
 - Shows compression statistics
+
+### validate_html.py
+
+Validates the HTML template structure.
+
+**Usage:**
+```bash
+python tools/validate_html.py
+```
+
+**Features:**
+- Validates HTML structure and syntax
+- Checks for duplicate IDs
+- Reports missing required elements
+- Analyzes translation attributes
+- Shows HTML statistics
+
+**Note:** This validates the documentation template, not the dynamically generated HTML.
 
 ## 📝 Best Practices
 
