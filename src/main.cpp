@@ -2945,53 +2945,93 @@ void testMotionSensor() {
 // ========== CARTE SD ==========
 bool initSD() {
   Serial.println("\r\n=== INIT SD CARD ===");
+  Serial.println("[SD] Starting SD card initialization...");
 
   if (sd_miso_pin < 0 || sd_mosi_pin < 0 || sd_sclk_pin < 0 || sd_cs_pin < 0) {
     sdTestResult = String(Texts::configuration_invalid);
     sdAvailable = false;
-    Serial.println("SD: Configuration invalide");
+    Serial.println("[SD] ERROR: Configuration invalide");
+    Serial.printf("[SD] Pins: MISO=%d, MOSI=%d, SCK=%d, CS=%d\r\n",
+                  sd_miso_pin, sd_mosi_pin, sd_sclk_pin, sd_cs_pin);
     return false;
   }
+
+  Serial.println("[SD] Pin configuration:");
+  Serial.printf("[SD]   MISO (Data Out): GPIO %d\r\n", sd_miso_pin);
+  Serial.printf("[SD]   MOSI (Data In):  GPIO %d\r\n", sd_mosi_pin);
+  Serial.printf("[SD]   SCK  (Clock):    GPIO %d\r\n", sd_sclk_pin);
+  Serial.printf("[SD]   CS   (Chip Sel): GPIO %d\r\n", sd_cs_pin);
 
   // Configuration SPI
   if (sdSPI == nullptr) {
 #if defined(CONFIG_IDF_TARGET_ESP32)
     sdSPI = new SPIClass(HSPI);  // ESP32 classic uses HSPI
+    Serial.println("[SD] SPI Bus: HSPI (ESP32 Classic)");
 #else
     sdSPI = new SPIClass(FSPI);  // ESP32-S2/S3 use FSPI (SPI2)
+    Serial.println("[SD] SPI Bus: FSPI/SPI2 (ESP32-S2/S3)");
 #endif
+  } else {
+    Serial.println("[SD] SPI Bus: Already initialized");
   }
-  sdSPI->begin(sd_sclk_pin, sd_miso_pin, sd_mosi_pin, sd_cs_pin);
 
+  Serial.println("[SD] Initializing SPI bus...");
+  sdSPI->begin(sd_sclk_pin, sd_miso_pin, sd_mosi_pin, sd_cs_pin);
+  Serial.println("[SD] SPI bus initialized successfully");
+
+  Serial.println("[SD] Attempting to mount SD card...");
   if (!SD.begin(sd_cs_pin, *sdSPI)) {
     sdTestResult = String(Texts::not_detected);
     sdAvailable = false;
-    Serial.println("SD: Carte non detectee");
+    Serial.println("[SD] ERROR: Carte non detectee");
+    Serial.println("[SD] Possible causes:");
+    Serial.println("[SD]   - No SD card inserted");
+    Serial.println("[SD]   - Incorrect wiring");
+    Serial.println("[SD]   - Unsupported card format");
+    Serial.println("[SD]   - SPI bus conflict");
     return false;
   }
 
   sdAvailable = true;
+  Serial.println("[SD] SD card mounted successfully!");
 
   // Détection type de carte
+  Serial.println("[SD] Reading card information...");
   sdCardType = SD.cardType();
   switch (sdCardType) {
     case CARD_MMC:
       sdCardTypeStr = "MMC";
+      Serial.println("[SD] Card Type: MMC (MultiMediaCard)");
       break;
     case CARD_SD:
       sdCardTypeStr = "SDSC";
+      Serial.println("[SD] Card Type: SDSC (Standard Capacity SD)");
       break;
     case CARD_SDHC:
       sdCardTypeStr = "SDHC";
+      Serial.println("[SD] Card Type: SDHC (High Capacity SD)");
       break;
     default:
       sdCardTypeStr = "UNKNOWN";
+      Serial.printf("[SD] Card Type: UNKNOWN (Code: %d)\r\n", sdCardType);
   }
 
   // Taille de la carte
   sdCardSize = SD.cardSize() / (1024 * 1024);  // MB
+  uint64_t totalBytes = SD.totalBytes() / (1024 * 1024);  // MB
+  uint64_t usedBytes = SD.usedBytes() / (1024 * 1024);   // MB
+  uint64_t freeBytes = totalBytes - usedBytes;             // MB
 
-  Serial.printf("SD: Type=%s, Size=%llu MB\r\n", sdCardTypeStr.c_str(), sdCardSize);
+  Serial.println("[SD] Storage Information:");
+  Serial.printf("[SD]   Card Size:  %llu MB\r\n", sdCardSize);
+  Serial.printf("[SD]   Total:      %llu MB\r\n", totalBytes);
+  Serial.printf("[SD]   Used:       %llu MB\r\n", usedBytes);
+  Serial.printf("[SD]   Free:       %llu MB\r\n", freeBytes);
+  Serial.printf("[SD]   Usage:      %.1f%%\r\n",
+                totalBytes > 0 ? (usedBytes * 100.0 / totalBytes) : 0.0);
+
+  Serial.printf("[SD] === Initialization Complete: %s, %llu MB ===\r\n",
+                sdCardTypeStr.c_str(), sdCardSize);
 
   char sdBuf[128];
   snprintf(sdBuf, sizeof(sdBuf), "OK - %s, %llu MB", sdCardTypeStr.c_str(), sdCardSize);
@@ -3002,8 +3042,10 @@ bool initSD() {
 
 void testSD() {
   Serial.println("\r\n=== TEST SD CARD ===");
+  Serial.println("[SD_TEST] Starting SD card read/write test...");
 
   if (!initSD()) {
+    Serial.println("[SD_TEST] ERROR: Initialization failed");
     return;
   }
 
@@ -3011,47 +3053,76 @@ void testSD() {
   const char* testFile = "/test_esp32.txt";
   const char* testData = "ESP32 Diagnostic Test";
 
+  Serial.printf("[SD_TEST] Test file: %s\r\n", testFile);
+  Serial.printf("[SD_TEST] Test data: \"%s\"\r\n", testData);
+
   // Écriture
+  Serial.println("[SD_TEST] Opening file for writing...");
   File file = SD.open(testFile, FILE_WRITE);
   if (!file) {
     sdTestResult = "Erreur: Ecriture impossible";
-    Serial.println("SD: Erreur ecriture");
+    Serial.println("[SD_TEST] ERROR: Cannot open file for writing");
+    Serial.println("[SD_TEST] Possible causes:");
+    Serial.println("[SD_TEST]   - Card is write-protected");
+    Serial.println("[SD_TEST]   - File system error");
+    Serial.println("[SD_TEST]   - Insufficient permissions");
     return;
   }
 
-  file.println(testData);
+  Serial.println("[SD_TEST] Writing test data...");
+  size_t bytesWritten = file.println(testData);
   file.close();
-  Serial.println("SD: Ecriture OK");
+  Serial.printf("[SD_TEST] Write complete: %d bytes written\r\n", bytesWritten);
 
   // Lecture
+  Serial.println("[SD_TEST] Opening file for reading...");
   file = SD.open(testFile);
   if (!file) {
     sdTestResult = "Erreur: Lecture impossible";
-    Serial.println("SD: Erreur lecture");
+    Serial.println("[SD_TEST] ERROR: Cannot open file for reading");
     return;
   }
 
+  Serial.println("[SD_TEST] Reading test data...");
   String readData = file.readStringUntil('\n');
   file.close();
+  Serial.printf("[SD_TEST] Read complete: \"%s\"\r\n", readData.c_str());
 
+  // Vérification
+  Serial.println("[SD_TEST] Verifying data integrity...");
   if (readData == testData) {
     uint64_t totalBytes = SD.totalBytes() / (1024 * 1024);
     uint64_t usedBytes = SD.usedBytes() / (1024 * 1024);
+    uint64_t freeBytes = totalBytes - usedBytes;
+
+    Serial.println("[SD_TEST] ✓ Data verification PASSED");
+    Serial.println("[SD_TEST] Final storage status:");
+    Serial.printf("[SD_TEST]   Type:  %s\r\n", sdCardTypeStr.c_str());
+    Serial.printf("[SD_TEST]   Total: %llu MB\r\n", totalBytes);
+    Serial.printf("[SD_TEST]   Used:  %llu MB\r\n", usedBytes);
+    Serial.printf("[SD_TEST]   Free:  %llu MB\r\n", freeBytes);
 
     char sdBuf[200];
     snprintf(sdBuf, sizeof(sdBuf),
              "OK - %s, Total:%llu MB, Utilise:%llu MB, Libre:%llu MB",
-             sdCardTypeStr.c_str(), totalBytes, usedBytes, totalBytes - usedBytes);
+             sdCardTypeStr.c_str(), totalBytes, usedBytes, freeBytes);
     sdTestResult = String(sdBuf);
     sdTested = true;
-    Serial.println("SD: Test complet OK");
+    Serial.println("[SD_TEST] === Test Complete: SUCCESS ===");
   } else {
     sdTestResult = "Erreur: Verification lecture";
-    Serial.println("SD: Erreur verification");
+    Serial.println("[SD_TEST] ERROR: Data verification FAILED");
+    Serial.printf("[SD_TEST]   Expected: \"%s\"\r\n", testData);
+    Serial.printf("[SD_TEST]   Got:      \"%s\"\r\n", readData.c_str());
   }
 
   // Nettoyage
-  SD.remove(testFile);
+  Serial.println("[SD_TEST] Cleaning up test file...");
+  if (SD.remove(testFile)) {
+    Serial.println("[SD_TEST] Test file removed successfully");
+  } else {
+    Serial.println("[SD_TEST] WARNING: Could not remove test file");
+  }
 }
 
 String getSDInfo() {
@@ -4256,12 +4327,39 @@ void handleSDInfo() {
     initSD();
   }
 
+  uint64_t totalMB = 0;
+  uint64_t usedMB = 0;
+  uint64_t freeMB = 0;
+  float usagePercent = 0.0;
+  String spiBusType = "";
+
+  if (sdAvailable) {
+    totalMB = SD.totalBytes() / (1024 * 1024);
+    usedMB = SD.usedBytes() / (1024 * 1024);
+    freeMB = totalMB - usedMB;
+    usagePercent = totalMB > 0 ? (usedMB * 100.0 / totalMB) : 0.0;
+
+#if defined(CONFIG_IDF_TARGET_ESP32)
+    spiBusType = "HSPI";
+#else
+    spiBusType = "FSPI";
+#endif
+  }
+
   sendJsonResponse(200, {
     jsonBoolField("available", sdAvailable),
     jsonStringField("type", sdCardTypeStr),
+    jsonNumberField("card_type_code", sdAvailable ? (uint8_t)sdCardType : 0),
     jsonNumberField("size_mb", (uint32_t)sdCardSize),
-    jsonNumberField("total_mb", sdAvailable ? (uint32_t)(SD.totalBytes() / (1024 * 1024)) : 0),
-    jsonNumberField("used_mb", sdAvailable ? (uint32_t)(SD.usedBytes() / (1024 * 1024)) : 0),
+    jsonNumberField("total_mb", (uint32_t)totalMB),
+    jsonNumberField("used_mb", (uint32_t)usedMB),
+    jsonNumberField("free_mb", (uint32_t)freeMB),
+    jsonNumberField("usage_percent", usagePercent),
+    jsonStringField("spi_bus", spiBusType),
+    jsonNumberField("pin_miso", sd_miso_pin),
+    jsonNumberField("pin_mosi", sd_mosi_pin),
+    jsonNumberField("pin_sck", sd_sclk_pin),
+    jsonNumberField("pin_cs", sd_cs_pin),
     jsonStringField("result", sdTestResult)
   });
 }
