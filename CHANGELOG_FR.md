@@ -1,3 +1,136 @@
+## [Version 3.31.1] - 2025-12-27
+
+### 🎨 Améliorations de l'Interface
+
+**Amélioration de la Visibilité de l'Indicateur "Bientôt disponible"**
+
+Cette version corrective améliore la présentation visuelle de l'indicateur "Bientôt disponible" dans la section Carte SD de l'onglet Mémoire.
+
+#### 🎯 Améliorations
+
+- **Typographie Améliorée**: Augmentation de la taille de police à 1.3em pour une meilleure lisibilité
+- **Emphase Visuelle**: Ajout du poids de police gras pour une présence visuelle plus forte
+- **Disposition Centrée**: Le texte est maintenant centré dans son conteneur pour un meilleur équilibre visuel
+- **Contraste Amélioré**: Augmentation de l'opacité à 1.0 pour une visibilité maximale
+- **Meilleur Espacement**: Ajout de 15px de marge et 10px de padding pour une meilleure séparation visuelle
+
+#### 📝 Détails Techniques
+
+- **Fichiers Modifiés**:
+  - `web_src/styles.css` - Amélioration du style de la classe `.coming`
+  - `include/web_interface.h` - Mise à jour avec le CSS minifié
+
+- **Modifications CSS**:
+  ```css
+  .coming {
+      color: #f5a623;
+      font-size: 1.3em;        /* Nouveau: texte plus grand */
+      font-weight: bold;        /* Nouveau: emphase */
+      font-style: italic;
+      text-align: center;       /* Nouveau: centré */
+      opacity: 1;               /* Modifié: de 0.85 */
+      margin: 15px 0;           /* Nouveau: espacement */
+      padding: 10px;            /* Nouveau: espacement */
+  }
+  ```
+
+#### 🌍 Internationalisation
+
+- Aucune modification des clés i18n
+- Clé de traduction existante `coming_soon` maintenue:
+  - Anglais: "Coming Soon"
+  - Français: "Bientôt disponible"
+
+### 🔄 Contrôle de Version
+
+- **Version incrémentée**: `3.31.0` → `3.31.1` dans `platformio.ini`
+- Ceci est une incrémentation de version **PATCH** selon SEMVER (petite amélioration UI, rétrocompatible)
+
+---
+
+## [Version 3.31.0] - 2025-12-27
+
+### ✨ Nouvelles Fonctionnalités
+
+**Code Source Lisible de l'Interface Web avec Minification Automatique**
+
+Cette version introduit une refonte complète du workflow de développement de l'interface web, rendant le code HTML/CSS/JavaScript maintenable tout en préservant une utilisation optimale de la mémoire sur l'ESP32.
+
+#### 🎯 Améliorations Clés
+
+- **Fichiers Sources Lisibles**: Tout le code de l'interface web est désormais disponible en format lisible dans `web_src/`
+  - `styles.css` - CSS formaté et commenté (~13 Ko lisible)
+  - `app.js` - JavaScript formaté et documenté pour l'interface complète (~115 Ko lisible)
+  - `app-lite.js` - JavaScript formaté pour l'interface lite ESP32 Classic (~3,8 Ko lisible)
+
+- **Workflow de Minification Automatique**: Deux scripts Python automatisent le cycle de développement
+  - `tools/extract_web_sources.py` - Extrait et formate le code depuis `web_interface.h`
+  - `tools/minify_web.py` - Minifie les fichiers sources et met à jour `web_interface.h`
+
+- **Optimisation Mémoire Préservée**: Le code minifié reste embarqué dans le firmware
+  - CSS: ~26% de réduction (13 Ko → 10 Ko)
+  - JavaScript Complet: ~18% de réduction (115 Ko → 94 Ko)
+  - JavaScript Lite: ~28% de réduction (3,8 Ko → 2,8 Ko)
+
+- **Convivial pour les Développeurs**: Documentation complète dans `web_src/README.md`
+  - Instructions détaillées du workflow
+  - Bonnes pratiques
+  - Guide de dépannage
+  - Exemples d'utilisation des outils
+
+### 🔧 Changements Techniques
+
+**Structure du Projet**
+- Nouveau répertoire: `web_src/` - Contient tous les fichiers sources lisibles de l'interface web
+- Nouveau répertoire: `tools/` - Contient les scripts Python pour le workflow de minification
+- Nouveaux fichiers:
+  - `web_src/README.md` - Documentation complète du workflow
+  - `web_src/styles.css` - Source CSS lisible
+  - `web_src/app.js` - Source JavaScript lisible (complet)
+  - `web_src/app-lite.js` - Source JavaScript lisible (lite)
+  - `tools/extract_web_sources.py` - Script d'extraction et de formatage
+  - `tools/minify_web.py` - Script de minification
+
+**Dépendances**
+- Packages Python requis pour la minification:
+  - `rcssmin` - Minification CSS
+  - `rjsmin` - Minification JavaScript
+  - `jsbeautifier` - Formatage JavaScript
+  - `cssbeautifier` - Formatage CSS
+
+**Workflow**
+1. Éditer les fichiers sources lisibles dans `web_src/`
+2. Exécuter `python tools/minify_web.py` pour mettre à jour `include/web_interface.h`
+3. Compiler et téléverser le firmware comme d'habitude
+
+### 📝 Notes de Migration
+
+- **Aucun changement incompatible**: Le fichier `web_interface.h` existant continue de fonctionner exactement comme avant
+- **Nouveau workflow de développement**: Les développeurs doivent maintenant éditer les fichiers sources dans `web_src/` au lieu de `web_interface.h`
+- **Configuration unique**: Installer les dépendances Python: `pip install rcssmin rjsmin jsbeautifier cssbeautifier`
+
+### 🎯 Avantages
+
+- **Maintenabilité**: Le code est désormais lisible, correctement formaté et commenté
+- **Collaboration**: Plusieurs développeurs peuvent facilement comprendre et modifier l'interface web
+- **Contrôle de Version**: Les diffs Git sont significatifs et montrent les vrais changements de code
+- **Aucun Impact sur les Performances**: Le code minifié dans le firmware reste optimisé
+- **Flexibilité**: Facile de personnaliser l'interface web sans manipuler du code minifié
+- **Documentation**: Un README complet guide les développeurs à travers le nouveau workflow
+
+### 📚 Mises à Jour de la Documentation
+
+- Nouveau `web_src/README.md` - Guide complet du workflow et de l'utilisation
+- Mise à jour de la documentation de la structure du projet pour refléter les nouveaux répertoires
+- Ajout d'exemples de workflow de minification et de bonnes pratiques
+
+### 🔄 Contrôle de Version
+
+- **Version incrémentée**: `3.30.0` → `3.31.0` dans `platformio.ini`
+- Ceci est une incrémentation de version **MINEURE** selon SEMVER (nouvelle fonctionnalité, rétrocompatible)
+
+---
+
 ## [Version 3.30.0] - 2025-12-25
 
 ### ✨ Nouvelles Fonctionnalités

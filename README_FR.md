@@ -1,12 +1,43 @@
 
-# ESP32 Suite de Diagnostic (v3.30.0)
+# ESP32 Suite de Diagnostic (v3.31.1)
 
-> **Note** : v3.30.0 ajoute **le changement de driver TFT en temps réel** depuis l'interface Web ! Basculez entre les écrans ILI9341 et ST7789 sans recompilation.
+> **Note** : v3.31.0 introduit **le code source lisible de l'interface web** avec minification automatique ! Développez en code clair et maintenable tout en gardant une taille de firmware optimisée.
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
+## 🎨 Version 3.31.1 - Amélioration de l'Interface
 
-## ✨ Nouveautés version 3.30.0 - Changement de Driver TFT en Runtime
+**Améliorations :**
+- **Visibilité "Bientôt disponible" améliorée** : Texte plus grand, gras et centré pour la section carte SD
+- Meilleure emphase visuelle pour les fonctionnalités à venir
+- Expérience utilisateur améliorée avec des indicateurs d'état plus clairs
+
+## ✨ Version 3.31.0 - Code Source Lisible de l'Interface Web
+
+**Nouveau Workflow Développeur :**
+- **Fichiers Sources Lisibles** : Éditez du HTML/CSS/JavaScript clair et formaté dans `web_src/`
+- **Minification Automatique** : Scripts Python convertissent le code lisible en firmware optimisé
+- **Mémoire Préservée** : Réduction de taille CSS ~26%, JS ~18-28% maintenue
+- **Documentation Complète** : Guide complet du workflow dans `web_src/README.md`
+
+**Démarrage Rapide :**
+```bash
+# Installer les dépendances Python (une fois)
+pip install rcssmin rjsmin jsbeautifier cssbeautifier
+
+# Extraire le code actuel (optionnel)
+python tools/extract_web_sources.py
+
+# Éditer les fichiers dans web_src/, puis minifier
+python tools/minify_web.py
+
+# Compiler et téléverser comme d'habitude
+pio run --target upload
+```
+
+Voir [web_src/README.md](web_src/README.md) pour les instructions détaillées.
+
+## Précédent : Version 3.30.0 - Changement de Driver TFT en Runtime
 
 **Nouvelles Fonctionnalités :**
 - **Changement dynamique de driver TFT** depuis l'interface Web - Aucune recompilation nécessaire !
