@@ -503,8 +503,8 @@ class TextField {
   X(button_pressed, "Pressed", "Appuyé") \
   X(button_released, "Released", "Relâché") \
   X(monitor_button, "Monitor", "Surveiller") \
-  X(stop_monitoring, "Stop", "Arrêter")
-
+  X(stop_monitoring, "Stop", "Arrêter") \
+  X(coming_soon, "Coming Soon", "Bientôt disponible")
 
 namespace Texts {
 #define DECLARE_TEXT(identifier, en, fr) \
