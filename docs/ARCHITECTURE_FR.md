@@ -1,6 +1,6 @@
-﻿# Architecture du firmware (FR) – v3.30.0
+﻿# Architecture du firmware (FR) – v3.32.0
 
-> **AVERTISSEMENT** : Ce document reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.32.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 ## Vue d'ensemble
 Le firmware est un projet PlatformIO avec le code principal dans `src/main.cpp` qui orchestre les diagnostics, sert l'interface web et expose des endpoints REST. Les en-têtes dans `include/` regroupent les traductions, les modèles HTML et les utilitaires de configuration.

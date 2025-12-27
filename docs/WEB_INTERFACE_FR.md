@@ -1,8 +1,8 @@
-﻿# ESP32 Diagnostic Suite – Guide de l’interface web (v3.30.0)
+﻿# ESP32 Diagnostic Suite – Guide de l’interface web (v3.32.0)
 
-> NOUVEAUTÉ v3.30.0 : Sélection dynamique du contrôleur TFT (ILI9341 ou ST7789) et configuration de la résolution dans `config.h`. Voir README_FR.md et CONFIG_FR.md.
+> NOUVEAUTÉ v3.32.0 : Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir README_FR.md et CONFIG_FR.md.
 
-> **AVERTISSEMENT** : Ce document reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.32.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 Le tableau de bord web embarqué constitue la surface de contrôle principale pour les techniciens. Ce guide couvre la disposition,
 les interactions et les points d'extension disponibles en version 3.16.0. Cette version introduit la surveillance en temps réel de la connexion WiFi, la configuration dynamique des écrans, et des capacités améliorées de diagnostic réseau.

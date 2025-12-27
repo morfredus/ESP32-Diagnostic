@@ -1,3 +1,28 @@
+## [Version 3.32.0] - 2025-12-28
+
+### 🚀 Améliorations TFT, NeoPixel et BOOT
+
+- **Barre de progression TFT fluide et sans scintillement** lors de l'appui long sur BOOT
+- **Rendu partiel optimisé** : seule la barre est redessinée, cadre dessiné une seule fois
+- **NeoPixel violet (#8000FF) pendant toute la progression**
+- **Earthbeat NeoPixel restauré** si BOOT relâché avant 100%
+- **Retour écran de boot propre** après annulation
+- **Machine d'état robuste** pour la gestion BOOT/Progression/Annulation/Action finale
+- **Code refactorisé, lisible, optimisé**
+- **Documentation interne détaillée**
+
+#### 🛠️ Détails techniques
+- Machine d'état : NORMAL, PROGRESSION, ANNULATION, ACTION FINALE
+- Optimisation du rendu TFT (frameDrawn, lastProgress)
+- Gestion fine NeoPixel (Earthbeat/violet)
+- Nettoyage et commentaires dans le code
+
+#### 📚 Documentation
+- Mise à jour : `CHANGELOG.md`, `CHANGELOG_FR.md`, `README.md`, `README_FR.md`
+- Version SEMVER : **3.32.0** (incrémentation mineure)
+
+---
+
 ## [Version 3.31.1] - 2025-12-27
 
 ### 🎨 Améliorations de l'Interface

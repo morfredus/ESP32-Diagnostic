@@ -1,4 +1,4 @@
-## TFT Dynamic Driver Selection (v3.30.0)
+## TFT Dynamic Driver Selection (v3.32.0)
 
 **NEW:** You can now switch between TFT controllers (`ILI9341` or `ST7789`) dynamically from the Web UI without recompiling!
 
@@ -32,9 +32,9 @@ Set the default driver in `include/config.h`:
 
 See [RELEASE_NOTES_3.30.0.md](RELEASE_NOTES_3.30.0.md) for complete details.
 
-# Configuration (EN) – v3.30.0
+# Configuration (EN) – v3.32.0
 
-> WARNING: This document reflects firmware v3.30.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
+> WARNING: This document reflects firmware v3.32.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 ## Build Environment Selection
 

@@ -1,7 +1,7 @@
-# GPIO Pin Mapping Policy (v3.30.0)
+# GPIO Pin Mapping Policy (v3.32.0)
 
-**ESP32 Diagnostic Suite - Version 3.30.0**
-> WARNING: This document reflects the GPIO mapping policy for firmware v3.30.0. All assignments are synchronized with `include/board_config.h`. See also [RELEASE_NOTES_3.30.0.md].
+**ESP32 Diagnostic Suite - Version 3.32.0**
+> WARNING: This document reflects the GPIO mapping policy for firmware v3.32.0. All assignments are synchronized with `include/board_config.h`. See also [RELEASE_NOTES_3.32.0.md].
 
 ---
 

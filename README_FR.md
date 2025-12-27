@@ -1,16 +1,20 @@
 
-# ESP32 Suite de Diagnostic (v3.31.1)
+# ESP32 Suite de Diagnostic (v3.32.0)
 
 > **Note** : v3.31.0 introduit **le code source lisible de l'interface web** avec minification automatique ! Développez en code clair et maintenable tout en gardant une taille de firmware optimisée.
 
 Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
 
-## 🎨 Version 3.31.1 - Amélioration de l'Interface
 
-**Améliorations :**
-- **Visibilité "Bientôt disponible" améliorée** : Texte plus grand, gras et centré pour la section carte SD
-- Meilleure emphase visuelle pour les fonctionnalités à venir
-- Expérience utilisateur améliorée avec des indicateurs d'état plus clairs
+## 🚀 Version 3.32.0 - TFT, NeoPixel & BOOT
+
+**Nouveautés :**
+- Barre de progression TFT fluide, sans scintillement, rendu partiel optimisé
+- NeoPixel violet pendant la progression, Earthbeat restauré si annulation
+- Retour écran boot propre, machine d'état robuste, code refactorisé
+- Documentation interne détaillée
+
+Voir [CHANGELOG_FR.md](CHANGELOG_FR.md) pour tous les détails.
 
 ## ✨ Version 3.31.0 - Code Source Lisible de l'Interface Web
 
