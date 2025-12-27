@@ -909,6 +909,7 @@ function buildMemory() {
     let h = '<div class="section"><h2 data-i18n="memory_section" data-i18n-prefix="💾">' + tr('memory_section') + '</h2><p data-i18n="memory_intro">' + tr('memory_intro') + '</p>';
     h += '<h3 data-i18n="sd_card" data-i18n-prefix="💾">' + tr('sd_card') + '</h3>';
     h += '<p data-i18n="sd_card_desc">' + tr('sd_card_desc') + '</p>';
+    h += '<p class="coming" data-i18n="coming_soon">' + tr('coming_soon') + '</p>';
     h += '<div class="card"><div class="info-grid">';
     h += '<div class="info-item"><div class="info-label" data-i18n="sd_pins_spi">' + tr('sd_pins_spi') + '</div>';
     h += '<div style="display:flex;gap:5px;flex-wrap:wrap">';

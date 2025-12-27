@@ -581,6 +581,12 @@ select:focus {
     transform: translateY(0)
 }
 
+.coming {
+    color: #f5a623;
+    font-style: italic;
+    opacity: 0.85;
+}
+
 @media(max-width:768px) {
     body {
         padding-top: 105px
