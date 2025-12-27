@@ -1,3 +1,86 @@
+## [Version 3.31.0] - 2025-12-27
+
+### ✨ New Features
+
+**Readable Web Interface Source Code with Automatic Minification**
+
+This release introduces a complete restructuring of the web interface development workflow, making the HTML/CSS/JavaScript code maintainable while preserving optimal memory usage on the ESP32.
+
+#### 🎯 Key Improvements
+
+- **Readable Source Files**: All web interface code is now available in human-readable format in `web_src/`
+  - `styles.css` - Beautified, commented CSS (~13 KB readable)
+  - `app.js` - Beautified, documented JavaScript for full UI (~115 KB readable)
+  - `app-lite.js` - Beautified JavaScript for ESP32 Classic lite UI (~3.8 KB readable)
+
+- **Automatic Minification Workflow**: Two Python scripts automate the development cycle
+  - `tools/extract_web_sources.py` - Extracts and beautifies code from `web_interface.h`
+  - `tools/minify_web.py` - Minifies source files and updates `web_interface.h`
+
+- **Memory Optimization Preserved**: Minified code remains embedded in firmware
+  - CSS: ~26% size reduction (13 KB → 10 KB)
+  - JavaScript Full: ~18% size reduction (115 KB → 94 KB)
+  - JavaScript Lite: ~28% size reduction (3.8 KB → 2.8 KB)
+
+- **Developer-Friendly**: Complete documentation in `web_src/README.md`
+  - Detailed workflow instructions
+  - Best practices
+  - Troubleshooting guide
+  - Tool usage examples
+
+### 🔧 Technical Changes
+
+**Project Structure**
+- New directory: `web_src/` - Contains all readable web interface source files
+- New directory: `tools/` - Contains Python scripts for minification workflow
+- New files:
+  - `web_src/README.md` - Complete workflow documentation
+  - `web_src/styles.css` - Readable CSS source
+  - `web_src/app.js` - Readable JavaScript source (full)
+  - `web_src/app-lite.js` - Readable JavaScript source (lite)
+  - `tools/extract_web_sources.py` - Extraction and beautification script
+  - `tools/minify_web.py` - Minification script
+
+**Dependencies**
+- Python packages required for minification:
+  - `rcssmin` - CSS minification
+  - `rjsmin` - JavaScript minification
+  - `jsbeautifier` - JavaScript beautification
+  - `cssbeautifier` - CSS beautification
+
+**Workflow**
+1. Edit readable source files in `web_src/`
+2. Run `python tools/minify_web.py` to update `include/web_interface.h`
+3. Compile and upload firmware as usual
+
+### 📝 Migration Notes
+
+- **No breaking changes**: Existing `web_interface.h` continues to work exactly as before
+- **New development workflow**: Developers should now edit source files in `web_src/` instead of `web_interface.h`
+- **One-time setup**: Install Python dependencies: `pip install rcssmin rjsmin jsbeautifier cssbeautifier`
+
+### 🎯 Benefits
+
+- **Maintainability**: Code is now readable, properly formatted, and commented
+- **Collaboration**: Multiple developers can easily understand and modify the web interface
+- **Version Control**: Git diffs are meaningful and show actual code changes
+- **No Performance Impact**: Minified code in firmware remains optimized
+- **Flexibility**: Easy to customize the web interface without dealing with minified code
+- **Documentation**: Comprehensive README guides developers through the new workflow
+
+### 📚 Documentation Updates
+
+- New `web_src/README.md` - Complete workflow and usage guide
+- Updated project structure documentation to reflect new directories
+- Added minification workflow examples and best practices
+
+### 🔄 Version Control
+
+- **Version bumped**: `3.30.0` → `3.31.0` in `platformio.ini`
+- This is a **MINOR** version increment per SEMVER (new feature, backward compatible)
+
+---
+
 ## [Version 3.30.0] - 2025-12-25
 
 ### ✨ New Features
