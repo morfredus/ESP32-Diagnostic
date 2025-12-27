@@ -1,8 +1,8 @@
-# ESP32 Diagnostic Suite – FAQ (v3.30.0)
+# ESP32 Diagnostic Suite – FAQ (v3.32.0)
 
-> NEW in v3.30.0: Full GPIO mapping/code/documentation synchronization. See README, CONFIG.md and RELEASE_NOTES_3.30.0.md.
+> NEW in v3.32.0: Smooth TFT progress bar, purple NeoPixel, robust BOOT logic, and dynamic TFT controller selection (ILI9341 or ST7789). See README, CONFIG.md and RELEASE_NOTES_3.32.0.md.
 
-> WARNING: This document reflects firmware v3.30.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
+> WARNING: This document reflects firmware v3.32.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 ## General
 **Q: Which boards are officially supported?**

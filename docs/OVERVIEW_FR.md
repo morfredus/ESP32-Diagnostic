@@ -1,13 +1,13 @@
-﻿# ESP32 Diagnostic Suite – Vue d'ensemble (v3.30.0)
+﻿# ESP32 Diagnostic Suite – Vue d'ensemble (v3.32.0)
 
-> **AVERTISSEMENT** : Ce document reflète le firmware **v3.30.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.32.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 La suite ESP32 Diagnostic fournit une boîte à outils prête pour la production afin de valider les cartes basées sur ESP32 avant déploiement. La version **3.30.0** inclut la sélection dynamique du contrôleur TFT, la synchronisation complète des mappings GPIO, et le support multi-environnements avec trois configurations de build distinctes optimisées pour différentes variantes matérielles ESP32.
 
 ## Mission
-## Dernière Mise à Jour : v3.30.0
+## Dernière Mise à Jour : v3.32.0
 
-**Nouveau en v3.30.0 :** Sélection dynamique du contrôleur TFT (ILI9341 ou ST7789) depuis l'interface Web et configuration de la résolution dans `config.h` sans recompilation. Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md) pour les détails.
+**Nouveautés v3.32.0 :** Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir [RELEASE_NOTES_3.32.0_FR.md](RELEASE_NOTES_3.32.0_FR.md) pour les détails.
 
 ---
 

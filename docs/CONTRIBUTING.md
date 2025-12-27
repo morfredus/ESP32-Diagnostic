@@ -1,6 +1,6 @@
-# Contributing (EN) – v3.30.0
+# Contributing (EN) – v3.32.0
 
-> WARNING: This document reflects firmware v3.30.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
+> WARNING: This document reflects firmware v3.32.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 We welcome improvements that strengthen the diagnostic experience while keeping the firmware reliable.
 

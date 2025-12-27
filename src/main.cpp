@@ -115,23 +115,20 @@
 // Set default language from config.h
 Language currentLanguage = DEFAULT_LANGUAGE;
 
+// --- Prototypes pour fonctions de réponse JSON/API ---
+void sendJsonResponse(int statusCode, std::initializer_list<JsonFieldSpec> fields);
+void sendOperationSuccess(const String& message, std::initializer_list<JsonFieldSpec> extraFields = {});
+void sendOperationError(int statusCode, const String& message, std::initializer_list<JsonFieldSpec> extraFields = {});
+void sendActionResponse(int statusCode, bool success, const String& message, std::initializer_list<JsonFieldSpec> extraFields = {});
+void tftStepBoot();
+
 static String buildActionResponseJson(bool success,
                                       const String& message,
                                       std::initializer_list<JsonFieldSpec> extraFields = {});
 String htmlEscape(const String& raw);
 String jsonEscape(const char* raw);
-inline void sendJsonResponse(int statusCode, std::initializer_list<JsonFieldSpec> fields);
 String buildTranslationsJSON();
 String buildTranslationsJSON(Language lang);
-inline void sendActionResponse(int statusCode,
-                               bool success,
-                               const String& message,
-                               std::initializer_list<JsonFieldSpec> extraFields = {});
-inline void sendOperationSuccess(const String& message,
-                                 std::initializer_list<JsonFieldSpec> extraFields = {});
-inline void sendOperationError(int statusCode,
-                               const String& message,
-                               std::initializer_list<JsonFieldSpec> extraFields = {});
 
 #if defined(__has_include)
   #if __has_include(<esp_arduino_version.h>)
@@ -573,78 +570,171 @@ static void onButton2Pressed() {
   }
 }
 
+// --- Machine d'état pour gestion BOOT/TFT/NeoPixel ---
+//
+// BOOT_NORMAL   : État par défaut, aucun appui sur BOOT
+// BOOT_PROGRESS : BOOT maintenu, barre de progression affichée, NeoPixel violet
+// BOOT_CANCEL   : BOOT relâché avant 100%, retour écran boot, NeoPixel Earthbeat restauré
+// BOOT_FINAL    : BOOT maintenu jusqu'à 100%, action finale (reset/config spéciale)
+//
+// La machine d'état permet une gestion robuste et fluide du comportement utilisateur.
+//
+// Rendu TFT :
+// - Seule la zone de la barre de progression est redessinée (pas de fillScreen)
+// - Le cadre n'est dessiné qu'une seule fois (frameDrawn)
+// - La barre est mise à jour uniquement si la progression change (lastProgress)
+// - Zéro scintillement, performance maximale
+//
+// Gestion NeoPixel :
+// - Earthbeat (battement vert) est mis en pause pendant la progression
+// - NeoPixel passe en violet (#8000FF) pendant toute la progression
+// - Earthbeat est restauré si l'utilisateur relâche avant 100%
+//
+// Comportement BOOT :
+// - Appui court : rien, retour à l'écran de boot
+// - Appui long (100%) : action finale (reset/config)
+//
+enum BootState {
+  BOOT_NORMAL,
+  BOOT_PROGRESS,
+  BOOT_CANCEL,
+  BOOT_FINAL
+};
+static BootState bootState = BOOT_NORMAL;
+static int lastProgress = -1;
+static bool frameDrawn = false;
+static bool earthbeatWasActive = false;
+
+// Fonction centrale de gestion des boutons et de la machine d'état BOOT
 static void maintainButtons() {
   unsigned long now = millis();
-  
-  // Bouton BOOT: Gestion appui long avec barre de progression pour reboot
+
+  // --- Gestion du bouton BOOT avec machine d'état ---
   if (buttonBootPin >= 0) {
     int s = digitalRead(buttonBootPin);
-    
-    if (s == LOW && buttonBootLast == HIGH) {
-      // Début d'appui
-      buttonBootPressStart = now;
-      buttonBootLongPressTriggered = false;
-    }
-    else if (s == LOW && buttonBootLast == LOW) {
-      // Appui maintenu
-      unsigned long pressDuration = now - buttonBootPressStart;
-      
-      if (pressDuration >= longPressMs && !buttonBootLongPressTriggered) {
-        buttonBootLongPressTriggered = true;
-        onButtonBootLongPress();
-      }
-      else if (pressDuration > debounceMs && pressDuration < longPressMs) {
-        // Afficher la barre de progression pendant l'appui
+    unsigned long pressDuration = now - buttonBootPressStart;
+
+    switch (bootState) {
+      case BOOT_NORMAL:
+        if (s == LOW && buttonBootLast == HIGH) {
+          // Début d'appui
+          buttonBootPressStart = now;
+          buttonBootLongPressTriggered = false;
+          bootState = BOOT_PROGRESS;
+          frameDrawn = false;
+          lastProgress = -1;
+          // Désactiver Earthbeat, mémoriser l'état
+          earthbeatWasActive = !neopixelStatusPaused;
+          neopixelPauseStatus();
+          if (strip) {
+            strip->setBrightness(60);
+            strip->setPixelColor(0, strip->Color(128, 0, 255)); // Violet
+            strip->show();
+          }
+// Couleur violette NeoPixel : #8000FF = 0x801F
 #if ENABLE_TFT_DISPLAY
-        if (tftAvailable && !buttonBootLongPressTriggered) {
-          static unsigned long lastProgressUpdate = 0;
-          if (now - lastProgressUpdate > 50) {
-            lastProgressUpdate = now;
-            
+          if (tftAvailable) {
             tft->fillScreen(TFT_BLACK);
-            tft->setTextSize(2);
-            tft->setTextColor(TFT_YELLOW);
-            tft->setCursor(10, 60);
-            tft->println("Maintenir pour");
-            tft->setCursor(10, 85);
-            tft->println("redemarrer...");
-            
-            // Barre de progression
+            uint16_t violet = 0x801F;
+            tft->setTextColor(violet);
+            tft->setTextSize(3);
+            int16_t x1, y1;
+            uint16_t w, h;
+            tft->getTextBounds("Reboot ?", 0, 0, &x1, &y1, &w, &h);
+            int x = (tftWidth - w) / 2;
+            int y = 60;
+            tft->setCursor(x, y);
+            tft->println("Reboot ?");
+          }
+#endif
+        }
+        break;
+      case BOOT_PROGRESS:
+        if (s == LOW) {
+          // Appui maintenu
+          int progress = (pressDuration * 100) / longPressMs;
+          if (progress > 100) progress = 100;
+
+// Couleur violette NeoPixel : #8000FF = 0x801F
+#if ENABLE_TFT_DISPLAY
+          if (tftAvailable) {
+            uint16_t violet = 0x801F;
             int barX = 20;
             int barY = 130;
             int barW = tftWidth - 40;
             int barH = 20;
-            tft->drawRect(barX, barY, barW, barH, TFT_WHITE);
-            
-            int progress = (pressDuration * 100) / longPressMs;
-            if (progress > 100) progress = 100;
-            int fillW = (barW - 4) * progress / 100;
-            tft->fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_CYAN);
+            // Dessiner le cadre une seule fois
+            if (!frameDrawn) {
+              // Nettoyage zone barre
+              tft->fillRect(barX-2, barY-2, barW+4, barH+4, TFT_BLACK);
+              tft->drawRect(barX, barY, barW, barH, violet);
+              frameDrawn = true;
+            }
+            // Mise à jour de la barre uniquement si changement
+            if (progress != lastProgress) {
+              int fillW = (barW - 4) * progress / 100;
+              // Efface uniquement la zone utile
+              tft->fillRect(barX + 2, barY + 2, barW - 4, barH - 4, TFT_BLACK);
+              if (fillW > 0) tft->fillRect(barX + 2, barY + 2, fillW, barH - 4, violet);
+              lastProgress = progress;
+            }
+          }
+#endif
+          // NeoPixel reste violet pendant toute la progression
+          if (strip) {
+            strip->setBrightness(60);
+            strip->setPixelColor(0, strip->Color(128, 0, 255));
+            strip->show();
+          }
+          // Atteint 100% ?
+          if (progress >= 100 && !buttonBootLongPressTriggered) {
+            buttonBootLongPressTriggered = true;
+            bootState = BOOT_FINAL;
+          }
+        } else {
+          // Relâchement avant 100%
+          bootState = BOOT_CANCEL;
+        }
+        break;
+      case BOOT_CANCEL:
+        // Restaure l'état NeoPixel
+        if (earthbeatWasActive) neopixelResumeStatus();
+        else neopixelPauseStatus();
+        // Retour écran boot complet (splash + IP)
+#if ENABLE_TFT_DISPLAY
+        if (tftAvailable) {
+          displayBootSplash();
+          if (WiFi.status() == WL_CONNECTED) {
+            displayWiFiConnected(WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
+          } else {
+            displayWiFiStatus("WiFi not connected", TFT_ORANGE);
           }
         }
 #endif
-      }
-    }
-    else if (s == HIGH && buttonBootLast == LOW) {
-      // Relâchement
-      if (!buttonBootLongPressTriggered) {
-        // Appui court ou relâché avant 2s → nettoyer l'écran
+        frameDrawn = false;
+        lastProgress = -1;
+        bootState = BOOT_NORMAL;
+        break;
+      case BOOT_FINAL:
+        // Action finale (reset config, etc.)
+        // NeoPixel reste violet ou logique projet
 #if ENABLE_TFT_DISPLAY
         if (tftAvailable) {
-          tft->fillScreen(TFT_BLACK);
-          tft->setTextSize(1);
-          tft->setTextColor(TFT_GREEN);
-          tft->setCursor(10, 10);
-          tft->println(PROJECT_NAME);
+          tft->fillRect(0, 0, tftWidth, tftHeight, TFT_BLACK);
+          tft->setTextSize(2);
+          tft->setTextColor(TFT_WHITE);
+          tft->setCursor(10, 80);
+          tft->println("Reboot...");
         }
 #endif
-      }
+        delay(300);
+        ESP.restart();
+        break;
     }
-    
     buttonBootLast = s;
   }
-  
-  // Bouton 1: Gestion appui simple pour cycle RGB
+
+  // --- Bouton 1: Gestion appui simple pour cycle RGB ---
   if (button1Pin >= 0) {
     int s = digitalRead(button1Pin);
     if (s != button1Last) {
@@ -657,8 +747,8 @@ static void maintainButtons() {
       }
     }
   }
-  
-  // Bouton 2: Gestion appui simple pour bip
+
+  // --- Bouton 2: Gestion appui simple pour bip ---
   if (button2Pin >= 0) {
     int s = digitalRead(button2Pin);
     if (s != button2Last) {
@@ -3436,11 +3526,11 @@ void handleBuiltinLEDConfig() {
       // [OPT-007]: Buffer-based message formatting (1 vs 4 allocations)
       char msgBuf[96];
       snprintf(msgBuf, sizeof(msgBuf), "%s %s %d", Texts::config.str().c_str(), Texts::gpio.str().c_str(), BUILTIN_LED_PIN);
-      sendOperationSuccess(String(msgBuf));
+      sendOperationSuccess(String(msgBuf), {});
       return;
     }
   }
-  sendOperationError(400, Texts::gpio_invalid.str());
+  sendOperationError(400, Texts::gpio_invalid.str(), {});
 }
 
 void handleBuiltinLEDTest() {
@@ -3473,13 +3563,13 @@ void handleBuiltinLEDTest() {
 
 void handleBuiltinLEDControl() {
   if (!server.hasArg("action")) {
-    sendOperationError(400, Texts::configuration_invalid.str());
+    sendOperationError(400, Texts::configuration_invalid.str(), {});
     return;
   }
 
   String action = server.arg("action");
   if (BUILTIN_LED_PIN == -1) {
-    sendOperationError(400, Texts::gpio_invalid.str());
+    sendOperationError(400, Texts::gpio_invalid.str(), {});
     return;
   }
 
@@ -3516,11 +3606,11 @@ void handleBuiltinLEDControl() {
     builtinLedTested = false;
     message = String(Texts::off);
   } else {
-    sendOperationError(400, Texts::configuration_invalid.str());
+    sendOperationError(400, Texts::configuration_invalid.str(), {});
     return;
   }
 
-  sendOperationSuccess(message);
+  sendOperationSuccess(message, {});
 }
 
 void handleNeoPixelConfig() {
@@ -3537,11 +3627,11 @@ void handleNeoPixelConfig() {
       // [OPT-007]: Buffer-based message formatting (1 vs 4 allocations)
       char msgBuf[96];
       snprintf(msgBuf, sizeof(msgBuf), "%s %s %d", Texts::config.str().c_str(), Texts::gpio.str().c_str(), LED_PIN);
-      sendOperationSuccess(String(msgBuf));
+      sendOperationSuccess(String(msgBuf), {});
       return;
     }
   }
-  sendOperationError(400, Texts::configuration_invalid.str());
+  sendOperationError(400, Texts::configuration_invalid.str(), {});
 }
 
 void handleNeoPixelTest() {
@@ -3579,14 +3669,14 @@ void handleNeoPixelTest() {
 
 void handleNeoPixelPattern() {
   if (!server.hasArg("pattern")) {
-    sendOperationError(400, Texts::configuration_invalid.str());
+    sendOperationError(400, Texts::configuration_invalid.str(), {});
     return;
   }
 
   String pattern = server.arg("pattern");
   if (!strip) {
     String message = String(Texts::neopixel) + " - " + String(Texts::not_detected);
-    sendOperationError(400, message);
+    sendOperationError(400, message, {});
     return;
   }
 
@@ -3620,13 +3710,13 @@ void handleNeoPixelPattern() {
     neopixelTested = false;
     message = String(Texts::off);
   } else {
-    sendOperationError(400, Texts::configuration_invalid.str());
+    sendOperationError(400, Texts::configuration_invalid.str(), {});
     neopixelRestoreWifiStatus();
     return;
   }
 
   neopixelRestoreWifiStatus();
-  sendOperationSuccess(message);
+  sendOperationSuccess(message, {});
 }
 
 void handleNeoPixelColor() {
@@ -3690,7 +3780,7 @@ void handleOLEDConfig() {
       return;
     }
   }
-  sendOperationError(400, Texts::configuration_invalid.str());
+  sendOperationError(400, Texts::configuration_invalid.str(), {});
 }
 
 void handleOLEDTest() {
@@ -3726,20 +3816,20 @@ void handleOLEDTest() {
 
 void handleOLEDStep() {
   if (!server.hasArg("step")) {
-    sendOperationError(400, Texts::oled_step_unknown.str());
+    sendOperationError(400, Texts::oled_step_unknown.str(), {});
     return;
   }
 
   String stepId = server.arg("step");
 
   if (!oledAvailable) {
-    sendActionResponse(200, false, Texts::oled_step_unavailable.str());
+    sendActionResponse(200, false, Texts::oled_step_unavailable.str(), {});
     return;
   }
 
   bool ok = performOLEDStep(stepId);
   if (!ok) {
-    sendOperationError(400, Texts::oled_step_unknown.str());
+    sendOperationError(400, Texts::oled_step_unknown.str(), {});
     return;
   }
 
@@ -3747,29 +3837,29 @@ void handleOLEDStep() {
   // [OPT-007]: Buffer-based message formatting (1 vs 2 allocations)
   char msgBuf[256];
   snprintf(msgBuf, sizeof(msgBuf), "%s %s", Texts::oled_step_executed_prefix.str().c_str(), label.c_str());
-  sendOperationSuccess(String(msgBuf));
+  sendOperationSuccess(String(msgBuf), {});
 }
 
 void handleOLEDMessage() {
   if (!server.hasArg("message")) {
-    sendOperationError(400, Texts::configuration_invalid.str());
+    sendOperationError(400, Texts::configuration_invalid.str(), {});
     return;
   }
 
   String message = server.arg("message");
   oledShowMessage(message);
   // Use translation key instead of hardcoded string
-  sendOperationSuccess(Texts::message_displayed.str());
+  sendOperationSuccess(Texts::message_displayed.str(), {});
 }
 
 void handleOLEDBoot() {
   if (!oledAvailable) {
-    sendActionResponse(200, false, "OLED not available");
+    sendActionResponse(200, false, "OLED not available", {});
     return;
   }
 
   oledShowWiFiStatus(PROJECT_NAME, "System Ready", WiFi.localIP().toString(), 100);
-  sendOperationSuccess("Boot screen displayed");
+  sendOperationSuccess("Boot screen displayed", {});
 }
 
 void handleTFTTest() {
@@ -3795,26 +3885,26 @@ void handleTFTTest() {
 void handleTFTStep() {
 #if ENABLE_TFT_DISPLAY
   if (!server.hasArg("step")) {
-    sendOperationError(400, "Step parameter missing");
+    sendOperationError(400, "Step parameter missing", {});
     return;
   }
 
   String stepId = server.arg("step");
 
   if (!tftAvailable) {
-    sendActionResponse(200, false, "TFT not available");
+    sendActionResponse(200, false, "TFT not available", {});
     return;
   }
 
   bool ok = performTFTStep(stepId);
   if (!ok) {
-    sendOperationError(400, "Unknown TFT step");
+    sendOperationError(400, "Unknown TFT step", {});
     return;
   }
 
   String label = getTFTStepLabel(stepId);
   String message = "Step executed: " + label;
-  sendOperationSuccess(message);
+  sendOperationSuccess(message, {});
 #else
   sendActionResponse(200, false, "TFT not enabled");
 #endif
@@ -3823,7 +3913,7 @@ void handleTFTStep() {
 void handleTFTBoot() {
 #if ENABLE_TFT_DISPLAY
   if (!tftAvailable) {
-    sendActionResponse(200, false, "TFT not available");
+    sendActionResponse(200, false, "TFT not available", {});
     return;
   }
 
@@ -3836,7 +3926,7 @@ void handleTFTBoot() {
     displayWiFiStatus("WiFi not connected", TFT_ORANGE);
   }
   
-  sendOperationSuccess("Boot screen displayed");
+  sendOperationSuccess("Boot screen displayed", {});
 #else
   sendActionResponse(200, false, "TFT not enabled");
 #endif
@@ -3852,7 +3942,7 @@ void handleTFTConfig() {
 
     // Validate driver type
     if (newDriver != "ILI9341" && newDriver != "ST7789") {
-      sendOperationError(400, "Invalid driver type. Must be ILI9341 or ST7789");
+      sendOperationError(400, "Invalid driver type. Must be ILI9341 or ST7789", {});
       return;
     }
 
@@ -3882,7 +3972,7 @@ void handleTFTConfig() {
         jsonNumberField("rotation", tftRotation)
       });
     } else {
-      sendOperationError(500, "Failed to switch TFT driver");
+      sendOperationError(500, "Failed to switch TFT driver", {});
     }
     return;
   }
@@ -3946,7 +4036,7 @@ void handleTFTConfig() {
       return;
     }
   }
-  sendOperationError(400, Texts::configuration_invalid.str());
+  sendOperationError(400, Texts::configuration_invalid.str(), {});
 #else
   sendActionResponse(200, false, "TFT not enabled");
 #endif
@@ -3998,9 +4088,9 @@ void handleRGBLedConfig() {
     rgb_led_pin_g = server.arg("g").toInt();
     rgb_led_pin_b = server.arg("b").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
-    sendActionResponse(200, true, OK_STR);
+    sendActionResponse(200, true, OK_STR, {});
   } else {
-    sendActionResponse(400, false, String(Texts::configuration_invalid));
+    sendActionResponse(400, false, String(Texts::configuration_invalid), {});
   }
 }
 
@@ -4040,9 +4130,9 @@ void handleRGBLedColor() {
     int g = server.arg("g").toInt();
     int b = server.arg("b").toInt();
     setRGBLedColor(r, g, b);
-    sendActionResponse(200, true, "RGB(" + String(r) + "," + String(g) + "," + String(b) + ")");
+    sendActionResponse(200, true, "RGB(" + String(r) + "," + String(g) + "," + String(b) + ")", {});
   } else {
-    sendActionResponse(400, false, String(Texts::configuration_invalid));
+    sendActionResponse(400, false, String(Texts::configuration_invalid), {});
   }
 }
 
@@ -4050,9 +4140,9 @@ void handleBuzzerConfig() {
   if (server.hasArg("pin")) {
     buzzer_pin = server.arg("pin").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
-    sendActionResponse(200, true, OK_STR);
+    sendActionResponse(200, true, OK_STR, {});
   } else {
-    sendActionResponse(400, false, String(Texts::configuration_invalid));
+    sendActionResponse(400, false, String(Texts::configuration_invalid), {});
   }
 }
 
@@ -4091,9 +4181,9 @@ void handleBuzzerTone() {
     int freq = server.arg("freq").toInt();
     int duration = server.arg("duration").toInt();
     playBuzzerTone(freq, duration);
-    sendActionResponse(200, true, String(freq) + "Hz");
+    sendActionResponse(200, true, String(freq) + "Hz", {});
   } else {
-    sendActionResponse(400, false, String(Texts::configuration_invalid));
+    sendActionResponse(400, false, String(Texts::configuration_invalid), {});
   }
 }
 
@@ -4121,7 +4211,7 @@ void handleDHTConfig() {
       DHT_SENSOR_TYPE = candidate;
       updated = true;
     } else {
-      sendActionResponse(400, false, String(Texts::configuration_invalid));
+      sendActionResponse(400, false, String(Texts::configuration_invalid), {});
       return;
     }
   }
@@ -4132,7 +4222,7 @@ void handleDHTConfig() {
                        String(Texts::ok),
                        {jsonNumberField("type", static_cast<int>(DHT_SENSOR_TYPE))});
   } else {
-    sendActionResponse(400, false, String(Texts::configuration_invalid));
+    sendActionResponse(400, false, String(Texts::configuration_invalid), {});
   }
 }
 
@@ -4151,9 +4241,9 @@ void handleLightSensorConfig() {
   if (server.hasArg("pin")) {
     light_sensor_pin = server.arg("pin").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
-    sendActionResponse(200, true, OK_STR);
+    sendActionResponse(200, true, OK_STR, {});
   } else {
-    sendActionResponse(400, false, String(Texts::configuration_invalid));
+    sendActionResponse(400, false, String(Texts::configuration_invalid), {});
   }
 }
 
@@ -4171,9 +4261,9 @@ void handleDistanceSensorConfig() {
     distance_trig_pin = server.arg("trig").toInt();
     distance_echo_pin = server.arg("echo").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
-    sendActionResponse(200, true, OK_STR);
+    sendActionResponse(200, true, OK_STR, {});
   } else {
-    sendActionResponse(400, false, String(Texts::configuration_invalid));
+    sendActionResponse(400, false, String(Texts::configuration_invalid), {});
   }
 }
 
@@ -4190,9 +4280,9 @@ void handleMotionSensorConfig() {
   if (server.hasArg("pin")) {
     motion_sensor_pin = server.arg("pin").toInt();
     // [OPT-009]: Use OK_STR constant instead of String(Texts::ok)
-    sendActionResponse(200, true, OK_STR);
+    sendActionResponse(200, true, OK_STR, {});
   } else {
-    sendActionResponse(400, false, String(Texts::configuration_invalid));
+    sendActionResponse(400, false, String(Texts::configuration_invalid), {});
   }
 }
 
@@ -4215,9 +4305,9 @@ void handleSDConfig() {
     sd_cs_pin = server.arg("cs").toInt();
 
     resetSDTest();
-    sendActionResponse(200, true, OK_STR);
+    sendActionResponse(200, true, OK_STR, {});
   } else {
-    sendActionResponse(400, false, String(Texts::configuration_invalid));
+    sendActionResponse(400, false, String(Texts::configuration_invalid), {});
   }
 }
 
@@ -5747,18 +5837,11 @@ void setup() {
                          getStableAccessURL(),
                          -1);
     }
-    displayWiFiFailed();
-    neopixelSetWifiState(false);
-  }
-
-  // Détections
-  detectBuiltinLED();
-  
-  if (ENABLE_I2C_SCAN) {
-    scanI2C();
   }
   
   scanSPI();
+
+
   listPartitions();
   
   collectDiagnosticInfo();
@@ -5911,6 +5994,31 @@ void setup() {
 
 // ========== LOOP ==========
 void loop() {
+    // --- Earthbeat NeoPixel fade (animation continue) ---
+    if (strip != nullptr) {
+      static unsigned long neopixelHeartbeatPreviousMillis = 0;
+      static float phase = 0.0f;
+      static bool fadeUp = true;
+      unsigned long now = millis();
+      const unsigned long NEOPIXEL_HEARTBEAT_FADE_PERIOD_MS = 1200;
+      const uint8_t NEOPIXEL_HEARTBEAT_BRIGHTNESS_MIN = 10;
+      const uint8_t NEOPIXEL_HEARTBEAT_BRIGHTNESS_MAX = 60;
+      const float step = (float)(now - neopixelHeartbeatPreviousMillis) / (float)NEOPIXEL_HEARTBEAT_FADE_PERIOD_MS;
+      neopixelHeartbeatPreviousMillis = now;
+      if (fadeUp) {
+        phase += step;
+        if (phase >= 1.0f) { phase = 1.0f; fadeUp = false; }
+      } else {
+        phase -= step;
+        if (phase <= 0.0f) { phase = 0.0f; fadeUp = true; }
+      }
+      uint8_t brightness = (uint8_t)(NEOPIXEL_HEARTBEAT_BRIGHTNESS_MIN + (NEOPIXEL_HEARTBEAT_BRIGHTNESS_MAX - NEOPIXEL_HEARTBEAT_BRIGHTNESS_MIN) * phase);
+      bool connected = (WiFi.status() == WL_CONNECTED);
+      uint32_t color = connected ? strip->Color(0, brightness, 0) : strip->Color(brightness, 0, 0);
+      strip->setBrightness(brightness);
+      strip->setPixelColor(0, color);
+      strip->show();
+    }
   server.handleClient();
   maintainNetworkServices();
   updateNeoPixelWifiStatus();

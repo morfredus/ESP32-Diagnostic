@@ -1,3 +1,34 @@
+### [CHANGE 1] NeoPixel Earthbeat: smooth fade
+
+- Earthbeat effect now uses a smooth fade (brightness min/max) instead of blinking.
+- No delay, no blocking: LED remains fluid, no performance impact.
+- Documented and optimized code.
+
+## [Version 3.32.0] - 2025-12-28
+
+### 🚀 TFT, NeoPixel & BOOT Improvements
+
+- **Smooth, flicker-free TFT progress bar** on BOOT long press
+- **Optimized partial redraw**: only the bar is updated, frame drawn once
+- **NeoPixel purple (#8000FF) during progress**
+- **Earthbeat NeoPixel restored** if BOOT released before 100%
+- **Clean return to boot screen** after cancel
+- **Robust state machine** for BOOT/Progress/Cancel/Final action
+- **Refactored, readable, optimized code**
+- **Detailed internal documentation**
+
+#### 🛠️ Technical details
+- State machine: NORMAL, PROGRESS, CANCEL, FINAL ACTION
+- TFT rendering optimization (frameDrawn, lastProgress)
+- Fine NeoPixel management (Earthbeat/purple)
+- Code cleanup and comments
+
+#### 📚 Documentation
+- Updated: `CHANGELOG.md`, `CHANGELOG_FR.md`, `README.md`, `README_FR.md`
+- SEMVER version: **3.32.0** (minor increment)
+
+---
+
 ## [Version 3.31.1] - 2025-12-27
 
 ### 🎨 UI Enhancements
