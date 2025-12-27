@@ -1,12 +1,37 @@
 
-# ESP32 Diagnostic Suite (v3.30.0)
+# ESP32 Diagnostic Suite (v3.31.0)
 
-> **Note**: v3.30.0 adds **runtime TFT driver switching** from the Web UI! Switch between ILI9341 and ST7789 displays without recompiling.
+> **Note**: v3.31.0 introduces **readable web interface source code** with automatic minification! Develop in clean, maintainable code while keeping optimized firmware size.
 
 Comprehensive diagnostic firmware for ESP32 microcontrollers with interactive web dashboard, automated hardware tests, and bilingual content (FR/EN). The firmware targets PlatformIO with ESP32 Arduino Core 3.3.3 and supports ESP32-S3 and ESP32 Classic targets.
 
 
-## ✨ Version 3.30.0 Highlights - Runtime TFT Driver Switching
+## ✨ Version 3.31.0 Highlights - Readable Web Interface Source Code
+
+**New Developer Workflow:**
+- **Readable Source Files**: Edit clean, formatted HTML/CSS/JavaScript in `web_src/`
+- **Automatic Minification**: Python scripts convert readable code to optimized firmware
+- **Memory Preserved**: CSS ~26%, JS ~18-28% size reduction maintained
+- **Full Documentation**: Complete workflow guide in `web_src/README.md`
+
+**Quick Start:**
+```bash
+# Install Python dependencies (one-time)
+pip install rcssmin rjsmin jsbeautifier cssbeautifier
+
+# Extract current code (optional)
+python tools/extract_web_sources.py
+
+# Edit files in web_src/, then minify
+python tools/minify_web.py
+
+# Build and upload as usual
+pio run --target upload
+```
+
+See [web_src/README.md](web_src/README.md) for detailed instructions.
+
+## Previous: Version 3.30.0 - Runtime TFT Driver Switching
 
 **New Features:**
 - **Dynamic TFT driver switching** from Web UI - No recompilation needed!
