@@ -124,9 +124,11 @@ def inject_css_into_header(header_content, minified_css):
 
     css_block = '\n'.join(css_lines)
 
-    # Replace CSS section
+    # Replace CSS section - ensure </style> tag is preserved
     pattern = r'(html \+= "<style>";)(.*?)(html \+= "</style>";)'
-    replacement = r'\1\n' + css_block + '\n  \3'
+
+    # Build replacement with explicit </style> tag
+    replacement = r'\1' + '\n' + css_block + '\n  html += "</style>";'
 
     new_content = re.sub(pattern, replacement, header_content, flags=re.DOTALL)
     return new_content
