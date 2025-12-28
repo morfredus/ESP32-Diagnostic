@@ -1,8 +1,8 @@
-﻿# ESP32 Diagnostic Suite – Directives de sécurité (v3.32.0)
+﻿# ESP32 Diagnostic Suite – Directives de sécurité (v3.33.0)
 
-> NOUVEAUTÉ v3.32.0 : Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir README_FR.md et CONFIG_FR.md.
+> NOUVEAUTÉ v3.33.0 : Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir README_FR.md et CONFIG_FR.md.
 
-> **AVERTISSEMENT** : Ce document reflète le firmware **v3.32.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.33.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 Même si la suite est majoritairement utilisée en laboratoire, ces recommandations limitent l'exposition lors des tests de
 matériel pré-production pour tous les environnements supportés (ESP32-S3 N16R8, ESP32-S3 N8R8, ESP32 Classic).

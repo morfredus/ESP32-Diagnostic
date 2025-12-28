@@ -1,5 +1,5 @@
 
-# ESP32 Suite de Diagnostic (v3.32.0)
+# ESP32 Suite de Diagnostic (v3.33.0)
 
 > **Note** : v3.31.0 introduit **le code source lisible de l'interface web** avec minification automatique ! Développez en code clair et maintenable tout en gardant une taille de firmware optimisée.
 
@@ -283,15 +283,21 @@ Voir [web_src/README.md](web_src/README.md) pour les instructions détaillées.
 | Contribuer | [CONTRIBUTING.md](CONTRIBUTING.md) | [CONTRIBUTING_FR.md](CONTRIBUTING_FR.md) |
 | Journal des modifications | [CHANGELOG.md](CHANGELOG.md) | [CHANGELOG_FR.md](CHANGELOG_FR.md) |
 
+
+## Exports & Impression (TXT, JSON, CSV, Impression)
+
+Tous les formats d'export et d'impression incluent désormais :
+- **Toutes les données des capteurs environnementaux** : AHT20 (température, humidité, statut), BMP280 (température, pression, altitude, statut), température moyenne, statut global.
+- **Toutes les données GPS** : statut module, fix, satellites, latitude, longitude, altitude, vitesse, HDOP, date/heure.
+- Toutes les informations carte, mémoire, Wi-Fi, GPIO, tests et performance précédentes.
+- Le rapport imprimable HTML présente toutes ces sections de façon claire et structurée.
+
+Voir l'onglet "Export" de l'interface web pour télécharger ou imprimer. Toutes les données sont disponibles dans chaque format pour analyse manuelle ou automatisée.
+
+---
+
 ## Capacités principales
-- Interface multilingue avec bascule FR/EN en temps réel sans rechargement.
-- Diagnostics matériels automatisés couvrant GPIO, ADC, pads tactiles, PWM, I2C, SPI, PSRAM, flash et scan Wi-Fi.
-- **Support écran TFT ST7789** avec écran de démarrage et état WiFi/IP en temps réel (résolution 240x240).
-- Batterie de tests OLED 0,96" I2C avec déclenchement pas-à-pas et animations prévisualisées.
-- **Support double affichage** : fonctionnement simultané OLED et TFT pour diagnostics améliorés.
-- Endpoints REST pour lancer les diagnostics et récupérer les rapports (TXT/JSON/CSV/vue imprimable).
-- Support multi-AP Wi-Fi, découverte mDNS via `http://ESP32-Diagnostic.local` et exports complets.
-- Motifs NeoPixel/WS2812B optionnels et outils de benchmark CPU/mémoire.
+...existing code...
 
 ## Compatibilité & prérequis
 - **Cartes :**

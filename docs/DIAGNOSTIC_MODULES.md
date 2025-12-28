@@ -1,6 +1,6 @@
-# ESP32 Diagnostic Suite – Diagnostic Modules (v3.32.0)
+# ESP32 Diagnostic Suite – Diagnostic Modules (v3.33.0)
 
-> WARNING: This document reflects firmware v3.32.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
+> WARNING: This document reflects firmware v3.33.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 This guide dives into each automated diagnostic module shipped with version 3.15.0. Use it to understand the execution order,
 metrics collected, and interpretation guidelines when reviewing reports.

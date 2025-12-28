@@ -1,10 +1,10 @@
-﻿# Guide d'installation (v3.32.0)
+﻿# Guide d'installation (v3.33.0)
 
-> **AVERTISSEMENT** : Ce guide reflète le firmware **v3.32.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
+> **AVERTISSEMENT** : Ce guide reflète le firmware **v3.33.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 Suivez ces étapes pour déployer ESP32 Diagnostic Suite sur votre carte.
 
-> **Nouveauté v3.32.0 :** Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir aussi [RELEASE_NOTES_3.32.0_FR.md]. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé** car il n'est pas correctement géré sous la configuration de plateforme PlatformIO.
+> **Nouveauté v3.33.0 :** Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir aussi [RELEASE_NOTES_3.33.0_FR.md]. La version originale Arduino IDE [ESP32-Diagnostic-Arduino-IDE](https://github.com/morfredus/ESP32-Diagnostic-Arduino-IDE) est maintenant **archivée**. Le support Bluetooth/BLE a été **supprimé** car il n'est pas correctement géré sous la configuration de plateforme PlatformIO.
 
 ## 1. Prérequis
 
