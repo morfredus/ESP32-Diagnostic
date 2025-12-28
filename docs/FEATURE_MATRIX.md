@@ -1,10 +1,10 @@
-# ESP32 Diagnostic Suite – Feature Matrix (v3.32.0)
-# ESP32 Diagnostic Suite – Feature Matrix (v3.30.0)
 
-> NEW in v3.32.0: Smooth TFT progress bar, purple NeoPixel, robust BOOT logic, and dynamic TFT controller selection (ILI9341 or ST7789).
+# ESP32 Diagnostic Suite – Feature Matrix (v3.33.0)
+
+> NEW in v3.33.0: Smooth TFT progress bar, purple NeoPixel, robust BOOT logic, and dynamic TFT controller selection (ILI9341 or ST7789).
 | TFT test | ? | ? | ? | 4MB Flash, **no PSRAM**. Different pin mapping (see PIN_MAPPING.md). No GPIO 35-48 restrictions. |
 | TFT test | ? | ? | ? | 4MB Flash, **no PSRAM**. Different pin mapping (see PIN_MAPPING.md). No GPIO 35-48 restrictions. Supports ST7789 (SPI, 240x240/240x320) and ILI9341 (SPI, 240x320) – configurable in `config.h`. |
-> WARNING: This document reflects firmware v3.32.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
+> WARNING: This document reflects firmware v3.33.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 This matrix summarises the diagnostic coverage for the ESP32 boards supported by version 3.30.0 with three distinct build environments.
 Use it to plan validation campaigns and to verify whether optional peripherals require additional wiring.

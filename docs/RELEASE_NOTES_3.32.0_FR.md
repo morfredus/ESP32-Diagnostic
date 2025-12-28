@@ -1,4 +1,4 @@
-# Notes de version v3.32.0
+# Notes de version v3.33.0
 
 **Date de publication : 28 décembre 2025**
 

@@ -1,5 +1,5 @@
 
-# ESP32 Diagnostic Suite (v3.32.0)
+# ESP32 Diagnostic Suite (v3.33.0)
 
 > **Note**: v3.31.0 introduces **readable web interface source code** with automatic minification! Develop in clean, maintainable code while keeping optimized firmware size.
 
@@ -272,15 +272,21 @@ Edit `include/config.h`:
 | Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) | [CONTRIBUTING_FR.md](CONTRIBUTING_FR.md) |
 | Changelog | [CHANGELOG.md](CHANGELOG.md) | [CHANGELOG_FR.md](CHANGELOG_FR.md) |
 
+
+## Export & Print Reports (TXT, JSON, CSV, Print)
+
+All export and print formats now include:
+- **Full environmental sensor data**: AHT20 (temperature, humidity, status), BMP280 (temperature, pressure, altitude, status), average temperature, global status.
+- **Full GPS data**: module status, fix, satellites, latitude, longitude, altitude, speed, HDOP, date/time.
+- All previous board, memory, Wi-Fi, GPIO, test, and performance information.
+- Printable HTML report includes all these sections in a clear, structured layout.
+
+See the "Export" tab in the web interface for download/print options. Data is available in all formats for both manual and automated analysis.
+
+---
+
 ## Main Capabilities
-- Multilingual interface with real-time FR/EN toggle without reload.
-- Automated hardware diagnostics covering GPIO, ADC, touch pads, PWM, I2C, SPI, PSRAM, flash, and Wi-Fi scan.
-- **TFT ST7789 screen support** with boot screen and real-time WiFi/IP status (240x240 resolution).
-- 0.96" I2C OLED test battery with step-by-step trigger and previewed animations.
-- **Dual display support**: simultaneous OLED and TFT operation for enhanced diagnostics.
-- REST endpoints to launch diagnostics and retrieve reports (TXT/JSON/CSV/printable view).
-- Multi-AP Wi-Fi support, mDNS discovery via `http://ESP32-Diagnostic.local`, and complete exports.
-- Optional NeoPixel/WS2812B patterns and CPU/memory benchmark tools.
+...existing code...
 
 ## Compatibility & Requirements
 - **Boards:**

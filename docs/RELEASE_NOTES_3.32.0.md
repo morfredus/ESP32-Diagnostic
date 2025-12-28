@@ -1,4 +1,4 @@
-# Release Notes v3.32.0
+# Release Notes v3.33.0
 
 **Date de publication : 28 décembre 2025**
 

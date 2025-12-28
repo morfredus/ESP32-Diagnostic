@@ -1,8 +1,8 @@
-﻿# Guide d’utilisation (FR) – v3.32.0
+﻿# Guide d’utilisation (FR) – v3.33.0
 
-> NOUVEAUTÉ v3.32.0 : Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir README_FR.md et CONFIG_FR.md.
+> NOUVEAUTÉ v3.33.0 : Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir README_FR.md et CONFIG_FR.md.
 
-> **AVERTISSEMENT** : Ce document reflète le firmware **v3.32.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.33.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 **Support multi-environnements :** La version 3.17.1 actualise les mappings par défaut pour ESP32-S3 et ESP32 Classic tout en conservant les trois environnements spécifiques au matériel et les optimisations mémoire pour l'ESP32 Classic. Avant la première utilisation, assurez-vous d'avoir sélectionné et flashé le bon environnement pour votre carte (voir [BUILD_AND_DEPLOY_FR.md](BUILD_AND_DEPLOY_FR.md)).
 
@@ -50,7 +50,11 @@ Toutes les routes renvoient du JSON sauf mention contraire :
 
 ## 6. Rapports et journalisation
 - La sortie série reflète les actions clés (Wi-Fi, BLE, résultats de tests).
-- Les exports incluent les informations carte, la mémoire, les benchmarks, le scan Wi-Fi, les GPIO et l'état OLED.
+- **Les exports (TXT, JSON, CSV, Impression) incluent désormais :**
+  - Toutes les données des capteurs environnementaux : AHT20 (température, humidité, statut), BMP280 (température, pression, altitude, statut), température moyenne, statut global.
+  - Toutes les données GPS : statut module, fix, satellites, latitude, longitude, altitude, vitesse, HDOP, date/heure.
+  - Toutes les informations carte, mémoire, Wi-Fi, GPIO, tests et performance précédentes.
+  - Le rapport imprimable HTML présente toutes ces sections de façon claire et structurée.
 - Utilisez le JSON pour l'analyse automatisée et TXT/CSV pour la consultation manuelle.
 - Exploitez l'endpoint `/api/memory-details` lorsque les exports signalent une fragmentation et, en 3.8.0, contrôlez que les réponses de scan BLE renvoient soit des résultats frais, soit un message d'erreur explicite si la radio est occupée.
 

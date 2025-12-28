@@ -4974,6 +4974,76 @@ void handleExportTXT() {
   unsigned long minutes = seconds / 60;
   unsigned long hours = minutes / 60;
   unsigned long days = hours / 24;
+  // === ENVIRONNEMENT ===
+  txt += "=== ENVIRONNEMENT ===\r\n";
+  txt += "AHT20: ";
+  txt += envData.aht20_available ? "OK" : "Non détecté";
+  txt += "\r\n";
+  txt += "  Température (AHT20): ";
+  txt += (envData.temperature_aht20 != -999.0 ? String(envData.temperature_aht20, 1) + " °C" : "N/A");
+  txt += "\r\n";
+  txt += "  Humidité: ";
+  txt += (envData.humidity != -999.0 ? String(envData.humidity, 1) + " %" : "N/A");
+  txt += "\r\n";
+  txt += "  Statut: " + envData.aht20_status + "\r\n";
+  txt += "BMP280: ";
+  txt += envData.bmp280_available ? "OK" : "Non détecté";
+  txt += "\r\n";
+  txt += "  Température (BMP280): ";
+  txt += (envData.temperature_bmp280 != -999.0 ? String(envData.temperature_bmp280, 1) + " °C" : "N/A");
+  txt += "\r\n";
+  txt += "  Pression: ";
+  txt += (envData.pressure != -999.0 ? String(envData.pressure, 1) + " hPa" : "N/A");
+  txt += "\r\n";
+  txt += "  Altitude: ";
+  txt += (envData.altitude != -999.0 ? String(envData.altitude, 1) + " m" : "N/A");
+  txt += "\r\n";
+  txt += "  Statut: " + envData.bmp280_status + "\r\n";
+  txt += "Moyenne température: ";
+  txt += (envData.temperature_avg != -999.0 ? String(envData.temperature_avg, 1) + " °C" : "N/A");
+  txt += "\r\n";
+  txt += "Statut global: " + envData.combined_status + "\r\n";
+  txt += "\r\n";
+
+  // === GPS ===
+  txt += "=== GPS ===\r\n";
+  txt += "Module: ";
+  txt += gpsAvailable ? "OK" : "Non détecté";
+  txt += "\r\n";
+  txt += "  Statut: " + gpsData.status_str + "\r\n";
+  txt += "  Fix: ";
+  txt += gpsData.hasFix ? "Oui" : "Non";
+  txt += "\r\n";
+  txt += "  Satellites: ";
+  txt += String(gpsData.satellites);
+  txt += "\r\n";
+  txt += "  Latitude: ";
+  txt += (gpsData.hasFix ? String(gpsData.latitude, 6) : "N/A");
+  txt += "\r\n";
+  txt += "  Longitude: ";
+  txt += (gpsData.hasFix ? String(gpsData.longitude, 6) : "N/A");
+  txt += "\r\n";
+  txt += "  Altitude: ";
+  txt += (gpsData.hasFix ? String(gpsData.altitude, 1) + " m" : "N/A");
+  txt += "\r\n";
+  txt += "  Vitesse: ";
+  txt += (gpsData.hasFix ? String(gpsData.speed, 2) + " noeuds" : "N/A");
+  txt += "\r\n";
+  txt += "  HDOP: ";
+  txt += (gpsData.hasFix ? String(gpsData.hdop, 2) : "N/A");
+  txt += "\r\n";
+  txt += "  Date/Heure: ";
+  if (gpsData.hasTime && gpsData.hasDate) {
+    txt += String(gpsData.day) + "/" + String(gpsData.month) + "/" + String(gpsData.year) + " ";
+    txt += (gpsData.hour < 10 ? "0" : "") + String(gpsData.hour) + ":";
+    txt += (gpsData.minute < 10 ? "0" : "") + String(gpsData.minute) + ":";
+    txt += (gpsData.second < 10 ? "0" : "") + String(gpsData.second);
+  } else {
+    txt += "N/A";
+  }
+  txt += "\r\n\r\n";
+
+  // === SYSTEME ===
   txt += "=== SYSTEM ===\r\n";
   txt += String(Texts::uptime) + ": " + String(days) + "d " + String(hours % 24) + "h " + String(minutes % 60) + "m\r\n";
   txt += String(Texts::last_reset) + ": " + getResetReason() + "\r\n";
@@ -4981,7 +5051,7 @@ void handleExportTXT() {
   txt += "========================================\r\n";
   txt += String(Texts::export_generated) + " " + String(millis()/1000) + "s " + String(Texts::export_after_boot) + "\r\n";
   txt += "========================================\r\n";
-  
+
   server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v"+ String(PROJECT_VERSION) +".txt");
   server.send(200, "text/plain; charset=utf-8", txt);
 }
@@ -5067,14 +5137,56 @@ void handleExportJSON() {
   json += ",\"stress_test\":\"" + stressTestResult + "\"";
   json += "},";
   
+  // === ENVIRONNEMENT ===
+  json += ",\"environment\":{";
+  json += "\"aht20_available\":" + String(envData.aht20_available ? "true" : "false") + ",";
+  json += "\"temperature_aht20\":" + (envData.temperature_aht20 != -999.0 ? String(envData.temperature_aht20, 1) : "null") + ",";
+  json += "\"humidity\":" + (envData.humidity != -999.0 ? String(envData.humidity, 1) : "null") + ",";
+  json += "\"aht20_status\":\"" + jsonEscape(envData.aht20_status.c_str()) + "\",";
+  json += "\"bmp280_available\":" + String(envData.bmp280_available ? "true" : "false") + ",";
+  json += "\"temperature_bmp280\":" + (envData.temperature_bmp280 != -999.0 ? String(envData.temperature_bmp280, 1) : "null") + ",";
+  json += "\"pressure\":" + (envData.pressure != -999.0 ? String(envData.pressure, 1) : "null") + ",";
+  json += "\"altitude\":" + (envData.altitude != -999.0 ? String(envData.altitude, 1) : "null") + ",";
+  json += "\"bmp280_status\":\"" + jsonEscape(envData.bmp280_status.c_str()) + "\",";
+  json += "\"temperature_avg\":" + (envData.temperature_avg != -999.0 ? String(envData.temperature_avg, 1) : "null") + ",";
+  json += "\"combined_status\":\"" + jsonEscape(envData.combined_status.c_str()) + "\"";
+  json += "},";
+
+  // === GPS ===
+  json += "\"gps\":{";
+  json += "\"available\":" + String(gpsAvailable ? "true" : "false") + ",";
+  json += "\"status\":\"" + jsonEscape(gpsData.status_str.c_str()) + "\",";
+  json += "\"has_fix\":" + String(gpsData.hasFix ? "true" : "false") + ",";
+  json += "\"satellites\":" + String(gpsData.satellites) + ",";
+  json += "\"latitude\":" + (gpsData.hasFix ? String(gpsData.latitude, 6) : "null") + ",";
+  json += "\"longitude\":" + (gpsData.hasFix ? String(gpsData.longitude, 6) : "null") + ",";
+  json += "\"altitude\":" + (gpsData.hasFix ? String(gpsData.altitude, 1) : "null") + ",";
+  json += "\"speed\":" + (gpsData.hasFix ? String(gpsData.speed, 2) : "null") + ",";
+  json += "\"hdop\":" + (gpsData.hasFix ? String(gpsData.hdop, 2) : "null") + ",";
+  json += "\"date_time\":\"";
+  if (gpsData.hasTime && gpsData.hasDate) {
+    json += String(gpsData.day) + "/" + String(gpsData.month) + "/" + String(gpsData.year) + " ";
+    if (gpsData.hour < 10) json += "0";
+    json += String(gpsData.hour) + ":";
+    if (gpsData.minute < 10) json += "0";
+    json += String(gpsData.minute) + ":";
+    if (gpsData.second < 10) json += "0";
+    json += String(gpsData.second);
+  } else {
+    json += "N/A";
+  }
+  json += "\"";
+  json += "},";
+
+  // === SYSTEME ===
   json += "\"system\":{";
   json += "\"uptime_ms\":" + String(diagnosticData.uptime) + ",";
   json += "\"reset_reason\":\"" + getResetReason() + "\",";
   json += "\"language\":\"en\"";
   json += "}";
-  
+
   json += "}";
-  
+
   server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v" + String(PROJECT_VERSION) + ".json");
   server.send(200, "application/json", json);
 }
@@ -5137,10 +5249,47 @@ void handleExportCSV() {
     csv += String(Texts::performance_bench) + ",CPU us," + String(diagnosticData.cpuBenchmark) + "\r\n";
     csv += String(Texts::performance_bench) + "," + String(Texts::memory_benchmark) + " us," + String(diagnosticData.memBenchmark) + "\r\n";
   }
-  
+
+  // === ENVIRONNEMENT ===
+  csv += "Environnement,AHT20 disponible," + String(envData.aht20_available ? "Oui" : "Non") + "\r\n";
+  csv += "Environnement,Température (AHT20)," + (envData.temperature_aht20 != -999.0 ? String(envData.temperature_aht20, 1) : "N/A") + "\r\n";
+  csv += "Environnement,Humidité," + (envData.humidity != -999.0 ? String(envData.humidity, 1) : "N/A") + "\r\n";
+  csv += "Environnement,Statut AHT20," + envData.aht20_status + "\r\n";
+  csv += "Environnement,BMP280 disponible," + String(envData.bmp280_available ? "Oui" : "Non") + "\r\n";
+  csv += "Environnement,Température (BMP280)," + (envData.temperature_bmp280 != -999.0 ? String(envData.temperature_bmp280, 1) : "N/A") + "\r\n";
+  csv += "Environnement,Pression," + (envData.pressure != -999.0 ? String(envData.pressure, 1) : "N/A") + "\r\n";
+  csv += "Environnement,Altitude," + (envData.altitude != -999.0 ? String(envData.altitude, 1) : "N/A") + "\r\n";
+  csv += "Environnement,Statut BMP280," + envData.bmp280_status + "\r\n";
+  csv += "Environnement,Température moyenne," + (envData.temperature_avg != -999.0 ? String(envData.temperature_avg, 1) : "N/A") + "\r\n";
+  csv += "Environnement,Statut global," + envData.combined_status + "\r\n";
+
+  // === GPS ===
+  csv += "GPS,Module disponible," + String(gpsAvailable ? "Oui" : "Non") + "\r\n";
+  csv += "GPS,Statut," + gpsData.status_str + "\r\n";
+  csv += "GPS,Fix," + String(gpsData.hasFix ? "Oui" : "Non") + "\r\n";
+  csv += "GPS,Satellites," + String(gpsData.satellites) + "\r\n";
+  csv += "GPS,Latitude," + (gpsData.hasFix ? String(gpsData.latitude, 6) : "N/A") + "\r\n";
+  csv += "GPS,Longitude," + (gpsData.hasFix ? String(gpsData.longitude, 6) : "N/A") + "\r\n";
+  csv += "GPS,Altitude," + (gpsData.hasFix ? String(gpsData.altitude, 1) : "N/A") + "\r\n";
+  csv += "GPS,Vitesse," + (gpsData.hasFix ? String(gpsData.speed, 2) : "N/A") + "\r\n";
+  csv += "GPS,HDOP," + (gpsData.hasFix ? String(gpsData.hdop, 2) : "N/A") + "\r\n";
+  csv += "GPS,Date/Heure,";
+  if (gpsData.hasTime && gpsData.hasDate) {
+    csv += String(gpsData.day) + "/" + String(gpsData.month) + "/" + String(gpsData.year) + " ";
+    if (gpsData.hour < 10) csv += "0";
+    csv += String(gpsData.hour) + ":";
+    if (gpsData.minute < 10) csv += "0";
+    csv += String(gpsData.minute) + ":";
+    if (gpsData.second < 10) csv += "0";
+    csv += String(gpsData.second);
+  } else {
+    csv += "N/A";
+  }
+  csv += "\r\n";
+
   csv += "System," + String(Texts::uptime) + " ms," + String(diagnosticData.uptime) + "\r\n";
   csv += "System," + String(Texts::last_reset) + "," + getResetReason() + "\r\n";
-  
+
   server.sendHeader("Content-Disposition", "attachment; filename=esp32_diagnostic_v" + String(PROJECT_VERSION) + ".csv");
   server.send(200, "text/csv; charset=utf-8", csv);
 }
@@ -5201,38 +5350,38 @@ void handlePrintVersion() {
   html += "<div class='row'><b>" + String(Texts::last_reset) + ":</b><span>" + getResetReason() + "</span></div>";
   html += "</div></div>";
 
+
   // Mémoire
   html += "<div class='section'>";
   html += "<h2>" + String(Texts::memory_details) + "</h2>";
   html += "<table>";
   html += "<tr><th>" + String(Texts::category) + "</th><th>" + String(Texts::total_size) + "</th><th>" + String(Texts::free) + "</th><th>" + String(Texts::used) + "</th><th>" + String(Texts::status) + "</th></tr>";
-
-  // Flash
+  // ...existing code for memory table...
   bool flashMatch = (detailedMemory.flashSizeReal == detailedMemory.flashSizeChip);
   html += "<tr><td><b>" + String(Texts::flash_memory) + "</b></td>";
   html += "<td>" + String(detailedMemory.flashSizeReal / 1048576.0, 1) + " MB</td>";
   html += "<td>-</td><td>-</td>";
   html += "<td><span class='badge " + String(flashMatch ? "badge-success'>" + String(Texts::ok) : "badge-warning'>" + String(Texts::ide_config)) + "</span></td></tr>";
-
-  // PSRAM
-  html += "<tr><td><b>" + String(Texts::psram_external) + "</b></td>";
-  html += "<td>" + String(detailedMemory.psramTotal / 1048576.0, 1) + " MB</td>";
+  // ...existing code for PSRAM and SRAM...
   if (detailedMemory.psramAvailable) {
+    html += "<tr><td><b>" + String(Texts::psram_external) + "</b></td>";
+    html += "<td>" + String(detailedMemory.psramTotal / 1048576.0, 1) + " MB</td>";
     html += "<td>" + String(detailedMemory.psramFree / 1048576.0, 1) + " MB</td>";
     html += "<td>" + String(detailedMemory.psramUsed / 1048576.0, 1) + " MB</td>";
-    html += "<td><span class='badge badge-success'>" + String(Texts::detected_active) + "</span></td>";
+    html += "<td><span class='badge badge-success'>" + String(Texts::detected_active) + "</span></td></tr>";
   } else if (detailedMemory.psramBoardSupported) {
+    html += "<tr><td><b>" + String(Texts::psram_external) + "</b></td>";
+    html += "<td>" + String(detailedMemory.psramTotal / 1048576.0, 1) + " MB</td>";
     html += "<td>-</td><td>-</td>";
     String psramHint = String(Texts::enable_psram_hint);
     psramHint.replace("%TYPE%", detailedMemory.psramType ? detailedMemory.psramType : "PSRAM");
-    html += "<td><span class='badge badge-warning'>" + String(Texts::supported_not_enabled) + "</span><br><small>" + psramHint + "</small></td>";
+    html += "<td><span class='badge badge-warning'>" + String(Texts::supported_not_enabled) + "</span><br><small>" + psramHint + "</small></td></tr>";
   } else {
+    html += "<tr><td><b>" + String(Texts::psram_external) + "</b></td>";
+    html += "<td>" + String(detailedMemory.psramTotal / 1048576.0, 1) + " MB</td>";
     html += "<td>-</td><td>-</td>";
-    html += "<td><span class='badge badge-danger'>" + String(Texts::not_detected) + "</span></td>";
+    html += "<td><span class='badge badge-danger'>" + String(Texts::not_detected) + "</span></td></tr>";
   }
-  html += "</tr>";
-
-  // SRAM
   html += "<tr><td><b>" + String(Texts::internal_sram) + "</b></td>";
   html += "<td>" + String(detailedMemory.sramTotal / 1024.0, 1) + " KB</td>";
   html += "<td>" + String(detailedMemory.sramFree / 1024.0, 1) + " KB</td>";
@@ -5241,6 +5390,53 @@ void handlePrintVersion() {
   html += "</table>";
   html += "<div class='row'><b>" + String(Texts::memory_fragmentation) + ":</b><span>" + String(detailedMemory.fragmentationPercent, 1) + "% - " + detailedMemory.memoryStatus + "</span></div>";
   html += "</div>";
+
+  // === ENVIRONNEMENT ===
+  html += "<div class='section'>";
+  html += "<h2>Environnement</h2>";
+  html += "<table>";
+  html += "<tr><th>Capteur</th><th>Paramètre</th><th>Valeur</th></tr>";
+  html += "<tr><td>AHT20</td><td>Disponible</td><td>" + String(envData.aht20_available ? "Oui" : "Non") + "</td></tr>";
+  html += "<tr><td>AHT20</td><td>Température</td><td>" + (envData.temperature_aht20 != -999.0 ? String(envData.temperature_aht20, 1) + " °C" : "N/A") + "</td></tr>";
+  html += "<tr><td>AHT20</td><td>Humidité</td><td>" + (envData.humidity != -999.0 ? String(envData.humidity, 1) + " %" : "N/A") + "</td></tr>";
+  html += "<tr><td>AHT20</td><td>Statut</td><td>" + envData.aht20_status + "</td></tr>";
+  html += "<tr><td>BMP280</td><td>Disponible</td><td>" + String(envData.bmp280_available ? "Oui" : "Non") + "</td></tr>";
+  html += "<tr><td>BMP280</td><td>Température</td><td>" + (envData.temperature_bmp280 != -999.0 ? String(envData.temperature_bmp280, 1) + " °C" : "N/A") + "</td></tr>";
+  html += "<tr><td>BMP280</td><td>Pression</td><td>" + (envData.pressure != -999.0 ? String(envData.pressure, 1) + " hPa" : "N/A") + "</td></tr>";
+  html += "<tr><td>BMP280</td><td>Altitude</td><td>" + (envData.altitude != -999.0 ? String(envData.altitude, 1) + " m" : "N/A") + "</td></tr>";
+  html += "<tr><td>BMP280</td><td>Statut</td><td>" + envData.bmp280_status + "</td></tr>";
+  html += "<tr><td colspan='2'>Température moyenne</td><td>" + (envData.temperature_avg != -999.0 ? String(envData.temperature_avg, 1) + " °C" : "N/A") + "</td></tr>";
+  html += "<tr><td colspan='2'>Statut global</td><td>" + envData.combined_status + "</td></tr>";
+  html += "</table></div>";
+
+  // === GPS ===
+  html += "<div class='section'>";
+  html += "<h2>GPS</h2>";
+  html += "<table>";
+  html += "<tr><th>Paramètre</th><th>Valeur</th></tr>";
+  html += "<tr><td>Module disponible</td><td>" + String(gpsAvailable ? "Oui" : "Non") + "</td></tr>";
+  html += "<tr><td>Statut</td><td>" + gpsData.status_str + "</td></tr>";
+  html += "<tr><td>Fix</td><td>" + String(gpsData.hasFix ? "Oui" : "Non") + "</td></tr>";
+  html += "<tr><td>Satellites</td><td>" + String(gpsData.satellites) + "</td></tr>";
+  html += "<tr><td>Latitude</td><td>" + (gpsData.hasFix ? String(gpsData.latitude, 6) : "N/A") + "</td></tr>";
+  html += "<tr><td>Longitude</td><td>" + (gpsData.hasFix ? String(gpsData.longitude, 6) : "N/A") + "</td></tr>";
+  html += "<tr><td>Altitude</td><td>" + (gpsData.hasFix ? String(gpsData.altitude, 1) + " m" : "N/A") + "</td></tr>";
+  html += "<tr><td>Vitesse</td><td>" + (gpsData.hasFix ? String(gpsData.speed, 2) + " noeuds" : "N/A") + "</td></tr>";
+  html += "<tr><td>HDOP</td><td>" + (gpsData.hasFix ? String(gpsData.hdop, 2) : "N/A") + "</td></tr>";
+  html += "<tr><td>Date/Heure</td><td>";
+  if (gpsData.hasTime && gpsData.hasDate) {
+    html += String(gpsData.day) + "/" + String(gpsData.month) + "/" + String(gpsData.year) + " ";
+    if (gpsData.hour < 10) html += "0";
+    html += String(gpsData.hour) + ":";
+    if (gpsData.minute < 10) html += "0";
+    html += String(gpsData.minute) + ":";
+    if (gpsData.second < 10) html += "0";
+    html += String(gpsData.second);
+  } else {
+    html += "N/A";
+  }
+  html += "</td></tr>";
+  html += "</table></div>";
 
   // WiFi
   html += "<div class='section'>";

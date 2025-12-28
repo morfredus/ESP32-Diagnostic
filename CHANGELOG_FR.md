@@ -1,4 +1,4 @@
-## [Version 3.32.0] - 2025-12-28
+## [Version 3.33.0] - 2025-12-29
 
 ### 🚀 Améliorations TFT, NeoPixel et BOOT
 
@@ -19,7 +19,7 @@
 
 #### 📚 Documentation
 - Mise à jour : `CHANGELOG.md`, `CHANGELOG_FR.md`, `README.md`, `README_FR.md`
-- Version SEMVER : **3.32.0** (incrémentation mineure)
+- Version SEMVER : **3.33.0** (incrémentation mineure)
 
 ---
 

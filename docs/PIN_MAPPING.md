@@ -1,8 +1,8 @@
-# Pin Mapping – Quick Reference (v3.32.0)
+# Pin Mapping – Quick Reference (v3.33.0)
 
-> NEW in v3.32.0: Smooth TFT progress bar, purple NeoPixel, robust BOOT logic, and dynamic TFT controller selection (ILI9341 or ST7789). See FEATURE_MATRIX.md and RELEASE_NOTES_3.32.0.md.
+> NEW in v3.33.0: Smooth TFT progress bar, purple NeoPixel, robust BOOT logic, and dynamic TFT controller selection (ILI9341 or ST7789). See FEATURE_MATRIX.md and RELEASE_NOTES_3.33.0.md.
 
-> WARNING: This document reflects the EXACT pin mapping from `include/board_config.h` as of v3.32.0. All GPIO assignments have been verified and synchronized with the codebase. Incorrect wiring may damage your ESP32 or peripherals. Read this entire document before flashing.
+> WARNING: This document reflects the EXACT pin mapping from `include/board_config.h` as of v3.33.0. All GPIO assignments have been verified and synchronized with the codebase. Incorrect wiring may damage your ESP32 or peripherals. Read this entire document before flashing.
 
 ## Supported Environments
 

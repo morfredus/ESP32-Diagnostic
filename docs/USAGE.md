@@ -1,8 +1,8 @@
-# Usage Guide (EN) – v3.32.0
+# Usage Guide (EN) – v3.33.0
 
-> NEW in v3.32.0: Smooth TFT progress bar, purple NeoPixel, robust BOOT logic, and dynamic TFT controller selection (ILI9341 or ST7789). See README and CONFIG.md.
+> NEW in v3.33.0: Smooth TFT progress bar, purple NeoPixel, robust BOOT logic, and dynamic TFT controller selection (ILI9341 or ST7789). See README and CONFIG.md.
 
-> WARNING: This document reflects firmware v3.32.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
+> WARNING: This document reflects firmware v3.33.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 **Multi-environment support:** Version 3.17.1 refreshes default pin mappings for ESP32-S3 and ESP32 Classic while keeping the three hardware-specific build environments and the ESP32 Classic memory optimizations. Before first use, ensure you've selected and flashed the correct environment for your board (see [BUILD_AND_DEPLOY.md](BUILD_AND_DEPLOY.md)).
 
@@ -49,7 +49,11 @@ All endpoints return JSON unless stated otherwise:
 
 ## 6. Reports and logging
 - Serial output mirrors key actions (Wi-Fi status, BLE state, test results).
-- Exported reports include board information, memory breakdown, benchmark metrics, Wi-Fi scan, GPIO results, and OLED status.
+- **Exported reports (TXT, JSON, CSV, Print) now include:**
+  - All environmental sensor data: AHT20 (temperature, humidity, status), BMP280 (temperature, pressure, altitude, status), average temperature, global status.
+  - All GPS data: module status, fix, satellites, latitude, longitude, altitude, speed, HDOP, date/time.
+  - All previous board, memory, Wi-Fi, GPIO, test, and performance information.
+  - Printable HTML report includes all these sections in a clear, structured layout.
 - Keep JSON exports for machine parsing and TXT/CSV for manual analysis.
 - Use the `/api/memory-details` endpoint when reports warn about fragmentation and, on 3.8.0, double-check that BLE scan responses include either fresh results or a clear error message if the radio is busy.
 

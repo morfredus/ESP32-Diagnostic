@@ -1,8 +1,8 @@
-# Mapping des pins — Référence rapide (v3.32.0)
+# Mapping des pins — Référence rapide (v3.33.0)
 
-> NOUVEAUTÉ v3.32.0 : Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir FEATURE_MATRIX_FR.md et RELEASE_NOTES_3.32.0_FR.md.
+> NOUVEAUTÉ v3.33.0 : Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir FEATURE_MATRIX_FR.md et RELEASE_NOTES_3.33.0_FR.md.
 
-> **AVERTISSEMENT** : Ce document reflète le mapping de pins EXACT depuis `include/board_config.h` version v3.32.0. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Un câblage incorrect peut endommager votre ESP32 ou vos périphériques. Lisez ce document entièrement avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le mapping de pins EXACT depuis `include/board_config.h` version v3.33.0. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Un câblage incorrect peut endommager votre ESP32 ou vos périphériques. Lisez ce document entièrement avant de flasher.
 
 - **Cartes supportées :**
   - ESP32-S3-DevKitC-1 N16R8 (16Mo Flash, 8Mo PSRAM) — `esp32s3_n16r8`

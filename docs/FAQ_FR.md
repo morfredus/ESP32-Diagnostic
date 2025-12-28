@@ -1,8 +1,8 @@
-﻿# ESP32 Diagnostic Suite – FAQ (v3.32.0)
+﻿# ESP32 Diagnostic Suite – FAQ (v3.33.0)
 
-> NOUVEAUTÉ v3.32.0 : Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir README_FR.md, CONFIG_FR.md et RELEASE_NOTES_3.32.0_FR.md.
+> NOUVEAUTÉ v3.33.0 : Barre de progression TFT fluide, NeoPixel violet, logique BOOT robuste, et sélection dynamique du contrôleur TFT (ILI9341 ou ST7789). Voir README_FR.md, CONFIG_FR.md et RELEASE_NOTES_3.33.0_FR.md.
 
-> **AVERTISSEMENT** : Ce document reflète le firmware **v3.32.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.33.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 ## Généralités
 **Q : Quelles cartes sont officiellement supportées ?**

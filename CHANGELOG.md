@@ -4,7 +4,7 @@
 - No delay, no blocking: LED remains fluid, no performance impact.
 - Documented and optimized code.
 
-## [Version 3.32.0] - 2025-12-28
+## [Version 3.33.0] - 2025-12-29
 
 ### 🚀 TFT, NeoPixel & BOOT Improvements
 
@@ -25,7 +25,7 @@
 
 #### 📚 Documentation
 - Updated: `CHANGELOG.md`, `CHANGELOG_FR.md`, `README.md`, `README_FR.md`
-- SEMVER version: **3.32.0** (minor increment)
+- SEMVER version: **3.33.0** (minor increment)
 
 ---
 
