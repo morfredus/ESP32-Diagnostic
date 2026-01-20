@@ -75,9 +75,9 @@ void deinitTFT() {
   Serial.println(" driver...");
 
   // Turn off backlight before deinit (PWM off)
-  if (TFT_BL >= 0) {
+  if (TFT_BL_PIN >= 0) {
     ledcWrite(TFT_BACKLIGHT_PWM_CHANNEL, 0);
-    ledcDetachPin(TFT_BL);
+    ledcDetachPin(TFT_BL_PIN);
   }
 
   // Clear the generic pointer
@@ -108,10 +108,10 @@ bool initTFT(TFT_DriverType driverType, int width, int height, int rotation) {
   Serial.println(" display...");
 
   // Configure backlight PWM if enabled
-  if (TFT_BL >= 0) {
+  if (TFT_BL_PIN >= 0) {
     // Setup PWM channel for backlight control
     ledcSetup(TFT_BACKLIGHT_PWM_CHANNEL, TFT_BACKLIGHT_PWM_FREQ, TFT_BACKLIGHT_PWM_RESOLUTION);
-    ledcAttachPin(TFT_BL, TFT_BACKLIGHT_PWM_CHANNEL);
+    ledcAttachPin(TFT_BL_PIN, TFT_BACKLIGHT_PWM_CHANNEL);
     ledcWrite(TFT_BACKLIGHT_PWM_CHANNEL, tft_current_brightness);  // Set to default brightness
 
     Serial.print("[TFT] Backlight PWM initialized (brightness: ");
@@ -124,7 +124,7 @@ bool initTFT(TFT_DriverType driverType, int width, int height, int rotation) {
 
   if (driverType == TFT_DRIVER_ILI9341) {
     // Create and initialize ILI9341
-    tft_ili9341 = new Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
+    tft_ili9341 = new Adafruit_ILI9341(TFT_CS_PIN, TFT_DC_PIN, TFT_RST_PIN);
     tft = tft_ili9341;
 
     tft_ili9341->begin();
@@ -133,7 +133,7 @@ bool initTFT(TFT_DriverType driverType, int width, int height, int rotation) {
 
   } else if (driverType == TFT_DRIVER_ST7789) {
     // Create and initialize ST7789
-    tft_st7789 = new Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+    tft_st7789 = new Adafruit_ST7789(TFT_CS_PIN, TFT_DC_PIN, TFT_RST_PIN);
     tft = tft_st7789;
 
     tft_st7789->init(width, height, SPI_MODE0);
@@ -321,7 +321,7 @@ void updateTFTDisplay(const char* chipModel, const char* ipAddr, unsigned long u
 
 // Set TFT backlight brightness using PWM (0-255)
 void setTFTBrightness(uint8_t brightness) {
-  if (TFT_BL >= 0) {
+  if (TFT_BL_PIN >= 0) {
     tft_current_brightness = brightness;
     ledcWrite(TFT_BACKLIGHT_PWM_CHANNEL, brightness);
 

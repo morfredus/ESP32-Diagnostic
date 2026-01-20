@@ -32,9 +32,11 @@ Définir le driver par défaut dans `include/config.h` :
 
 Voir [RELEASE_NOTES_3.30.0_FR.md](RELEASE_NOTES_3.30.0_FR.md) pour tous les détails.
 
-# Configuration (FR) — v3.33.0
 
-> **AVERTISSEMENT** : Ce document reflète le firmware **v3.33.0** avec mappings de broches EXACTS depuis `include/board_config.h`. Toutes les assignations GPIO ont été vérifiées et synchronisées avec le code. Lisez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
+
+# Configuration (FR) — v3.33.5
+
+> **AVERTISSEMENT** : Ce document reflète le firmware **v3.33.5**. Tous les mappings de broches et noms GPIO sont strictement synchronisés et utilisent la convention *_PIN définie dans `include/board_config.h`. Vérifiez toutes les assignations et consultez [docs/PIN_MAPPING_FR.md](docs/PIN_MAPPING_FR.md) avant de flasher.
 
 ## Sélection de l'Environnement de Build
 

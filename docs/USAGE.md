@@ -1,8 +1,10 @@
-# Usage Guide (EN) – v3.33.0
 
-> NEW in v3.33.0: Smooth TFT progress bar, purple NeoPixel, robust BOOT logic, and dynamic TFT controller selection (ILI9341 or ST7789). See README and CONFIG.md.
 
-> WARNING: This document reflects firmware v3.33.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
+# Usage Guide (EN) – v3.33.5
+
+> NEW in v3.33.5: Pin mapping and GPIO names are now strictly synchronized and use the *_PIN naming convention as defined in `include/board_config.h`. See README and CONFIG.md.
+
+> WARNING: This document reflects firmware v3.33.5 with EXACT pin mappings and *_PIN names from `include/board_config.h`. Please verify all assignments and consult [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 **Multi-environment support:** Version 3.17.1 refreshes default pin mappings for ESP32-S3 and ESP32 Classic while keeping the three hardware-specific build environments and the ESP32 Classic memory optimizations. Before first use, ensure you've selected and flashed the correct environment for your board (see [BUILD_AND_DEPLOY.md](BUILD_AND_DEPLOY.md)).
 

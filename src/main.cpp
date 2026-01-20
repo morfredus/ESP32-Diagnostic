@@ -198,33 +198,33 @@ String getArduinoCoreVersionString() {
 // Using lowercase names avoids preprocessor conflicts while enabling dynamic remapping
 
 // I2C pins for OLED and environmental sensors (modifiable via web interface)
-int i2c_sda = I2C_SDA;
-int i2c_scl = I2C_SCL;
+int i2c_sda = I2C_SDA_PIN;
+int i2c_scl = I2C_SCL_PIN;
 
 // RGB LED pins (modifiable via web interface)
-int rgb_led_pin_r = LED_RED;
-int rgb_led_pin_g = LED_GREEN;
-int rgb_led_pin_b = LED_BLUE;
+int rgb_led_pin_r = LED_RED_PIN;
+int rgb_led_pin_g = LED_GREEN_PIN;
+int rgb_led_pin_b = LED_BLUE_PIN;
 
 // Sensor and output pins (modifiable via web interface)
-int pwm_pin = PWM;
-int buzzer_pin = BUZZER;
-int dht_pin = DHT;
-int light_sensor_pin = LIGHT_SENSOR;
-int distance_trig_pin = DISTANCE_TRIG;
-int distance_echo_pin = DISTANCE_ECHO;
-int motion_sensor_pin = MOTION_SENSOR;
+int pwm_pin = PWM_PIN;
+int buzzer_pin = BUZZER_PIN;
+int dht_pin = DHT_PIN;
+int light_sensor_pin = LIGHT_SENSOR_PIN;
+int distance_trig_pin = DISTANCE_TRIG_PIN;
+int distance_echo_pin = DISTANCE_ECHO_PIN;
+int motion_sensor_pin = MOTION_SENSOR_PIN;
 
 // SD Card pins (modifiable via web interface)
-int sd_miso_pin = SD_MISO;
-int sd_mosi_pin = SD_MOSI;
-int sd_sclk_pin = SD_SCLK;
-int sd_cs_pin = SD_CS;
+int sd_miso_pin = SD_MISO_PIN;
+int sd_mosi_pin = SD_MOSI_PIN;
+int sd_sclk_pin = SD_SCLK_PIN;
+int sd_cs_pin = SD_CS_PIN;
 
 // Rotary Encoder pins (modifiable via web interface)
-int rotary_clk_pin = ROTARY_CLK;
-int rotary_dt_pin = ROTARY_DT;
-int rotary_sw_pin = ROTARY_SW;
+int rotary_clk_pin = ROTARY_CLK_PIN;
+int rotary_dt_pin = ROTARY_DT_PIN;
+int rotary_sw_pin = ROTARY_SW_PIN;
 
 // OLED display settings (from config.h)
 uint8_t oledRotation = DEFAULT_OLED_ROTATION;
@@ -250,18 +250,18 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C oled(U8G2_R0, U8X8_PIN_NONE);
 
 
 // NeoPixel (from board_config.h via config.h)
-int LED_PIN = NEOPIXEL;
+int LED_PIN = NEOPIXEL_PIN;
 int LED_COUNT = DEFAULT_NEOPIXEL_COUNT;
 
 // TFT pins (modifiables via web)
 #if ENABLE_TFT_DISPLAY
-int tftMISO = TFT_MISO;
-int tftMOSI = TFT_MOSI;
-int tftSCLK = TFT_SCLK;
-int tftCS = TFT_CS;
-int tftDC = TFT_DC;
-int tftRST = TFT_RST;
-int tftBL = TFT_BL;
+int tftMISO = TFT_MISO_PIN;
+int tftMOSI = TFT_MOSI_PIN;
+int tftSCLK = TFT_SCLK_PIN;
+int tftCS = TFT_CS_PIN;
+int tftDC = TFT_DC_PIN;
+int tftRST = TFT_RST_PIN;
+int tftBL = TFT_BL_PIN;
 int tftWidth = TFT_WIDTH;
 int tftHeight = TFT_HEIGHT;
 int tftRotation = TFT_ROTATION;
@@ -455,9 +455,9 @@ int lastButtonState = HIGH;
 // ========== BOUTONS ==========
 // Gestion simple avec anti-rebond et actions utiles par défaut
 #if ENABLE_BUTTONS
-static int buttonBootPin = BUTTON_BOOT;
-static int button1Pin = BUTTON_1;
-static int button2Pin = BUTTON_2;
+static int buttonBootPin = BUTTON_BOOT_PIN;
+static int button1Pin = BUTTON_1_PIN;
+static int button2Pin = BUTTON_2_PIN;
 static int buttonBootLast = HIGH;
 static int button1Last = HIGH;
 static int button2Last = HIGH;
@@ -2800,7 +2800,7 @@ void testBuzzer() {
 }
 
 void playBuzzerTone(int frequency, int duration) {
-  if (BUZZER >= 0) {
+  if (BUZZER_PIN >= 0) {
     tone(buzzer_pin, frequency, duration);
   }
 }
@@ -3282,18 +3282,18 @@ void resetRotaryPosition() {
 // v3.28.5: Use constants directly to ensure correct pin access
 int getButtonBootState() {
   // Use constant directly instead of static variable
-  if (BUTTON_BOOT < 0 || BUTTON_BOOT > 48) return -1;
-  return digitalRead(BUTTON_BOOT);
+  if (BUTTON_BOOT_PIN < 0 || BUTTON_BOOT_PIN > 48) return -1;
+  return digitalRead(BUTTON_BOOT_PIN);
 }
 
 int getButton1State() {
-  if (BUTTON_1 < 0 || BUTTON_1 > 48) return -1;
-  return digitalRead(BUTTON_1);
+  if (BUTTON_1_PIN < 0 || BUTTON_1_PIN > 48) return -1;
+  return digitalRead(BUTTON_1_PIN);
 }
 
 int getButton2State() {
-  if (BUTTON_2 < 0 || BUTTON_2 > 48) return -1;
-  return digitalRead(BUTTON_2);
+  if (BUTTON_2_PIN < 0 || BUTTON_2_PIN > 48) return -1;
+  return digitalRead(BUTTON_2_PIN);
 }
 
 // v3.28.5 - Read REAL GPIO state of rotary button for monitoring
@@ -4582,9 +4582,9 @@ void handleButtonStates() {
     jsonBoolField("button1_available", button1State != -1),
     jsonBoolField("button2_pressed", button2State == LOW && button2State != -1),
     jsonBoolField("button2_available", button2State != -1),
-    jsonNumberField("boot_pin", BUTTON_BOOT),  // v3.28.5: Use constants
-    jsonNumberField("button1_pin", BUTTON_1),
-    jsonNumberField("button2_pin", BUTTON_2)
+    jsonNumberField("boot_pin", BUTTON_BOOT_PIN),  // v3.28.5: Use constants
+    jsonNumberField("button1_pin", BUTTON_1_PIN),
+    jsonNumberField("button2_pin", BUTTON_2_PIN)
   });
 }
 
@@ -4602,13 +4602,13 @@ void handleButtonState() {
 
   if (buttonParam == "boot") {
     state = getButtonBootState();
-    pin = BUTTON_BOOT;  // v3.28.5: Use constant directly
+    pin = BUTTON_BOOT_PIN;  // v3.28.5: Use constant directly
   } else if (buttonParam == "1" || buttonParam == "button1") {
     state = getButton1State();
-    pin = BUTTON_1;
+    pin = BUTTON_1_PIN;
   } else if (buttonParam == "2" || buttonParam == "button2") {
     state = getButton2State();
-    pin = BUTTON_2;
+    pin = BUTTON_2_PIN;
   } else {
     sendActionResponse(400, false, "Invalid button parameter (must be 'boot', '1', or '2')");
     return;
@@ -5863,14 +5863,14 @@ void handleJavaScriptRoute() {
   pinVars += String(rotary_sw_pin);
   // Button pins
   pinVars += ";const BUTTON_BOOT=";
-  pinVars += String(BUTTON_BOOT);
+  pinVars += String(BUTTON_BOOT_PIN);
   pinVars += ";const BUTTON_1=";
-  pinVars += String(BUTTON_1);
+  pinVars += String(BUTTON_1_PIN);
   pinVars += ";const BUTTON_2=";
-  pinVars += String(BUTTON_2);
+  pinVars += String(BUTTON_2_PIN);
   // TFT MISO pin
   pinVars += ";const TFT_MISO_PIN=";
-  pinVars += String(TFT_MISO);
+  pinVars += String(TFT_MISO_PIN);
   pinVars += ";console.log('GPIO Pins from board_config:',{SD_MISO:SD_MISO_PIN,SD_MOSI:SD_MOSI_PIN,SD_SCLK:SD_SCLK_PIN,SD_CS:SD_CS_PIN,ROTARY_CLK:ROTARY_CLK_PIN,ROTARY_DT:ROTARY_DT_PIN,ROTARY_SW:ROTARY_SW_PIN,BUTTON_BOOT:BUTTON_BOOT,BUTTON_1:BUTTON_1,BUTTON_2:BUTTON_2,TFT_MISO:TFT_MISO_PIN});";
 
   Serial.printf("Sending pin variables: %d bytes\n", pinVars.length());
@@ -5879,8 +5879,8 @@ void handleJavaScriptRoute() {
   Serial.printf("  DIST_TRIG=%d, DIST_ECHO=%d\n", distance_trig_pin, distance_echo_pin);
   Serial.printf("  SD_MISO=%d, SD_MOSI=%d, SD_SCLK=%d, SD_CS=%d\n", sd_miso_pin, sd_mosi_pin, sd_sclk_pin, sd_cs_pin);
   Serial.printf("  ROTARY_CLK=%d, ROTARY_DT=%d, ROTARY_SW=%d\n", rotary_clk_pin, rotary_dt_pin, rotary_sw_pin);
-  Serial.printf("  BUTTON_BOOT=%d, BUTTON_1=%d, BUTTON_2=%d\n", BUTTON_BOOT, BUTTON_1, BUTTON_2);
-  Serial.printf("  TFT_MISO=%d\n", TFT_MISO);
+  Serial.printf("  BUTTON_BOOT=%d, BUTTON_1=%d, BUTTON_2=%d\n", BUTTON_BOOT_PIN, BUTTON_1_PIN, BUTTON_2_PIN);
+  Serial.printf("  TFT_MISO=%d\n", TFT_MISO_PIN);
   server.sendContent(pinVars);
 
   // Send translations

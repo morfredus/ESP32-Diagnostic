@@ -3,10 +3,10 @@
 # -----------------------------------------------------------------------------
 # Fichier de configuration WiFi (sensible - NE PAS VERSIONNER)
 include/secrets.h
-# Ancien nom conservé pour éviter tout commit accidentel
 include/wifi-config.h
 
 # Fichiers divers (a ignorer si leur contenu n'est pas a partager)
+.copilot
 
 # -----------------------------------------------------------------------------
 # 2. FICHIERS GENERES PAR COMPILATION ET OUTILS
@@ -18,6 +18,7 @@ include/wifi-config.h
 .pio/
 .lib/
 .cache/
+.claude/
 
 # Arduino IDE (fichiers temporaires ou specifiques a l'utilisateur)
 *.lss              # Fichiers de liste de compilation (Arduino IDE et autres)

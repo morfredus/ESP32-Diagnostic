@@ -32,9 +32,11 @@ Set the default driver in `include/config.h`:
 
 See [RELEASE_NOTES_3.30.0.md](RELEASE_NOTES_3.30.0.md) for complete details.
 
-# Configuration (EN) – v3.33.0
 
-> WARNING: This document reflects firmware v3.33.0 with EXACT pin mappings from `include/board_config.h`. All GPIO assignments have been verified and synchronized with the codebase. Read [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
+
+# Configuration (EN) – v3.33.5
+
+> WARNING: This document reflects firmware v3.33.5. All pin mappings and GPIO names are now strictly synchronized and use the *_PIN naming convention as defined in `include/board_config.h`. Please verify all assignments and consult [docs/PIN_MAPPING.md](docs/PIN_MAPPING.md) before flashing.
 
 ## Build Environment Selection
 

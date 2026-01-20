@@ -1,9 +1,11 @@
 
-# ESP32 Suite de Diagnostic (v3.33.4)
+
+# ESP32 Suite de Diagnostic (v3.33.5)
 
 > **Note** : v3.31.0 introduit **le code source lisible de l'interface web** avec minification automatique ! Développez en code clair et maintenable tout en gardant une taille de firmware optimisée.
 
-Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic.
+
+Firmware de diagnostic complet pour microcontrôleurs ESP32 avec tableau de bord web interactif, tests matériels automatisés et contenu bilingue (FR/EN). Le firmware cible PlatformIO avec ESP32 Arduino Core 3.3.3 et supporte les cibles ESP32-S3 et ESP32 Classic. Tous les mappings de broches et noms GPIO utilisent désormais la convention *_PIN et sont strictement synchronisés avec le code et la documentation.
 
 
 ## ✨ Version 3.33.4 - Correction UX : Plus de Rechargement de Page

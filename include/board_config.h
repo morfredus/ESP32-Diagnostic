@@ -2,254 +2,228 @@
 #define BOARD_CONFIG_H
 
 // =========================================================
-//         Configuration Pinout ESP32-S3 DevKitC-1 N16R8
+//         CONFIGURATION ESP32-S3 DevKitC-1 (N16R8)
 // =========================================================
 #if defined(TARGET_ESP32_S3)
 
-    #define BOARD_NAME "ESP32-S3 DevKitC-1"
+#define BOARD_NAME "ESP32-S3 DevKitC-1"
+
+// ============================================================
+// Paramètres écran TFT
+// ============================================================
+#define DISPLAY_WIDTH      240   // Largeur écran pixels.
+#define DISPLAY_HEIGHT     240   // Hauteur écran pixels.
+#define DISPLAY_SPI_FREQ   40000000UL // 40 MHz : stable et rapide sur S3.
 
 // ============================================================
 // RAPPELS DE SÉCURITÉ ESP32-S3
 // ============================================================
-// - Tension logique GPIO : 3.3 V uniquement (aucune broche n'est 5V tolérante).
-// - Ne jamais appliquer 5V directement sur une GPIO (utiliser diviseur ou interface).
-// - GPIO0 : broche BOOT (strapping) – ne rien connecter qui la force à LOW au boot.
-// - GPIO46 : utilisé pour PIR, attention au JTAG / boot.
-// - GPS TX (vers RXD 18) et HC-SR04 ECHO (vers GPIO 35) : Diviseur de tension OBLIGATOIRE si capteurs alimentés en 5V.
-// - LEDs : ajouter résistance série 220–470 O (0.25 W) pour limiter le courant.
-// - I2C (GPIO 15/16) : pull-up 4.7 kO vers 3.3 V OBLIGATOIRE.
-// - Buzzer : transistor nécessaire (avec résistance de base 1–10 kO) si passif ou courant >12 mA.
+// - GPIO 3.3V uniquement (aucune broche 5V tolérante).
+// - GPIO0 : strapping BOOT — ne rien connecter qui force LOW.
+// - GPIO46 : entrée uniquement, attention au boot/JTAG.
+// - GPS TX (vers RXD 18) et HC-SR04 ECHO (vers GPIO 35) : diviseur obligatoire si capteurs 5V.
+// - I2C : pull-up 4.7 kΩ obligatoire.
+// - LED : résistance série 220–470 Ω.
+// - Buzzer : transistor obligatoire si >12 mA.
 // ============================================================
 
 
-// ------------------------------------
-// DÉTAIL TECHNIQUE : Diviseur de Tension
-// ------------------------------------
-// Vout = Vin * (R2 / (R1 + R2))
-// Exemple recommandé : R1 = 10 kO (haut), R2 = 20 kO (bas) ? 5V ? ~3.3V
-// Variante basse impédance : R1 = 2 kO, R2 = 3 kO
-// Utilisation : GPS TX ? ESP32 RX, HC-SR04 ECHO ? ESP32
-// ------------------------------------
+// ============================================================
+// SPI TFT + SD — SPI Natif ESP32-S3 (HSPI)
+// ============================================================
+#define DISPLAY_SCK_PIN     12   // SPI SCLK — natif, haute vitesse
+#define DISPLAY_MOSI_PIN    11   // SPI MOSI — natif
+#define DISPLAY_MISO_PIN    13   // SPI MISO — natif (lecture SD)
+#define DISPLAY_CS_PIN      10   // CS TFT — GPIO libre
+#define DISPLAY_DC_PIN       9   // Data/Command — GPIO libre
+#define DISPLAY_RST_PIN      8   // Reset matériel TFT
+#define DISPLAY_BL_PIN      18   // Backlight — PWM possible
 
+// Alias TFT (compatibilité librairies)
+#define TFT_MISO_PIN DISPLAY_MISO_PIN
+#define TFT_MOSI_PIN DISPLAY_MOSI_PIN
+#define TFT_SCLK_PIN DISPLAY_SCK_PIN
+#define TFT_CS_PIN   DISPLAY_CS_PIN
+#define TFT_DC_PIN   DISPLAY_DC_PIN
+#define TFT_RST_PIN  DISPLAY_RST_PIN
+#define TFT_BL_PIN   DISPLAY_BL_PIN
 
-// ------------------------------------
-// GPS (UART1)
-// ------------------------------------
-#define GPS_RXD 18  // Entrée RX ESP32 (depuis TX GPS) – 3.3V, diviseur obligatoire si GPS 5V
-#define GPS_TXD 17  // Sortie TX ESP32 (vers RX GPS) – 3.3V
-#define GPS_PPS  8  // Entrée PPS GPS (1PPS) – 3.3V
-
-
-// ------------------------------------
-// TFT ST7789 (SPI) — Ordre SPI standardisé
-// ------------------------------------
-// Alias :
-//   MOSI = DIN / SDA / SDI / DATA / DI
-//   MISO = DO / SDO
-//   SCLK = SCK / CLK / SCL
-//   CS   = CS / CE / SS / TCS
-//   DC   = D/C / A0 / RS
-//   RST  = RST / RESET / RES
-//   BL   = BL / LED / BACKLIGHT
-// Tension logique : 3.3V
-
-#define TFT_MISO      13  // MISO TFT/SD (DO / SDO) – entrée 3.3V (ne jamais recevoir 5V)
-#define TFT_MOSI      11  // MOSI (DIN / SDA / SDI / DATA / DI) – sortie 3.3V
-#define TFT_SCLK      12  // Horloge SPI (SCK / CLK / SCL) – sortie 3.3V
-#define TFT_CS        10  // Chip Select TFT – sortie 3.3V
-#define TFT_DC         9  // Data/Command – sortie 3.3V
-#define TFT_RST       14  // Reset matériel TFT – sortie 3.3V
-#define TFT_BL         7  // Rétroéclairage TFT – sortie 3.3V (PWM possible)
-#define TOUCH_CS      -1  // Pas de tactile câblé
-
-
-// ------------------------------------
-// ILI9341 (SPI) — Compatible ST7789
-// ------------------------------------
-#define ILI9341_MISO  TFT_MISO
-#define ILI9341_MOSI  TFT_MOSI
-#define ILI9341_SCLK  TFT_SCLK
-#define ILI9341_CS    TFT_CS
-#define ILI9341_DC    TFT_DC
-#define ILI9341_RST   TFT_RST
-#define ILI9341_BL    TFT_BL
-
-
-// ------------------------------------
 // SD Card (SPI partagé)
-// ------------------------------------
-#define SD_MISO      13  // MISO SD – entrée 3.3V
-#define SD_MOSI      11  // MOSI SD – sortie 3.3V
-#define SD_SCLK      12  // Horloge SD – sortie 3.3V
-#define SD_CS         1  // Chip Select SD – sortie 3.3V
+#define SD_MISO_PIN   DISPLAY_MISO_PIN
+#define SD_MOSI_PIN   DISPLAY_MOSI_PIN
+#define SD_SCLK_PIN   DISPLAY_SCK_PIN
+#define SD_CS_PIN     1   // CS SD — GPIO sûr
 
 
-// ------------------------------------
-// I2C
-// ------------------------------------
-#define I2C_SDA 15  // SDA – open-drain 3.3V, pull-up externe 4.7 kO ? 3.3V
-#define I2C_SCL 16  // SCL – open-drain 3.3V, pull-up externe 4.7 kO ? 3.3V
+// ============================================================
+// GPS (UART1)
+// ============================================================
+#define GPS_RXD_PIN 18  // RX ESP32 — entrée 3.3V (diviseur si GPS 5V)
+#define GPS_TXD_PIN 17  // TX ESP32 — sortie 3.3V
+#define GPS_PPS_PIN  7  // PPS GPS — entrée 3.3V
 
 
-// ------------------------------------
+// ============================================================
+// I2C — Broches recommandées ESP32-S3
+// ============================================================
+#define I2C_SDA_PIN  15  // SDA — open-drain, pull-up 4.7 kΩ
+#define I2C_SCL_PIN  16  // SCL — open-drain, pull-up 4.7 kΩ
+
+
+// ============================================================
 // LED RGB & NeoPixel
-// ------------------------------------
-#define LED_RED    21 // LED Rouge – sortie 3.3V, résistance série 220–470 O
-#define LED_GREEN  41 // LED Verte – sortie 3.3V, résistance série 220–470 O
-#define LED_BLUE   42 // LED Bleue – sortie 3.3V, résistance série 220–470 O
-#define NEOPIXEL   48 // Data NeoPixel – sortie 3.3V (LED souvent alimentée en 5V)
+// ============================================================
+#define LED_RED_PIN    21  // LED Rouge — sortie 3.3V
+#define LED_GREEN_PIN  41  // LED Verte — sortie 3.3V
+#define LED_BLUE_PIN   42  // LED Bleue — sortie 3.3V
+#define NEOPIXEL_PIN   48  // NeoPixel — sortie 3.3V
 
 
-// ------------------------------------
+// ============================================================
 // Boutons
-// ------------------------------------
-#define BUTTON_BOOT 0   // Bouton BOOT – entrée 3.3V, vers GND à l’appui
-#define BUTTON_1   38   // Bouton utilisateur 1 – entrée 3.3V, pull-up interne
-#define BUTTON_2   39   // Bouton utilisateur 2 – entrée 3.3V, pull-up interne
+// ============================================================
+#define BUTTON_BOOT_PIN 0   // BOOT — strapping
+#define BUTTON_1_PIN   38   // Bouton user — entrée, pull-up interne
+#define BUTTON_2_PIN   39   // Bouton user — entrée, pull-up interne
 
 
-// ------------------------------------
-// ENCODEUR ROTATIF (HW-040)
-// ------------------------------------
-// - Module passif (contacts mécaniques).
-// - Recommandation : condensateurs 10 nF entre CLK?GND et DT?GND pour debounce matériel.
-// - SW : utiliser pull-up interne.
-#define ROTARY_CLK   47  // Signal A / CLK / S1 – entrée 3.3V, ~10 nF recommandé
-#define ROTARY_DT    45  // Signal B / DT / S2 – entrée 3.3V, ~10 nF recommandé
-#define ROTARY_SW    40  // Bouton SW – entrée 3.3V, pull-up interne
+// ============================================================
+// Encodeur Rotatif (HW-040)
+// ============================================================
+#define ROTARY_CLK_PIN  47  // Signal A — entrée rapide
+#define ROTARY_DT_PIN   45  // Signal B — entrée rapide
+#define ROTARY_SW_PIN   40  // Bouton SW — entrée, pull-up interne
 
 
-// ------------------------------------
-// Capteurs & Sorties diverses
-// ------------------------------------
-#define PWM            20 // PWM générique – sortie 3.3V (LED via R 220–470 O ou transistor)
-#define BUZZER          6 // Commande buzzer – sortie 3.3V, transistor + R base 1–10 kO recommandé
-#define DHT             5 // Capteur DHT – DATA 3.3V, pull-up typique 10 kO si nécessaire
-#define MOTION_SENSOR  46 // PIR – entrée 3.3V (adapter si module 5V)
-#define LIGHT_SENSOR    4 // LDR via diviseur – entrée ADC 3.3V max, R typique 10 kO
+// ============================================================
+// Capteurs & Sorties
+// ============================================================
+#define PWM_PIN            20 // PWM générique — sortie
+#define BUZZER_PIN          6 // Buzzer — sortie (transistor recommandé)
+#define DHT_PIN             5 // DHT — DATA 3.3V
+#define MOTION_SENSOR_PIN  46 // PIR — entrée uniquement
+#define LIGHT_SENSOR_PIN    4 // LDR via diviseur — ADC 3.3V max
 
 
-// ------------------------------------
-// Capteur de Distance HC-SR04
-// ------------------------------------
-// - TRIG : accepte 3.3V ? OK
-// - ECHO : sort du 5V ? diviseur obligatoire
-#define DISTANCE_TRIG 2   // TRIG – sortie 3.3V
-#define DISTANCE_ECHO 35  // ECHO – entrée 3.3V, diviseur recommandé (10 kO / 20 kO)
+// ============================================================
+// HC-SR04
+// ============================================================
+#define DISTANCE_TRIG_PIN 2   // TRIG — sortie 3.3V
+#define DISTANCE_ECHO_PIN 35  // ECHO — entrée, diviseur obligatoire
+
 
 
 // =========================================================
-//         MAPPING ESP32 CLASSIQUE (DevKitC)
+//         CONFIGURATION ESP32 CLASSIC (WROOM DevKitC)
 // =========================================================
 #elif defined(TARGET_ESP32_CLASSIC)
 
-    #define BOARD_NAME "ESP32 Classic DevKitC"
+#define BOARD_NAME "ESP32 Classic DevKitC"
+
+// ============================================================
+// Paramètres écran TFT
+// ============================================================
+#define DISPLAY_WIDTH      240   // Largeur écran pixels.
+#define DISPLAY_HEIGHT     240   // Hauteur écran pixels.
+#define DISPLAY_SPI_FREQ   40000000UL // 40 MHz : stable et rapide sur S3/Classic.
 
 // ============================================================
 // RAPPELS DE SÉCURITÉ ESP32-WROOM
 // ============================================================
 // - GPIO 3.3V uniquement.
-// - GPIO0 : boot, éviter.
-// - GPIO1/3 : UART0 console.
+// - GPIO0 : boot — éviter.
+// - GPIO1/3 : UART0 console — ne pas utiliser.
 // - GPIO34–39 : entrées uniquement.
 // - GPS TX et HC-SR04 ECHO : diviseur obligatoire si 5V.
-// - LEDs : résistance série 220–470 O.
-// - I2C : pull-up 4.7 kO obligatoire.
 // ============================================================
 
 
-// ------------------------------------
+// ============================================================
+// SPI TFT + SD — SPI Natif VSPI
+// ============================================================
+#define DISPLAY_SCK_PIN     18   // VSPI SCLK — natif
+#define DISPLAY_MOSI_PIN    23   // VSPI MOSI — natif
+#define DISPLAY_MISO_PIN    19   // VSPI MISO — natif
+#define DISPLAY_CS_PIN       5   // CS TFT — GPIO sûr
+#define DISPLAY_DC_PIN      16   // Data/Command — GPIO sûr
+#define DISPLAY_RST_PIN     17   // Reset matériel — GPIO sûr
+#define DISPLAY_BL_PIN       4   // Backlight — PWM possible
+
+// Alias TFT
+#define TFT_MISO_PIN DISPLAY_MISO_PIN
+#define TFT_MOSI_PIN DISPLAY_MOSI_PIN
+#define TFT_SCLK_PIN DISPLAY_SCK_PIN
+#define TFT_CS_PIN   DISPLAY_CS_PIN
+#define TFT_DC_PIN   DISPLAY_DC_PIN
+#define TFT_RST_PIN  DISPLAY_RST_PIN
+#define TFT_BL_PIN   DISPLAY_BL_PIN
+
+// SD Card (SPI partagé)
+#define SD_MISO_PIN   DISPLAY_MISO_PIN
+#define SD_MOSI_PIN   DISPLAY_MOSI_PIN
+#define SD_SCLK_PIN   DISPLAY_SCK_PIN
+#define SD_CS_PIN     DISPLAY_CS_PIN
+
+
+// ============================================================
 // GPS (UART2)
-// ------------------------------------
-#define GPS_RXD 16  // RX ESP32 – entrée 3.3V, diviseur si GPS 5V
-#define GPS_TXD 17  // TX ESP32 – sortie 3.3V
-#define GPS_PPS 36  // PPS GPS – entrée 3.3V (GPIO36 = entrée uniquement)
+// ============================================================
+#define GPS_RXD_PIN 32  // RX ESP32 — entrée 3.3V
+#define GPS_TXD_PIN 33  // TX ESP32 — sortie 3.3V
+#define GPS_PPS_PIN 36  // PPS — entrée uniquement
 
 
-// ------------------------------------
-// TFT ST7789 (SPI)
-// ------------------------------------
-#define TFT_MISO     -1  // Non câblé sur ce module TFT
-#define TFT_MOSI      23 // MOSI – sortie 3.3V
-#define TFT_SCLK      18 // Horloge SPI – sortie 3.3V
-#define TFT_CS        27 // Chip Select TFT – sortie 3.3V
-#define TFT_DC        14 // Data/Command – sortie 3.3V
-#define TFT_RST       25 // Reset TFT – sortie 3.3V
-#define TFT_BL        32 // Backlight – sortie 3.3V (PWM possible)
-
-
-// ------------------------------------
-// ILI9341 (SPI)
-// ------------------------------------
-#define ILI9341_MISO  -1
-#define ILI9341_MOSI  TFT_MOSI
-#define ILI9341_SCLK  TFT_SCLK
-#define ILI9341_CS    TFT_CS
-#define ILI9341_DC    TFT_DC
-#define ILI9341_RST   TFT_RST
-#define ILI9341_BL    TFT_BL
-
-
-// ------------------------------------
+// ============================================================
 // I2C
-// ------------------------------------
-#define I2C_SDA 21  // SDA – open-drain 3.3V, pull-up 4.7 kO
-#define I2C_SCL 22  // SCL – open-drain 3.3V, pull-up 4.7 kO
+// ============================================================
+#define I2C_SDA_PIN 21  // SDA — open-drain, pull-up 4.7 kΩ
+#define I2C_SCL_PIN 22  // SCL — open-drain, pull-up 4.7 kΩ
 
 
-// ------------------------------------
-// SD Card (SPI)
-// ------------------------------------
-#define SD_MISO      19  // MISO SD – entrée 3.3V
-#define SD_MOSI      13  // MOSI SD – sortie 3.3V (partagé avec TFT)
-#define SD_SCLK       5  // Horloge SD – sortie 3.3V (partagé avec TFT)
-#define SD_CS         4  // Chip Select SD – sortie 3.3V
-
-// ------------------------------------
-// LED RGB
-// ------------------------------------
-#define LED_RED     13 // LED Rouge – sortie 3.3V, résistance 220–470 O
-#define LED_GREEN   26 // LED Verte – sortie 3.3V, résistance 220–470 O
-#define LED_BLUE    33 // LED Bleue – sortie 3.3V, résistance 220–470 O
-#define LED_BUILTIN  2 // LED intégrée – sortie 3.3V
+// ============================================================
+// LED RGB & NeoPixel
+// ============================================================
+#define LED_RED_PIN     13 // LED Rouge — sortie
+#define LED_GREEN_PIN   26 // LED Verte — sortie
+#define LED_BLUE_PIN    25 // LED Bleue — sortie
+#define NEOPIXEL_PIN     2 // NeoPixel — sortie
 
 
-// ------------------------------------
+// ============================================================
 // Boutons
-// ------------------------------------
-#define BUTTON_BOOT 0  // Bouton BOOT – entrée 3.3V, vers GND
-#define BUTTON_1    5  // Bouton user 1 – entrée 3.3V, pull-up interne
-#define BUTTON_2   12  // Bouton user 2 – entrée 3.3V, pull-up interne
+// ============================================================
+#define BUTTON_BOOT_PIN 0  // BOOT — strapping
+#define BUTTON_1_PIN    27 // Bouton user — entrée
+#define BUTTON_2_PIN    12 // Bouton user — entrée
 
 
-// ------------------------------------
-// ENCODEUR ROTATIF (HW-040)
-// ------------------------------------
-#define ROTARY_CLK   4   // Signal A / CLK / S1 – entrée 3.3V, ~10 nF recommandé
-#define ROTARY_DT    13  // Signal B / DT / S2 – entrée 3.3V, ~10 nF possible
-#define ROTARY_SW    26  // Bouton SW – entrée 3.3V, pull-up interne
+// ============================================================
+// Encodeur Rotatif
+// ============================================================
+#define ROTARY_CLK_PIN  14  // Signal A — entrée
+#define ROTARY_DT_PIN   27  // Signal B — entrée
+#define ROTARY_SW_PIN   26  // Bouton SW — entrée
 
 
-// ------------------------------------
+// ============================================================
 // Capteurs & Sorties
-// ------------------------------------
-#define PWM            4  // PWM générique – sortie 3.3V
-#define BUZZER        19  // Commande buzzer – sortie 3.3V, transistor + R base 1–10 kO
-#define DHT           15  // Capteur DHT – DATA 3.3V, pull-up 10 kO si nécessaire
-#define MOTION_SENSOR 34  // PIR – entrée 3.3V (GPIO34 = entrée uniquement, adapter si module 5V)
-#define LIGHT_SENSOR  39  // LDR via diviseur – entrée ADC 3.3V max, R typique 10 kO
-#define NEOPIXEL       2  // Data NeoPixel – sortie 3.3V (partagé avec LED_BUILTIN)
+// ============================================================
+#define PWM_PIN            25 // PWM générique — sortie
+#define BUZZER_PIN         13 // Buzzer — sortie
+#define DHT_PIN            15 // DHT — DATA
+#define MOTION_SENSOR_PIN  34 // PIR — entrée uniquement
+#define LIGHT_SENSOR_PIN   39 // LDR — ADC entrée uniquement
 
 
-// ------------------------------------
-// Capteur de Distance
-// ------------------------------------
-#define DISTANCE_TRIG 1  // TRIG – sortie 3.3V
-#define DISTANCE_ECHO 35 // ECHO – entrée 3.3V, diviseur obligatoire si capteur 5V
+// ============================================================
+// HC-SR04
+// ============================================================
+#define DISTANCE_TRIG_PIN 1  // TRIG — sortie
+#define DISTANCE_ECHO_PIN 35 // ECHO — entrée, diviseur obligatoire
 
 
 #else
-    #error "Aucune cible definie ! Verifiez platformio.ini (TARGET_ESP32_...)"
+#error "Aucune cible définie ! Vérifiez platformio.ini (TARGET_ESP32_...)"
 #endif
 
 #endif // BOARD_CONFIG_H
